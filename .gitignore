@@ -1,0 +1,8 @@
+*.bak
+composer.lock
+vendor
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
+.claude
+.codacy

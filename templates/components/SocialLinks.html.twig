@@ -1,0 +1,8 @@
+{# <twig:c975LSocial:SocialLinks/> #}
+{# Renders the first "social_links" block found, wherever it lives (attached to a page or not) - see
+   BlockRepository::findOneByKind(). Lets the same block also be dropped on individual pages if wanted,
+   with no dedicated singleton entity/table for the site-wide footer copy #}
+{% set block = social_link_block() %}
+{% if block is not null %}
+    {{ render_block(block) }}
+{% endif %}

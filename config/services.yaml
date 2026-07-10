@@ -1,0 +1,25 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    c975L\SocialBundle\:
+        resource: '../src/'
+        exclude: '../src/{DependencyInjection,Entity}'
+
+    c975L\SocialBundle\Service\StylesheetProvider:
+        tags:
+            - { name: 'ui.stylesheet', priority: 100 }
+
+    social.block.social_links:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: social_links
+              label: "block.social_links"
+              description: "block.social_links_description"
+              translation_domain: 'social'
+              form: c975L\SocialBundle\Form\Block\SocialLinksType
+              template: '@c975LSocial/blocks/SocialLinks.html.twig'
+              category: 'label.category_navigation'

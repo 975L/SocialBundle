@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="fr" datatype="plaintext" original="social.fr.xlf">
+        <body>
+            <trans-unit id="1">
+                <source>label.social_links</source>
+                <target>Réseaux sociaux</target>
+            </trans-unit>
+            <trans-unit id="2">
+                <source>label.label</source>
+                <target>Libellé</target>
+            </trans-unit>
+            <trans-unit id="3">
+                <source>label.url</source>
+                <target>URL</target>
+            </trans-unit>
+            <trans-unit id="4">
+                <source>label.icon</source>
+                <target>Icône</target>
+            </trans-unit>
+            <trans-unit id="5">
+                <source>block.social_links</source>
+                <target>Réseaux sociaux</target>
+            </trans-unit>
+            <trans-unit id="6">
+                <source>block.social_links_description</source>
+                <target>Affiche une liste d'icônes de réseaux sociaux, chacune vers l'URL de ton choix</target>
+            </trans-unit>
+            <trans-unit id="7">
+                <source>label.category_navigation</source>
+                <target>Navigation</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

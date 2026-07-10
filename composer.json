@@ -1,0 +1,43 @@
+{
+    "name": "c975l/social-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony bundle that manages social features - social links, post retrieval, scheduled posting, and more.",
+    "keywords": ["symfony", "bundle", "social"],
+    "homepage": "https://github.com/975L/SocialBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Laurent Marquet",
+            "email": "laurent.marquet@laposte.net",
+            "homepage": "https://github.com/LaurentMarquet",
+            "role": "Developer"
+        },
+        {
+            "name": "975L Community",
+            "homepage": "https://github.com/975L"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "c975l/config-bundle": "*",
+        "c975l/ui-bundle": "*",
+        "easycorp/easyadmin-bundle": "*",
+        "symfony/form": "*",
+        "symfony/framework-bundle": "*"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "c975L\\SocialBundle\\": "src/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "support": {
+        "email": "contact@975l.com",
+        "source": "https://github.com/975L/SocialBundle",
+        "issues": "https://github.com/975L/SocialBundle/issues"
+    }
+}

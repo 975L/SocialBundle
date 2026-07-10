@@ -1,0 +1,17 @@
+/* FOOTER SOCIAL LINKS (SiteBundle's Footer.html.twig calls <twig:c975LSocial:SocialLinks/>) */
+footer .social-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1em;
+    margin: 1em 0;
+    padding: 0;
+}
+
+footer .social-link a {
+    display: flex;
+}
+
+footer .social-link a:hover {
+    opacity: 0.75;
+}
