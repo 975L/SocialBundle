@@ -1,0 +1,121 @@
+/* SHARE BUTTONS (share_buttons() Twig function - migrated from c975L/ShareButtonsBundle) */
+@use '_social-brand-colors.scss';
+
+/* Hidden below 768px: mobile/tablet browsers have their own native share sheet */
+.social-share {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .social-share {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 0.2em;
+        padding: 0;
+        margin: 0;
+    }
+
+    .social-share--left {
+        justify-content: flex-start;
+    }
+
+    .social-share--right {
+        justify-content: flex-end;
+    }
+
+    .social-share-btn {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        margin: 0.2em;
+        text-decoration: none;
+        color: #fff;
+    }
+
+    .social-share-btn img,
+    .social-share-btn svg {
+        width: 24px;
+        height: 24px;
+        margin: 0 auto;
+        filter: social-brand-colors.$white-icon-filter;
+    }
+
+    .social-share--distinct .social-share-btn,
+    .social-share--ellipse .social-share-btn {
+        width: 65px;
+        height: 50px;
+    }
+
+    .social-share--circle .social-share-btn,
+    .social-share--square .social-share-btn,
+    .social-share--rounded .social-share-btn,
+    .social-share--outline .social-share-btn,
+    .social-share--minimal .social-share-btn {
+        width: 50px;
+        height: 50px;
+    }
+
+    .social-share--ellipse .social-share-btn,
+    .social-share--circle .social-share-btn,
+    .social-share--outline .social-share-btn {
+        border-radius: 50%;
+    }
+
+    .social-share--rounded .social-share-btn {
+        border-radius: 12px;
+    }
+
+    .social-share-btn:hover {
+        animation: bounceVertical 0.5s infinite ease-in-out;
+    }
+
+    /* "Outline": transparent with a brand-colored ring, filling in on hover - the icon can't be tinted
+       to the brand color itself (it's an <img>, "filter" can't target arbitrary colors), so it stays
+       neutral (no filter) until hover, when the button fills and the icon turns white like the other styles */
+    .social-share--outline .social-share-btn {
+        background-color: transparent;
+        border: 2px solid var(--network-color, #fff);
+        color: var(--network-color, #fff);
+    }
+
+    .social-share--outline .social-share-btn:hover {
+        background-color: var(--network-color, #000);
+        color: #fff;
+    }
+
+    .social-share--outline .social-share-btn:hover img,
+    .social-share--outline .social-share-btn:hover svg {
+        filter: social-brand-colors.$white-icon-filter;
+    }
+
+    /* "Minimal": icon only, no background/border - same reasoning on icon color as "outline" above */
+    .social-share--minimal .social-share-btn {
+        background-color: transparent;
+        color: inherit;
+    }
+
+    .social-share--minimal .social-share-btn:hover {
+        color: var(--network-color, inherit);
+    }
+
+    .social-share--outline .social-share-btn img,
+    .social-share--outline .social-share-btn svg,
+    .social-share--minimal .social-share-btn img,
+    .social-share--minimal .social-share-btn svg {
+        filter: none;
+    }
+
+    /* Social networks colors - also exposed as "--network-color", used by the "outline" style's
+       border/hover-fill and "minimal"'s hover color (see above). Shared with _social.scss's own
+       per-network coloring - see _social-brand-colors.scss for the single source of truth. */
+    @each $network, $color in social-brand-colors.$social-brand-colors {
+        .social-share-btn--#{$network},
+        .social-share-btn--#{$network}:hover {
+            --network-color: #{$color};
+            background-color: var(--network-color);
+        }
+    }
+}

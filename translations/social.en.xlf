@@ -30,6 +30,94 @@
                 <source>label.category_navigation</source>
                 <target>Navigation</target>
             </trans-unit>
+            <trans-unit id="8">
+                <source>label.display_label</source>
+                <target>Display label</target>
+            </trans-unit>
+            <trans-unit id="9">
+                <source>label.share_on</source>
+                <target>Share on %network%</target>
+            </trans-unit>
+            <trans-unit id="10">
+                <source>block.social_links_display</source>
+                <target>Social links (existing block)</target>
+            </trans-unit>
+            <trans-unit id="11">
+                <source>block.social_links_display_description</source>
+                <target>Inserts the social links defined in the dashboard, without redefining them</target>
+            </trans-unit>
+            <trans-unit id="12">
+                <source>label.share_buttons_settings</source>
+                <target>Share buttons</target>
+            </trans-unit>
+            <trans-unit id="13">
+                <source>label.networks</source>
+                <target>Networks</target>
+            </trans-unit>
+            <trans-unit id="14">
+                <source>label.style</source>
+                <target>Style</target>
+            </trans-unit>
+            <trans-unit id="15">
+                <source>label.style_distinct</source>
+                <target>Distinct</target>
+            </trans-unit>
+            <trans-unit id="16">
+                <source>label.style_ellipse</source>
+                <target>Ellipse</target>
+            </trans-unit>
+            <trans-unit id="17">
+                <source>label.style_circle</source>
+                <target>Circle</target>
+            </trans-unit>
+            <trans-unit id="18">
+                <source>label.style_square</source>
+                <target>Square</target>
+            </trans-unit>
+            <trans-unit id="19">
+                <source>label.style_rounded</source>
+                <target>Rounded</target>
+            </trans-unit>
+            <trans-unit id="20">
+                <source>label.style_outline</source>
+                <target>Outline</target>
+            </trans-unit>
+            <trans-unit id="21">
+                <source>label.style_minimal</source>
+                <target>Minimal</target>
+            </trans-unit>
+            <trans-unit id="22">
+                <source>label.social</source>
+                <target>Social</target>
+            </trans-unit>
+            <trans-unit id="23">
+                <source>label.style_preview</source>
+                <target>Preview</target>
+            </trans-unit>
+            <trans-unit id="24">
+                <source>label.network</source>
+                <target>Network</target>
+            </trans-unit>
+            <trans-unit id="26">
+                <source>label.icon_style</source>
+                <target>Icon style</target>
+            </trans-unit>
+            <trans-unit id="27">
+                <source>label.icon_style_minimal</source>
+                <target>Minimal (neutral icon)</target>
+            </trans-unit>
+            <trans-unit id="28">
+                <source>label.icon_style_colored</source>
+                <target>Colored version</target>
+            </trans-unit>
+            <trans-unit id="29">
+                <source>label.preview</source>
+                <target>Preview</target>
+            </trans-unit>
+            <trans-unit id="30">
+                <source>label.icon_style_outline</source>
+                <target>Outline</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

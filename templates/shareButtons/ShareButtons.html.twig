@@ -1,0 +1,20 @@
+{# {{ share_buttons(networks, style, alignment, displayIcon, displayText, url) }} - see README #}
+<div class="social-share social-share--{{ style }} social-share--{{ alignment }}" data-controller="shareButtonsPopup">
+    {% for button in buttons %}
+        <a
+            href="{{ button.url }}"
+            class="social-share-btn social-share-btn--{{ button.network }}"
+            aria-label="{{ 'label.share_on'|trans({'%network%': button.network|capitalize}, 'social') }}"
+            data-action="shareButtonsPopup#open"
+            target="_blank"
+            rel="noopener nofollow"
+        >
+            {% if displayIcon and button.icon is not empty %}
+                <twig:c975LUi:Image:Icon src="{{ button.icon }}" width="24" height="24" />
+            {% endif %}
+            {% if displayText %}
+                {{ button.network|capitalize }}
+            {% endif %}
+        </a>
+    {% endfor %}
+</div>

@@ -1,13 +1,18 @@
-{# Adapter for the dynamic Block system - "data.links" (see SocialLinksType) is spread as "links" #}
+{# Adapter for the dynamic Block system - "data.links"/"data.displayLabel"/"data.iconStyle" (see
+   SocialLinksType) are spread as "links"/"displayLabel"/"iconStyle" #}
 {% if links is defined and links is not empty %}
-    <ul class="social-links">
+    <ul class="social-links social-links--{{ iconStyle|default('minimal') }}">
         {% for link in links %}
-            <li class="social-link">
-                <a href="{{ link.url }}" aria-label="{{ link.label }}" target="_blank" rel="noopener">
-                    {% if link.icon is not empty %}
-                        <twig:c975LUi:Image:Icon src="{{ link.icon }}" width="24" height="24" alt="{{ link.label }}" />
+            {% set label = link.network is not empty ? link.network|capitalize : link.customLabel %}
+            {% set icon = link.network is not empty ? social_link_icon(link.network) : link.customIcon %}
+            <li class="social-link social-link--{{ link.network is not empty ? link.network : 'other' }}">
+                <a href="{{ link.url }}" aria-label="{{ label }}" target="_blank" rel="noopener">
+                    {% if icon is not empty %}
+                        <twig:c975LUi:Image:Icon src="{{ icon }}" width="32" height="32" class="social-link-icon" title="{{ label }}" />
                     {% endif %}
-                    {{ link.label }}
+                    {% if displayLabel is not defined or displayLabel %}
+                        {{ label }}
+                    {% endif %}
                 </a>
             </li>
         {% endfor %}

@@ -6,6 +6,15 @@
  * with this source code in the file LICENSE.
  */
 /* SOCIAL */
+/* Shared constants for both _share-buttons.scss and _social.scss - single source of truth so their
+   per-network coloring stays in sync (they both use the same flat Font Awesome glyphs, recolored
+   entirely via CSS - see README's "Icons" section). */
+/* Every icon (public/icons/*.svg) is a flat glyph with no explicit "fill" (black by default) - as an
+   <img>, its pixels can't be tinted via "color"/"fill", only inverted to white via "filter" against a
+   colored background (used by both "colored" styles below). */
+/* Official-ish brand colors per network */
+/* Picks readable black/white text for a given background - relative luminance (not plain HSL lightness,
+   which misjudges saturated colors like a bright yellow as "mid" and would pick the wrong one) */
 .social-links {
   list-style: none;
   display: flex;
@@ -13,6 +22,1078 @@
   padding: 0;
   margin: 0;
   gap: 1.5em;
+}
+
+.social-link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.4em 0.9em;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, currentColor 8%, transparent);
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.social-link a:hover {
+  background-color: color-mix(in srgb, currentColor 15%, transparent);
+}
+
+.icon.social-link-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+/* "Colored version" icon style (data.iconStyle - see SocialLinksType/SocialLinks.html.twig): the whole
+   item's badge becomes a solid brand-colored pill, like a proper badge instead of the faint currentColor
+   tint above - text switches to black or white, whichever reads on that background (see
+   social-contrast-text()), and the icon (the same flat Font Awesome glyph as "minimal", not a separate
+   asset - see SocialLinkExtension::getSocialLinkIcon()) turns white via $white-icon-filter, mirroring
+   share_buttons()'s own solid styles (distinct/circle/...). Only applies to known networks - "Autre"
+   entries (SocialLinkEntryType's free-text/custom-icon escape hatch) have no brand color to badge with,
+   and forcing their own, possibly already-colored icon white would make it unreadable. Shared with
+   _share-buttons.scss's own per-network coloring - see _social-brand-colors.scss for the single source
+   of truth. */
+.social-links--colored .social-link--behance a {
+  background-color: #1769ff;
+  color: #fff;
+}
+
+.social-links--colored .social-link--behance .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--behance a:hover {
+  background-color: rgb(0, 88.4327586207, 250.2);
+}
+
+.social-links--colored .social-link--blogger a {
+  background-color: #f57d00;
+  color: #fff;
+}
+
+.social-links--colored .social-link--blogger .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--blogger a:hover {
+  background-color: rgb(220.5, 112.5, 0);
+}
+
+.social-links--colored .social-link--bluesky a {
+  background-color: #1da1f2;
+  color: #fff;
+}
+
+.social-links--colored .social-link--bluesky .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--bluesky a:hover {
+  background-color: rgb(13.2665271967, 147.9728033473, 230.6334728033);
+}
+
+.social-links--colored .social-link--buffer a {
+  background-color: #168eea;
+  color: #fff;
+}
+
+.social-links--colored .social-link--buffer .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--buffer a:hover {
+  background-color: rgb(19.0488188976, 127.8992125984, 211.3511811024);
+}
+
+.social-links--colored .social-link--delicious a {
+  background-color: #3399ff;
+  color: #fff;
+}
+
+.social-links--colored .social-link--delicious .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--delicious a:hover {
+  background-color: rgb(20.4, 137.7, 255);
+}
+
+.social-links--colored .social-link--discord a {
+  background-color: #5865f2;
+  color: #fff;
+}
+
+.social-links--colored .social-link--discord .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--discord a:hover {
+  background-color: rgb(57.3833333333, 72.7666666667, 239.6166666667);
+}
+
+.social-links--colored .social-link--dribbble a {
+  background-color: #ea4c89;
+  color: #fff;
+}
+
+.social-links--colored .social-link--dribbble .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--dribbble a:hover {
+  background-color: rgb(230.745, 48.255, 118.71);
+}
+
+.social-links--colored .social-link--email a {
+  background-color: #2f4f4f;
+  color: #fff;
+}
+
+.social-links--colored .social-link--email .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--email a:hover {
+  background-color: rgb(42.3, 71.1, 71.1);
+}
+
+.social-links--colored .social-link--evernote a {
+  background-color: #2dbe60;
+  color: #fff;
+}
+
+.social-links--colored .social-link--evernote .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--evernote a:hover {
+  background-color: rgb(40.5, 171, 86.4);
+}
+
+.social-links--colored .social-link--facebook a {
+  background-color: #3c5a99;
+  color: #fff;
+}
+
+.social-links--colored .social-link--facebook .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--facebook a:hover {
+  background-color: rgb(54, 81, 137.7);
+}
+
+.social-links--colored .social-link--flickr a {
+  background-color: #ff0084;
+  color: #fff;
+}
+
+.social-links--colored .social-link--flickr .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--flickr a:hover {
+  background-color: rgb(229.5, 0, 118.8);
+}
+
+.social-links--colored .social-link--github a {
+  background-color: #181717;
+  color: #fff;
+}
+
+.social-links--colored .social-link--github .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--github a:hover {
+  background-color: rgb(21.6, 20.7, 20.7);
+}
+
+.social-links--colored .social-link--instagram a {
+  background-color: #e4405f;
+  color: #fff;
+}
+
+.social-links--colored .social-link--instagram .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--instagram a:hover {
+  background-color: rgb(224.3834862385, 38.4165137615, 73.5688073394);
+}
+
+.social-links--colored .social-link--line a {
+  background-color: #00c300;
+  color: #fff;
+}
+
+.social-links--colored .social-link--line .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--line a:hover {
+  background-color: rgb(0, 175.5, 0);
+}
+
+.social-links--colored .social-link--linkedin a {
+  background-color: #0077b5;
+  color: #fff;
+}
+
+.social-links--colored .social-link--linkedin .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--linkedin a:hover {
+  background-color: rgb(0, 107.1, 162.9);
+}
+
+.social-links--colored .social-link--mastodon a {
+  background-color: #6364ff;
+  color: #fff;
+}
+
+.social-links--colored .social-link--mastodon .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--mastodon a:hover {
+  background-color: rgb(63.6, 64.8269230769, 255);
+}
+
+.social-links--colored .social-link--medium a {
+  background-color: #000000;
+  color: #fff;
+}
+
+.social-links--colored .social-link--medium .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--medium a:hover {
+  background-color: black;
+}
+
+.social-links--colored .social-link--messenger a {
+  background-color: #0084ff;
+  color: #fff;
+}
+
+.social-links--colored .social-link--messenger .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--messenger a:hover {
+  background-color: rgb(0, 118.8, 229.5);
+}
+
+.social-links--colored .social-link--pinterest a {
+  background-color: #bd081c;
+  color: #fff;
+}
+
+.social-links--colored .social-link--pinterest .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--pinterest a:hover {
+  background-color: rgb(170.1, 7.2, 25.2);
+}
+
+.social-links--colored .social-link--reddit a {
+  background-color: #ff4500;
+  color: #fff;
+}
+
+.social-links--colored .social-link--reddit .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--reddit a:hover {
+  background-color: rgb(229.5, 62.1, 0);
+}
+
+.social-links--colored .social-link--skype a {
+  background-color: #00aff0;
+  color: #fff;
+}
+
+.social-links--colored .social-link--skype .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--skype a:hover {
+  background-color: rgb(0, 157.5, 216);
+}
+
+.social-links--colored .social-link--snapchat a {
+  background-color: #fffc00;
+  color: #000;
+}
+
+.social-links--colored .social-link--snapchat .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--snapchat a:hover {
+  background-color: rgb(229.5, 226.8, 0);
+}
+
+.social-links--colored .social-link--soundcloud a {
+  background-color: #ff5500;
+  color: #fff;
+}
+
+.social-links--colored .social-link--soundcloud .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--soundcloud a:hover {
+  background-color: rgb(229.5, 76.5, 0);
+}
+
+.social-links--colored .social-link--spotify a {
+  background-color: #1db954;
+  color: #fff;
+}
+
+.social-links--colored .social-link--spotify .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--spotify a:hover {
+  background-color: rgb(26.1, 166.5, 75.6);
+}
+
+.social-links--colored .social-link--stumbleupon a {
+  background-color: #eb4924;
+  color: #fff;
+}
+
+.social-links--colored .social-link--stumbleupon .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--stumbleupon a:hover {
+  background-color: rgb(223.489958159, 58.1686192469, 20.410041841);
+}
+
+.social-links--colored .social-link--telegram a {
+  background-color: #26a5e4;
+  color: #fff;
+}
+
+.social-links--colored .social-link--telegram .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--telegram a:hover {
+  background-color: rgb(26.4909836066, 151.0967213115, 212.9090163934);
+}
+
+.social-links--colored .social-link--threads a {
+  background-color: #000000;
+  color: #fff;
+}
+
+.social-links--colored .social-link--threads .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--threads a:hover {
+  background-color: black;
+}
+
+.social-links--colored .social-link--tiktok a {
+  background-color: #000000;
+  color: #fff;
+}
+
+.social-links--colored .social-link--tiktok .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--tiktok a:hover {
+  background-color: black;
+}
+
+.social-links--colored .social-link--tumblr a {
+  background-color: #35465c;
+  color: #fff;
+}
+
+.social-links--colored .social-link--tumblr .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--tumblr a:hover {
+  background-color: rgb(47.7, 63, 82.8);
+}
+
+.social-links--colored .social-link--twitch a {
+  background-color: #9146ff;
+  color: #fff;
+}
+
+.social-links--colored .social-link--twitch .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--twitch a:hover {
+  background-color: rgb(125.6756756757, 37.5, 255);
+}
+
+.social-links--colored .social-link--vimeo a {
+  background-color: #1ab7ea;
+  color: #fff;
+}
+
+.social-links--colored .social-link--vimeo .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--vimeo a:hover {
+  background-color: rgb(19.656, 166.608, 214.344);
+}
+
+.social-links--colored .social-link--vk a {
+  background-color: #0077ff;
+  color: #fff;
+}
+
+.social-links--colored .social-link--vk .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--vk a:hover {
+  background-color: rgb(0, 107.1, 229.5);
+}
+
+.social-links--colored .social-link--wechat a {
+  background-color: #07c160;
+  color: #fff;
+}
+
+.social-links--colored .social-link--wechat .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--wechat a:hover {
+  background-color: rgb(6.3, 173.7, 86.4);
+}
+
+.social-links--colored .social-link--whatsapp a {
+  background-color: #25d366;
+  color: #fff;
+}
+
+.social-links--colored .social-link--whatsapp .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--whatsapp a:hover {
+  background-color: rgb(33.3, 189.9, 91.8);
+}
+
+.social-links--colored .social-link--wordpress a {
+  background-color: #21759b;
+  color: #fff;
+}
+
+.social-links--colored .social-link--wordpress .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--wordpress a:hover {
+  background-color: rgb(29.7, 105.3, 139.5);
+}
+
+.social-links--colored .social-link--xing a {
+  background-color: #026466;
+  color: #fff;
+}
+
+.social-links--colored .social-link--xing .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--xing a:hover {
+  background-color: rgb(1.8, 90, 91.8);
+}
+
+.social-links--colored .social-link--youtube a {
+  background-color: #ff0000;
+  color: #fff;
+}
+
+.social-links--colored .social-link--youtube .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--youtube a:hover {
+  background-color: rgb(229.5, 0, 0);
+}
+
+/* "Outline" icon style: same brand colors, lighter treatment - a colored ring on a transparent
+   background, filling in on hover (mirrors share_buttons()'s own "outline" style). The icon keeps its
+   natural black by default (it's an <img>, "color"/border can't tint it, see $white-icon-filter's own
+   doc comment) and only turns white on hover, once the badge behind it is dark/colored enough to need it. */
+.social-links--outline .social-link--behance a {
+  background-color: transparent;
+  border: 3px solid #1769ff;
+  color: #1769ff;
+}
+
+.social-links--outline .social-link--behance a:hover {
+  background-color: #1769ff;
+  color: #fff;
+}
+
+.social-links--outline .social-link--behance a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--blogger a {
+  background-color: transparent;
+  border: 3px solid #f57d00;
+  color: #f57d00;
+}
+
+.social-links--outline .social-link--blogger a:hover {
+  background-color: #f57d00;
+  color: #fff;
+}
+
+.social-links--outline .social-link--blogger a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--bluesky a {
+  background-color: transparent;
+  border: 3px solid #1da1f2;
+  color: #1da1f2;
+}
+
+.social-links--outline .social-link--bluesky a:hover {
+  background-color: #1da1f2;
+  color: #fff;
+}
+
+.social-links--outline .social-link--bluesky a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--buffer a {
+  background-color: transparent;
+  border: 3px solid #168eea;
+  color: #168eea;
+}
+
+.social-links--outline .social-link--buffer a:hover {
+  background-color: #168eea;
+  color: #fff;
+}
+
+.social-links--outline .social-link--buffer a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--delicious a {
+  background-color: transparent;
+  border: 3px solid #3399ff;
+  color: #3399ff;
+}
+
+.social-links--outline .social-link--delicious a:hover {
+  background-color: #3399ff;
+  color: #fff;
+}
+
+.social-links--outline .social-link--delicious a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--discord a {
+  background-color: transparent;
+  border: 3px solid #5865f2;
+  color: #5865f2;
+}
+
+.social-links--outline .social-link--discord a:hover {
+  background-color: #5865f2;
+  color: #fff;
+}
+
+.social-links--outline .social-link--discord a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--dribbble a {
+  background-color: transparent;
+  border: 3px solid #ea4c89;
+  color: #ea4c89;
+}
+
+.social-links--outline .social-link--dribbble a:hover {
+  background-color: #ea4c89;
+  color: #fff;
+}
+
+.social-links--outline .social-link--dribbble a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--email a {
+  background-color: transparent;
+  border: 3px solid #2f4f4f;
+  color: #2f4f4f;
+}
+
+.social-links--outline .social-link--email a:hover {
+  background-color: #2f4f4f;
+  color: #fff;
+}
+
+.social-links--outline .social-link--email a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--evernote a {
+  background-color: transparent;
+  border: 3px solid #2dbe60;
+  color: #2dbe60;
+}
+
+.social-links--outline .social-link--evernote a:hover {
+  background-color: #2dbe60;
+  color: #fff;
+}
+
+.social-links--outline .social-link--evernote a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--facebook a {
+  background-color: transparent;
+  border: 3px solid #3c5a99;
+  color: #3c5a99;
+}
+
+.social-links--outline .social-link--facebook a:hover {
+  background-color: #3c5a99;
+  color: #fff;
+}
+
+.social-links--outline .social-link--facebook a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--flickr a {
+  background-color: transparent;
+  border: 3px solid #ff0084;
+  color: #ff0084;
+}
+
+.social-links--outline .social-link--flickr a:hover {
+  background-color: #ff0084;
+  color: #fff;
+}
+
+.social-links--outline .social-link--flickr a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--github a {
+  background-color: transparent;
+  border: 3px solid #181717;
+  color: #181717;
+}
+
+.social-links--outline .social-link--github a:hover {
+  background-color: #181717;
+  color: #fff;
+}
+
+.social-links--outline .social-link--github a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--instagram a {
+  background-color: transparent;
+  border: 3px solid #e4405f;
+  color: #e4405f;
+}
+
+.social-links--outline .social-link--instagram a:hover {
+  background-color: #e4405f;
+  color: #fff;
+}
+
+.social-links--outline .social-link--instagram a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--line a {
+  background-color: transparent;
+  border: 3px solid #00c300;
+  color: #00c300;
+}
+
+.social-links--outline .social-link--line a:hover {
+  background-color: #00c300;
+  color: #fff;
+}
+
+.social-links--outline .social-link--line a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--linkedin a {
+  background-color: transparent;
+  border: 3px solid #0077b5;
+  color: #0077b5;
+}
+
+.social-links--outline .social-link--linkedin a:hover {
+  background-color: #0077b5;
+  color: #fff;
+}
+
+.social-links--outline .social-link--linkedin a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--mastodon a {
+  background-color: transparent;
+  border: 3px solid #6364ff;
+  color: #6364ff;
+}
+
+.social-links--outline .social-link--mastodon a:hover {
+  background-color: #6364ff;
+  color: #fff;
+}
+
+.social-links--outline .social-link--mastodon a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--medium a {
+  background-color: transparent;
+  border: 3px solid #000000;
+  color: #000000;
+}
+
+.social-links--outline .social-link--medium a:hover {
+  background-color: #000000;
+  color: #fff;
+}
+
+.social-links--outline .social-link--medium a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--messenger a {
+  background-color: transparent;
+  border: 3px solid #0084ff;
+  color: #0084ff;
+}
+
+.social-links--outline .social-link--messenger a:hover {
+  background-color: #0084ff;
+  color: #fff;
+}
+
+.social-links--outline .social-link--messenger a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--pinterest a {
+  background-color: transparent;
+  border: 3px solid #bd081c;
+  color: #bd081c;
+}
+
+.social-links--outline .social-link--pinterest a:hover {
+  background-color: #bd081c;
+  color: #fff;
+}
+
+.social-links--outline .social-link--pinterest a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--reddit a {
+  background-color: transparent;
+  border: 3px solid #ff4500;
+  color: #ff4500;
+}
+
+.social-links--outline .social-link--reddit a:hover {
+  background-color: #ff4500;
+  color: #fff;
+}
+
+.social-links--outline .social-link--reddit a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--skype a {
+  background-color: transparent;
+  border: 3px solid #00aff0;
+  color: #00aff0;
+}
+
+.social-links--outline .social-link--skype a:hover {
+  background-color: #00aff0;
+  color: #fff;
+}
+
+.social-links--outline .social-link--skype a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--snapchat a {
+  background-color: transparent;
+  border: 3px solid #fffc00;
+  color: #fffc00;
+}
+
+.social-links--outline .social-link--snapchat a:hover {
+  background-color: #fffc00;
+  color: #000;
+}
+
+.social-links--outline .social-link--snapchat a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--soundcloud a {
+  background-color: transparent;
+  border: 3px solid #ff5500;
+  color: #ff5500;
+}
+
+.social-links--outline .social-link--soundcloud a:hover {
+  background-color: #ff5500;
+  color: #fff;
+}
+
+.social-links--outline .social-link--soundcloud a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--spotify a {
+  background-color: transparent;
+  border: 3px solid #1db954;
+  color: #1db954;
+}
+
+.social-links--outline .social-link--spotify a:hover {
+  background-color: #1db954;
+  color: #fff;
+}
+
+.social-links--outline .social-link--spotify a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--stumbleupon a {
+  background-color: transparent;
+  border: 3px solid #eb4924;
+  color: #eb4924;
+}
+
+.social-links--outline .social-link--stumbleupon a:hover {
+  background-color: #eb4924;
+  color: #fff;
+}
+
+.social-links--outline .social-link--stumbleupon a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--telegram a {
+  background-color: transparent;
+  border: 3px solid #26a5e4;
+  color: #26a5e4;
+}
+
+.social-links--outline .social-link--telegram a:hover {
+  background-color: #26a5e4;
+  color: #fff;
+}
+
+.social-links--outline .social-link--telegram a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--threads a {
+  background-color: transparent;
+  border: 3px solid #000000;
+  color: #000000;
+}
+
+.social-links--outline .social-link--threads a:hover {
+  background-color: #000000;
+  color: #fff;
+}
+
+.social-links--outline .social-link--threads a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--tiktok a {
+  background-color: transparent;
+  border: 3px solid #000000;
+  color: #000000;
+}
+
+.social-links--outline .social-link--tiktok a:hover {
+  background-color: #000000;
+  color: #fff;
+}
+
+.social-links--outline .social-link--tiktok a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--tumblr a {
+  background-color: transparent;
+  border: 3px solid #35465c;
+  color: #35465c;
+}
+
+.social-links--outline .social-link--tumblr a:hover {
+  background-color: #35465c;
+  color: #fff;
+}
+
+.social-links--outline .social-link--tumblr a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--twitch a {
+  background-color: transparent;
+  border: 3px solid #9146ff;
+  color: #9146ff;
+}
+
+.social-links--outline .social-link--twitch a:hover {
+  background-color: #9146ff;
+  color: #fff;
+}
+
+.social-links--outline .social-link--twitch a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--vimeo a {
+  background-color: transparent;
+  border: 3px solid #1ab7ea;
+  color: #1ab7ea;
+}
+
+.social-links--outline .social-link--vimeo a:hover {
+  background-color: #1ab7ea;
+  color: #fff;
+}
+
+.social-links--outline .social-link--vimeo a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--vk a {
+  background-color: transparent;
+  border: 3px solid #0077ff;
+  color: #0077ff;
+}
+
+.social-links--outline .social-link--vk a:hover {
+  background-color: #0077ff;
+  color: #fff;
+}
+
+.social-links--outline .social-link--vk a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--wechat a {
+  background-color: transparent;
+  border: 3px solid #07c160;
+  color: #07c160;
+}
+
+.social-links--outline .social-link--wechat a:hover {
+  background-color: #07c160;
+  color: #fff;
+}
+
+.social-links--outline .social-link--wechat a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--whatsapp a {
+  background-color: transparent;
+  border: 3px solid #25d366;
+  color: #25d366;
+}
+
+.social-links--outline .social-link--whatsapp a:hover {
+  background-color: #25d366;
+  color: #fff;
+}
+
+.social-links--outline .social-link--whatsapp a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--wordpress a {
+  background-color: transparent;
+  border: 3px solid #21759b;
+  color: #21759b;
+}
+
+.social-links--outline .social-link--wordpress a:hover {
+  background-color: #21759b;
+  color: #fff;
+}
+
+.social-links--outline .social-link--wordpress a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--xing a {
+  background-color: transparent;
+  border: 3px solid #026466;
+  color: #026466;
+}
+
+.social-links--outline .social-link--xing a:hover {
+  background-color: #026466;
+  color: #fff;
+}
+
+.social-links--outline .social-link--xing a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--youtube a {
+  background-color: transparent;
+  border: 3px solid #ff0000;
+  color: #ff0000;
+}
+
+.social-links--outline .social-link--youtube a:hover {
+  background-color: #ff0000;
+  color: #fff;
+}
+
+.social-links--outline .social-link--youtube a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
 }
 
 /* FOOTER SOCIAL LINKS (SiteBundle's Footer.html.twig calls <twig:c975LSocial:SocialLinks/>) */
@@ -25,10 +1106,288 @@ footer .social-links {
   padding: 0;
 }
 
-footer .social-link a {
-  display: flex;
-}
-
 footer .social-link a:hover {
   opacity: 0.75;
+}
+
+/* SHARE BUTTONS (share_buttons() Twig function - migrated from c975L/ShareButtonsBundle) */
+/* Hidden below 768px: mobile/tablet browsers have their own native share sheet */
+.social-share {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .social-share {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2em;
+    padding: 0;
+    margin: 0;
+  }
+  .social-share--left {
+    justify-content: flex-start;
+  }
+  .social-share--right {
+    justify-content: flex-end;
+  }
+  .social-share-btn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 0.2em;
+    text-decoration: none;
+    color: #fff;
+  }
+  .social-share-btn img,
+  .social-share-btn svg {
+    width: 24px;
+    height: 24px;
+    margin: 0 auto;
+    filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+  }
+  .social-share--distinct .social-share-btn,
+  .social-share--ellipse .social-share-btn {
+    width: 65px;
+    height: 50px;
+  }
+  .social-share--circle .social-share-btn,
+  .social-share--square .social-share-btn,
+  .social-share--rounded .social-share-btn,
+  .social-share--outline .social-share-btn,
+  .social-share--minimal .social-share-btn {
+    width: 50px;
+    height: 50px;
+  }
+  .social-share--ellipse .social-share-btn,
+  .social-share--circle .social-share-btn,
+  .social-share--outline .social-share-btn {
+    border-radius: 50%;
+  }
+  .social-share--rounded .social-share-btn {
+    border-radius: 12px;
+  }
+  .social-share-btn:hover {
+    animation: bounceVertical 0.5s infinite ease-in-out;
+  }
+  /* "Outline": transparent with a brand-colored ring, filling in on hover - the icon can't be tinted
+     to the brand color itself (it's an <img>, "filter" can't target arbitrary colors), so it stays
+     neutral (no filter) until hover, when the button fills and the icon turns white like the other styles */
+  .social-share--outline .social-share-btn {
+    background-color: transparent;
+    border: 2px solid var(--network-color, #fff);
+    color: var(--network-color, #fff);
+  }
+  .social-share--outline .social-share-btn:hover {
+    background-color: var(--network-color, #000);
+    color: #fff;
+  }
+  .social-share--outline .social-share-btn:hover img,
+  .social-share--outline .social-share-btn:hover svg {
+    filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+  }
+  /* "Minimal": icon only, no background/border - same reasoning on icon color as "outline" above */
+  .social-share--minimal .social-share-btn {
+    background-color: transparent;
+    color: inherit;
+  }
+  .social-share--minimal .social-share-btn:hover {
+    color: var(--network-color, inherit);
+  }
+  .social-share--outline .social-share-btn img,
+  .social-share--outline .social-share-btn svg,
+  .social-share--minimal .social-share-btn img,
+  .social-share--minimal .social-share-btn svg {
+    filter: none;
+  }
+  /* Social networks colors - also exposed as "--network-color", used by the "outline" style's
+     border/hover-fill and "minimal"'s hover color (see above). Shared with _social.scss's own
+     per-network coloring - see _social-brand-colors.scss for the single source of truth. */
+  .social-share-btn--behance,
+  .social-share-btn--behance:hover {
+    --network-color: #1769ff;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--blogger,
+  .social-share-btn--blogger:hover {
+    --network-color: #f57d00;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--bluesky,
+  .social-share-btn--bluesky:hover {
+    --network-color: #1da1f2;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--buffer,
+  .social-share-btn--buffer:hover {
+    --network-color: #168eea;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--delicious,
+  .social-share-btn--delicious:hover {
+    --network-color: #3399ff;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--discord,
+  .social-share-btn--discord:hover {
+    --network-color: #5865f2;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--dribbble,
+  .social-share-btn--dribbble:hover {
+    --network-color: #ea4c89;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--email,
+  .social-share-btn--email:hover {
+    --network-color: #2f4f4f;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--evernote,
+  .social-share-btn--evernote:hover {
+    --network-color: #2dbe60;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--facebook,
+  .social-share-btn--facebook:hover {
+    --network-color: #3c5a99;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--flickr,
+  .social-share-btn--flickr:hover {
+    --network-color: #ff0084;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--github,
+  .social-share-btn--github:hover {
+    --network-color: #181717;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--instagram,
+  .social-share-btn--instagram:hover {
+    --network-color: #e4405f;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--line,
+  .social-share-btn--line:hover {
+    --network-color: #00c300;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--linkedin,
+  .social-share-btn--linkedin:hover {
+    --network-color: #0077b5;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--mastodon,
+  .social-share-btn--mastodon:hover {
+    --network-color: #6364ff;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--medium,
+  .social-share-btn--medium:hover {
+    --network-color: #000000;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--messenger,
+  .social-share-btn--messenger:hover {
+    --network-color: #0084ff;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--pinterest,
+  .social-share-btn--pinterest:hover {
+    --network-color: #bd081c;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--reddit,
+  .social-share-btn--reddit:hover {
+    --network-color: #ff4500;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--skype,
+  .social-share-btn--skype:hover {
+    --network-color: #00aff0;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--snapchat,
+  .social-share-btn--snapchat:hover {
+    --network-color: #fffc00;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--soundcloud,
+  .social-share-btn--soundcloud:hover {
+    --network-color: #ff5500;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--spotify,
+  .social-share-btn--spotify:hover {
+    --network-color: #1db954;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--stumbleupon,
+  .social-share-btn--stumbleupon:hover {
+    --network-color: #eb4924;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--telegram,
+  .social-share-btn--telegram:hover {
+    --network-color: #26a5e4;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--threads,
+  .social-share-btn--threads:hover {
+    --network-color: #000000;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--tiktok,
+  .social-share-btn--tiktok:hover {
+    --network-color: #000000;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--tumblr,
+  .social-share-btn--tumblr:hover {
+    --network-color: #35465c;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--twitch,
+  .social-share-btn--twitch:hover {
+    --network-color: #9146ff;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--vimeo,
+  .social-share-btn--vimeo:hover {
+    --network-color: #1ab7ea;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--vk,
+  .social-share-btn--vk:hover {
+    --network-color: #0077ff;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--wechat,
+  .social-share-btn--wechat:hover {
+    --network-color: #07c160;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--whatsapp,
+  .social-share-btn--whatsapp:hover {
+    --network-color: #25d366;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--wordpress,
+  .social-share-btn--wordpress:hover {
+    --network-color: #21759b;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--xing,
+  .social-share-btn--xing:hover {
+    --network-color: #026466;
+    background-color: var(--network-color);
+  }
+  .social-share-btn--youtube,
+  .social-share-btn--youtube:hover {
+    --network-color: #ff0000;
+    background-color: var(--network-color);
+  }
 }/*# sourceMappingURL=styles.css.map */

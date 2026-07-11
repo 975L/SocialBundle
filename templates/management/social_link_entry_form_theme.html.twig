@@ -1,0 +1,43 @@
+{# SocialLinkEntryType's own block ("social_link_entry" is its Symfony-computed block prefix), more
+   specific than EasyAdmin's generic "collection_entry_row" it would otherwise fall back to. Reuses
+   the same accordion markup EasyAdmin's field-collection.js depends on for its add/delete-button
+   wiring (it looks up ".accordion-button"/".accordion-collapse" on newly-added prototype items), but
+   forces it open by default - editing an entry shouldn't require an extra click to "deploy" it - and
+   shows the entry's own label instead of the generic, meaningless "Array (4 items)" summary. #}
+{% block social_link_entry_row %}
+    {% set allows_deleting_items = form_parent(form).vars.allow_delete|default(false) %}
+    {% set is_other = form.network.vars.value is empty %}
+    {% set title = is_other ? value.customLabel|default('') : value.network|default('')|capitalize %}
+
+    <div class="field-collection-item {{ not form.vars.valid ? 'is-invalid' }}">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#{{ id }}-contents">
+                    <twig:ea:Icon name="internal:chevron-right" class="form-collection-item-collapse-marker" />
+                    {{ title }}
+                </button>
+                {% if allows_deleting_items and not disabled %}
+                    <button type="button" class="btn btn-link btn-link-danger field-collection-delete-button"
+                            title="{{ 'action.remove_item'|trans({}, 'EasyAdminBundle') }}">
+                        <twig:ea:Icon name="internal:delete" />
+                    </button>
+                {% endif %}
+            </h2>
+            <div id="{{ id }}-contents" class="accordion-collapse collapse show">
+                <div class="accordion-body">
+                    <div class="row">
+                        {{ form_row(form.network) }}
+                        {{ form_row(form.url) }}
+                        {# Only relevant when network is left empty - shown/hidden live by
+                           assets/js/social-link-network-toggle.js, server-rendered "hidden" here so an
+                           existing custom entry isn't hidden before that script has run #}
+                        <div data-social-link-network-custom{{ is_other ? '' : ' hidden' }}>
+                            {{ form_row(form.customLabel) }}
+                            {{ form_row(form.customIcon) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

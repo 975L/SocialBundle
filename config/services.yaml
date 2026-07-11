@@ -12,6 +12,11 @@ services:
         tags:
             - { name: 'ui.stylesheet', priority: 100 }
 
+    c975L\SocialBundle\Service\ScriptProvider:
+        tags:
+            - { name: 'ui.script', priority: 100 }
+            - { name: 'ui.admin_script', priority: 100 }
+
     social.block.social_links:
         class: stdClass
         tags:
@@ -22,4 +27,19 @@ services:
               translation_domain: 'social'
               form: c975L\SocialBundle\Form\Block\SocialLinksType
               template: '@c975LSocial/blocks/SocialLinks.html.twig'
+              category: 'label.category_navigation'
+              pickable: false
+
+    # Pickable pointer to the singleton above - no data of its own, so it can be dropped on any page
+    # without re-defining the links (see SocialLinksDisplayType / SocialLinksDisplay.html.twig)
+    social.block.social_links_display:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: social_links_display
+              label: "block.social_links_display"
+              description: "block.social_links_display_description"
+              translation_domain: 'social'
+              form: c975L\SocialBundle\Form\Block\SocialLinksDisplayType
+              template: '@c975LSocial/blocks/SocialLinksDisplay.html.twig'
               category: 'label.category_navigation'

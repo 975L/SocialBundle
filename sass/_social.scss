@@ -1,4 +1,23 @@
 /* SOCIAL */
+@use 'sass:color';
+@use 'sass:math';
+@use '_social-brand-colors.scss';
+
+/* Picks readable black/white text for a given background - relative luminance (not plain HSL lightness,
+   which misjudges saturated colors like a bright yellow as "mid" and would pick the wrong one) */
+@function social-contrast-text($bg) {
+    $r: color.channel($bg, 'red', $space: rgb);
+    $g: color.channel($bg, 'green', $space: rgb);
+    $b: color.channel($bg, 'blue', $space: rgb);
+    $luminance: math.div(0.299 * $r + 0.587 * $g + 0.114 * $b, 255);
+
+    @if $luminance > 0.6 {
+        @return #000;
+    } @else {
+        @return #fff;
+    }
+}
+
 .social-links {
     list-style: none;
     display: flex;
@@ -6,4 +25,72 @@
     padding: 0;
     margin: 0;
     gap: 1.5em;
+}
+
+.social-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.4em 0.9em;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, currentColor 8%, transparent);
+    color: inherit;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.social-link a:hover {
+    background-color: color-mix(in srgb, currentColor 15%, transparent);
+}
+
+.icon.social-link-icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+/* "Colored version" icon style (data.iconStyle - see SocialLinksType/SocialLinks.html.twig): the whole
+   item's badge becomes a solid brand-colored pill, like a proper badge instead of the faint currentColor
+   tint above - text switches to black or white, whichever reads on that background (see
+   social-contrast-text()), and the icon (the same flat Font Awesome glyph as "minimal", not a separate
+   asset - see SocialLinkExtension::getSocialLinkIcon()) turns white via $white-icon-filter, mirroring
+   share_buttons()'s own solid styles (distinct/circle/...). Only applies to known networks - "Autre"
+   entries (SocialLinkEntryType's free-text/custom-icon escape hatch) have no brand color to badge with,
+   and forcing their own, possibly already-colored icon white would make it unreadable. Shared with
+   _share-buttons.scss's own per-network coloring - see _social-brand-colors.scss for the single source
+   of truth. */
+@each $network, $brand-color in social-brand-colors.$social-brand-colors {
+    .social-links--colored .social-link--#{$network} a {
+        background-color: $brand-color;
+        color: social-contrast-text($brand-color);
+    }
+
+    .social-links--colored .social-link--#{$network} .social-link-icon {
+        filter: social-brand-colors.$white-icon-filter;
+    }
+
+    .social-links--colored .social-link--#{$network} a:hover {
+        background-color: color.scale($brand-color, $lightness: -10%);
+    }
+}
+
+/* "Outline" icon style: same brand colors, lighter treatment - a colored ring on a transparent
+   background, filling in on hover (mirrors share_buttons()'s own "outline" style). The icon keeps its
+   natural black by default (it's an <img>, "color"/border can't tint it, see $white-icon-filter's own
+   doc comment) and only turns white on hover, once the badge behind it is dark/colored enough to need it. */
+@each $network, $brand-color in social-brand-colors.$social-brand-colors {
+    .social-links--outline .social-link--#{$network} a {
+        background-color: transparent;
+        border: 3px solid $brand-color;
+        color: $brand-color;
+    }
+
+    .social-links--outline .social-link--#{$network} a:hover {
+        background-color: $brand-color;
+        color: social-contrast-text($brand-color);
+    }
+
+    .social-links--outline .social-link--#{$network} a:hover .social-link-icon {
+        filter: social-brand-colors.$white-icon-filter;
+    }
 }

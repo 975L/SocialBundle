@@ -1,0 +1,49 @@
+/* Shared constants for both _share-buttons.scss and _social.scss - single source of truth so their
+   per-network coloring stays in sync (they both use the same flat Font Awesome glyphs, recolored
+   entirely via CSS - see README's "Icons" section). */
+
+/* Every icon (public/icons/*.svg) is a flat glyph with no explicit "fill" (black by default) - as an
+   <img>, its pixels can't be tinted via "color"/"fill", only inverted to white via "filter" against a
+   colored background (used by both "colored" styles below). */
+$white-icon-filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+
+/* Official-ish brand colors per network */
+$social-brand-colors: (
+    behance: #1769ff,
+    blogger: #f57d00,
+    bluesky: #1da1f2,
+    buffer: #168eea,
+    delicious: #3399ff,
+    discord: #5865f2,
+    dribbble: #ea4c89,
+    email: #2f4f4f,
+    evernote: #2dbe60,
+    facebook: #3c5a99,
+    flickr: #ff0084,
+    github: #181717,
+    instagram: #e4405f,
+    line: #00c300,
+    linkedin: #0077b5,
+    mastodon: #6364ff,
+    medium: #000000,
+    messenger: #0084ff,
+    pinterest: #bd081c,
+    reddit: #ff4500,
+    skype: #00aff0,
+    snapchat: #fffc00,
+    soundcloud: #ff5500,
+    spotify: #1db954,
+    stumbleupon: #eb4924,
+    telegram: #26a5e4,
+    threads: #000000,
+    tiktok: #000000,
+    tumblr: #35465c,
+    twitch: #9146ff,
+    vimeo: #1ab7ea,
+    vk: #0077ff,
+    wechat: #07c160,
+    whatsapp: #25d366,
+    wordpress: #21759b,
+    xing: #026466,
+    youtube: #ff0000,
+);

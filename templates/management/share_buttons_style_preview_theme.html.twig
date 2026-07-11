@@ -1,0 +1,46 @@
+{# Overrides ShareButtonsStylePreviewType's and the "networks" field's widgets - registered via
+   Crud::addFormTheme() in ShareButtonsSettingsCrudController. #}
+
+{# Renders every known network (not just the checked ones) - assets/js/share-buttons-preview.js hides
+   the unchecked ones and reorders the rest to match the "networks" checkboxes live, on page load and on
+   every change/reorder. Starts on the "distinct" style: the style <select> below is authoritative for
+   the real, saved value, and that same script re-syncs the class to match it too. #}
+{% block share_buttons_style_preview_widget %}
+    {# Scoped to SocialBundle's own compiled stylesheet only ("social-share*" classes don't collide with
+       EasyAdmin's Bootstrap/AdminLTE ones) - never load the app's main front-end stylesheet here, see
+       c975L/UiBundle's README ("Automatic CSS injection for EasyAdmin management pages") #}
+    {# Root-relative, unlike the front-end's bundle_stylesheets() (StylesheetProvider::getStylesheets()):
+       the front-end layout resolves those against a <base href> pointing at the domain root, but EasyAdmin
+       pages live several segments deep (e.g. /management/social/share-buttons-settings/1/edit) with no such
+       <base> tag, so a bare "bundles/..." path would 404 against the current page's own URL instead #}
+    <link rel="stylesheet" href="/bundles/c975lsocial/css/styles.min.css">
+    <div id="ss-style-preview">
+        {{ share_buttons(all_networks, 'distinct') }}
+    </div>
+{% endblock %}
+
+{# Draggable checkbox list for the "networks" field (see ShareButtonsSettingsType's "block_prefix"
+   option) instead of ChoiceType's default choice_widget_expanded layout - drag order is read back
+   through the checkboxes' own DOM order on submit (see ShareButtonsSettingsType::reorderNetworkChoices()
+   for how it's restored on the next load), no hidden "position" field needed.
+   Mirrors Symfony's own "choice_widget_expanded" block (form_div_layout.html.twig) for the
+   widget/label pairing - only the wrapping markup differs. #}
+{% block share_buttons_networks_widget %}
+    <style>
+        /* Scoped to this field only - see the README section this template's other block already
+           references for why this isn't a whole separate management stylesheet asset for so little CSS */
+        .ss-networks-sortable { list-style: none; margin: 0; padding: 0; }
+        .ss-networks-sortable-item { display: flex; align-items: center; gap: .5em; padding: .25em 0; }
+        .ss-networks-sortable-item.ss-dragging { opacity: .4; }
+        .ss-drag-handle { cursor: grab; user-select: none; color: var(--bs-secondary, #6c757d); }
+    </style>
+    <ul class="ss-networks-sortable" data-share-networks-sortable {{ block('widget_container_attributes') }}>
+        {%- for child in form %}
+            <li class="ss-networks-sortable-item">
+                <span class="ss-drag-handle" aria-hidden="true">&#10021;</span>
+                {{ form_widget(child) }}
+                {{ form_label(child, null, {translation_domain: choice_translation_domain}) }}
+            </li>
+        {% endfor -%}
+    </ul>
+{% endblock %}

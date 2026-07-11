@@ -1,7 +1,7 @@
 {
     "name": "c975l/social-bundle",
     "type": "symfony-bundle",
-    "description": "Symfony bundle that manages social features - social links, post retrieval, scheduled posting, and more.",
+    "description": "Symfony bundle managing social features for the c975L ecosystem — starting with a user-defined social links block, with post retrieval, scheduled posting, and more planned.",
     "keywords": ["symfony", "bundle", "social"],
     "homepage": "https://github.com/975L/SocialBundle",
     "license": "MIT",

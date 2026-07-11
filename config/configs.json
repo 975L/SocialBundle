@@ -1,0 +1,13 @@
+[
+    {
+        "label": "Enable Share Buttons",
+        "slug": "social-enable-share-buttons",
+        "sensitive": false,
+        "restricted": false,
+        "value": "false",
+        "kind": "bool",
+        "group": "general",
+        "severity": null,
+        "description": "label.social_enable_share_buttons"
+    }
+]

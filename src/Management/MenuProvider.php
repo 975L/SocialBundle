@@ -11,21 +11,28 @@
 namespace c975L\SocialBundle\Management;
 
 use c975L\ConfigBundle\Management\MenuProviderInterface;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 
 class MenuProvider implements MenuProviderInterface
 {
+    public function __construct(
+        private readonly ConfigServiceInterface $configService,
+    ) {
+    }
+
     public function getMenuSection(): array
     {
         return [
-            'label' => 'label.management',
-            'translation_domain' => 'site',
+            'label' => 'label.social',
+            'translation_domain' => 'social',
         ];
     }
 
     public function getMenus(): array
     {
-        return [
+        $menus = [
             'social_links' => [
                 'controller' => SocialLinksCrudController::class,
                 'label' => 'label.social_links',
@@ -33,6 +40,18 @@ class MenuProvider implements MenuProviderInterface
                 'icon' => 'fas fa-share-alt',
             ],
         ];
+
+        // Only displayed if share buttons are enabled site-wide (see "social-enable-share-buttons" in ShareButtonsExtension)
+        if ($this->configService->getBool($this->configService->get('social-enable-share-buttons'))) {
+            $menus['share_buttons_settings'] = [
+                'controller' => ShareButtonsSettingsCrudController::class,
+                'label' => 'label.share_buttons_settings',
+                'translation_domain' => 'social',
+                'icon' => 'fas fa-share-nodes',
+            ];
+        }
+
+        return $menus;
     }
 
     public function getLinks(): array
