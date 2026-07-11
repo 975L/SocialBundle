@@ -1,0 +1,17 @@
+[
+    {
+        "date": "2026-07-11",
+        "description": [
+            {
+                "en": "Added share buttons and a new share dialog to the application",
+                "fr": "Ajout de boutons de partage et d'une nouvelle boîte de dialogue de partage dans l'application",
+                "es": "Se añadieron botones de compartir y un nuevo cuadro de diálogo de compartir en la aplicación"
+            },
+            {
+                "en": "Added social links and a new share dialog to the application",
+                "fr": "Ajout de liens sociaux et d'une nouvelle boîte de dialogue de partage dans l'application",
+                "es": "Se añadieron enlaces sociales y un nuevo cuadro de diálogo de compartir en la aplicación"
+            }
+        ]
+    }
+]

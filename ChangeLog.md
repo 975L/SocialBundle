@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.1
+
+- Added What's new feature (11/07/2026)
+
 ## v1.0
 
 - Added share_buttons() Twig function, migrated from the now-abandoned c975L/ShareButtonsBundle (10/07/2026)
