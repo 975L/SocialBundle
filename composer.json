@@ -25,6 +25,9 @@
         "symfony/form": "*",
         "symfony/framework-bundle": "*"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^13.2"
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload": {
@@ -33,7 +36,11 @@
         }
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "vendor-dir": ".vendor"
+    },
+    "scripts": {
+        "test": "phpunit"
     },
     "support": {
         "email": "contact@975l.com",

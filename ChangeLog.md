@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.1
+
+- Added translations for config label (13/07/2026)
+- Added tests (13/07/2026)
+
 ## v1.0.1
 
 - Added What's new feature (11/07/2026)

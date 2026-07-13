@@ -3,8 +3,12 @@
     <file source-language="en" target-language="fr" datatype="plaintext" original="site_config.fr.xlf">
         <body>
             <trans-unit id="1">
-                <source>label.social_enable_share_buttons</source>
+                <source>description.social_enable_share_buttons</source>
                 <target>Affiche automatiquement les boutons de partage (voir "Boutons de partage" dans le menu de gestion pour les réseaux/le style utilisés) sur chaque page.</target>
+            </trans-unit>
+            <trans-unit id="2">
+                <source>label.social_enable_share_buttons</source>
+                <target>Activer les boutons de partage</target>
             </trans-unit>
         </body>
     </file>

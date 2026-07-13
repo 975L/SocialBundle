@@ -6,7 +6,7 @@ services:
 
     c975L\SocialBundle\:
         resource: '../src/'
-        exclude: '../src/{DependencyInjection,Entity}'
+        exclude: '../src/{DependencyInjection,Entity,Tests}'
 
     c975L\SocialBundle\Service\StylesheetProvider:
         tags:
@@ -29,6 +29,7 @@ services:
               template: '@c975LSocial/blocks/SocialLinks.html.twig'
               category: 'label.category_navigation'
               pickable: false
+              cacheable: true
 
     # Pickable pointer to the singleton above - no data of its own, so it can be dropped on any page
     # without re-defining the links (see SocialLinksDisplayType / SocialLinksDisplay.html.twig)
@@ -43,3 +44,7 @@ services:
               form: c975L\SocialBundle\Form\Block\SocialLinksDisplayType
               template: '@c975LSocial/blocks/SocialLinksDisplay.html.twig'
               category: 'label.category_navigation'
+              pickable: true
+              # Its render depends on the "social_links" singleton's data, not its own - caching it
+              # under its own block id would go stale whenever the singleton is edited elsewhere
+              cacheable: false

@@ -1,6 +1,6 @@
 [
     {
-        "label": "Enable Share Buttons",
+        "label": "label.social_enable_share_buttons",
         "slug": "social-enable-share-buttons",
         "sensitive": false,
         "restricted": false,
@@ -8,6 +8,6 @@
         "kind": "bool",
         "group": "general",
         "severity": null,
-        "description": "label.social_enable_share_buttons"
+        "description": "description.social_enable_share_buttons"
     }
 ]
