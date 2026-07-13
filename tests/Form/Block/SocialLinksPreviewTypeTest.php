@@ -13,8 +13,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Test\TypeTestCase;
 
-// Lives under src/Tests (not a sibling tests/ dir) so it stays autoloadable by consuming apps,
-// whose attribute route loader recursively reflects every class under the bundle root
 class SocialLinksPreviewTypeTest extends TypeTestCase
 {
     // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own

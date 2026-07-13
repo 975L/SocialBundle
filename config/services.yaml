@@ -6,7 +6,7 @@ services:
 
     c975L\SocialBundle\:
         resource: '../src/'
-        exclude: '../src/{DependencyInjection,Entity,Tests}'
+        exclude: '../src/{DependencyInjection,Entity}'
 
     c975L\SocialBundle\Service\StylesheetProvider:
         tags:

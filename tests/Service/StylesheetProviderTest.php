@@ -11,8 +11,6 @@ namespace c975L\SocialBundle\Tests\Service;
 use c975L\SocialBundle\Service\StylesheetProvider;
 use PHPUnit\Framework\TestCase;
 
-// Lives under src/Tests (not a sibling tests/ dir) so it stays autoloadable by consuming apps,
-// whose attribute route loader recursively reflects every class under the bundle root
 class StylesheetProviderTest extends TestCase
 {
     // The bundle contributes exactly its own minified stylesheet, published under public/bundles/c975lsocial

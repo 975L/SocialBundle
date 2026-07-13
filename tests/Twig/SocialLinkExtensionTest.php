@@ -17,8 +17,6 @@ use c975L\UiBundle\Service\IconServiceInterface;
 use PHPUnit\Framework\TestCase;
 use Twig\TwigFunction;
 
-// Lives under src/Tests (not a sibling tests/ dir) so it stays autoloadable by consuming apps,
-// whose attribute route loader recursively reflects every class under the bundle root
 class SocialLinkExtensionTest extends TestCase
 {
     // Builds the extension, with a BlockRepository double answering "social_links" with $socialLinksBlock

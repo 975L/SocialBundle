@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.1
+
+- Moved tests to the right place (13/07/2026)
+
 ## v1.1
 
 - Added translations for config label (13/07/2026)

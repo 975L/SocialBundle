@@ -9,29 +9,31 @@
 namespace c975L\SocialBundle\Tests\Controller\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
-use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
-use c975L\SocialBundle\Form\Block\ShareButtonsSettingsType;
-use c975L\SocialBundle\Form\Block\ShareButtonsStylePreviewType;
+use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
+use c975L\SocialBundle\Form\Block\SocialLinksPreviewType;
+use c975L\SocialBundle\Form\Block\SocialLinksType;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Repository\BlockRepository;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Context\CrudContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Registry\AdminControllerRegistryInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Router\AdminRouteGeneratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatableMessage;
 
-// Lives under src/Tests (not a sibling tests/ dir) so it stays autoloadable by consuming apps,
-// whose attribute route loader recursively reflects every class under the bundle root
-class ShareButtonsSettingsCrudControllerTest extends TestCase
+class SocialLinksCrudControllerTest extends TestCase
 {
     private function createConfigService(string $role = 'ROLE_ADMIN'): ConfigServiceInterface
     {
@@ -72,35 +74,58 @@ class ShareButtonsSettingsCrudControllerTest extends TestCase
         return new AdminUrlGenerator($adminContextProvider, $urlGenerator, $adminControllers, $adminRouteGenerator, $cache);
     }
 
-    private function createController(?Block $existingBlock, string $role = 'ROLE_ADMIN'): ShareButtonsSettingsCrudController
+    private function createController(?Block $existingBlock, string $role = 'ROLE_ADMIN'): SocialLinksCrudController
     {
         $blockRepository = $this->createStub(BlockRepository::class);
         $blockRepository->method('findOneByKind')->willReturnCallback(
-            static fn (string $kind) => 'share_buttons_settings' === $kind ? $existingBlock : null
+            static fn (string $kind) => 'social_links' === $kind ? $existingBlock : null
         );
 
-        return new ShareButtonsSettingsCrudController(
+        return new SocialLinksCrudController(
             $this->createConfigService($role),
             $blockRepository,
             $this->createAdminUrlGenerator(),
         );
     }
 
-    public function testGetEntityFqcnReturnsBlockClass(): void
+    // configureFields() unconditionally reads getContext()->getEntity()->getInstance()->getData()
+    // to seed the preview field's options - EasyAdmin ships AdminContext::forTesting()/
+    // CrudContext::forTesting() precisely to build a real context without a full container/kernel,
+    // wrapped here in a Psr\Container\ContainerInterface stub for AbstractController::getContext()
+    // to fetch it from
+    private function setContextEntity(SocialLinksCrudController $controller, ?Block $entity): void
     {
-        $this->assertSame(Block::class, ShareButtonsSettingsCrudController::getEntityFqcn());
+        // AdminContext::getEntity() throws if the CrudContext's EntityDto itself is null (it's
+        // meant to guard "no CRUD operation at all", not "no entity instance yet") - a real
+        // "new"/"edit" page always has an EntityDto, only its instance is null before
+        // createEntity() runs, so that's what a not-yet-saved singleton is modeled as here
+        $entityDto = new EntityDto(Block::class, new ClassMetadata(Block::class), null, $entity);
+        $adminContext = AdminContext::forTesting(crudContext: CrudContext::forTesting(entityDto: $entityDto));
+
+        $adminContextProvider = $this->createStub(AdminContextProviderInterface::class);
+        $adminContextProvider->method('getContext')->willReturn($adminContext);
+
+        $container = $this->createStub(ContainerInterface::class);
+        $container->method('get')->willReturn($adminContextProvider);
+
+        $controller->setContainer($container);
     }
 
-    public function testCreateEntitySetsShareButtonsSettingsKind(): void
+    public function testGetEntityFqcnReturnsBlockClass(): void
+    {
+        $this->assertSame(Block::class, SocialLinksCrudController::getEntityFqcn());
+    }
+
+    public function testCreateEntitySetsSocialLinksKind(): void
     {
         $controller = $this->createController(null);
 
         $entity = $controller->createEntity(Block::class);
 
-        $this->assertSame('share_buttons_settings', $entity->getKind());
+        $this->assertSame('social_links', $entity->getKind());
     }
 
-    public function testConfigureCrudSetsLabelsPermissionAndStylePreviewFormTheme(): void
+    public function testConfigureCrudSetsLabelsPermissionAndFormThemes(): void
     {
         $controller = $this->createController(null, 'ROLE_ADMIN');
 
@@ -108,15 +133,13 @@ class ShareButtonsSettingsCrudControllerTest extends TestCase
 
         $labelInSingular = $dto->getEntityLabelInSingular();
         $this->assertInstanceOf(TranslatableMessage::class, $labelInSingular);
-        $this->assertSame('label.share_buttons_settings', $labelInSingular->getMessage());
+        $this->assertSame('label.social_links', $labelInSingular->getMessage());
         $this->assertSame('social', $labelInSingular->getDomain());
 
-        $labelInPlural = $dto->getEntityLabelInPlural();
-        $this->assertInstanceOf(TranslatableMessage::class, $labelInPlural);
-        $this->assertSame('label.share_buttons_settings', $labelInPlural->getMessage());
-
         $this->assertSame('ROLE_ADMIN', $dto->getEntityPermission());
-        $this->assertContains('@c975LSocial/management/share_buttons_style_preview_theme.html.twig', $dto->getFormThemes());
+        $this->assertContains('@c975LUi/form/icon_picker_theme.html.twig', $dto->getFormThemes());
+        $this->assertContains('@c975LSocial/management/social_link_entry_form_theme.html.twig', $dto->getFormThemes());
+        $this->assertContains('@c975LSocial/management/social_links_preview_theme.html.twig', $dto->getFormThemes());
     }
 
     public function testConfigureActionsGrantsSiteRoleAdminOnEveryAction(): void
@@ -130,10 +153,14 @@ class ShareButtonsSettingsCrudControllerTest extends TestCase
         }
     }
 
-    public function testConfigureFieldsIndexColumnsFormatNetworksAndStyleFromBlockData(): void
+    public function testConfigureFieldsIndexColumnsJoinLabelsAndUrlsFromLinksData(): void
     {
         $controller = $this->createController(null);
-        $entity = (new Block())->setData(['networks' => ['facebook', 'bluesky'], 'style' => 'circle']);
+        $this->setContextEntity($controller, null);
+        $entity = (new Block())->setData(['links' => [
+            ['label' => 'Facebook', 'url' => 'https://facebook.com/975l', 'icon' => 'facebook'],
+            ['label' => 'Bluesky', 'url' => 'https://bsky.app/975l', 'icon' => 'bluesky'],
+        ]]);
 
         $fields = iterator_to_array($controller->configureFields('index'));
         $dtosByProperty = [];
@@ -143,51 +170,75 @@ class ShareButtonsSettingsCrudControllerTest extends TestCase
         }
 
         $this->assertSame(
-            'facebook, bluesky',
-            ($dtosByProperty['shareButtonsNetworks']->getFormatValueCallable())(null, $entity)
+            'Facebook, Bluesky',
+            ($dtosByProperty['socialLinksLabels']->getFormatValueCallable())(null, $entity)
         );
         $this->assertSame(
-            'circle',
-            ($dtosByProperty['shareButtonsStyle']->getFormatValueCallable())(null, $entity)
+            'https://facebook.com/975l, https://bsky.app/975l',
+            ($dtosByProperty['socialLinksUrls']->getFormatValueCallable())(null, $entity)
         );
     }
 
-    // A plain Field/TextField gets silently rebuilt by EasyAdmin against a JSON column - HiddenField
-    // has no dedicated configurator, so setFormType() below fully takes over as intended (see the
+    // HiddenField, not Field/TextField: "data" is a Doctrine JSON column, a plain Field would get
+    // silently rebuilt into an ArrayField that crashes against SocialLinksType's options (see the
     // class-level comment on the controller)
-    public function testConfigureFieldsDataFieldUsesHiddenShareButtonsSettingsType(): void
+    public function testConfigureFieldsDataFieldUsesHiddenSocialLinksTypeWithCollectionJs(): void
     {
         $controller = $this->createController(null);
+        $this->setContextEntity($controller, null);
 
         $fields = iterator_to_array($controller->configureFields('edit'));
         $dataField = current(array_filter($fields, static fn ($field) => 'data' === $field->getAsDto()->getProperty()));
 
-        $this->assertSame(ShareButtonsSettingsType::class, $dataField->getAsDto()->getFormType());
+        $this->assertSame(SocialLinksType::class, $dataField->getAsDto()->getFormType());
     }
 
-    // "mapped" => false: this field has no matching Block property, so Symfony's form data mapper
-    // would otherwise crash trying to read/write it (see the class-level comment on the controller)
-    public function testConfigureFieldsStylePreviewFieldIsUnmappedShareButtonsStylePreviewType(): void
+    // Before any singleton has ever been saved, the preview field falls back to an empty link
+    // list, visible labels and the "minimal" icon style
+    public function testConfigureFieldsPreviewFieldDefaultsWhenNoEntityDataYet(): void
     {
         $controller = $this->createController(null);
+        $this->setContextEntity($controller, null);
 
-        $fields = iterator_to_array($controller->configureFields('edit'));
-        $previewField = current(array_filter($fields, static fn ($field) => 'shareButtonsStylePreview' === $field->getAsDto()->getProperty()));
+        $fields = iterator_to_array($controller->configureFields('new'));
+        $previewField = current(array_filter($fields, static fn ($field) => 'socialLinksPreview' === $field->getAsDto()->getProperty()));
+        $options = $previewField->getAsDto()->getFormTypeOptions();
 
-        $this->assertSame(ShareButtonsStylePreviewType::class, $previewField->getAsDto()->getFormType());
-        $this->assertFalse($previewField->getAsDto()->getFormTypeOption('mapped'));
+        $this->assertSame(SocialLinksPreviewType::class, $previewField->getAsDto()->getFormType());
+        $this->assertFalse($options['mapped']);
+        $this->assertSame([], $options['links']);
+        $this->assertTrue($options['display_label']);
+        $this->assertSame('minimal', $options['icon_style']);
     }
 
-    // Redirects to editing the existing singleton instead of letting a second
-    // "share_buttons_settings" Block be created (see the class-level comment on the controller);
-    // the no-existing-block branch delegates to parent::new(), which needs full EasyAdmin/container
-    // wiring (event dispatcher, security voter, form factory...) disproportionate to this pure-unit
-    // suite, so it's left untested here
+    // Once the singleton exists, the preview is seeded from its last-saved data instead
+    public function testConfigureFieldsPreviewFieldReadsSavedEntityData(): void
+    {
+        $links = [['label' => 'Facebook', 'url' => 'https://facebook.com/975l', 'icon' => 'facebook']];
+        $entity = (new Block())->setData(['links' => $links, 'displayLabel' => false, 'iconStyle' => 'colored']);
+
+        $controller = $this->createController($entity);
+        $this->setContextEntity($controller, $entity);
+
+        $fields = iterator_to_array($controller->configureFields('edit'));
+        $previewField = current(array_filter($fields, static fn ($field) => 'socialLinksPreview' === $field->getAsDto()->getProperty()));
+        $options = $previewField->getAsDto()->getFormTypeOptions();
+
+        $this->assertSame($links, $options['links']);
+        $this->assertFalse($options['display_label']);
+        $this->assertSame('colored', $options['icon_style']);
+    }
+
+    // Redirects to editing the existing singleton instead of letting a second "social_links"
+    // Block be created (see the class-level comment on the controller); the no-existing-block
+    // branch delegates to parent::new(), which needs full EasyAdmin/container wiring (event
+    // dispatcher, security voter, form factory...) disproportionate to this pure-unit suite, so
+    // it's left untested here
     public function testNewRedirectsToEditWhenSingletonAlreadyExists(): void
     {
         $existing = new Block();
         $idProperty = new \ReflectionProperty(Block::class, 'id');
-        $idProperty->setValue($existing, 42);
+        $idProperty->setValue($existing, 7);
 
         $blockRepository = $this->createStub(BlockRepository::class);
         $blockRepository->method('findOneByKind')->willReturn($existing);
@@ -199,10 +250,10 @@ class ShareButtonsSettingsCrudControllerTest extends TestCase
         $adminRouteGenerator = $this->createMock(AdminRouteGeneratorInterface::class);
         $adminRouteGenerator->expects($this->once())
             ->method('findRouteName')
-            ->with($this->anything(), ShareButtonsSettingsCrudController::class, Action::EDIT)
+            ->with($this->anything(), SocialLinksCrudController::class, Action::EDIT)
             ->willReturn(null);
 
-        $controller = new ShareButtonsSettingsCrudController(
+        $controller = new SocialLinksCrudController(
             $this->createConfigService(),
             $blockRepository,
             $this->createAdminUrlGenerator($adminRouteGenerator),
@@ -211,6 +262,6 @@ class ShareButtonsSettingsCrudControllerTest extends TestCase
         $response = $controller->new(AdminContext::forTesting());
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertStringContainsString('entityId=42', $response->getTargetUrl());
+        $this->assertStringContainsString('entityId=7', $response->getTargetUrl());
     }
 }

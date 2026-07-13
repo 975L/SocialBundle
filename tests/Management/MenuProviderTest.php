@@ -14,8 +14,6 @@ use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use c975L\SocialBundle\Management\MenuProvider;
 use PHPUnit\Framework\TestCase;
 
-// Lives under src/Tests (not a sibling tests/ dir) so it stays autoloadable by consuming apps,
-// whose attribute route loader recursively reflects every class under the bundle root
 class MenuProviderTest extends TestCase
 {
     // Builds a provider whose ConfigService answers "social-enable-share-buttons" with the given value

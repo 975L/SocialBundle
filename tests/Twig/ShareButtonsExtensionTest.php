@@ -20,8 +20,6 @@ use Twig\Environment;
 use Twig\Node\Node;
 use Twig\TwigFunction;
 
-// Lives under src/Tests (not a sibling tests/ dir) so it stays autoloadable by consuming apps,
-// whose attribute route loader recursively reflects every class under the bundle root
 class ShareButtonsExtensionTest extends TestCase
 {
     // Builds a ShareButtonsService double, recording every getShareUrl() call into $calls as [network, pageUrl]

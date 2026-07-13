@@ -12,8 +12,6 @@ use c975L\SocialBundle\Form\Block\SocialLinksDisplayType;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Test\TypeTestCase;
 
-// Lives under src/Tests (not a sibling tests/ dir) so it stays autoloadable by consuming apps,
-// whose attribute route loader recursively reflects every class under the bundle root
 class SocialLinksDisplayTypeTest extends TypeTestCase
 {
     // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own

@@ -15,8 +15,6 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\PreloadedExtension;
 use Symfony\Component\Form\Test\TypeTestCase;
 
-// Lives under src/Tests (not a sibling tests/ dir) so it stays autoloadable by consuming apps,
-// whose attribute route loader recursively reflects every class under the bundle root
 class ShareButtonsSettingsTypeTest extends TypeTestCase
 {
     private const NETWORKS = ['facebook', 'bluesky', 'linkedin', 'pinterest', 'email'];

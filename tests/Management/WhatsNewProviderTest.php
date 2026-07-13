@@ -11,8 +11,6 @@ namespace c975L\SocialBundle\Tests\Management;
 use c975L\SocialBundle\Management\WhatsNewProvider;
 use PHPUnit\Framework\TestCase;
 
-// Lives under src/Tests (not a sibling tests/ dir) so it stays autoloadable by consuming apps,
-// whose attribute route loader recursively reflects every class under the bundle root
 class WhatsNewProviderTest extends TestCase
 {
     private ?string $originalLocale = null;
@@ -32,7 +30,7 @@ class WhatsNewProviderTest extends TestCase
     private function readRawEntries(): array
     {
         return json_decode(
-            file_get_contents(\dirname(__DIR__, 3) . '/config/whatsnew.json'),
+            file_get_contents(\dirname(__DIR__, 2) . '/config/whatsnew.json'),
             true
         );
     }

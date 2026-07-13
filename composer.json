@@ -35,6 +35,11 @@
             "c975L\\SocialBundle\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "c975L\\SocialBundle\\Tests\\": "tests/"
+        }
+    },
     "config": {
         "sort-packages": true,
         "vendor-dir": ".vendor"

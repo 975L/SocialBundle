@@ -13,8 +13,6 @@ use c975L\SocialBundle\Service\ShareButtonsService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-// Lives under src/Tests (not a sibling tests/ dir) so it stays autoloadable by consuming apps,
-// whose attribute route loader recursively reflects every class under the bundle root
 class c975LSocialBundleTest extends TestCase
 {
     // Mirrors how Symfony's own kernel invokes it (BundleExtension::load() builds the
@@ -40,12 +38,12 @@ class c975LSocialBundleTest extends TestCase
 
         $frameworkConfig = $container->getExtensionConfig('framework');
         $this->assertSame(
-            \dirname(__DIR__) . '/../assets',
+            \dirname(__DIR__) . '/src/../assets',
             array_key_first($frameworkConfig[0]['asset_mapper']['paths'])
         );
         $this->assertSame(
             '@c975l/social-bundle',
-            $frameworkConfig[0]['asset_mapper']['paths'][\dirname(__DIR__) . '/../assets']
+            $frameworkConfig[0]['asset_mapper']['paths'][\dirname(__DIR__) . '/src/../assets']
         );
     }
 
@@ -53,6 +51,6 @@ class c975LSocialBundleTest extends TestCase
     {
         $bundle = new c975LSocialBundle();
 
-        $this->assertSame(\dirname(__DIR__, 2), $bundle->getPath());
+        $this->assertSame(\dirname(__DIR__), $bundle->getPath());
     }
 }
