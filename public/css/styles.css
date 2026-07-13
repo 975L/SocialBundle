@@ -1111,7 +1111,11 @@ footer .social-link a:hover {
 }
 
 /* SHARE BUTTONS (share_buttons() Twig function - migrated from c975L/ShareButtonsBundle) */
-/* Hidden below 768px: mobile/tablet browsers have their own native share sheet */
+/* Hidden below 768px: mobile/tablet browsers have their own native share sheet. Only the visibility
+   toggle is gated by the breakpoint - every other rule below applies unconditionally, the same way
+   _social.scss's own per-network styling isn't width-gated, so anything forcing .social-share visible
+   outside this breakpoint (e.g. the block gallery, which can't rely on a real viewport width inside an
+   iframe) still gets the real styling instead of a plain unstyled fallback. */
 .social-share {
   display: none;
 }
@@ -1119,275 +1123,329 @@ footer .social-link a:hover {
 @media (min-width: 768px) {
   .social-share {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 0.2em;
-    padding: 0;
-    margin: 0;
   }
-  .social-share--left {
-    justify-content: flex-start;
-  }
-  .social-share--right {
-    justify-content: flex-end;
-  }
-  .social-share-btn {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    margin: 0.2em;
-    text-decoration: none;
-    color: #fff;
-  }
-  .social-share-btn img,
-  .social-share-btn svg {
-    width: 24px;
-    height: 24px;
-    margin: 0 auto;
-    filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
-  }
-  .social-share--distinct .social-share-btn,
-  .social-share--ellipse .social-share-btn {
-    width: 65px;
-    height: 50px;
-  }
-  .social-share--circle .social-share-btn,
-  .social-share--square .social-share-btn,
-  .social-share--rounded .social-share-btn,
-  .social-share--outline .social-share-btn,
-  .social-share--minimal .social-share-btn {
-    width: 50px;
-    height: 50px;
-  }
-  .social-share--ellipse .social-share-btn,
-  .social-share--circle .social-share-btn,
-  .social-share--outline .social-share-btn {
-    border-radius: 50%;
-  }
-  .social-share--rounded .social-share-btn {
-    border-radius: 12px;
-  }
-  .social-share-btn:hover {
-    animation: bounceVertical 0.5s infinite ease-in-out;
-  }
-  /* "Outline": transparent with a brand-colored ring, filling in on hover - the icon can't be tinted
-     to the brand color itself (it's an <img>, "filter" can't target arbitrary colors), so it stays
-     neutral (no filter) until hover, when the button fills and the icon turns white like the other styles */
-  .social-share--outline .social-share-btn {
-    background-color: transparent;
-    border: 2px solid var(--network-color, #fff);
-    color: var(--network-color, #fff);
-  }
-  .social-share--outline .social-share-btn:hover {
-    background-color: var(--network-color, #000);
-    color: #fff;
-  }
-  .social-share--outline .social-share-btn:hover img,
-  .social-share--outline .social-share-btn:hover svg {
-    filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
-  }
-  /* "Minimal": icon only, no background/border - same reasoning on icon color as "outline" above */
-  .social-share--minimal .social-share-btn {
-    background-color: transparent;
-    color: inherit;
-  }
-  .social-share--minimal .social-share-btn:hover {
-    color: var(--network-color, inherit);
-  }
-  .social-share--outline .social-share-btn img,
-  .social-share--outline .social-share-btn svg,
-  .social-share--minimal .social-share-btn img,
-  .social-share--minimal .social-share-btn svg {
-    filter: none;
-  }
-  /* Social networks colors - also exposed as "--network-color", used by the "outline" style's
-     border/hover-fill and "minimal"'s hover color (see above). Shared with _social.scss's own
-     per-network coloring - see _social-brand-colors.scss for the single source of truth. */
-  .social-share-btn--behance,
-  .social-share-btn--behance:hover {
-    --network-color: #1769ff;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--blogger,
-  .social-share-btn--blogger:hover {
-    --network-color: #f57d00;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--bluesky,
-  .social-share-btn--bluesky:hover {
-    --network-color: #1da1f2;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--buffer,
-  .social-share-btn--buffer:hover {
-    --network-color: #168eea;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--delicious,
-  .social-share-btn--delicious:hover {
-    --network-color: #3399ff;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--discord,
-  .social-share-btn--discord:hover {
-    --network-color: #5865f2;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--dribbble,
-  .social-share-btn--dribbble:hover {
-    --network-color: #ea4c89;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--email,
-  .social-share-btn--email:hover {
-    --network-color: #2f4f4f;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--evernote,
-  .social-share-btn--evernote:hover {
-    --network-color: #2dbe60;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--facebook,
-  .social-share-btn--facebook:hover {
-    --network-color: #3c5a99;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--flickr,
-  .social-share-btn--flickr:hover {
-    --network-color: #ff0084;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--github,
-  .social-share-btn--github:hover {
-    --network-color: #181717;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--instagram,
-  .social-share-btn--instagram:hover {
-    --network-color: #e4405f;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--line,
-  .social-share-btn--line:hover {
-    --network-color: #00c300;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--linkedin,
-  .social-share-btn--linkedin:hover {
-    --network-color: #0077b5;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--mastodon,
-  .social-share-btn--mastodon:hover {
-    --network-color: #6364ff;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--medium,
-  .social-share-btn--medium:hover {
-    --network-color: #000000;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--messenger,
-  .social-share-btn--messenger:hover {
-    --network-color: #0084ff;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--pinterest,
-  .social-share-btn--pinterest:hover {
-    --network-color: #bd081c;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--reddit,
-  .social-share-btn--reddit:hover {
-    --network-color: #ff4500;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--skype,
-  .social-share-btn--skype:hover {
-    --network-color: #00aff0;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--snapchat,
-  .social-share-btn--snapchat:hover {
-    --network-color: #fffc00;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--soundcloud,
-  .social-share-btn--soundcloud:hover {
-    --network-color: #ff5500;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--spotify,
-  .social-share-btn--spotify:hover {
-    --network-color: #1db954;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--stumbleupon,
-  .social-share-btn--stumbleupon:hover {
-    --network-color: #eb4924;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--telegram,
-  .social-share-btn--telegram:hover {
-    --network-color: #26a5e4;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--threads,
-  .social-share-btn--threads:hover {
-    --network-color: #000000;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--tiktok,
-  .social-share-btn--tiktok:hover {
-    --network-color: #000000;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--tumblr,
-  .social-share-btn--tumblr:hover {
-    --network-color: #35465c;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--twitch,
-  .social-share-btn--twitch:hover {
-    --network-color: #9146ff;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--vimeo,
-  .social-share-btn--vimeo:hover {
-    --network-color: #1ab7ea;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--vk,
-  .social-share-btn--vk:hover {
-    --network-color: #0077ff;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--wechat,
-  .social-share-btn--wechat:hover {
-    --network-color: #07c160;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--whatsapp,
-  .social-share-btn--whatsapp:hover {
-    --network-color: #25d366;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--wordpress,
-  .social-share-btn--wordpress:hover {
-    --network-color: #21759b;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--xing,
-  .social-share-btn--xing:hover {
-    --network-color: #026466;
-    background-color: var(--network-color);
-  }
-  .social-share-btn--youtube,
-  .social-share-btn--youtube:hover {
-    --network-color: #ff0000;
-    background-color: var(--network-color);
-  }
-}/*# sourceMappingURL=styles.css.map */
+}
+.social-share {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2em;
+  padding: 0;
+  margin: 0;
+}
+
+.social-share--left {
+  justify-content: flex-start;
+}
+
+.social-share--right {
+  justify-content: flex-end;
+}
+
+.social-share-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 0.2em;
+  text-decoration: none;
+  color: #fff;
+}
+
+.social-share-btn img,
+.social-share-btn svg {
+  width: 24px;
+  height: 24px;
+  margin: 0 auto;
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-share--distinct .social-share-btn,
+.social-share--ellipse .social-share-btn {
+  width: 65px;
+  height: 50px;
+}
+
+.social-share--circle .social-share-btn,
+.social-share--square .social-share-btn,
+.social-share--rounded .social-share-btn,
+.social-share--outline .social-share-btn,
+.social-share--minimal .social-share-btn {
+  width: 50px;
+  height: 50px;
+}
+
+.social-share--ellipse .social-share-btn,
+.social-share--circle .social-share-btn,
+.social-share--outline .social-share-btn {
+  border-radius: 50%;
+}
+
+.social-share--rounded .social-share-btn {
+  border-radius: 12px;
+}
+
+.social-share-btn:hover {
+  animation: bounceVertical 0.5s infinite ease-in-out;
+}
+
+/* "Outline": transparent with a brand-colored ring, filling in on hover - the icon can't be tinted
+   to the brand color itself (it's an <img>, "filter" can't target arbitrary colors), so it stays
+   neutral (no filter) until hover, when the button fills and the icon turns white like the other styles */
+.social-share--outline .social-share-btn {
+  background-color: transparent;
+  border: 2px solid var(--network-color, #fff);
+  color: var(--network-color, #fff);
+}
+
+.social-share--outline .social-share-btn:hover {
+  background-color: var(--network-color, #000);
+  color: #fff;
+}
+
+.social-share--outline .social-share-btn:hover img,
+.social-share--outline .social-share-btn:hover svg {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+/* "Minimal": icon only, no background/border - same reasoning on icon color as "outline" above */
+.social-share--minimal .social-share-btn {
+  background-color: transparent;
+  color: inherit;
+}
+
+.social-share--minimal .social-share-btn:hover {
+  color: var(--network-color, inherit);
+}
+
+.social-share--outline .social-share-btn img,
+.social-share--outline .social-share-btn svg,
+.social-share--minimal .social-share-btn img,
+.social-share--minimal .social-share-btn svg {
+  filter: none;
+}
+
+/* Social networks colors - also exposed as "--network-color", used by the "outline" style's
+   border/hover-fill and "minimal"'s hover color (see above). Shared with _social.scss's own
+   per-network coloring - see _social-brand-colors.scss for the single source of truth. */
+.social-share-btn--behance,
+.social-share-btn--behance:hover {
+  --network-color: #1769ff;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--blogger,
+.social-share-btn--blogger:hover {
+  --network-color: #f57d00;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--bluesky,
+.social-share-btn--bluesky:hover {
+  --network-color: #1da1f2;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--buffer,
+.social-share-btn--buffer:hover {
+  --network-color: #168eea;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--delicious,
+.social-share-btn--delicious:hover {
+  --network-color: #3399ff;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--discord,
+.social-share-btn--discord:hover {
+  --network-color: #5865f2;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--dribbble,
+.social-share-btn--dribbble:hover {
+  --network-color: #ea4c89;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--email,
+.social-share-btn--email:hover {
+  --network-color: #2f4f4f;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--evernote,
+.social-share-btn--evernote:hover {
+  --network-color: #2dbe60;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--facebook,
+.social-share-btn--facebook:hover {
+  --network-color: #3c5a99;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--flickr,
+.social-share-btn--flickr:hover {
+  --network-color: #ff0084;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--github,
+.social-share-btn--github:hover {
+  --network-color: #181717;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--instagram,
+.social-share-btn--instagram:hover {
+  --network-color: #e4405f;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--line,
+.social-share-btn--line:hover {
+  --network-color: #00c300;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--linkedin,
+.social-share-btn--linkedin:hover {
+  --network-color: #0077b5;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--mastodon,
+.social-share-btn--mastodon:hover {
+  --network-color: #6364ff;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--medium,
+.social-share-btn--medium:hover {
+  --network-color: #000000;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--messenger,
+.social-share-btn--messenger:hover {
+  --network-color: #0084ff;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--pinterest,
+.social-share-btn--pinterest:hover {
+  --network-color: #bd081c;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--reddit,
+.social-share-btn--reddit:hover {
+  --network-color: #ff4500;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--skype,
+.social-share-btn--skype:hover {
+  --network-color: #00aff0;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--snapchat,
+.social-share-btn--snapchat:hover {
+  --network-color: #fffc00;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--soundcloud,
+.social-share-btn--soundcloud:hover {
+  --network-color: #ff5500;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--spotify,
+.social-share-btn--spotify:hover {
+  --network-color: #1db954;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--stumbleupon,
+.social-share-btn--stumbleupon:hover {
+  --network-color: #eb4924;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--telegram,
+.social-share-btn--telegram:hover {
+  --network-color: #26a5e4;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--threads,
+.social-share-btn--threads:hover {
+  --network-color: #000000;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--tiktok,
+.social-share-btn--tiktok:hover {
+  --network-color: #000000;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--tumblr,
+.social-share-btn--tumblr:hover {
+  --network-color: #35465c;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--twitch,
+.social-share-btn--twitch:hover {
+  --network-color: #9146ff;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--vimeo,
+.social-share-btn--vimeo:hover {
+  --network-color: #1ab7ea;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--vk,
+.social-share-btn--vk:hover {
+  --network-color: #0077ff;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--wechat,
+.social-share-btn--wechat:hover {
+  --network-color: #07c160;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--whatsapp,
+.social-share-btn--whatsapp:hover {
+  --network-color: #25d366;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--wordpress,
+.social-share-btn--wordpress:hover {
+  --network-color: #21759b;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--xing,
+.social-share-btn--xing:hover {
+  --network-color: #026466;
+  background-color: var(--network-color);
+}
+
+.social-share-btn--youtube,
+.social-share-btn--youtube:hover {
+  --network-color: #ff0000;
+  background-color: var(--network-color);
+}

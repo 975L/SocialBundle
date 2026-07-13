@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.2
+
+- Added `GalleryShowcaseProvider`: shows every `social_links` icon style (minimal/colored/outline, sample Facebook/Bluesky/LinkedIn entries) and `share_buttons()` style (sample Facebook/Bluesky/Pinterest entries) in UiBundle's block gallery (13/07/2026)
+- Social links showcase now joins `social_links_display`'s own "Navigation" category in the gallery instead of a generic section; share buttons has none to join (13/07/2026)
+- Share buttons showcase now also joins the "Navigation" category, reusing `social_links_display`'s category key directly since it has no block kind of its own (13/07/2026)
+- Removed `social_links_display`'s now-redundant fixture: the showcase stands in for it and suppresses its own (previously duplicate) preview card (13/07/2026)
+- Fixed `_share-buttons.scss` gating all its visual styling (colors/sizes/shapes) behind the 768px mobile-hiding breakpoint, unlike `_social.scss`'s equivalent styling - only the visibility toggle needs that breakpoint now (13/07/2026)
+
 ## v1.1.1
 
 - Moved tests to the right place (13/07/2026)

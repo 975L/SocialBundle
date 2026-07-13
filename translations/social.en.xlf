@@ -118,6 +118,22 @@
                 <source>label.icon_style_outline</source>
                 <target>Outline</target>
             </trans-unit>
+            <trans-unit id="31">
+                <source>label.gallery_showcase_social_links</source>
+                <target>Social networks</target>
+            </trans-unit>
+            <trans-unit id="32">
+                <source>label.gallery_showcase_social_links_description</source>
+                <target>Available styles for displaying social network links.</target>
+            </trans-unit>
+            <trans-unit id="33">
+                <source>label.gallery_showcase_share_buttons</source>
+                <target>Share buttons</target>
+            </trans-unit>
+            <trans-unit id="34">
+                <source>label.gallery_showcase_share_buttons_description</source>
+                <target>Available styles for social sharing buttons.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

@@ -118,6 +118,22 @@
                 <source>label.icon_style_outline</source>
                 <target>Contour</target>
             </trans-unit>
+            <trans-unit id="31">
+                <source>label.gallery_showcase_social_links</source>
+                <target>Réseaux sociaux</target>
+            </trans-unit>
+            <trans-unit id="32">
+                <source>label.gallery_showcase_social_links_description</source>
+                <target>Styles disponibles pour l'affichage des liens vers les réseaux sociaux.</target>
+            </trans-unit>
+            <trans-unit id="33">
+                <source>label.gallery_showcase_share_buttons</source>
+                <target>Boutons de partage</target>
+            </trans-unit>
+            <trans-unit id="34">
+                <source>label.gallery_showcase_share_buttons_description</source>
+                <target>Styles disponibles pour les boutons de partage sur les réseaux sociaux.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
