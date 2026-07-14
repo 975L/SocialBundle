@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Environment;
-use Twig\Node\Node;
+use Twig\Node\TextNode;
 use Twig\TwigFunction;
 
 class ShareButtonsExtensionTest extends TestCase
@@ -96,7 +96,7 @@ class ShareButtonsExtensionTest extends TestCase
         );
         foreach ($functions as $function) {
             $this->assertTrue($function->needsEnvironment());
-            $this->assertSame(['html'], $function->getSafe(new Node()));
+            $this->assertSame(['html'], $function->getSafe(new TextNode('', 0)));
         }
     }
 

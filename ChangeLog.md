@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.3
+
+- Added test to trigger deprecations (14/07/2026)
+
 ## v1.1.2
 
 - Added `GalleryShowcaseProvider`: shows every `social_links` icon style (minimal/colored/outline, sample Facebook/Bluesky/LinkedIn entries) and `share_buttons()` style (sample Facebook/Bluesky/Pinterest entries) in UiBundle's block gallery (13/07/2026)
