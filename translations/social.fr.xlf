@@ -40,7 +40,7 @@
             </trans-unit>
             <trans-unit id="10">
                 <source>block.social_links_display</source>
-                <target>Réseaux sociaux (bloc existant)</target>
+                <target>Réseaux sociaux</target>
             </trans-unit>
             <trans-unit id="11">
                 <source>block.social_links_display_description</source>
@@ -133,6 +133,14 @@
             <trans-unit id="34">
                 <source>label.gallery_showcase_share_buttons_description</source>
                 <target>Styles disponibles pour les boutons de partage sur les réseaux sociaux.</target>
+            </trans-unit>
+            <trans-unit id="35">
+                <source>block.share_buttons_display</source>
+                <target>Boutons de partage</target>
+            </trans-unit>
+            <trans-unit id="36">
+                <source>block.share_buttons_display_description</source>
+                <target>Insère les boutons de partage définis dans le tableau de bord, sans redéfinir les réseaux</target>
             </trans-unit>
         </body>
     </file>

@@ -16,6 +16,7 @@ Symfony bundle managing social features for the c975L ecosystem — starting wit
 - **Pickable pointer block** (`social_links_display`) to drop the same site-wide links into any page's block flow, with no data re-entry
 - **Share buttons**: a `share_buttons()` Twig function to let visitors share the current (or a given) page on 15 social networks, with several display styles
 - **Share buttons dashboard settings**: pick which networks and which style are used site-wide, and an `enable-share-buttons` config key to auto-display them on every page with no template change
+- **Pickable pointer block** (`share_buttons_display`) to drop those same site-wide share buttons into any page's block flow, with no data re-entry
 - **Icon picker** reusing [c975L/UiBundle](https://github.com/975L/UiBundle)'s searchable `IconPickerType`
 - **Stylesheet auto-registration** via UiBundle's `BundleStylesheetProviderInterface` — no manual `<link>` needed
 - **Script auto-registration** via UiBundle's `BundleScriptProviderInterface` — no manual `<script>` needed
@@ -157,6 +158,8 @@ To show share buttons on every page without touching a single template, two piec
 ```
 
 Flip `social-enable-share-buttons` to `true` in the dashboard and every page gets the buttons; leave it `false` (the default) and nothing changes. Calling `share_buttons()` directly, anywhere else in your own templates, is unaffected by any of this — it's a separate, always-manual entry point.
+
+To insert those same dashboard-defined buttons at a specific spot in a page's block flow (not just the automatic site-wide call above), pick the **`share_buttons_display`** kind from the page's block picker instead. Same thin-pointer technique as [`social_links_display`](#social-links-block): no fields of its own, always reflects the current dashboard settings, edited only from the "Boutons de partage" screen.
 
 ---
 

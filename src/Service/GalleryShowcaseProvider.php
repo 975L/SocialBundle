@@ -13,11 +13,12 @@ use c975L\UiBundle\Service\IconServiceInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
-// Shows every visual style of "social_links"/"share_buttons()" in UiBundle's block gallery (see
-// BlockGalleryController). Neither fits BlockFixtureProviderInterface: "social_links_display" always
-// renders the site-wide singleton regardless of its own data (see SocialLinksDisplay.html.twig), and
-// share_buttons() isn't a block kind at all - both are rendered here directly, bypassing the lookup,
-// with a fixed sample set of networks (Laurent's own picks, one set per showcase).
+// Shows every visual style of "social_links_display"/"share_buttons_display" in UiBundle's block
+// gallery (see BlockGalleryController). Neither fits BlockFixtureProviderInterface: both always render
+// a site-wide singleton regardless of their own data (see SocialLinksDisplay.html.twig/
+// ShareButtonsDisplay.html.twig) - rendered here instead, directly against the same underlying
+// components/markup, with a fixed sample set of networks (Laurent's own picks, one set per showcase)
+// instead of the real singleton/current page URL that real render depends on.
 class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
 {
     private const SOCIAL_LINKS_NETWORKS = ['facebook', 'bluesky', 'linkedin'];
@@ -42,17 +43,17 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
                 'kind' => 'social_links_display',
                 'variants' => $this->socialLinksVariants(),
             ],
-            // No kind: share_buttons() isn't a block kind at all, nothing to suppress/join - but it still
-            // belongs next to "social_links_display", so "category" reuses the exact same
-            // "label.category_navigation" key that kind is tagged with in services.yaml, instead of
-            // falling back to the generic section. No "wide" needed: _share-buttons.scss's visual rules
-            // (colors/sizes/shapes) aren't gated by the 768px breakpoint, only the base visibility is -
-            // same as _social.scss, so the gallery's own ".social-share { display:flex !important }"
-            // override (see the previewIframe macro) is enough on its own, in a normal-width card.
+            // Stands in for "share_buttons_display" - same feature, just previewed here with a fixed
+            // sample set of networks instead of the real "share_buttons_settings" singleton (and the
+            // current page's own URL) that block's real render depends on. Its own regular (data-less)
+            // preview card is suppressed by the gallery once "kind" is set here, so it only shows up
+            // once. No "wide" needed: _share-buttons.scss's visual rules (colors/sizes/shapes) aren't
+            // gated by the 768px breakpoint, only the base visibility is - same as _social.scss, so the
+            // gallery's own ".social-share { display:flex !important }" override (see the previewIframe
+            // macro) is enough on its own, in a normal-width card.
             $this->translator->trans('label.gallery_showcase_share_buttons', [], 'social') => [
                 'description' => $this->translator->trans('label.gallery_showcase_share_buttons_description', [], 'social'),
-                'kind' => null,
-                'category' => $this->translator->trans('label.category_navigation', [], 'social'),
+                'kind' => 'share_buttons_display',
                 'variants' => $this->shareButtonsVariants(),
             ],
         ];

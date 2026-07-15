@@ -31,9 +31,10 @@ use function Symfony\Component\Translation\t;
 
 // Manages the site-wide "share_buttons_settings" singleton (networks + style used by
 // share_buttons_default(), see ShareButtonsExtension), reusing UiBundle's generic Block/data JSON
-// storage - no dedicated entity/table, no "ui.block" tag (this is never placed on a page or rendered
-// via render_block(), unlike SocialLinksCrudController's "social_links" - see SocialLinksCrudController
-// for the pattern this mirrors).
+// storage - no dedicated entity/table, no "ui.block" tag of its own (this singleton is never placed on
+// a page or rendered via render_block() - same as "social_links" - see SocialLinksCrudController for
+// the pattern this mirrors). Its pickable pointer, "share_buttons_display", is a separate block kind
+// (see services.yaml) that lets editors drop these same settings into a specific page's block flow.
 class ShareButtonsSettingsCrudController extends AbstractCrudController
 {
     private const KIND = 'share_buttons_settings';

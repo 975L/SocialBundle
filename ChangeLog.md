@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2
+
+- Added a `share_buttons_display` pickable block kind: drops the site-wide "share_buttons_settings" dashboard singleton into a specific spot in a page's block flow, on top of the layout's own automatic `share_buttons_default()` call - same thin-pointer pattern as `social_links_display` (15/07/2026)
+- Gallery showcase's share buttons entry now stands in for `share_buttons_display` (kind set instead of null/reused category), suppressing that kind's own regular preview card the same way the social links showcase already does for `social_links_display` (15/07/2026)
+- Simplified `social_links_display`'s block label from "Social links (existing block)" to "Social links" (15/07/2026)
+
 ## v1.1.3
 
 - Added test to trigger deprecations (14/07/2026)

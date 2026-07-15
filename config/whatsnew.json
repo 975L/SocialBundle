@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-07-15",
+        "description": [
+            {
+                "en": "You can now place the share buttons at a specific spot on a page, in addition to having them show up automatically everywhere",
+                "fr": "Vous pouvez désormais placer les boutons de partage à un endroit précis d'une page, en plus de leur affichage automatique partout",
+                "es": "Ahora puede colocar los botones para compartir en un punto específico de una página, además de su aparición automática en todas partes"
+            }
+        ]
+    },
+    {
         "date": "2026-07-11",
         "description": [
             {

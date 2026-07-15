@@ -48,3 +48,23 @@ services:
               # Its render depends on the "social_links" singleton's data, not its own - caching it
               # under its own block id would go stale whenever the singleton is edited elsewhere
               cacheable: false
+
+    # Pickable pointer to the "share_buttons_settings" singleton (see ShareButtonsSettingsCrudController)
+    # - same pattern as social_links_display above, so editors can drop the share buttons somewhere
+    # specific on a page too, on top of the layout's own automatic share_buttons_default() call
+    social.block.share_buttons_display:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: share_buttons_display
+              label: "block.share_buttons_display"
+              description: "block.share_buttons_display_description"
+              translation_domain: 'social'
+              form: c975L\SocialBundle\Form\Block\ShareButtonsDisplayType
+              template: '@c975LSocial/blocks/ShareButtonsDisplay.html.twig'
+              category: 'label.category_navigation'
+              pickable: true
+              # Its render depends on the current request's URL (see ShareButtonsExtension::
+              # renderShareButtons()), not its own data - caching it under its own block id would reuse
+              # the first page's share URL on every other page the same block instance is placed on
+              cacheable: false

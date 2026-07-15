@@ -1,0 +1,5 @@
+{# Pointer block kind ("share_buttons_display"): holds no data of its own, always renders the
+   site-wide "share_buttons_settings" singleton (see ShareButtonsSettingsCrudController) - lets editors
+   drop it into any page's block flow, in addition to (or instead of) the layout's own automatic
+   share_buttons_default() call, gated by "social-enable-share-buttons" (see layout.html.twig) #}
+{{ share_buttons_default() }}

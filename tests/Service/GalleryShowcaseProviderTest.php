@@ -67,20 +67,13 @@ class GalleryShowcaseProviderTest extends TestCase
         $this->assertSame('social_links_display', $showcases['label.gallery_showcase_social_links']['kind']);
     }
 
-    // share_buttons() isn't a block kind at all - nothing to stand in for
-    public function testShareButtonsShowcaseHasNoKind(): void
+    // Stands in for "share_buttons_display" - the gallery suppresses that kind's own regular preview
+    // card once "kind" is set here, so it only shows up once
+    public function testShareButtonsShowcaseStandsInForShareButtonsDisplay(): void
     {
         $showcases = $this->createProvider()->getShowcases();
 
-        $this->assertNull($showcases['label.gallery_showcase_share_buttons']['kind']);
-    }
-
-    // Reuses "social_links_display"'s own category key instead of falling back to the generic section
-    public function testShareButtonsShowcaseReusesSocialLinksDisplaysCategoryKey(): void
-    {
-        $showcases = $this->createProvider()->getShowcases();
-
-        $this->assertSame('label.category_navigation', $showcases['label.gallery_showcase_share_buttons']['category']);
+        $this->assertSame('share_buttons_display', $showcases['label.gallery_showcase_share_buttons']['kind']);
     }
 
     // One variant per ShareButtonsServiceInterface::getStyles() choice

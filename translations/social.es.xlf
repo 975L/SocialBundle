@@ -40,7 +40,7 @@
             </trans-unit>
             <trans-unit id="10">
                 <source>block.social_links_display</source>
-                <target>Redes sociales (bloque existente)</target>
+                <target>Redes sociales</target>
             </trans-unit>
             <trans-unit id="11">
                 <source>block.social_links_display_description</source>
@@ -133,6 +133,14 @@
             <trans-unit id="34">
                 <source>label.gallery_showcase_share_buttons_description</source>
                 <target>Estilos disponibles para los botones de compartir en redes sociales.</target>
+            </trans-unit>
+            <trans-unit id="35">
+                <source>block.share_buttons_display</source>
+                <target>Botones para compartir</target>
+            </trans-unit>
+            <trans-unit id="36">
+                <source>block.share_buttons_display_description</source>
+                <target>Inserta los botones para compartir definidos en el panel, sin redefinir las redes</target>
             </trans-unit>
         </body>
     </file>
