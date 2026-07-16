@@ -163,4 +163,10 @@ To insert those same dashboard-defined buttons at a specific spot in a page's bl
 
 ---
 
-If this project **helps you save development time**, consider sponsoring via the **Sponsor** button at the top of the GitHub page. Thank you!
+> [!TIP]
+> If this project **helps you save development time**:
+>
+> - [**star** it on GitHub](https://github.com/975L/SocialBundle) — helps others find it
+> - [**open an issue**](https://github.com/975L/SocialBundle/issues/new) to share how you use it — genuinely useful feedback
+>
+> And if you'd like to support the work directly, the **Sponsor** button at the top of the GitHub page is there for that. Thank you!

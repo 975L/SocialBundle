@@ -32,6 +32,7 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatableMessage;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SocialLinksCrudControllerTest extends TestCase
 {
@@ -41,6 +42,14 @@ class SocialLinksCrudControllerTest extends TestCase
         $configService->method('get')->willReturn($role);
 
         return $configService;
+    }
+
+    private function createTranslator(): TranslatorInterface
+    {
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnArgument(0);
+
+        return $translator;
     }
 
     // AdminUrlGenerator is final (can't be stubbed), but every one of its own dependencies is an
@@ -85,6 +94,7 @@ class SocialLinksCrudControllerTest extends TestCase
             $this->createConfigService($role),
             $blockRepository,
             $this->createAdminUrlGenerator(),
+            $this->createTranslator(),
         );
     }
 
@@ -146,7 +156,13 @@ class SocialLinksCrudControllerTest extends TestCase
     {
         $controller = $this->createController(null, 'ROLE_SOCIAL_ADMIN');
 
-        $permissions = $controller->configureActions(Actions::new())->getAsDto(null)->getActionPermissions();
+        // A real EasyAdmin runtime pre-populates default actions (EDIT, DELETE...) before calling
+        // configureActions() - update() below assumes EDIT/DELETE already exist on PAGE_INDEX
+        $actions = Actions::new()
+            ->add(Crud::PAGE_INDEX, Action::EDIT)
+            ->add(Crud::PAGE_INDEX, Action::DELETE);
+
+        $permissions = $controller->configureActions($actions)->getAsDto(null)->getActionPermissions();
 
         foreach ([Action::INDEX, Action::NEW, Action::EDIT, Action::DELETE, Action::DETAIL] as $action) {
             $this->assertSame('ROLE_SOCIAL_ADMIN', $permissions[$action]);
@@ -257,6 +273,7 @@ class SocialLinksCrudControllerTest extends TestCase
             $this->createConfigService(),
             $blockRepository,
             $this->createAdminUrlGenerator($adminRouteGenerator),
+            $this->createTranslator(),
         );
 
         $response = $controller->new(AdminContext::forTesting());

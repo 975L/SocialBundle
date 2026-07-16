@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Controller\Management;
 
+use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Form\Block\SocialLinksPreviewType;
 use c975L\SocialBundle\Form\Block\SocialLinksType;
@@ -27,6 +28,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\HiddenField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function Symfony\Component\Translation\t;
 
@@ -45,6 +47,7 @@ class SocialLinksCrudController extends AbstractCrudController
         private readonly ConfigServiceInterface $configService,
         private readonly BlockRepository $blockRepository,
         private readonly AdminUrlGenerator $adminUrlGenerator,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -112,6 +115,14 @@ class SocialLinksCrudController extends AbstractCrudController
         $role = $this->configService->get('site-role-admin');
 
         return $actions
+            ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
+                $action,
+                $this->translator->trans('action.edit', [], 'EasyAdminBundle'),
+            ))
+            ->update(Crud::PAGE_INDEX, Action::DELETE, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
+                $action,
+                $this->translator->trans('action.delete', [], 'EasyAdminBundle'),
+            ))
             ->setPermission(Action::INDEX, $role)
             ->setPermission(Action::NEW, $role)
             ->setPermission(Action::EDIT, $role)

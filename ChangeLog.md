@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Index-page Edit/Delete action buttons now show icon-only with the label as hover title (16/07/2026)
+
 ## v1.2
 
 - Added a `share_buttons_display` pickable block kind: drops the site-wide "share_buttons_settings" dashboard singleton into a specific spot in a page's block flow, on top of the layout's own automatic `share_buttons_default()` call - same thin-pointer pattern as `social_links_display` (15/07/2026)
