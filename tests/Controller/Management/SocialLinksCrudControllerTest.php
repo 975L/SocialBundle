@@ -52,9 +52,7 @@ class SocialLinksCrudControllerTest extends TestCase
         return $translator;
     }
 
-    // AdminUrlGenerator is final (can't be stubbed), but every one of its own dependencies is an
-    // interface - building a real instance with those stubbed lets new() below exercise the exact
-    // same URL-generation code path the real app uses, instead of faking its return value
+    // AdminUrlGenerator is final (can't be stubbed), but every one of its own dependencies is an interface - building a real instance with those stubbed lets new() below exercise the exact same URL-generation code path the real app uses, instead of faking its return value
     private function createAdminUrlGenerator(?AdminRouteGeneratorInterface $adminRouteGenerator = null): AdminUrlGenerator
     {
         $adminContextProvider = $this->createStub(AdminContextProviderInterface::class);
@@ -98,17 +96,10 @@ class SocialLinksCrudControllerTest extends TestCase
         );
     }
 
-    // configureFields() unconditionally reads getContext()->getEntity()->getInstance()->getData()
-    // to seed the preview field's options - EasyAdmin ships AdminContext::forTesting()/
-    // CrudContext::forTesting() precisely to build a real context without a full container/kernel,
-    // wrapped here in a Psr\Container\ContainerInterface stub for AbstractController::getContext()
-    // to fetch it from
+    // configureFields() unconditionally reads getContext()->getEntity()->getInstance()->getData() to seed the preview field's options - EasyAdmin ships AdminContext::forTesting()/ CrudContext::forTesting() precisely to build a real context without a full container/kernel, wrapped here in a Psr\Container\ContainerInterface stub for AbstractController::getContext() to fetch it from
     private function setContextEntity(SocialLinksCrudController $controller, ?Block $entity): void
     {
-        // AdminContext::getEntity() throws if the CrudContext's EntityDto itself is null (it's
-        // meant to guard "no CRUD operation at all", not "no entity instance yet") - a real
-        // "new"/"edit" page always has an EntityDto, only its instance is null before
-        // createEntity() runs, so that's what a not-yet-saved singleton is modeled as here
+        // AdminContext::getEntity() throws if the CrudContext's EntityDto itself is null (it's meant to guard "no CRUD operation at all", not "no entity instance yet") - a real "new"/"edit" page always has an EntityDto, only its instance is null before createEntity() runs, so that's what a not-yet-saved singleton is modeled as here
         $entityDto = new EntityDto(Block::class, new ClassMetadata(Block::class), null, $entity);
         $adminContext = AdminContext::forTesting(crudContext: CrudContext::forTesting(entityDto: $entityDto));
 
@@ -156,8 +147,7 @@ class SocialLinksCrudControllerTest extends TestCase
     {
         $controller = $this->createController(null, 'ROLE_SOCIAL_ADMIN');
 
-        // A real EasyAdmin runtime pre-populates default actions (EDIT, DELETE...) before calling
-        // configureActions() - update() below assumes EDIT/DELETE already exist on PAGE_INDEX
+        // A real EasyAdmin runtime pre-populates default actions (EDIT, DELETE...) before calling configureActions() - update() below assumes EDIT/DELETE already exist on PAGE_INDEX
         $actions = Actions::new()
             ->add(Crud::PAGE_INDEX, Action::EDIT)
             ->add(Crud::PAGE_INDEX, Action::DELETE);
@@ -195,9 +185,7 @@ class SocialLinksCrudControllerTest extends TestCase
         );
     }
 
-    // HiddenField, not Field/TextField: "data" is a Doctrine JSON column, a plain Field would get
-    // silently rebuilt into an ArrayField that crashes against SocialLinksType's options (see the
-    // class-level comment on the controller)
+    // HiddenField, not Field/TextField: "data" is a Doctrine JSON column, a plain Field would get silently rebuilt into an ArrayField that crashes against SocialLinksType's options (see the class-level comment on the controller)
     public function testConfigureFieldsDataFieldUsesHiddenSocialLinksTypeWithCollectionJs(): void
     {
         $controller = $this->createController(null);
@@ -209,8 +197,7 @@ class SocialLinksCrudControllerTest extends TestCase
         $this->assertSame(SocialLinksType::class, $dataField->getAsDto()->getFormType());
     }
 
-    // Before any singleton has ever been saved, the preview field falls back to an empty link
-    // list, visible labels and the "minimal" icon style
+    // Before any singleton has ever been saved, the preview field falls back to an empty link list, visible labels and the "minimal" icon style
     public function testConfigureFieldsPreviewFieldDefaultsWhenNoEntityDataYet(): void
     {
         $controller = $this->createController(null);
@@ -245,11 +232,7 @@ class SocialLinksCrudControllerTest extends TestCase
         $this->assertSame('colored', $options['icon_style']);
     }
 
-    // Redirects to editing the existing singleton instead of letting a second "social_links"
-    // Block be created (see the class-level comment on the controller); the no-existing-block
-    // branch delegates to parent::new(), which needs full EasyAdmin/container wiring (event
-    // dispatcher, security voter, form factory...) disproportionate to this pure-unit suite, so
-    // it's left untested here
+    // Redirects to editing the existing singleton instead of letting a second "social_links" Block be created (see the class-level comment on the controller); the no-existing-block branch delegates to parent::new(), which needs full EasyAdmin/container wiring (event dispatcher, security voter, form factory...) disproportionate to this pure-unit suite, so it's left untested here
     public function testNewRedirectsToEditWhenSingletonAlreadyExists(): void
     {
         $existing = new Block();
@@ -259,10 +242,7 @@ class SocialLinksCrudControllerTest extends TestCase
         $blockRepository = $this->createStub(BlockRepository::class);
         $blockRepository->method('findOneByKind')->willReturn($existing);
 
-        // AdminUrlGenerator itself folds crudControllerFqcn/crudAction into the resolved route
-        // name (dropping them from the query string), so the meaningful assertion for this
-        // controller's own logic is that it hands the right controller FQCN, action and entity ID
-        // through to that resolution step - not the exact final URL, which is EasyAdmin's concern
+        // AdminUrlGenerator itself folds crudControllerFqcn/crudAction into the resolved route name (dropping them from the query string), so the meaningful assertion for this controller's own logic is that it hands the right controller FQCN, action and entity ID through to that resolution step - not the exact final URL, which is EasyAdmin's concern
         $adminRouteGenerator = $this->createMock(AdminRouteGeneratorInterface::class);
         $adminRouteGenerator->expects($this->once())
             ->method('findRouteName')

@@ -21,17 +21,14 @@ use Symfony\Component\Form\Test\TypeTestCase;
 
 class SocialLinksTypeTest extends TypeTestCase
 {
-    // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own
-    // EventDispatcherInterface mock with no configured expectations - forms do dispatch events
-    // internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
+    // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own EventDispatcherInterface mock with no configured expectations - forms do dispatch events internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
     protected function setUp(): void
     {
         $this->dispatcher = $this->createStub(EventDispatcherInterface::class);
         parent::setUp();
     }
 
-    // "links" is a CollectionType of SocialLinkEntryType, which itself builds on IconPickerType -
-    // so it must be resolvable by the form factory exactly as it is in the real app
+    // "links" is a CollectionType of SocialLinkEntryType, which itself builds on IconPickerType - so it must be resolvable by the form factory exactly as it is in the real app
     protected function getExtensions(): array
     {
         $iconService = $this->createStub(IconServiceInterface::class);
@@ -60,9 +57,7 @@ class SocialLinksTypeTest extends TypeTestCase
         );
     }
 
-    // No empty_data: an unchecked checkbox submits no value at all, indistinguishable from "never
-    // touched" - empty_data would force it back to true on every submit, making it impossible to
-    // actually uncheck it once saved
+    // No empty_data: an unchecked checkbox submits no value at all, indistinguishable from "never touched" - empty_data would force it back to true on every submit, making it impossible to actually uncheck it once saved
     public function testDisplayLabelFieldIsOptionalCheckboxWithoutEmptyData(): void
     {
         $form = $this->factory->create(SocialLinksType::class);

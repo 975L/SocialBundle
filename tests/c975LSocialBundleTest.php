@@ -15,9 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class c975LSocialBundleTest extends TestCase
 {
-    // Mirrors how Symfony's own kernel invokes it (BundleExtension::load() builds the
-    // ContainerConfigurator and calls loadExtension() for us), so this also validates that
-    // config/services.yaml itself parses and wires without error
+    // Mirrors how Symfony's own kernel invokes it (BundleExtension::load() builds the ContainerConfigurator and calls loadExtension() for us), so this also validates that config/services.yaml itself parses and wires without error
     public function testLoadExtensionImportsServicesYaml(): void
     {
         $container = new ContainerBuilder();
@@ -27,9 +25,7 @@ class c975LSocialBundleTest extends TestCase
         $this->assertTrue($container->hasDefinition(ShareButtonsService::class));
     }
 
-    // Same real-kernel-hook approach as loadExtension() above (BundleExtension::prepend() calls
-    // prependExtension() for us) - asset_mapper needs this path so Twig's asset()/importmap can
-    // resolve "@c975l/social-bundle" to the bundle's own assets/ directory
+    // Same real-kernel-hook approach as loadExtension() above (BundleExtension::prepend() calls prependExtension() for us) - asset_mapper needs this path so Twig's asset()/importmap can resolve "@c975l/social-bundle" to the bundle's own assets/ directory
     public function testPrependExtensionRegistersAssetMapperPathForBundleAssets(): void
     {
         $container = new ContainerBuilder();

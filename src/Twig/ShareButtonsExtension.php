@@ -9,22 +9,20 @@
 namespace c975L\SocialBundle\Twig;
 
 use c975L\SocialBundle\Service\ShareButtonsServiceInterface;
+use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Repository\BlockRepository;
 use c975L\UiBundle\Service\IconServiceInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-// Migrated from c975L/ShareButtonsBundle's ShareButtons Twig extension. Renders direct links to each
-// network's share URL - no internal redirect route: the previous ShareButtonsController only existed to
-// proxy that redirect, which needed a double urlencode of the target URL to work around it being carried
-// as an Apache path segment. Building the final URL once here, at render time, sidesteps both.
+// Migrated from c975L/ShareButtonsBundle's ShareButtons Twig extension. Renders direct links to each network's share URL - no internal redirect route: the previous ShareButtonsController only existed to proxy that redirect, which needed a double urlencode of the target URL to work around it being carried as an Apache path segment. Building the final URL once here, at render time, sidesteps both.
 class ShareButtonsExtension extends AbstractExtension
 {
-    // Kind of the "share_buttons_settings" singleton Block (see ShareButtonsSettingsCrudController) -
-    // not shared as a public constant there either, matching SocialLinkExtension's own literal use of
-    // "social_links" for the same reason (no other consumer needs it)
+    // Kind of the "share_buttons_settings" singleton Block (see ShareButtonsSettingsCrudController) - not shared as a public constant there either, matching SocialLinkExtension's own literal use of "social_links" for the same reason (no other consumer needs it)
     private const SETTINGS_KIND = 'share_buttons_settings';
 
     public function __construct(
@@ -32,6 +30,7 @@ class ShareButtonsExtension extends AbstractExtension
         private readonly IconServiceInterface $iconService,
         private readonly RequestStack $requestStack,
         private readonly BlockRepository $blockRepository,
+        private readonly TagAwareCacheInterface $cache,
     ) {
     }
 
@@ -49,19 +48,27 @@ class ShareButtonsExtension extends AbstractExtension
         ];
     }
 
-    // Renders with the networks/style configured in the dashboard (see ShareButtonsSettingsCrudController),
-    // falling back to the same defaults as share_buttons() as long as the settings singleton hasn't been
-    // saved yet. Meant to be called unconditionally from the site layout, gated by the
-    // "social-enable-share-buttons" config key - not by the settings themselves being present.
+    // Renders with the networks/style configured in the dashboard (see ShareButtonsSettingsCrudController), falling back to the same defaults as share_buttons() as long as the settings singleton hasn't been saved yet. Meant to be called unconditionally from the site layout, gated by the "social-enable-share-buttons" config key - not by the settings themselves being present.
     public function renderDefaultShareButtons(Environment $environment): string
     {
-        $settings = $this->blockRepository->findOneByKind(self::SETTINGS_KIND)?->getData() ?? [];
+        $settings = $this->getSettingsBlock()?->getData() ?? [];
 
         return $this->renderShareButtons(
             $environment,
             $settings['networks'] ?? 'main',
             $settings['style'] ?? 'distinct',
         );
+    }
+
+    // Cross-request cache: this singleton Block is read on every page rendering share_buttons_default(), and barely ever changes - invalidated by SingletonBlockCacheInvalidationListener whenever it's saved/removed. Safe to cache the entity directly: only ->getData() is ever read from it (never rendered through render_block() like "social_links" is), so its medias/user are never touched
+    private function getSettingsBlock(): ?Block
+    {
+        return $this->cache->get('singleton_block_' . self::SETTINGS_KIND, function (ItemInterface $item): ?Block {
+            $item->expiresAfter(null);
+            $item->tag(['singleton_block_' . self::SETTINGS_KIND]);
+
+            return $this->blockRepository->findOneByKind(self::SETTINGS_KIND);
+        });
     }
 
     /**
@@ -78,9 +85,7 @@ class ShareButtonsExtension extends AbstractExtension
     ): string {
         $networks = 'main' === $networks ? $this->shareButtonsService->getMainNetworks() : $networks;
         $pageUrl = $url ?? $this->requestStack->getCurrentRequest()?->getUri() ?? '';
-        // Icons are the same brand SVGs used by UiBundle's IconPickerType (public/icons/*.svg) - reused
-        // by key here too, so dropping/overriding an icon in the app's own public/icons/ (which
-        // IconService reads last, taking precedence over bundle-provided ones) affects both features
+        // Icons are the same brand SVGs used by UiBundle's IconPickerType (public/icons/*.svg) - reused by key here too, so dropping/overriding an icon in the app's own public/icons/ (which IconService reads last, taking precedence over bundle-provided ones) affects both features
         $icons = $this->iconService->getIcons();
 
         $buttons = [];

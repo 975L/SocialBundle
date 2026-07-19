@@ -14,17 +14,14 @@ use Symfony\Component\Form\Test\TypeTestCase;
 
 class SocialLinksDisplayTypeTest extends TypeTestCase
 {
-    // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own
-    // EventDispatcherInterface mock with no configured expectations - forms do dispatch events
-    // internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
+    // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own EventDispatcherInterface mock with no configured expectations - forms do dispatch events internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
     protected function setUp(): void
     {
         $this->dispatcher = $this->createStub(EventDispatcherInterface::class);
         parent::setUp();
     }
 
-    // No fields: the "social_links_display" block kind only points at the "social_links" singleton
-    // (see SocialLinksCrudController), it holds no data of its own
+    // No fields: the "social_links_display" block kind only points at the "social_links" singleton (see SocialLinksCrudController), it holds no data of its own
     public function testBuildFormAddsNoChildren(): void
     {
         $form = $this->factory->create(SocialLinksDisplayType::class);

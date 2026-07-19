@@ -140,7 +140,15 @@
             </trans-unit>
             <trans-unit id="36">
                 <source>block.share_buttons_display_description</source>
-                <target>Inserts the share buttons defined in the dashboard, without redefining the networks</target>
+                <target>Inserts the dashboard's share buttons</target>
+            </trans-unit>
+            <trans-unit id="37">
+                <source>label.info_social_links</source>
+                <target>The site-wide social links shown in the footer. This is a singleton - a single set of links, edited here.</target>
+            </trans-unit>
+            <trans-unit id="38">
+                <source>label.info_share_buttons_settings</source>
+                <target>The site-wide default networks/style used by share buttons. This is a singleton, edited here - a page can still override it with its own "share_buttons_display" block.</target>
             </trans-unit>
         </body>
     </file>

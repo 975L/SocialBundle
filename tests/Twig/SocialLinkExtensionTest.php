@@ -15,13 +15,25 @@ use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Repository\BlockRepository;
 use c975L\UiBundle\Service\IconServiceInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\TagAwareAdapter;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Twig\TwigFunction;
 
 class SocialLinkExtensionTest extends TestCase
 {
-    // Builds the extension, with a BlockRepository double answering "social_links" with $socialLinksBlock
-    private function createExtension(?Block $socialLinksBlock, array $icons = []): SocialLinkExtension
+    // Real in-memory tag-aware pool (not a stub): storeSerialized stays at its default (true), same as the production filesystem-backed pool, so a test would catch a Block that doesn't actually survive a cache round-trip
+    private function createCache(): TagAwareCacheInterface
     {
+        return new TagAwareAdapter(new ArrayAdapter());
+    }
+
+    // Builds the extension, with a BlockRepository double answering "social_links" with $socialLinksBlock
+    private function createExtension(
+        ?Block $socialLinksBlock,
+        array $icons = [],
+        ?TagAwareCacheInterface $cache = null,
+    ): SocialLinkExtension {
         $blockRepository = $this->createStub(BlockRepository::class);
         $blockRepository->method('findOneByKind')->willReturnCallback(
             static fn (string $kind) => 'social_links' === $kind ? $socialLinksBlock : null
@@ -30,7 +42,7 @@ class SocialLinkExtensionTest extends TestCase
         $iconService = $this->createStub(IconServiceInterface::class);
         $iconService->method('getIcons')->willReturn($icons);
 
-        return new SocialLinkExtension($blockRepository, $iconService);
+        return new SocialLinkExtension($blockRepository, $iconService, $cache ?? $this->createCache());
     }
 
     // Both functions are plain value-returning helpers, not html-rendering ones (no needs_environment/is_safe)
@@ -53,10 +65,11 @@ class SocialLinkExtensionTest extends TestCase
     // The layout renders the "social_links" singleton block whenever it has been created
     public function testGetSocialLinkBlockReturnsBlockPersistedUnderSocialLinksKind(): void
     {
-        $block = new Block();
+        $block = (new Block())->setKind('social_links')->setData(['links' => []]);
         $extension = $this->createExtension($block);
 
-        $this->assertSame($block, $extension->getSocialLinkBlock());
+        // Not assertSame(): the cached-and-reconstructed Block is a fresh object after the pool's (de)serialization round-trip, equal in value but no longer the same instance
+        $this->assertEquals($block, $extension->getSocialLinkBlock());
     }
 
     // Before the block has ever been created, the layout must be able to skip rendering it entirely
@@ -65,6 +78,37 @@ class SocialLinkExtensionTest extends TestCase
         $extension = $this->createExtension(null);
 
         $this->assertNull($extension->getSocialLinkBlock());
+    }
+
+    // A base layout typically calls social_link_block() once per render, but a page could embed it more than once (e.g. header and footer) - only the first call in a request should hit the repository
+    public function testGetSocialLinkBlockMemoizesWithinTheSameCacheInstance(): void
+    {
+        $block = (new Block())->setKind('social_links')->setData(['links' => []]);
+        $blockRepository = $this->createMock(BlockRepository::class);
+        $blockRepository->expects($this->once())->method('findOneByKind')->with('social_links')->willReturn($block);
+
+        $iconService = $this->createStub(IconServiceInterface::class);
+        $cache = $this->createCache();
+        $extension = new SocialLinkExtension($blockRepository, $iconService, $cache);
+
+        $extension->getSocialLinkBlock();
+        $extension->getSocialLinkBlock();
+    }
+
+    // The whole point of a cross-request cache: a fresh SocialLinkExtension instance (simulating a new request) sharing the same cache pool must not hit the repository again
+    public function testGetSocialLinkBlockSurvivesAcrossInstancesSharingTheSameCachePool(): void
+    {
+        $block = (new Block())->setKind('social_links')->setData(['links' => []]);
+        $blockRepository = $this->createMock(BlockRepository::class);
+        $blockRepository->expects($this->once())->method('findOneByKind')->with('social_links')->willReturn($block);
+        $iconService = $this->createStub(IconServiceInterface::class);
+
+        $cache = $this->createCache();
+        $firstRequest = new SocialLinkExtension($blockRepository, $iconService, $cache);
+        $this->assertEquals($block, $firstRequest->getSocialLinkBlock());
+
+        $secondRequest = new SocialLinkExtension($blockRepository, $iconService, $cache);
+        $this->assertEquals($block, $secondRequest->getSocialLinkBlock());
     }
 
     // A configured network resolves to the same flat Font Awesome glyph IconService exposes for it

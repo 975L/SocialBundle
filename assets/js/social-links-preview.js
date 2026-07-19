@@ -6,11 +6,7 @@
  * with this source code in the file LICENSE.
  */
 
-// Keeps the "social_links" preview (see social_links_preview_theme.html.twig) in sync with the "icon
-// style" <select> and "display label" checkbox - both styles share the same icon (CSS alone recolors
-// it, see sass/_social.scss), so this just swaps the list's modifier class and toggles the label, never
-// rebuilds entries. The "links" list itself stays static (see SocialLinksPreviewType for why). Runs
-// once on load too, not just on "change", to match their actual, server-rendered initial state.
+// Keeps the "social_links" preview (see social_links_preview_theme.html.twig) in sync with the "icon style" <select> and "display label" checkbox - both styles share the same icon (CSS alone recolors it, see sass/_social.scss), so this just swaps the list's modifier class and toggles the label, never rebuilds entries. The "links" list itself stays static (see SocialLinksPreviewType for why). Runs once on load too, not just on "change", to match their actual, server-rendered initial state.
 const ICON_STYLES = ['minimal', 'colored', 'outline'];
 
 function syncPreview() {

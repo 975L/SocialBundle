@@ -17,9 +17,7 @@ use Symfony\Component\Form\Test\TypeTestCase;
 
 class ShareButtonsStylePreviewTypeTest extends TypeTestCase
 {
-    // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own
-    // EventDispatcherInterface mock with no configured expectations - forms do dispatch events
-    // internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
+    // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own EventDispatcherInterface mock with no configured expectations - forms do dispatch events internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
     protected function setUp(): void
     {
         $this->dispatcher = $this->createStub(EventDispatcherInterface::class);
@@ -39,9 +37,7 @@ class ShareButtonsStylePreviewTypeTest extends TypeTestCase
         return [new PreloadedExtension([new ShareButtonsStylePreviewType($this->createShareButtonsService())], [])];
     }
 
-    // Dedicated block prefix so share_buttons_style_preview_theme.html.twig can override just
-    // this field's widget - see the class-level comment for why (EasyAdmin only honors
-    // setTemplatePath() on index/detail, never on New/Edit)
+    // Dedicated block prefix so share_buttons_style_preview_theme.html.twig can override just this field's widget - see the class-level comment for why (EasyAdmin only honors setTemplatePath() on index/detail, never on New/Edit)
     public function testGetParentAndBlockPrefixEnableTheDedicatedFormTheme(): void
     {
         $type = new ShareButtonsStylePreviewType($this->createShareButtonsService());
@@ -50,8 +46,7 @@ class ShareButtonsStylePreviewTypeTest extends TypeTestCase
         $this->assertSame('share_buttons_style_preview', $type->getBlockPrefix());
     }
 
-    // Every known network is rendered into the preview (client-side JS hides/reorders them to
-    // match the "networks" checkboxes live), not just whichever are actually checked
+    // Every known network is rendered into the preview (client-side JS hides/reorders them to match the "networks" checkboxes live), not just whichever are actually checked
     public function testBuildViewExposesAllNetworksRegardlessOfSavedSelection(): void
     {
         $form = $this->factory->create(ShareButtonsStylePreviewType::class);

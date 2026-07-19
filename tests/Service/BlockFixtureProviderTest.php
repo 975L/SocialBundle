@@ -14,9 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class BlockFixtureProviderTest extends TestCase
 {
-    // "social_links" is pickable: false (never shown); "social_links_display" and
-    // "share_buttons_display" are covered by GalleryShowcaseProvider instead (see its own class comment
-    // for why) - none of the three needs a fixture here
+    // "social_links" is pickable: false (never shown); "social_links_display" and "share_buttons_display" are covered by GalleryShowcaseProvider instead (see its own class comment for why) - none of the three needs a fixture here
     public function testGetFixturesReturnsNothing(): void
     {
         $this->assertSame([], (new BlockFixtureProvider())->getFixtures());

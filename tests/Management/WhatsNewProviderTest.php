@@ -25,8 +25,7 @@ class WhatsNewProviderTest extends TestCase
         \Locale::setDefault($this->originalLocale);
     }
 
-    // Reads the same config/whatsnew.json the provider is expected to point at, decoded independently
-    // so assertions stay valid as new release-note entries are appended over time
+    // Reads the same config/whatsnew.json the provider is expected to point at, decoded independently so assertions stay valid as new release-note entries are appended over time
     private function readRawEntries(): array
     {
         return json_decode(

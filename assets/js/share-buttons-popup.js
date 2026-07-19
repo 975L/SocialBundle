@@ -7,9 +7,7 @@
  */
 import { Controller } from "@hotwired/stimulus";
 
-// Opens a share link in a small centered popup instead of a full navigation - migrated from
-// c975L/ShareButtonsBundle's functions.js, scoped to "[data-controller=shareButtonsPopup]" via
-// data-action instead of a global ".btn-share" listener
+// Opens a share link in a small centered popup instead of a full navigation - migrated from c975L/ShareButtonsBundle's functions.js, scoped to "[data-controller=shareButtonsPopup]" via data-action instead of a global ".btn-share" listener
 export default class extends Controller {
     open(event) {
         event.preventDefault();

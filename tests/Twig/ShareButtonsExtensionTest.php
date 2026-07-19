@@ -14,14 +14,23 @@ use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Repository\BlockRepository;
 use c975L\UiBundle\Service\IconServiceInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Twig\Environment;
 use Twig\Node\TextNode;
 use Twig\TwigFunction;
 
 class ShareButtonsExtensionTest extends TestCase
 {
+    // Real in-memory tag-aware pool (not a stub): storeSerialized stays at its default (true), same as the production filesystem-backed pool, so a test would catch a Block that doesn't actually survive a cache round-trip
+    private function createCache(): TagAwareCacheInterface
+    {
+        return new TagAwareAdapter(new ArrayAdapter());
+    }
+
     // Builds a ShareButtonsService double, recording every getShareUrl() call into $calls as [network, pageUrl]
     private function createShareButtonsService(
         array $mainNetworks,
@@ -64,6 +73,7 @@ class ShareButtonsExtensionTest extends TestCase
         array $icons = [],
         ?Block $settingsBlock = null,
         ?Request $currentRequest = null,
+        ?TagAwareCacheInterface $cache = null,
     ): ShareButtonsExtension {
         $iconService = $this->createStub(IconServiceInterface::class);
         $iconService->method('getIcons')->willReturn($icons);
@@ -78,7 +88,7 @@ class ShareButtonsExtensionTest extends TestCase
             static fn (string $kind) => 'share_buttons_settings' === $kind ? $settingsBlock : null
         );
 
-        return new ShareButtonsExtension($shareButtonsService, $iconService, $requestStack, $blockRepository);
+        return new ShareButtonsExtension($shareButtonsService, $iconService, $requestStack, $blockRepository, $cache ?? $this->createCache());
     }
 
     // Both functions render raw HTML and must receive the Twig Environment to call render() themselves
@@ -266,5 +276,52 @@ class ShareButtonsExtensionTest extends TestCase
 
         $this->assertSame('distinct', $context['style']);
         $this->assertSame('facebook', $context['buttons'][0]['network']);
+    }
+
+    // renderDefaultShareButtons() reads the settings singleton on every call - only the first one in a request should hit the repository
+    public function testRenderDefaultShareButtonsMemoizesTheSettingsBlockWithinTheSameCacheInstance(): void
+    {
+        $calls = [];
+        $shareButtonsService = $this->createShareButtonsService(['facebook'], $calls, ['facebook' => 'https://share/facebook']);
+        $settingsBlock = (new Block())->setKind('share_buttons_settings')->setData(['networks' => ['facebook'], 'style' => 'circle']);
+
+        $blockRepository = $this->createMock(BlockRepository::class);
+        $blockRepository->expects($this->once())->method('findOneByKind')->with('share_buttons_settings')->willReturn($settingsBlock);
+
+        $iconService = $this->createStub(IconServiceInterface::class);
+        $cache = $this->createCache();
+        $extension = new ShareButtonsExtension($shareButtonsService, $iconService, new RequestStack(), $blockRepository, $cache);
+
+        $template = null;
+        $context = null;
+        $renderCallCount = 0;
+        $environment = $this->createEnvironment($template, $context, $renderCallCount);
+        $extension->renderDefaultShareButtons($environment);
+        $extension->renderDefaultShareButtons($environment);
+    }
+
+    // The whole point of a cross-request cache: a fresh ShareButtonsExtension instance (simulating a new request) sharing the same cache pool must not hit the repository again
+    public function testRenderDefaultShareButtonsSurvivesAcrossInstancesSharingTheSameCachePool(): void
+    {
+        $calls = [];
+        $shareButtonsService = $this->createShareButtonsService(['facebook'], $calls, ['twitter' => 'https://share/twitter']);
+        $settingsBlock = (new Block())->setKind('share_buttons_settings')->setData(['networks' => ['twitter'], 'style' => 'circle']);
+
+        $blockRepository = $this->createMock(BlockRepository::class);
+        $blockRepository->expects($this->once())->method('findOneByKind')->with('share_buttons_settings')->willReturn($settingsBlock);
+        $iconService = $this->createStub(IconServiceInterface::class);
+
+        $cache = $this->createCache();
+        $firstRequest = new ShareButtonsExtension($shareButtonsService, $iconService, new RequestStack(), $blockRepository, $cache);
+        $template = null;
+        $context = null;
+        $renderCallCount = 0;
+        $environment = $this->createEnvironment($template, $context, $renderCallCount);
+        $firstRequest->renderDefaultShareButtons($environment);
+        $this->assertSame('circle', $context['style']);
+
+        $secondRequest = new ShareButtonsExtension($shareButtonsService, $iconService, new RequestStack(), $blockRepository, $cache);
+        $secondRequest->renderDefaultShareButtons($environment);
+        $this->assertSame('circle', $context['style']);
     }
 }

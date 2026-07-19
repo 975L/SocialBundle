@@ -19,17 +19,14 @@ use Symfony\Component\Form\Test\TypeTestCase;
 
 class SocialLinkEntryTypeTest extends TypeTestCase
 {
-    // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own
-    // EventDispatcherInterface mock with no configured expectations - forms do dispatch events
-    // internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
+    // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own EventDispatcherInterface mock with no configured expectations - forms do dispatch events internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
     protected function setUp(): void
     {
         $this->dispatcher = $this->createStub(EventDispatcherInterface::class);
         parent::setUp();
     }
 
-    // "network"/"customIcon" both build on UiBundle's IconPickerType, so it must be resolvable
-    // by the form factory exactly as it is in the real app (an autowired service)
+    // "network"/"customIcon" both build on UiBundle's IconPickerType, so it must be resolvable by the form factory exactly as it is in the real app (an autowired service)
     protected function getExtensions(): array
     {
         $iconService = $this->createStub(IconServiceInterface::class);
@@ -45,9 +42,7 @@ class SocialLinkEntryTypeTest extends TypeTestCase
         $this->assertSame(['network', 'url', 'customLabel', 'customIcon'], array_keys($form->all()));
     }
 
-    // "network" is restricted to the curated NETWORKS list and stores the bare key ("facebook"),
-    // not an icon path - see SocialLinkExtension::getSocialLinkIcon(), which resolves that key
-    // to an icon path at render time
+    // "network" is restricted to the curated NETWORKS list and stores the bare key ("facebook"), not an icon path - see SocialLinkExtension::getSocialLinkIcon(), which resolves that key to an icon path at render time
     public function testNetworkFieldIsRestrictedIconPickerStoringNetworkName(): void
     {
         $form = $this->factory->create(SocialLinkEntryType::class);
@@ -60,9 +55,7 @@ class SocialLinkEntryTypeTest extends TypeTestCase
         $this->assertNotContains('alert', $networkField->getConfig()->getOption('icons'));
     }
 
-    // "customIcon" is the escape hatch for a network with no curated icon - unlike "network"
-    // above, it isn't restricted to NETWORKS and stores the icon's asset path (IconPickerType's
-    // own default), not a bare key
+    // "customIcon" is the escape hatch for a network with no curated icon - unlike "network" above, it isn't restricted to NETWORKS and stores the icon's asset path (IconPickerType's own default), not a bare key
     public function testCustomIconFieldIsUnrestrictedIconPickerStoringPath(): void
     {
         $form = $this->factory->create(SocialLinkEntryType::class);

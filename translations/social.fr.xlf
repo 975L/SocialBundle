@@ -140,7 +140,15 @@
             </trans-unit>
             <trans-unit id="36">
                 <source>block.share_buttons_display_description</source>
-                <target>Insère les boutons de partage définis dans le tableau de bord, sans redéfinir les réseaux</target>
+                <target>Insère les boutons de partage du tableau de bord</target>
+            </trans-unit>
+            <trans-unit id="37">
+                <source>label.info_social_links</source>
+                <target>Les liens sociaux affichés dans le pied de page du site. C'est un singleton - un seul jeu de liens, édité ici.</target>
+            </trans-unit>
+            <trans-unit id="38">
+                <source>label.info_share_buttons_settings</source>
+                <target>Les réseaux/style par défaut utilisés par les boutons de partage sur tout le site. C'est un singleton édité ici - une page peut toujours le surcharger avec son propre bloc "share_buttons_display".</target>
             </trans-unit>
         </body>
     </file>

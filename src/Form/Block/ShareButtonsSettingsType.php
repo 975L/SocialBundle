@@ -18,20 +18,14 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-// Data form of the "share_buttons_settings" singleton (see ShareButtonsSettingsCrudController): the
-// site-wide default networks/style used when share_buttons_default() auto-renders on every page
+// Data form of the "share_buttons_settings" singleton (see ShareButtonsSettingsCrudController): the site-wide default networks/style used when share_buttons_default() auto-renders on every page
 class ShareButtonsSettingsType extends AbstractType
 {
     public function __construct(private readonly ShareButtonsServiceInterface $shareButtonsService)
     {
     }
 
-    // Both fields are (re)built from scratch on PRE_SET_DATA, not added directly below - "networks"
-    // needs the entity's currently saved order to sort its choices (see reorderNetworkChoices()), which
-    // isn't available yet while the form is still being defined here. Building "style" here too, instead
-    // of leaving it in a plain ->add() call, keeps it after "networks" in the rendered field order -
-    // fields added from inside the listener are appended after any already added directly, which would
-    // otherwise flip the two around.
+    // Both fields are (re)built from scratch on PRE_SET_DATA, not added directly below - "networks" needs the entity's currently saved order to sort its choices (see reorderNetworkChoices()), which isn't available yet while the form is still being defined here. Building "style" here too, instead of leaving it in a plain ->add() call, keeps it after "networks" in the rendered field order - fields added from inside the listener are appended after any already added directly, which would otherwise flip the two around.
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $networkChoices = array_combine(
@@ -57,19 +51,14 @@ class ShareButtonsSettingsType extends AbstractType
                         'multiple' => true,
                         'expanded' => true,
                         'required' => false,
-                        // Rendered as a draggable list, not ChoiceType's default expanded layout - see
-                        // share_buttons_style_preview_theme.html.twig's "share_buttons_networks_widget"
-                        // block and assets/js/share-buttons-networks-sort.js. Reordering it there changes
-                        // the checkboxes' DOM order, which is what reorderNetworkChoices() above reads
-                        // back on the next save (plain checkbox submission follows DOM order).
+                        // Rendered as a draggable list, not ChoiceType's default expanded layout - see share_buttons_style_preview_theme.html.twig's "share_buttons_networks_widget" block and assets/js/share-buttons-networks-sort.js. Reordering it there changes the checkboxes' DOM order, which is what reorderNetworkChoices() above reads back on the next save (plain checkbox submission follows DOM order).
                         'block_prefix' => 'share_buttons_networks',
                     ])
                     ->add('style', ChoiceType::class, [
                         'label' => 'label.style',
                         'choices' => $styleChoices,
                         'expanded' => false,
-                        // Hooked by assets/js/share-buttons-preview.js to refresh the live preview
-                        // below this field (see ShareButtonsSettingsCrudController) on change
+                        // Hooked by assets/js/share-buttons-preview.js to refresh the live preview below this field (see ShareButtonsSettingsCrudController) on change
                         'attr' => ['data-share-style-select' => true],
                     ])
                 ;
@@ -85,9 +74,7 @@ class ShareButtonsSettingsType extends AbstractType
         ]);
     }
 
-    // Puts previously saved, checked networks first (in their saved order), then every other network
-    // in ShareButtonsService::getNetworks()'s fixed order - without this, the sortable list would reset
-    // to that fixed order on every page load, discarding whatever order was last dragged and saved.
+    // Puts previously saved, checked networks first (in their saved order), then every other network in ShareButtonsService::getNetworks()'s fixed order - without this, the sortable list would reset to that fixed order on every page load, discarding whatever order was last dragged and saved.
     private function reorderNetworkChoices(array $networkChoices, array $savedOrder): array
     {
         if ([] === $savedOrder) {

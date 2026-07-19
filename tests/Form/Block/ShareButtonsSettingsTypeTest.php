@@ -20,9 +20,7 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
     private const NETWORKS = ['facebook', 'bluesky', 'linkedin', 'pinterest', 'email'];
     private const STYLES = ['distinct', 'ellipse', 'circle'];
 
-    // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own
-    // EventDispatcherInterface mock with no configured expectations - forms do dispatch events
-    // internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
+    // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own EventDispatcherInterface mock with no configured expectations - forms do dispatch events internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
     protected function setUp(): void
     {
         $this->dispatcher = $this->createStub(EventDispatcherInterface::class);
@@ -43,9 +41,7 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
         return [new PreloadedExtension([new ShareButtonsSettingsType($this->createShareButtonsService())], [])];
     }
 
-    // Both fields are (re)built from scratch on PRE_SET_DATA (see the class-level comment for
-    // why), which the form factory always triggers once on creation - so they must already be
-    // present even before any explicit submit/setData call
+    // Both fields are (re)built from scratch on PRE_SET_DATA (see the class-level comment for why), which the form factory always triggers once on creation - so they must already be present even before any explicit submit/setData call
     public function testBuildFormAddsNetworksAndStyleFieldsOnCreation(): void
     {
         $form = $this->factory->create(ShareButtonsSettingsType::class);
@@ -77,8 +73,7 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
         );
     }
 
-    // Without any previously saved data, the networks choices stay in ShareButtonsService's
-    // own fixed order
+    // Without any previously saved data, the networks choices stay in ShareButtonsService's own fixed order
     public function testNetworksChoicesKeepFixedOrderWhenNoDataIsSaved(): void
     {
         $form = $this->factory->create(ShareButtonsSettingsType::class);
@@ -89,9 +84,7 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
         );
     }
 
-    // Previously saved, checked networks come first (in their saved order), then every other
-    // network in the fixed order - without this, the sortable list would reset on every page
-    // load, discarding whatever order was last dragged and saved
+    // Previously saved, checked networks come first (in their saved order), then every other network in the fixed order - without this, the sortable list would reset on every page load, discarding whatever order was last dragged and saved
     public function testNetworksChoicesPutSavedOrderFirstThenRemainingNetworksInFixedOrder(): void
     {
         $form = $this->factory->create(ShareButtonsSettingsType::class, ['networks' => ['linkedin', 'facebook'], 'style' => 'circle']);

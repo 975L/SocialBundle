@@ -16,12 +16,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-// Dedicated block prefix ("social_links_preview") so social_links_preview_theme.html.twig can override
-// just this field's widget - EasyAdmin's Field::setTemplatePath() only affects index/detail pages, never
-// New/Edit (see ShareButtonsSettingsCrudController's ShareButtonsStylePreviewType, the same pattern this
-// mirrors). Static, unlike that one: it renders the entry list as last saved (SocialLinksCrudController
-// reads it straight off the entity), it doesn't live-update as entries are added/edited/removed in the
-// form above - keeping that in sync would need re-running the whole "links" CollectionType client-side.
+// Dedicated block prefix ("social_links_preview") so social_links_preview_theme.html.twig can override just this field's widget - EasyAdmin's Field::setTemplatePath() only affects index/detail pages, never New/Edit (see ShareButtonsSettingsCrudController's ShareButtonsStylePreviewType, the same pattern this mirrors). Static, unlike that one: it renders the entry list as last saved (SocialLinksCrudController reads it straight off the entity), it doesn't live-update as entries are added/edited/removed in the form above - keeping that in sync would need re-running the whole "links" CollectionType client-side.
 class SocialLinksPreviewType extends AbstractType
 {
     public function buildView(FormView $view, FormInterface $form, array $options): void

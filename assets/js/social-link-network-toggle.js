@@ -6,11 +6,7 @@
  * with this source code in the file LICENSE.
  */
 
-// Shows/hides SocialLinkEntryType's customLabel/customIcon fields depending on whether "network" is
-// left empty (the icon-picker widget's hidden input fires "change" on both pick and clear, see
-// c975L/UiBundle's assets/js/icon-picker.js) - initial state is server-rendered (see
-// social_link_entry_form_theme.html.twig), this only keeps it in sync afterwards, including on
-// entries added later by field-collection.js
+// Shows/hides SocialLinkEntryType's customLabel/customIcon fields depending on whether "network" is left empty (the icon-picker widget's hidden input fires "change" on both pick and clear, see c975L/UiBundle's assets/js/icon-picker.js) - initial state is server-rendered (see social_link_entry_form_theme.html.twig), this only keeps it in sync afterwards, including on entries added later by field-collection.js
 document.addEventListener('change', event => {
     if (!event.target.matches('[data-social-link-network-select]')) return;
 

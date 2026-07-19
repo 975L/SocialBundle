@@ -140,7 +140,15 @@
             </trans-unit>
             <trans-unit id="36">
                 <source>block.share_buttons_display_description</source>
-                <target>Inserta los botones para compartir definidos en el panel, sin redefinir las redes</target>
+                <target>Inserta los botones para compartir del panel</target>
+            </trans-unit>
+            <trans-unit id="37">
+                <source>label.info_social_links</source>
+                <target>Los enlaces sociales mostrados en el pie de página del sitio. Es un singleton - un único conjunto de enlaces, editado aquí.</target>
+            </trans-unit>
+            <trans-unit id="38">
+                <source>label.info_share_buttons_settings</source>
+                <target>Las redes/estilo predeterminados usados por los botones de compartir en todo el sitio. Es un singleton editado aquí - una página puede seguir sobrescribirlo con su propio bloque "share_buttons_display".</target>
             </trans-unit>
         </body>
     </file>

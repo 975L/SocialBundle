@@ -15,18 +15,14 @@ use Symfony\Component\Form\Test\TypeTestCase;
 
 class SocialLinksPreviewTypeTest extends TypeTestCase
 {
-    // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own
-    // EventDispatcherInterface mock with no configured expectations - forms do dispatch events
-    // internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
+    // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own EventDispatcherInterface mock with no configured expectations - forms do dispatch events internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
     protected function setUp(): void
     {
         $this->dispatcher = $this->createStub(EventDispatcherInterface::class);
         parent::setUp();
     }
 
-    // Dedicated block prefix so social_links_preview_theme.html.twig can override just this
-    // field's widget - see the class-level comment for why (EasyAdmin only honors
-    // setTemplatePath() on index/detail, never on New/Edit)
+    // Dedicated block prefix so social_links_preview_theme.html.twig can override just this field's widget - see the class-level comment for why (EasyAdmin only honors setTemplatePath() on index/detail, never on New/Edit)
     public function testGetParentAndBlockPrefixEnableTheDedicatedFormTheme(): void
     {
         $type = new SocialLinksPreviewType();
@@ -44,8 +40,7 @@ class SocialLinksPreviewTypeTest extends TypeTestCase
         $this->assertSame('minimal', $form->getConfig()->getOption('icon_style'));
     }
 
-    // buildView() copies the options straight onto the view - the theme template only ever
-    // reads $links/$display_label/$icon_style off the view, never the (unmapped) form data
+    // buildView() copies the options straight onto the view - the theme template only ever reads $links/$display_label/$icon_style off the view, never the (unmapped) form data
     public function testBuildViewExposesLinksDisplayLabelAndIconStyleAsViewVars(): void
     {
         $links = [['network' => 'facebook', 'url' => 'https://facebook.com/975l', 'customLabel' => null, 'customIcon' => null]];

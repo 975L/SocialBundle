@@ -6,13 +6,7 @@
  * with this source code in the file LICENSE.
  */
 
-// Keeps the "share_buttons_settings" preview (see share_buttons_style_preview_theme.html.twig) in sync
-// with the "style" <select> and the "networks" checkboxes - both the style class and the shown/hidden,
-// ordered set of buttons. The preview widget renders every known network, always starting on "distinct"
-// (it has no access to the entity's saved values - see ShareButtonsStylePreviewType/
-// ShareButtonsSettingsType), so this runs once on load too, not just on "change", to match their actual,
-// server-rendered initial state. Also re-run after a drag reorder (see share-buttons-networks-sort.js),
-// which changes the checkboxes' DOM order without firing "change" on any of them.
+// Keeps the "share_buttons_settings" preview (see share_buttons_style_preview_theme.html.twig) in sync with the "style" <select> and the "networks" checkboxes - both the style class and the shown/hidden, ordered set of buttons. The preview widget renders every known network, always starting on "distinct" (it has no access to the entity's saved values - see ShareButtonsStylePreviewType/ShareButtonsSettingsType), so this runs once on load too, not just on "change", to match their actual, server-rendered initial state. Also re-run after a drag reorder (see share-buttons-networks-sort.js), which changes the checkboxes' DOM order without firing "change" on any of them.
 const STYLES = ['distinct', 'ellipse', 'circle', 'square', 'rounded', 'outline', 'minimal'];
 
 function syncPreview() {

@@ -6,13 +6,7 @@
  * with this source code in the file LICENSE.
  */
 
-// Native HTML5 drag-and-drop reordering for the "networks" checkbox list (see
-// share_buttons_style_preview_theme.html.twig's "share_buttons_networks_widget" block) - adapted from
-// c975L/UiBundle's assets/js/ea-sortable.js, which targets EasyAdmin CollectionType items with a
-// "position" subfield and doesn't apply here (this is a plain expanded ChoiceType, no such subfield).
-// No hidden order field either: reordering the <li>s also reorders their checkbox <input>s, and plain
-// form submission serializes same-name fields in DOM order - ShareButtonsSettingsType reads that order
-// straight back off the submitted "networks" array.
+// Native HTML5 drag-and-drop reordering for the "networks" checkbox list (see share_buttons_style_preview_theme.html.twig's "share_buttons_networks_widget" block) - adapted from c975L/UiBundle's assets/js/ea-sortable.js, which targets EasyAdmin CollectionType items with a "position" subfield and doesn't apply here (this is a plain expanded ChoiceType, no such subfield). No hidden order field either: reordering the <li>s also reorders their checkbox <input>s, and plain form submission serializes same-name fields in DOM order - ShareButtonsSettingsType reads that order straight back off the submitted "networks" array.
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.querySelector('[data-share-networks-sortable]');
     if (!container) return;

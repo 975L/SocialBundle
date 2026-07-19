@@ -14,17 +14,14 @@ use Symfony\Component\Form\Test\TypeTestCase;
 
 class ShareButtonsDisplayTypeTest extends TypeTestCase
 {
-    // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own
-    // EventDispatcherInterface mock with no configured expectations - forms do dispatch events
-    // internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
+    // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own EventDispatcherInterface mock with no configured expectations - forms do dispatch events internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
     protected function setUp(): void
     {
         $this->dispatcher = $this->createStub(EventDispatcherInterface::class);
         parent::setUp();
     }
 
-    // No fields: the "share_buttons_display" block kind only points at the "share_buttons_settings"
-    // singleton (see ShareButtonsSettingsCrudController), it holds no data of its own
+    // No fields: the "share_buttons_display" block kind only points at the "share_buttons_settings" singleton (see ShareButtonsSettingsCrudController), it holds no data of its own
     public function testBuildFormAddsNoChildren(): void
     {
         $form = $this->factory->create(ShareButtonsDisplayType::class);

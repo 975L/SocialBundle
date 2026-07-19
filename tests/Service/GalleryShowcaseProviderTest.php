@@ -58,8 +58,7 @@ class GalleryShowcaseProviderTest extends TestCase
         );
     }
 
-    // Stands in for "social_links_display" - the gallery suppresses that kind's own regular preview
-    // card once "kind" is set here, so it only shows up once
+    // Stands in for "social_links_display" - the gallery suppresses that kind's own regular preview card once "kind" is set here, so it only shows up once
     public function testSocialLinksShowcaseStandsInForSocialLinksDisplay(): void
     {
         $showcases = $this->createProvider()->getShowcases();
@@ -67,8 +66,7 @@ class GalleryShowcaseProviderTest extends TestCase
         $this->assertSame('social_links_display', $showcases['label.gallery_showcase_social_links']['kind']);
     }
 
-    // Stands in for "share_buttons_display" - the gallery suppresses that kind's own regular preview
-    // card once "kind" is set here, so it only shows up once
+    // Stands in for "share_buttons_display" - the gallery suppresses that kind's own regular preview card once "kind" is set here, so it only shows up once
     public function testShareButtonsShowcaseStandsInForShareButtonsDisplay(): void
     {
         $showcases = $this->createProvider()->getShowcases();

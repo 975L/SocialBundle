@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.2.1
 
 - Index-page Edit/Delete action buttons now show icon-only with the label as hover title (16/07/2026)
 
