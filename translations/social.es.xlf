@@ -24,7 +24,7 @@
             </trans-unit>
             <trans-unit id="6">
                 <source>block.social_links_description</source>
-                <target>Muestra una lista de iconos de redes sociales, cada uno con la URL que elijas</target>
+                <target>Iconos de redes sociales, cada uno con la URL que elijas</target>
             </trans-unit>
             <trans-unit id="7">
                 <source>label.category_navigation</source>
@@ -44,7 +44,7 @@
             </trans-unit>
             <trans-unit id="11">
                 <source>block.social_links_display_description</source>
-                <target>Inserta las redes sociales definidas en el panel, sin redefinir los enlaces</target>
+                <target>Inserta las redes sociales del panel, sin redefinir los enlaces</target>
             </trans-unit>
             <trans-unit id="12">
                 <source>label.share_buttons_settings</source>
@@ -124,7 +124,7 @@
             </trans-unit>
             <trans-unit id="32">
                 <source>label.gallery_showcase_social_links_description</source>
-                <target>Estilos disponibles para mostrar los enlaces a las redes sociales.</target>
+                <target>Estilos disponibles para los enlaces a redes sociales.</target>
             </trans-unit>
             <trans-unit id="33">
                 <source>label.gallery_showcase_share_buttons</source>
@@ -132,7 +132,7 @@
             </trans-unit>
             <trans-unit id="34">
                 <source>label.gallery_showcase_share_buttons_description</source>
-                <target>Estilos disponibles para los botones de compartir en redes sociales.</target>
+                <target>Estilos disponibles para los botones de compartir.</target>
             </trans-unit>
             <trans-unit id="35">
                 <source>block.share_buttons_display</source>
@@ -144,11 +144,11 @@
             </trans-unit>
             <trans-unit id="37">
                 <source>label.info_social_links</source>
-                <target>Los enlaces sociales mostrados en el pie de página del sitio. Es un singleton - un único conjunto de enlaces, editado aquí.</target>
+                <target>Enlaces sociales del pie de página - singleton, un único conjunto de enlaces.</target>
             </trans-unit>
             <trans-unit id="38">
                 <source>label.info_share_buttons_settings</source>
-                <target>Las redes/estilo predeterminados usados por los botones de compartir en todo el sitio. Es un singleton editado aquí - una página puede seguir sobrescribirlo con su propio bloque "share_buttons_display".</target>
+                <target>Redes/estilo predeterminados de los botones de compartir - singleton, sobrescribible por página con el bloque "share_buttons_display".</target>
             </trans-unit>
         </body>
     </file>

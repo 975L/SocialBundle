@@ -4,7 +4,7 @@
         <body>
             <trans-unit id="1">
                 <source>description.social_enable_share_buttons</source>
-                <target>Muestra automáticamente los botones para compartir (ver "Botones para compartir" en el menú de gestión para las redes/el estilo utilizados) en cada página.</target>
+                <target>Muestra automáticamente los botones de compartir en cada página (ajustes en "Botones para compartir").</target>
             </trans-unit>
             <trans-unit id="2">
                 <source>label.social_enable_share_buttons</source>

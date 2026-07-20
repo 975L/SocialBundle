@@ -24,7 +24,7 @@
             </trans-unit>
             <trans-unit id="6">
                 <source>block.social_links_description</source>
-                <target>Displays a list of social network icons, each linking to the URL of your choice</target>
+                <target>Social network icons, each linking to the URL of your choice</target>
             </trans-unit>
             <trans-unit id="7">
                 <source>label.category_navigation</source>
@@ -44,7 +44,7 @@
             </trans-unit>
             <trans-unit id="11">
                 <source>block.social_links_display_description</source>
-                <target>Inserts the social links defined in the dashboard, without redefining them</target>
+                <target>Inserts the dashboard's social links, without redefining them</target>
             </trans-unit>
             <trans-unit id="12">
                 <source>label.share_buttons_settings</source>
@@ -124,7 +124,7 @@
             </trans-unit>
             <trans-unit id="32">
                 <source>label.gallery_showcase_social_links_description</source>
-                <target>Available styles for displaying social network links.</target>
+                <target>Available styles for social network links.</target>
             </trans-unit>
             <trans-unit id="33">
                 <source>label.gallery_showcase_share_buttons</source>
@@ -132,7 +132,7 @@
             </trans-unit>
             <trans-unit id="34">
                 <source>label.gallery_showcase_share_buttons_description</source>
-                <target>Available styles for social sharing buttons.</target>
+                <target>Available styles for share buttons.</target>
             </trans-unit>
             <trans-unit id="35">
                 <source>block.share_buttons_display</source>
@@ -144,11 +144,11 @@
             </trans-unit>
             <trans-unit id="37">
                 <source>label.info_social_links</source>
-                <target>The site-wide social links shown in the footer. This is a singleton - a single set of links, edited here.</target>
+                <target>Site-wide social links shown in the footer - a singleton, one set of links.</target>
             </trans-unit>
             <trans-unit id="38">
                 <source>label.info_share_buttons_settings</source>
-                <target>The site-wide default networks/style used by share buttons. This is a singleton, edited here - a page can still override it with its own "share_buttons_display" block.</target>
+                <target>Default networks/style for share buttons - a singleton, overridable per page via the "share_buttons_display" block.</target>
             </trans-unit>
         </body>
     </file>

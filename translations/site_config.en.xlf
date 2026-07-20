@@ -4,7 +4,7 @@
         <body>
             <trans-unit id="1">
                 <source>description.social_enable_share_buttons</source>
-                <target>Automatically displays the share buttons (see "Share buttons" in the management menu for the networks/style used) on every page.</target>
+                <target>Automatically shows share buttons on every page (settings in "Share buttons").</target>
             </trans-unit>
             <trans-unit id="2">
                 <source>label.social_enable_share_buttons</source>

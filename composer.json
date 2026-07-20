@@ -21,7 +21,7 @@
         "php": ">=8.1",
         "c975l/config-bundle": "*",
         "c975l/ui-bundle": "*",
-        "easycorp/easyadmin-bundle": "*",
+        "easycorp/easyadmin-bundle": "^5.1",
         "symfony/form": "*",
         "symfony/framework-bundle": "*"
     },

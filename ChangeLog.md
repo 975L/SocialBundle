@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.3
+
+- Shortened translations (20/07/2026)
+
 ## v1.2.2
 
 - Tag error (19/07/2026)
