@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.4
+
+- Added admin help procedures for social links and share buttons setup (21/07/2026)
+
 ## v1.2.3
 
 - Shortened translations (20/07/2026)

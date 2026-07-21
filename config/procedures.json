@@ -1,0 +1,28 @@
+[
+    {
+        "slug": "configurer-reseaux-sociaux",
+        "title": {
+            "fr": "Configurer les liens réseaux sociaux",
+            "en": "Configure social network links",
+            "es": "Configurar los enlaces de redes sociales"
+        },
+        "body": {
+            "fr": "Menu **Social → Réseaux sociaux**. C'est un réglage unique (une seule fiche, pas une liste) : cliquer sur **Éditer**. Dans **Réseaux sociaux**, ajouter une ligne par réseau avec **Libellé**, **URL** et une icône, réordonnables. Le champ **Aperçu** montre les liens tels qu'enregistrés (ne se met pas à jour en direct pendant la saisie). Enregistrer.\nCes liens s'affichent automatiquement là où le thème les prévoit (ex. pied de page) ; pour les insérer à un endroit précis d'une page, utiliser le bloc **Réseaux sociaux (affichage)**, qui réutilise ces mêmes liens sans les dupliquer.",
+            "en": "Menu **Social → Social links**. This is a single setting (one record, not a list): click **Edit**. In **Social links**, add one row per network with **Label**, **URL** and an icon, reorderable. The **Preview** field shows the links as saved (it doesn't update live while typing). Save.\nThese links are displayed automatically wherever the theme places them (e.g. the footer); to insert them at a specific spot on a page, use the **Social links (display)** block, which reuses the same links without duplicating them.",
+            "es": "Menú **Social → Redes sociales**. Es un ajuste único (una sola ficha, no una lista): hacer clic en **Editar**. En **Redes sociales**, añadir una línea por red con **Etiqueta**, **URL** y un icono, reordenables. El campo **Vista previa** muestra los enlaces tal como se guardaron (no se actualiza en vivo mientras se escribe). Guardar.\nEstos enlaces se muestran automáticamente donde el tema los coloque (p. ej. el pie de página); para insertarlos en un punto concreto de una página, usar el bloque **Redes sociales (visualización)**, que reutiliza los mismos enlaces sin duplicarlos."
+        }
+    },
+    {
+        "slug": "configurer-boutons-partage",
+        "title": {
+            "fr": "Configurer les boutons de partage",
+            "en": "Configure share buttons",
+            "es": "Configurar los botones de compartir"
+        },
+        "body": {
+            "fr": "Menu **Social → Boutons de partage** (visible seulement si les boutons de partage sont activés dans la config du site). Réglage unique : cliquer sur **Éditer**. Choisir les **Réseaux** à activer (réordonnables par glisser-déposer) et le **Style** d'affichage ; l'**Aperçu** se met à jour en direct pendant la sélection. Enregistrer.\nCes réglages pilotent l'affichage automatique des boutons sur tout le site ; le bloc **Boutons de partage (affichage)** permet en plus d'en déposer un exemplaire à un endroit précis d'une page.",
+            "en": "Menu **Social → Share buttons** (only visible if share buttons are enabled in the site config). Single setting: click **Edit**. Choose which **Networks** to enable (reorderable by drag-and-drop) and the display **Style**; the **Preview** updates live while selecting. Save.\nThese settings drive the automatic site-wide display of the buttons; the **Share buttons (display)** block additionally lets you place one instance at a specific spot on a page.",
+            "es": "Menú **Social → Botones de compartir** (visible solo si los botones de compartir están activados en la configuración del sitio). Ajuste único: hacer clic en **Editar**. Elegir las **Redes** a activar (reordenables arrastrándolas) y el **Estilo** de visualización; la **Vista previa** se actualiza en vivo al seleccionar. Guardar.\nEstos ajustes controlan la visualización automática de los botones en todo el sitio; el bloque **Botones de compartir (visualización)** permite además colocar una instancia en un punto concreto de una página."
+        }
+    }
+]

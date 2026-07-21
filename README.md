@@ -21,6 +21,7 @@ Symfony bundle managing social features for the c975L ecosystem — starting wit
 - **Stylesheet auto-registration** via UiBundle's `BundleStylesheetProviderInterface` — no manual `<link>` needed
 - **Script auto-registration** via UiBundle's `BundleScriptProviderInterface` — no manual `<script>` needed
 - **Admin menu entry** registered automatically via `MenuProviderInterface`
+- **Admin help procedures** contributed automatically via `ProcedureProviderInterface`
 
 ---
 
@@ -160,6 +161,12 @@ To show share buttons on every page without touching a single template, two piec
 Flip `social-enable-share-buttons` to `true` in the dashboard and every page gets the buttons; leave it `false` (the default) and nothing changes. Calling `share_buttons()` directly, anywhere else in your own templates, is unaffected by any of this — it's a separate, always-manual entry point.
 
 To insert those same dashboard-defined buttons at a specific spot in a page's block flow (not just the automatic site-wide call above), pick the **`share_buttons_display`** kind from the page's block picker instead. Same thin-pointer technique as [`social_links_display`](#social-links-block): no fields of its own, always reflects the current dashboard settings, edited only from the "Boutons de partage" screen.
+
+---
+
+## Admin help procedures
+
+`ProcedureProvider` (implements ConfigBundle's `ProcedureProviderInterface`) reads `config/procedures.json` and contributes one entry per documented admin workflow (configuring social links, configuring share buttons) to ConfigBundle's `ProcedureBuilder`, which aggregates every bundle's procedures for the dashboard AI assistant. Each entry ships `fr`/`en`/`es` translations, resolved to the current locale by `ProcedureJsonReader`.
 
 ---
 

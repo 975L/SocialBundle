@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-07-21",
+        "description": [
+            {
+                "en": "The dashboard assistant can now guide you step by step through setting up social links and share buttons",
+                "fr": "L'assistant du tableau de bord peut désormais vous guider pas à pas pour configurer les liens réseaux sociaux et les boutons de partage",
+                "es": "El asistente del panel ahora puede guiarte paso a paso para configurar los enlaces de redes sociales y los botones de compartir"
+            }
+        ]
+    },
+    {
         "date": "2026-07-15",
         "description": [
             {
