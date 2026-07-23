@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.5.1
+
+- Added logo to readme (23/07/2026)
+
 ## v1.2.5
 
 - Expanded the explanatory text on the Social links/Share buttons settings edit screens (22/07/2026)
