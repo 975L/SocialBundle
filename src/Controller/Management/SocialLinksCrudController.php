@@ -95,6 +95,8 @@ class SocialLinksCrudController extends AbstractCrudController
             // Single-row index (it's a singleton): showing Edit/Delete inline avoids an extra click through the "..." dropdown to reach them.
             ->showEntityActionsInlined()
             ->overrideTemplate('crud/index', '@c975LSocial/management/social_links_crud_index.html.twig')
+            ->overrideTemplate('crud/edit', '@c975LSocial/management/social_links_crud_edit.html.twig')
+            ->overrideTemplate('crud/new', '@c975LSocial/management/social_links_crud_new.html.twig')
         ;
     }
 
@@ -102,7 +104,14 @@ class SocialLinksCrudController extends AbstractCrudController
     {
         $role = $this->configService->get('site-role-admin');
 
+        // Lets the admin back out of a create/edit without saving - mirrors EasyAdmin's own built-in actions (linkToCrudAction targeting INDEX, same as Action::INDEX itself)
+        $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')
+            ->linkToCrudAction(Action::INDEX)
+            ->addCssClass('btn btn-secondary');
+
         return $actions
+            ->add(Crud::PAGE_NEW, $cancelAction)
+            ->add(Crud::PAGE_EDIT, $cancelAction)
             ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
                 $action,
                 $this->translator->trans('action.edit', [], 'EasyAdminBundle'),
@@ -115,7 +124,8 @@ class SocialLinksCrudController extends AbstractCrudController
             ->setPermission(Action::NEW, $role)
             ->setPermission(Action::EDIT, $role)
             ->setPermission(Action::DELETE, $role)
-            ->setPermission(Action::DETAIL, $role)
+            // Detail adds no information beyond what edit already shows
+            ->disable(Action::DETAIL)
         ;
     }
 

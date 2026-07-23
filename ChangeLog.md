@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.5
+
+- Expanded the explanatory text on the Social links/Share buttons settings edit screens (22/07/2026)
+- Removed the detail/view page on Social links and Share buttons settings (22/07/2026)
+- Added a Cancel action on both singletons' create/edit screens (22/07/2026)
+
 ## v1.2.4
 
 - Added admin help procedures for social links and share buttons setup (21/07/2026)

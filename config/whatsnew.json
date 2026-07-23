@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-07-22",
+        "description": [
+            {
+                "en": "The Social links and Share buttons settings screens now explain what they're for",
+                "fr": "Les écrans Liens sociaux et Réglages des boutons de partage expliquent désormais à quoi ils servent",
+                "es": "Las pantallas Enlaces sociales y Ajustes de botones de compartir ahora explican para qué sirven"
+            },
+            {
+                "en": "Removed the separate view page on Social links and Share buttons settings - edit now shows everything",
+                "fr": "Suppression de la page de consultation séparée sur les liens sociaux et les réglages des boutons de partage : la page de modification affiche désormais tout",
+                "es": "Se eliminó la página de consulta independiente en enlaces sociales y ajustes de botones de compartir: la página de edición ahora lo muestra todo"
+            },
+            {
+                "en": "Added a Cancel button when editing these settings",
+                "fr": "Ajout d'un bouton Annuler lors de la modification de ces réglages",
+                "es": "Añadido un botón Cancelar al modificar estos ajustes"
+            }
+        ]
+    },
+    {
         "date": "2026-07-21",
         "description": [
             {

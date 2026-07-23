@@ -144,11 +144,11 @@
             </trans-unit>
             <trans-unit id="37">
                 <source>label.info_social_links</source>
-                <target>Enlaces sociales del pie de página - singleton, un único conjunto de enlaces.</target>
+                <target>Enlaces sociales del pie de página - singleton, un único conjunto de enlaces. Modifique la lista para añadir, quitar o reordenar una red social.</target>
             </trans-unit>
             <trans-unit id="38">
                 <source>label.info_share_buttons_settings</source>
-                <target>Redes/estilo predeterminados de los botones de compartir - singleton, sobrescribible por página con el bloque "share_buttons_display".</target>
+                <target>Redes/estilo predeterminados de los botones de compartir - singleton, sobrescribible por página con el bloque "share_buttons_display". Modifique las redes activas, su orden y el estilo de visualización.</target>
             </trans-unit>
         </body>
     </file>

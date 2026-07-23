@@ -144,11 +144,11 @@
             </trans-unit>
             <trans-unit id="37">
                 <source>label.info_social_links</source>
-                <target>Site-wide social links shown in the footer - a singleton, one set of links.</target>
+                <target>Site-wide social links shown in the footer - a singleton, one set of links. Edit the list to add, remove or reorder a social network.</target>
             </trans-unit>
             <trans-unit id="38">
                 <source>label.info_share_buttons_settings</source>
-                <target>Default networks/style for share buttons - a singleton, overridable per page via the "share_buttons_display" block.</target>
+                <target>Default networks/style for share buttons - a singleton, overridable per page via the "share_buttons_display" block. Edit the active networks, their order and the display style.</target>
             </trans-unit>
         </body>
     </file>
