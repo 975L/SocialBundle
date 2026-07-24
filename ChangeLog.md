@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.7
+
+- Added `SocialLinksExportProvider`/`SocialLinksImportProvider`, plugging the `social_links` singleton Block into ConfigBundle's "Sync" content export/import (24/07/2026)
+- Added `ShareButtonsSettingsExportProvider`/`ShareButtonsSettingsImportProvider`, plugging the `share_buttons_settings` singleton Block into ConfigBundle's "Sync" content export/import (24/07/2026)
+
 ## v1.2.6
 
 - Added `ImportmapProvider`, declaring `controllers-admin.js`/`controllers.js`'s importmap.php entries for ConfigBundle's `c975l:config:check-importmap` (24/07/2026)

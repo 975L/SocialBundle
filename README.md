@@ -12,6 +12,8 @@ Symfony bundle managing social features for the c975L ecosystem — starting wit
 
 Add SocialBundle on top of the shared [UiBundle](https://github.com/975L/UiBundle) + [ConfigBundle](https://github.com/975L/ConfigBundle) foundation to get social links and sharing — no dependency on SiteBundle, ShopBundle or any other satellite bundle, so it drops into any c975L site that needs one. Its `social_links` block reuses UiBundle's generic `Block` entity rather than a dedicated table, following the "singleton CRUD" pattern shared across the ecosystem.
 
+See it in action at [975l.com/pages/social-bundle](https://975l.com/pages/social-bundle), and browse every block kind live in the [block gallery](https://975l.com/pages/blocks).
+
 ---
 
 ## Features
