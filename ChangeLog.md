@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.6
+
+- Added `ImportmapProvider`, declaring `controllers-admin.js`/`controllers.js`'s importmap.php entries for ConfigBundle's `c975l:config:check-importmap` (24/07/2026)
+
 ## v1.2.5.1
 
 - Added logo to readme (23/07/2026)
