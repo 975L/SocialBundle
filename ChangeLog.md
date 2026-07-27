@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.8
+
+- Replaced the removed `twitter`/`x` networks by `bluesky`/`telegram` in test fixtures (27/07/2026)
+
 ## v1.2.7
 
 - Added `SocialLinksExportProvider`/`SocialLinksImportProvider`, plugging the `social_links` singleton Block into ConfigBundle's "Sync" content export/import (24/07/2026)

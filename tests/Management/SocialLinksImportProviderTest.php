@@ -54,11 +54,11 @@ class SocialLinksImportProviderTest extends TestCase
 
         $provider = new SocialLinksImportProvider($em, $this->createBlockRepository());
 
-        $result = $provider->import([['data' => ['links' => [['label' => 'X', 'url' => 'https://x.com']]]]]);
+        $result = $provider->import([['data' => ['links' => [['label' => 'Bluesky', 'url' => 'https://bsky.app/profile/975l.com']]]]]);
 
         $this->assertSame(['created' => 1, 'updated' => 0], $result);
         $this->assertSame('social_links', $persisted[0]->getKind());
-        $this->assertSame(['links' => [['label' => 'X', 'url' => 'https://x.com']]], $persisted[0]->getData());
+        $this->assertSame(['links' => [['label' => 'Bluesky', 'url' => 'https://bsky.app/profile/975l.com']]], $persisted[0]->getData());
     }
 
     public function testImportUpdatesTheExistingSingletonBlockInPlaceInsteadOfCreatingASecondOne(): void

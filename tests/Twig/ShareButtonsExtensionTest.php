@@ -241,9 +241,9 @@ class ShareButtonsExtensionTest extends TestCase
         $shareButtonsService = $this->createShareButtonsService(
             ['facebook'],
             $calls,
-            ['twitter' => 'https://share/twitter'],
+            ['telegram' => 'https://share/telegram'],
         );
-        $settingsBlock = (new Block())->setData(['networks' => ['twitter'], 'style' => 'circle']);
+        $settingsBlock = (new Block())->setData(['networks' => ['telegram'], 'style' => 'circle']);
         $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
         $template = null;
         $context = null;
@@ -254,7 +254,7 @@ class ShareButtonsExtensionTest extends TestCase
 
         $this->assertSame('circle', $context['style']);
         $this->assertCount(1, $context['buttons']);
-        $this->assertSame('twitter', $context['buttons'][0]['network']);
+        $this->assertSame('telegram', $context['buttons'][0]['network']);
     }
 
     // Before the settings singleton has ever been saved, share_buttons_default() must behave like share_buttons()
@@ -304,8 +304,8 @@ class ShareButtonsExtensionTest extends TestCase
     public function testRenderDefaultShareButtonsSurvivesAcrossInstancesSharingTheSameCachePool(): void
     {
         $calls = [];
-        $shareButtonsService = $this->createShareButtonsService(['facebook'], $calls, ['twitter' => 'https://share/twitter']);
-        $settingsBlock = (new Block())->setKind('share_buttons_settings')->setData(['networks' => ['twitter'], 'style' => 'circle']);
+        $shareButtonsService = $this->createShareButtonsService(['facebook'], $calls, ['telegram' => 'https://share/telegram']);
+        $settingsBlock = (new Block())->setKind('share_buttons_settings')->setData(['networks' => ['telegram'], 'style' => 'circle']);
 
         $blockRepository = $this->createMock(BlockRepository::class);
         $blockRepository->expects($this->once())->method('findOneByKind')->with('share_buttons_settings')->willReturn($settingsBlock);
