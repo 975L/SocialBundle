@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.11
+
+- Replaced ids by hash in translations (27/07/2026)
+
 ## v1.2.10
 
 - Added `--social-share-display`, `--social-share-background`, `--social-share-padding` and `--social-share-gap` custom properties on the share band (27/07/2026)

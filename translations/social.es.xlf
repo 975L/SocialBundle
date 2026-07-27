@@ -2,161 +2,161 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="es" datatype="plaintext" original="social.es.xlf">
         <body>
-            <trans-unit id="1">
-                <source>label.social_links</source>
-                <target>Redes sociales</target>
-            </trans-unit>
-            <trans-unit id="2">
-                <source>label.label</source>
-                <target>Etiqueta</target>
-            </trans-unit>
-            <trans-unit id="3">
-                <source>label.url</source>
-                <target>URL</target>
-            </trans-unit>
-            <trans-unit id="4">
-                <source>label.icon</source>
-                <target>Icono</target>
-            </trans-unit>
-            <trans-unit id="5">
-                <source>block.social_links</source>
-                <target>Redes sociales</target>
-            </trans-unit>
-            <trans-unit id="6">
-                <source>block.social_links_description</source>
-                <target>Iconos de redes sociales, cada uno con la URL que elijas</target>
-            </trans-unit>
-            <trans-unit id="7">
-                <source>label.category_navigation</source>
-                <target>Navegación</target>
-            </trans-unit>
-            <trans-unit id="8">
-                <source>label.display_label</source>
-                <target>Mostrar etiqueta</target>
-            </trans-unit>
-            <trans-unit id="9">
-                <source>label.share_on</source>
-                <target>Compartir en %network%</target>
-            </trans-unit>
-            <trans-unit id="10">
-                <source>block.social_links_display</source>
-                <target>Redes sociales</target>
-            </trans-unit>
-            <trans-unit id="11">
-                <source>block.social_links_display_description</source>
-                <target>Inserta las redes sociales del panel, sin redefinir los enlaces</target>
-            </trans-unit>
-            <trans-unit id="12">
-                <source>label.share_buttons_settings</source>
-                <target>Botones para compartir</target>
-            </trans-unit>
-            <trans-unit id="13">
-                <source>label.networks</source>
-                <target>Redes</target>
-            </trans-unit>
-            <trans-unit id="14">
-                <source>label.style</source>
-                <target>Estilo</target>
-            </trans-unit>
-            <trans-unit id="15">
-                <source>label.style_distinct</source>
-                <target>Distinto</target>
-            </trans-unit>
-            <trans-unit id="16">
-                <source>label.style_ellipse</source>
-                <target>Elipse</target>
-            </trans-unit>
-            <trans-unit id="17">
-                <source>label.style_circle</source>
-                <target>Círculo</target>
-            </trans-unit>
-            <trans-unit id="18">
-                <source>label.style_square</source>
-                <target>Cuadrado</target>
-            </trans-unit>
-            <trans-unit id="19">
-                <source>label.style_rounded</source>
-                <target>Redondeado</target>
-            </trans-unit>
-            <trans-unit id="20">
-                <source>label.style_outline</source>
-                <target>Contorno</target>
-            </trans-unit>
-            <trans-unit id="21">
-                <source>label.style_minimal</source>
-                <target>Minimalista</target>
-            </trans-unit>
-            <trans-unit id="22">
-                <source>label.social</source>
-                <target>Social</target>
-            </trans-unit>
-            <trans-unit id="23">
-                <source>label.style_preview</source>
-                <target>Vista previa</target>
-            </trans-unit>
-            <trans-unit id="24">
-                <source>label.network</source>
-                <target>Red</target>
-            </trans-unit>
-            <trans-unit id="26">
-                <source>label.icon_style</source>
-                <target>Estilo de los iconos</target>
-            </trans-unit>
-            <trans-unit id="27">
-                <source>label.icon_style_minimal</source>
-                <target>Minimalista (icono neutro)</target>
-            </trans-unit>
-            <trans-unit id="28">
-                <source>label.icon_style_colored</source>
-                <target>Versión coloreada</target>
-            </trans-unit>
-            <trans-unit id="29">
-                <source>label.preview</source>
-                <target>Vista previa</target>
-            </trans-unit>
-            <trans-unit id="30">
-                <source>label.icon_style_outline</source>
-                <target>Contorno</target>
-            </trans-unit>
-            <trans-unit id="31">
-                <source>label.gallery_showcase_social_links</source>
-                <target>Redes sociales</target>
-            </trans-unit>
-            <trans-unit id="32">
-                <source>label.gallery_showcase_social_links_description</source>
-                <target>Estilos disponibles para los enlaces a redes sociales.</target>
-            </trans-unit>
-            <trans-unit id="33">
-                <source>label.gallery_showcase_share_buttons</source>
-                <target>Botones para compartir</target>
-            </trans-unit>
-            <trans-unit id="34">
-                <source>label.gallery_showcase_share_buttons_description</source>
-                <target>Estilos disponibles para los botones de compartir.</target>
-            </trans-unit>
-            <trans-unit id="35">
+            <trans-unit id="7SpI0nW">
                 <source>block.share_buttons_display</source>
                 <target>Botones para compartir</target>
             </trans-unit>
-            <trans-unit id="36">
+            <trans-unit id="5psnf9R">
                 <source>block.share_buttons_display_description</source>
                 <target>Inserta los botones para compartir del panel</target>
             </trans-unit>
-            <trans-unit id="37">
-                <source>label.info_social_links</source>
-                <target>Enlaces sociales del pie de página - singleton, un único conjunto de enlaces. Modifique la lista para añadir, quitar o reordenar una red social.</target>
+            <trans-unit id="frNa1k9">
+                <source>block.social_links</source>
+                <target>Redes sociales</target>
             </trans-unit>
-            <trans-unit id="38">
-                <source>label.info_share_buttons_settings</source>
-                <target>Redes/estilo predeterminados de los botones de compartir - singleton, sobrescribible por página con el bloque "share_buttons_display". Modifique las redes activas, su orden y el estilo de visualización.</target>
+            <trans-unit id="LV_GO1c">
+                <source>block.social_links_description</source>
+                <target>Iconos de redes sociales, cada uno con la URL que elijas</target>
             </trans-unit>
-            <trans-unit id="39">
+            <trans-unit id="Xdf5gBw">
+                <source>block.social_links_display</source>
+                <target>Redes sociales</target>
+            </trans-unit>
+            <trans-unit id="v3cHlpZ">
+                <source>block.social_links_display_description</source>
+                <target>Inserta las redes sociales del panel, sin redefinir los enlaces</target>
+            </trans-unit>
+            <trans-unit id="PmT6SQr">
                 <source>label.anchor</source>
                 <target>Ancla</target>
             </trans-unit>
-            <trans-unit id="40">
+            <trans-unit id="ufovuez">
                 <source>label.anchor_help</source>
                 <target>Identificador corto para enlazar una entrada de menú a esta banda (ej. «compartir»). Sin ancla, no se puede enlazar desde un menú.</target>
+            </trans-unit>
+            <trans-unit id="tKFuD86">
+                <source>label.category_navigation</source>
+                <target>Navegación</target>
+            </trans-unit>
+            <trans-unit id="cnGpTz.">
+                <source>label.display_label</source>
+                <target>Mostrar etiqueta</target>
+            </trans-unit>
+            <trans-unit id="QI77jSF">
+                <source>label.gallery_showcase_share_buttons</source>
+                <target>Botones para compartir</target>
+            </trans-unit>
+            <trans-unit id="1oW5S0c">
+                <source>label.gallery_showcase_share_buttons_description</source>
+                <target>Estilos disponibles para los botones de compartir.</target>
+            </trans-unit>
+            <trans-unit id="nhQVvug">
+                <source>label.gallery_showcase_social_links</source>
+                <target>Redes sociales</target>
+            </trans-unit>
+            <trans-unit id="nECqDP1">
+                <source>label.gallery_showcase_social_links_description</source>
+                <target>Estilos disponibles para los enlaces a redes sociales.</target>
+            </trans-unit>
+            <trans-unit id="lqEFtzf">
+                <source>label.icon</source>
+                <target>Icono</target>
+            </trans-unit>
+            <trans-unit id="6oOiQbB">
+                <source>label.icon_style</source>
+                <target>Estilo de los iconos</target>
+            </trans-unit>
+            <trans-unit id="JYZqOsl">
+                <source>label.icon_style_colored</source>
+                <target>Versión coloreada</target>
+            </trans-unit>
+            <trans-unit id="M_AiKSK">
+                <source>label.icon_style_minimal</source>
+                <target>Minimalista (icono neutro)</target>
+            </trans-unit>
+            <trans-unit id="eu0IPxW">
+                <source>label.icon_style_outline</source>
+                <target>Contorno</target>
+            </trans-unit>
+            <trans-unit id="AuLTjz5">
+                <source>label.info_share_buttons_settings</source>
+                <target>Redes/estilo predeterminados de los botones de compartir - singleton, sobrescribible por página con el bloque "share_buttons_display". Modifique las redes activas, su orden y el estilo de visualización.</target>
+            </trans-unit>
+            <trans-unit id="RKLGNte">
+                <source>label.info_social_links</source>
+                <target>Enlaces sociales del pie de página - singleton, un único conjunto de enlaces. Modifique la lista para añadir, quitar o reordenar una red social.</target>
+            </trans-unit>
+            <trans-unit id="y.9x3G.">
+                <source>label.label</source>
+                <target>Etiqueta</target>
+            </trans-unit>
+            <trans-unit id="qW0z.EV">
+                <source>label.network</source>
+                <target>Red</target>
+            </trans-unit>
+            <trans-unit id="NFkKnJC">
+                <source>label.networks</source>
+                <target>Redes</target>
+            </trans-unit>
+            <trans-unit id="Fa3jTj1">
+                <source>label.preview</source>
+                <target>Vista previa</target>
+            </trans-unit>
+            <trans-unit id="QGQ5OoP">
+                <source>label.share_buttons_settings</source>
+                <target>Botones para compartir</target>
+            </trans-unit>
+            <trans-unit id="YKoIXTJ">
+                <source>label.share_on</source>
+                <target>Compartir en %network%</target>
+            </trans-unit>
+            <trans-unit id="ihLkvSa">
+                <source>label.social</source>
+                <target>Social</target>
+            </trans-unit>
+            <trans-unit id="Eyn1gXP">
+                <source>label.social_links</source>
+                <target>Redes sociales</target>
+            </trans-unit>
+            <trans-unit id="XWMpUxP">
+                <source>label.style</source>
+                <target>Estilo</target>
+            </trans-unit>
+            <trans-unit id="TGKLvs1">
+                <source>label.style_circle</source>
+                <target>Círculo</target>
+            </trans-unit>
+            <trans-unit id="DiTkKlj">
+                <source>label.style_distinct</source>
+                <target>Distinto</target>
+            </trans-unit>
+            <trans-unit id="bDCzg9D">
+                <source>label.style_ellipse</source>
+                <target>Elipse</target>
+            </trans-unit>
+            <trans-unit id="LApIp6i">
+                <source>label.style_minimal</source>
+                <target>Minimalista</target>
+            </trans-unit>
+            <trans-unit id="qz282lV">
+                <source>label.style_outline</source>
+                <target>Contorno</target>
+            </trans-unit>
+            <trans-unit id="kOYnrgC">
+                <source>label.style_preview</source>
+                <target>Vista previa</target>
+            </trans-unit>
+            <trans-unit id="GHdn8Ip">
+                <source>label.style_rounded</source>
+                <target>Redondeado</target>
+            </trans-unit>
+            <trans-unit id="g6VgKWm">
+                <source>label.style_square</source>
+                <target>Cuadrado</target>
+            </trans-unit>
+            <trans-unit id="mcQ1Bzu">
+                <source>label.url</source>
+                <target>URL</target>
             </trans-unit>
         </body>
     </file>
