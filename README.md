@@ -124,7 +124,7 @@ Migrated from the now-abandoned [c975L/ShareButtonsBundle](https://github.com/97
 
 ```twig
 {# Full signature #}
-{{ share_buttons(networks, style, alignment, displayIcon, displayText, url) }}
+{{ share_buttons(networks, style, alignment, displayIcon, displayText, url, id) }}
 
 {# Display the main networks with default style #}
 {{ share_buttons() }}
@@ -144,6 +144,7 @@ Migrated from the now-abandoned [c975L/ShareButtonsBundle](https://github.com/97
 | `displayIcon` | `bool` | `true` | Show the network icon |
 | `displayText` | `bool` | `false` | Show the network name |
 | `url` | `string\|null` | `null` | URL to share, defaults to the current page |
+| `id` | `string\|null` | `null` | HTML id set on the band, to link to it from a menu — only printed when set, an empty `id=""` being invalid and a repeated one worse |
 
 `distinct` and `ellipse` render wide (65×50) buttons, one filled with the network's brand color; the others render square (50×50) ones - `circle`/`rounded`/`square` filled, `outline` a brand-colored ring that fills on hover, and `minimal` icon-only with no background.
 
@@ -158,7 +159,7 @@ To show share buttons on every page without touching a single template, two piec
 - **"Boutons de partage"** in the management menu (`ShareButtonsSettingsCrudController`) — a small dashboard singleton (same `Block`-reuse technique as the [social links block](#social-links-block), no dedicated entity/table) letting you pick which networks and which [style](#share-buttons) are used site-wide. Networks are a drag-sortable checkbox list (see `assets/js/share-buttons-networks-sort.js`) - their order controls the order buttons render in. A live preview (see `assets/js/share-buttons-preview.js`) updates as you check/uncheck/reorder networks or change the style.
 - **`social-enable-share-buttons`** — a boolean [c975L/ConfigBundle](https://github.com/975L/ConfigBundle) config key (`false` by default), auto-loaded from this bundle's `config/configs.json`.
 
-[c975L/SiteBundle](https://github.com/975L/SiteBundle)'s base layout calls the `share_buttons_default()` Twig function — which reads those dashboard settings, falling back to `share_buttons()`'s own defaults (`'main'` networks, `'distinct'` style) as long as nothing's been saved yet — gated behind that config key:
+[c975L/SiteBundle](https://github.com/975L/SiteBundle)'s base layout calls the `share_buttons_default()` Twig function — which reads those dashboard settings, falling back to `share_buttons()`'s own defaults (`'main'` networks, `'distinct'` style) as long as nothing's been saved yet — and to the main networks again if every one of them is unchecked, `social-enable-share-buttons` being what hides the band — gated behind that config key:
 
 ```twig
 {% if config('social-enable-share-buttons') %}
@@ -168,7 +169,11 @@ To show share buttons on every page without touching a single template, two piec
 
 Flip `social-enable-share-buttons` to `true` in the dashboard and every page gets the buttons; leave it `false` (the default) and nothing changes. Calling `share_buttons()` directly, anywhere else in your own templates, is unaffected by any of this — it's a separate, always-manual entry point.
 
-To insert those same dashboard-defined buttons at a specific spot in a page's block flow (not just the automatic site-wide call above), pick the **`share_buttons_display`** kind from the page's block picker instead. Same thin-pointer technique as [`social_links_display`](#social-links-block): no fields of its own, always reflects the current dashboard settings, edited only from the "Boutons de partage" screen.
+The "Boutons de partage" screen also carries an **anchor**: fill it in and the band gets that id on every page, so a navbar or footer entry can link straight to it (`/#partage`). Left empty — the default — the band renders with no id, exactly as before. It belongs to the site-wide settings rather than to a page, the auto-display being all-pages or nothing. `share_buttons_default(id)` also takes an optional id of its own, overriding that anchor for a single call.
+
+To insert those same dashboard-defined buttons at a specific spot in a page's block flow (not just the automatic site-wide call above), pick the **`share_buttons_display`** kind from the page's block picker instead. Same thin-pointer technique as [`social_links_display`](#social-links-block): no display fields of its own, always reflects the current dashboard settings, edited only from the "Boutons de partage" screen.
+
+Its one field is an **anchor** (same as UiBundle's page-section kinds, see that bundle's README "Anchors"): fill it in and the band gets that id, so a navbar/footer entry can link straight to it — a menu link's target select lists every block carrying an anchor. As with every page-section kind, the block's own id is appended to keep it unique on the page (`partage` → `partage-12`). Leave it empty and the band renders with no id: it never inherits the site-wide anchor above, which the layout's own call already uses on that same page.
 
 ---
 

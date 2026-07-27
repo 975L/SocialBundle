@@ -9,8 +9,10 @@
 namespace c975L\SocialBundle\Tests\Form\Block;
 
 use c975L\SocialBundle\Form\Block\ShareButtonsDisplayType;
+use c975L\UiBundle\Service\BlockAnchorSlugger;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Test\TypeTestCase;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class ShareButtonsDisplayTypeTest extends TypeTestCase
 {
@@ -21,12 +23,42 @@ class ShareButtonsDisplayTypeTest extends TypeTestCase
         parent::setUp();
     }
 
-    // No fields: the "share_buttons_display" block kind only points at the "share_buttons_settings" singleton (see ShareButtonsSettingsCrudController), it holds no data of its own
-    public function testBuildFormAddsNoChildren(): void
+    // The type now takes a BlockAnchorSlugger, so it can no longer be instantiated by class name alone
+    protected function getTypes(): array
+    {
+        return [new ShareButtonsDisplayType(new BlockAnchorSlugger(new AsciiSlugger()))];
+    }
+
+    // Only the anchor: the "share_buttons_display" block kind points at the "share_buttons_settings" singleton (see ShareButtonsSettingsCrudController) for everything it displays, and holds nothing else of its own
+    public function testBuildFormAddsOnlyTheAnchorField(): void
     {
         $form = $this->factory->create(ShareButtonsDisplayType::class);
 
-        $this->assertCount(0, $form);
+        $this->assertCount(1, $form);
+        $this->assertTrue($form->has('anchor'));
+        $this->assertFalse($form->get('anchor')->isRequired());
+    }
+
+    // This kind carries no title to derive a slug from, so an anchor left empty stays null rather than being invented (same as UiBundle's FeatureBarType) - the band then renders with no id at all
+    public function testSubmitLeavesTheAnchorNullWhenNoneIsTyped(): void
+    {
+        $form = $this->factory->create(ShareButtonsDisplayType::class);
+
+        $form->submit(['anchor' => '']);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertNull($form->getData()['anchor']);
+    }
+
+    // A typed anchor is slugified, so it is always a valid HTML id whatever the editor types
+    public function testSubmitSlugifiesTheTypedAnchor(): void
+    {
+        $form = $this->factory->create(ShareButtonsDisplayType::class);
+
+        $form->submit(['anchor' => 'Partage le ras-le-bol']);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertSame('partage-le-ras-le-bol', $form->getData()['anchor']);
     }
 
     public function testConfigureOptionsUsesSocialTranslationDomainAndNoDataClass(): void

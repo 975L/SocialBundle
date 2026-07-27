@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-07-27",
+        "description": [
+            {
+                "en": "You can now give the share buttons band an anchor, so a menu entry can link straight to it",
+                "fr": "Vous pouvez désormais donner une ancre au bandeau des boutons de partage, pour qu'une entrée de menu y renvoie directement",
+                "es": "Ahora puede dar un ancla a la banda de botones de compartir, para que una entrada de menú enlace directamente con ella"
+            },
+            {
+                "en": "The share buttons no longer vanish when no network is selected - the default ones show instead",
+                "fr": "Les boutons de partage ne disparaissent plus lorsqu'aucun réseau n'est sélectionné : ceux par défaut s'affichent à la place",
+                "es": "Los botones de compartir ya no desaparecen cuando no hay ninguna red seleccionada: se muestran los predeterminados"
+            }
+        ]
+    },
+    {
         "date": "2026-07-22",
         "description": [
             {

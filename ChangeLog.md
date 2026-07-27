@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.2.9
+
+- Added an optional anchor to the share buttons settings (27/07/2026)
+- Added an optional anchor field to the `share_buttons_display` block (27/07/2026)
+- Added an optional `id` parameter to `share_buttons()` and `share_buttons_default()` (27/07/2026)
+- Added a fallback to the main networks when none is selected in the share buttons settings (27/07/2026)
+
 ## v1.2.8
 
 - Replaced the removed `twitter`/`x` networks by `bluesky`/`telegram` in test fixtures (27/07/2026)

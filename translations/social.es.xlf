@@ -150,6 +150,14 @@
                 <source>label.info_share_buttons_settings</source>
                 <target>Redes/estilo predeterminados de los botones de compartir - singleton, sobrescribible por página con el bloque "share_buttons_display". Modifique las redes activas, su orden y el estilo de visualización.</target>
             </trans-unit>
+            <trans-unit id="39">
+                <source>label.anchor</source>
+                <target>Ancla</target>
+            </trans-unit>
+            <trans-unit id="40">
+                <source>label.anchor_help</source>
+                <target>Identificador corto para enlazar una entrada de menú a esta banda (ej. «compartir»). Sin ancla, no se puede enlazar desde un menú.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

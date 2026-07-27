@@ -1,5 +1,6 @@
-{# {{ share_buttons(networks, style, alignment, displayIcon, displayText, url) }} - see README #}
-<div class="social-share social-share--{{ style }} social-share--{{ alignment }}" data-controller="shareButtonsPopup">
+{# {{ share_buttons(networks, style, alignment, displayIcon, displayText, url, id) }} - see README #}
+{# id only when the anchor is set: an empty id="" is invalid HTML, and would be a duplicate of every other one #}
+<div class="social-share social-share--{{ style }} social-share--{{ alignment }}"{% if id|default('') %} id="{{ id }}"{% endif %} data-controller="shareButtonsPopup">
     {% for button in buttons %}
         <a
             href="{{ button.url }}"

@@ -324,4 +324,129 @@ class ShareButtonsExtensionTest extends TestCase
         $secondRequest->renderDefaultShareButtons($environment);
         $this->assertSame('circle', $context['style']);
     }
+
+    // The "share_buttons_display" block's own anchor travels down to the template, which turns it into the band's id so a menu entry can link to it (see blocks/ShareButtonsDisplay.html.twig)
+    public function testRenderDefaultShareButtonsForwardsTheGivenIdToTheTemplate(): void
+    {
+        $calls = [];
+        $shareButtonsService = $this->createShareButtonsService(
+            ['facebook'],
+            $calls,
+            ['facebook' => 'https://share/facebook'],
+        );
+        $extension = $this->createExtension($shareButtonsService, [], null, Request::create('https://example.com'));
+        $template = null;
+        $context = null;
+        $renderCallCount = 0;
+        $environment = $this->createEnvironment($template, $context, $renderCallCount);
+
+        $extension->renderDefaultShareButtons($environment, 'partage-12');
+
+        $this->assertSame('partage-12', $context['id']);
+    }
+
+    // The layout's own site-wide call passes no id and falls back to the singleton's anchor, so the band carries the same id on every page - what a navbar entry linking to it needs
+    public function testRenderDefaultShareButtonsFallsBackToTheSettingsAnchorWhenNoIdIsGiven(): void
+    {
+        $calls = [];
+        $shareButtonsService = $this->createShareButtonsService(
+            ['facebook'],
+            $calls,
+            ['facebook' => 'https://share/facebook'],
+        );
+        $settingsBlock = (new Block())->setData(['networks' => ['facebook'], 'style' => 'circle', 'anchor' => 'partage']);
+        $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
+        $template = null;
+        $context = null;
+        $renderCallCount = 0;
+        $environment = $this->createEnvironment($template, $context, $renderCallCount);
+
+        $extension->renderDefaultShareButtons($environment);
+
+        $this->assertSame('partage', $context['id']);
+    }
+
+    // A block's own anchor wins over the site-wide one, so a "share_buttons_display" placed on a page keeps its own id
+    public function testRenderDefaultShareButtonsPrefersTheGivenIdOverTheSettingsAnchor(): void
+    {
+        $calls = [];
+        $shareButtonsService = $this->createShareButtonsService(
+            ['facebook'],
+            $calls,
+            ['facebook' => 'https://share/facebook'],
+        );
+        $settingsBlock = (new Block())->setData(['networks' => ['facebook'], 'style' => 'circle', 'anchor' => 'partage']);
+        $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
+        $template = null;
+        $context = null;
+        $renderCallCount = 0;
+        $environment = $this->createEnvironment($template, $context, $renderCallCount);
+
+        $extension->renderDefaultShareButtons($environment, 'partage-12');
+
+        $this->assertSame('partage-12', $context['id']);
+    }
+
+    // A "share_buttons_display" block with no anchor passes an empty string, which must not fall back to the site-wide anchor: both bands can appear on the same page, and they would then carry the very same id
+    public function testRenderDefaultShareButtonsDoesNotFallBackToTheSettingsAnchorWhenAnEmptyIdIsGiven(): void
+    {
+        $calls = [];
+        $shareButtonsService = $this->createShareButtonsService(
+            ['facebook'],
+            $calls,
+            ['facebook' => 'https://share/facebook'],
+        );
+        $settingsBlock = (new Block())->setData(['networks' => ['facebook'], 'style' => 'circle', 'anchor' => 'partage']);
+        $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
+        $template = null;
+        $context = null;
+        $renderCallCount = 0;
+        $environment = $this->createEnvironment($template, $context, $renderCallCount);
+
+        $extension->renderDefaultShareButtons($environment, '');
+
+        $this->assertNull($context['id']);
+    }
+
+    // Every network unchecked in the dashboard falls back to the main set, same as a never-saved singleton - otherwise the band silently disappears, taking its anchor with it
+    public function testRenderDefaultShareButtonsFallsBackToMainNetworksWhenNoneIsSelected(): void
+    {
+        $calls = [];
+        $shareButtonsService = $this->createShareButtonsService(
+            ['facebook', 'bluesky'],
+            $calls,
+            ['facebook' => 'https://share/facebook', 'bluesky' => 'https://share/bluesky'],
+        );
+        $settingsBlock = (new Block())->setData(['networks' => [], 'style' => 'circle']);
+        $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
+        $template = null;
+        $context = null;
+        $renderCallCount = 0;
+        $environment = $this->createEnvironment($template, $context, $renderCallCount);
+
+        $extension->renderDefaultShareButtons($environment);
+
+        $this->assertSame(['facebook', 'bluesky'], array_column($context['buttons'], 'network'));
+        $this->assertSame('circle', $context['style']);
+    }
+
+    // Manual share_buttons() calls set no id unless one is passed, and the template only prints the attribute when it is set
+    public function testRenderShareButtonsPassesANullIdByDefault(): void
+    {
+        $calls = [];
+        $shareButtonsService = $this->createShareButtonsService(
+            ['facebook'],
+            $calls,
+            ['facebook' => 'https://share/facebook'],
+        );
+        $extension = $this->createExtension($shareButtonsService, [], null, Request::create('https://example.com'));
+        $template = null;
+        $context = null;
+        $renderCallCount = 0;
+        $environment = $this->createEnvironment($template, $context, $renderCallCount);
+
+        $extension->renderShareButtons($environment);
+
+        $this->assertNull($context['id']);
+    }
 }

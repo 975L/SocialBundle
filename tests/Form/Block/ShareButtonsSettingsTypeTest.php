@@ -10,10 +10,12 @@ namespace c975L\SocialBundle\Tests\Form\Block;
 
 use c975L\SocialBundle\Form\Block\ShareButtonsSettingsType;
 use c975L\SocialBundle\Service\ShareButtonsServiceInterface;
+use c975L\UiBundle\Service\BlockAnchorSlugger;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\PreloadedExtension;
 use Symfony\Component\Form\Test\TypeTestCase;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class ShareButtonsSettingsTypeTest extends TypeTestCase
 {
@@ -38,7 +40,7 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
 
     protected function getExtensions(): array
     {
-        return [new PreloadedExtension([new ShareButtonsSettingsType($this->createShareButtonsService())], [])];
+        return [new PreloadedExtension([new ShareButtonsSettingsType($this->createShareButtonsService(), new BlockAnchorSlugger(new AsciiSlugger()))], [])];
     }
 
     // Both fields are (re)built from scratch on PRE_SET_DATA (see the class-level comment for why), which the form factory always triggers once on creation - so they must already be present even before any explicit submit/setData call
@@ -46,7 +48,7 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
     {
         $form = $this->factory->create(ShareButtonsSettingsType::class);
 
-        $this->assertSame(['networks', 'style'], array_keys($form->all()));
+        $this->assertSame(['networks', 'style', 'anchor'], array_keys($form->all()));
     }
 
     public function testNetworksFieldIsMultipleExpandedChoiceOfAllNetworks(): void
@@ -102,7 +104,29 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
         $form->submit(['networks' => ['bluesky', 'email'], 'style' => 'ellipse']);
 
         $this->assertTrue($form->isSynchronized());
-        $this->assertSame(['networks' => ['bluesky', 'email'], 'style' => 'ellipse'], $form->getData());
+        $this->assertSame(['networks' => ['bluesky', 'email'], 'style' => 'ellipse', 'anchor' => null], $form->getData());
+    }
+
+    // Site-wide anchor: filled in, the band carries that id on every page, so a menu entry can link to it (see ShareButtonsExtension::renderDefaultShareButtons())
+    public function testSubmitSlugifiesTheAnchor(): void
+    {
+        $form = $this->factory->create(ShareButtonsSettingsType::class);
+
+        $form->submit(['networks' => ['email'], 'style' => 'ellipse', 'anchor' => 'Partage le ras-le-bol']);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertSame('partage-le-ras-le-bol', $form->getData()['anchor']);
+    }
+
+    // Left empty, nothing changes for the sites that never set one: the band renders with no id, exactly as before this field existed
+    public function testSubmitLeavesTheAnchorNullWhenNoneIsTyped(): void
+    {
+        $form = $this->factory->create(ShareButtonsSettingsType::class);
+
+        $form->submit(['networks' => ['email'], 'style' => 'ellipse', 'anchor' => '']);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertNull($form->getData()['anchor']);
     }
 
     public function testConfigureOptionsHasNoDataClassAndSocialTranslationDomain(): void

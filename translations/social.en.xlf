@@ -150,6 +150,14 @@
                 <source>label.info_share_buttons_settings</source>
                 <target>Default networks/style for share buttons - a singleton, overridable per page via the "share_buttons_display" block. Edit the active networks, their order and the display style.</target>
             </trans-unit>
+            <trans-unit id="39">
+                <source>label.anchor</source>
+                <target>Anchor</target>
+            </trans-unit>
+            <trans-unit id="40">
+                <source>label.anchor_help</source>
+                <target>Short id to link a menu entry to this band (e.g. "share"). Without an anchor, it can't be targeted from a menu.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

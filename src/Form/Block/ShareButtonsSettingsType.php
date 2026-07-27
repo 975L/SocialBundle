@@ -11,18 +11,22 @@
 namespace c975L\SocialBundle\Form\Block;
 
 use c975L\SocialBundle\Service\ShareButtonsServiceInterface;
+use c975L\UiBundle\Service\BlockAnchorSlugger;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-// Data form of the "share_buttons_settings" singleton (see ShareButtonsSettingsCrudController): the site-wide default networks/style used when share_buttons_default() auto-renders on every page
+// Data form of the "share_buttons_settings" singleton (see ShareButtonsSettingsCrudController): the site-wide default networks/style/anchor used when share_buttons_default() auto-renders on every page
 class ShareButtonsSettingsType extends AbstractType
 {
-    public function __construct(private readonly ShareButtonsServiceInterface $shareButtonsService)
-    {
+    public function __construct(
+        private readonly ShareButtonsServiceInterface $shareButtonsService,
+        private readonly BlockAnchorSlugger $anchorSlugger,
+    ) {
     }
 
     // Both fields are (re)built from scratch on PRE_SET_DATA, not added directly below - "networks" needs the entity's currently saved order to sort its choices (see reorderNetworkChoices()), which isn't available yet while the form is still being defined here. Building "style" here too, instead of leaving it in a plain ->add() call, keeps it after "networks" in the rendered field order - fields added from inside the listener are appended after any already added directly, which would otherwise flip the two around.
@@ -61,7 +65,23 @@ class ShareButtonsSettingsType extends AbstractType
                         // Hooked by assets/js/share-buttons-preview.js to refresh the live preview below this field (see ShareButtonsSettingsCrudController) on change
                         'attr' => ['data-share-style-select' => true],
                     ])
+                    // Not added through UiBundle's HasAnchorFieldTrait, unlike every block kind offering an anchor: that trait adds its field directly, which would place it before the two above (fields added from inside this listener are appended after any added directly) - an anchor ahead of the networks reads backwards on a settings screen
+                    ->add('anchor', TextType::class, [
+                        'label' => 'label.anchor',
+                        'help' => 'label.anchor_help',
+                        'required' => false,
+                    ])
                 ;
+            },
+        );
+
+        // Same slugification as HasAnchorFieldTrait's: whatever is typed always ends up a valid HTML id. No title to fall back on here, so an empty anchor stays empty and the band renders with no id at all, exactly as before this field existed
+        $builder->addEventListener(
+            FormEvents::SUBMIT,
+            function (FormEvent $event): void {
+                $data = $event->getData();
+                $data['anchor'] = $this->anchorSlugger->slugify($data['anchor'] ?? null, null);
+                $event->setData($data);
             },
         );
     }

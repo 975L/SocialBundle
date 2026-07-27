@@ -150,6 +150,14 @@
                 <source>label.info_share_buttons_settings</source>
                 <target>Réseaux/style par défaut des boutons de partage - singleton, surchargeable par page via le bloc "share_buttons_display". Modifiez les réseaux actifs, leur ordre et le style d'affichage.</target>
             </trans-unit>
+            <trans-unit id="39">
+                <source>label.anchor</source>
+                <target>Ancre</target>
+            </trans-unit>
+            <trans-unit id="40">
+                <source>label.anchor_help</source>
+                <target>Identifiant court pour lier une entrée de menu à ce bandeau (ex. « partage »). Sans ancre, il n'est pas atteignable depuis un menu.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

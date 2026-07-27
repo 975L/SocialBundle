@@ -49,14 +49,17 @@ class ShareButtonsExtension extends AbstractExtension
     }
 
     // Renders with the networks/style configured in the dashboard (see ShareButtonsSettingsCrudController), falling back to the same defaults as share_buttons() as long as the settings singleton hasn't been saved yet. Meant to be called unconditionally from the site layout, gated by the "social-enable-share-buttons" config key - not by the settings themselves being present.
-    public function renderDefaultShareButtons(Environment $environment): string
+    // $id carries the "share_buttons_display" block's own anchor when the buttons are placed in a page's block flow (see blocks/ShareButtonsDisplay.html.twig). Null (the layout's site-wide call, which passes nothing) falls back to the singleton's own anchor, so the band gets the same id on every page - which is what a navbar entry linking to it needs, the site-wide display being all-pages or nothing. An empty string (a block with no anchor set) does not fall back: both bands can appear on the same page, and they would then carry the very same id.
+    public function renderDefaultShareButtons(Environment $environment, ?string $id = null): string
     {
         $settings = $this->getSettingsBlock()?->getData() ?? [];
 
         return $this->renderShareButtons(
             $environment,
-            $settings['networks'] ?? 'main',
+            // Every network unchecked falls back to the main set, same as a never-saved singleton - "??" alone wouldn't, an empty array being neither null nor a missing key. Hiding the band is what the "social-enable-share-buttons" config key is for.
+            ($settings['networks'] ?? []) ?: 'main',
             $settings['style'] ?? 'distinct',
+            id: null !== $id ? ($id ?: null) : ($settings['anchor'] ?? null),
         );
     }
 
@@ -82,6 +85,7 @@ class ShareButtonsExtension extends AbstractExtension
         bool $displayIcon = true,
         bool $displayText = false,
         ?string $url = null,
+        ?string $id = null,
     ): string {
         $networks = 'main' === $networks ? $this->shareButtonsService->getMainNetworks() : $networks;
         $pageUrl = $url ?? $this->requestStack->getCurrentRequest()?->getUri() ?? '';
@@ -110,6 +114,7 @@ class ShareButtonsExtension extends AbstractExtension
             'alignment' => $alignment,
             'displayIcon' => $displayIcon,
             'displayText' => $displayText,
+            'id' => $id,
         ]);
     }
 }
