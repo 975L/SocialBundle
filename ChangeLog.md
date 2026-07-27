@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.2.10
+
+- Added `--social-share-display`, `--social-share-background`, `--social-share-padding` and `--social-share-gap` custom properties on the share band (27/07/2026)
+- Added `--social-share-btn-width`, `--social-share-btn-height`, `--social-share-btn-margin` and `--social-share-btn-radius` custom properties on the share buttons (27/07/2026)
+- Added `--social-share-btn-background` and `--social-share-btn-background-hover` custom properties overriding the network brand fill (27/07/2026)
+- Documented the share buttons custom properties in the readme (27/07/2026)
+
 ## v1.2.9
 
 - Added an optional anchor to the share buttons settings (27/07/2026)

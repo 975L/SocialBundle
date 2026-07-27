@@ -5,23 +5,29 @@
    toggle is gated by the breakpoint - every other rule below applies unconditionally, the same way
    _social.scss's own per-network styling isn't width-gated, so anything forcing .social-share visible
    outside this breakpoint (e.g. the block gallery, which can't rely on a real viewport width inside an
-   iframe) still gets the real styling instead of a plain unstyled fallback. */
+   iframe) still gets the real styling instead of a plain unstyled fallback.
+   A design showing the band at every width sets --social-share-display: flex once, rather than
+   restating the rule (and the breakpoint) in its own stylesheet. */
 .social-share {
-    display: none;
+    display: var(--social-share-display, none);
 }
 
 @media (min-width: 768px) {
     .social-share {
-        display: flex;
+        display: var(--social-share-display, flex);
     }
 }
 
+/* The band is transparent and tight by default, sitting in a page's flow. A design making it a
+   full-width colored flat - what UiBundle's own sections get from their "background" field, which this
+   one has no form to carry - paints it through these three, instead of overriding the rule. */
 .social-share {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 0.2em;
-    padding: 0;
+    background-color: var(--social-share-background, transparent);
+    gap: var(--social-share-gap, 0.2em);
+    padding: var(--social-share-padding, 0);
     margin: 0;
 }
 
@@ -33,12 +39,15 @@
     justify-content: flex-end;
 }
 
+/* Size, spacing and radius go through tokens too, each style below keeping its own value as the
+   fallback - a design retunes the buttons whatever style it picked, without restating the selectors */
 .social-share-btn {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    margin: 0.2em;
+    margin: var(--social-share-btn-margin, 0.2em);
+    border-radius: var(--social-share-btn-radius, 0);
     text-decoration: none;
     color: #fff;
 }
@@ -53,8 +62,8 @@
 
 .social-share--distinct .social-share-btn,
 .social-share--ellipse .social-share-btn {
-    width: 65px;
-    height: 50px;
+    width: var(--social-share-btn-width, 65px);
+    height: var(--social-share-btn-height, 50px);
 }
 
 .social-share--circle .social-share-btn,
@@ -62,18 +71,18 @@
 .social-share--rounded .social-share-btn,
 .social-share--outline .social-share-btn,
 .social-share--minimal .social-share-btn {
-    width: 50px;
-    height: 50px;
+    width: var(--social-share-btn-width, 50px);
+    height: var(--social-share-btn-height, 50px);
 }
 
 .social-share--ellipse .social-share-btn,
 .social-share--circle .social-share-btn,
 .social-share--outline .social-share-btn {
-    border-radius: 50%;
+    border-radius: var(--social-share-btn-radius, 50%);
 }
 
 .social-share--rounded .social-share-btn {
-    border-radius: 12px;
+    border-radius: var(--social-share-btn-radius, 12px);
 }
 
 .social-share-btn:hover {
@@ -118,11 +127,16 @@
 
 /* Social networks colors - also exposed as "--network-color", used by the "outline" style's
    border/hover-fill and "minimal"'s hover color (see above). Shared with _social.scss's own
-   per-network coloring - see _social-brand-colors.scss for the single source of truth. */
+   per-network coloring - see _social-brand-colors.scss for the single source of truth.
+   --social-share-btn-background overrides the brand fill for a design wanting one uniform button
+   (e.g. a translucent white on a colored band), the hover one falling back on it when left unset. */
 @each $network, $color in social-brand-colors.$social-brand-colors {
-    .social-share-btn--#{$network},
-    .social-share-btn--#{$network}:hover {
+    .social-share-btn--#{$network} {
         --network-color: #{$color};
-        background-color: var(--network-color);
+        background-color: var(--social-share-btn-background, var(--network-color));
+    }
+
+    .social-share-btn--#{$network}:hover {
+        background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
     }
 }

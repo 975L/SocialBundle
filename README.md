@@ -152,6 +152,19 @@ All networks are supported: `facebook`, `bluesky`, `linkedin`, `pinterest`, `ema
 
 Hidden below 768px (mobile/tablet browsers have their own native share sheet), and clicking a button opens the target in a small centered popup instead of navigating away, via a Stimulus controller (see [Install assets](#install-assets)).
 
+The band and its buttons are retuned through custom properties rather than by restating the rules — each is read with the value above as its own fallback, so a site setting none of them renders exactly as described:
+
+| Property | Default | Retunes |
+| --- | --- | --- |
+| `--social-share-display` | `none` below 768px, `flex` above | The band's visibility, for a design showing it at every width |
+| `--social-share-background` | `transparent` | The band as a full-width colored flat, what UiBundle's sections get from their "background" field |
+| `--social-share-padding` | `0` | Its breathing room, once painted |
+| `--social-share-gap` | `0.2em` | The space between buttons |
+| `--social-share-btn-width` / `-height` | `65px`/`50px` (`distinct`, `ellipse`), `50px`/`50px` (others) | The button box, whatever style is picked |
+| `--social-share-btn-margin` | `0.2em` | Its own margin, on top of the band's gap |
+| `--social-share-btn-radius` | `0`, `50%` (`ellipse`, `circle`, `outline`), `12px` (`rounded`) | The corners, whatever style is picked |
+| `--social-share-btn-background` / `-hover` | the network's brand color | One uniform button instead of the brand fill (e.g. a translucent white over a colored band) |
+
 ### Site-wide auto-display
 
 To show share buttons on every page without touching a single template, two pieces work together:
