@@ -16,20 +16,28 @@ See it in action at [975l.com/pages/social-bundle](https://975l.com/pages/social
 
 ---
 
+> **TL;DR** — Social links and share buttons for a c975L site. The links are stored as a `social_links` block reusing UiBundle's generic `Block` entity rather than a dedicated table (the "singleton CRUD" pattern), displayed anywhere through a `social_links_display` block or site-wide. Replaces the former ShareButtonsBundle.
+
+## Contents
+
+- **Setup** — [requirements](#requirements) · [installation](#installation) · [assets](#install-assets)
+- **Using it** — [social links block](#social-links-block) · [admin management](#admin-management) · [rendering](#rendering-the-block) · [styling](#styling) · [share buttons](#share-buttons) · [site-wide auto-display](#site-wide-auto-display) · [admin help procedures](#admin-help-procedures) · [guided projects](#guided-projects)
+
 ## Features
 
 - **Social links block**: a `ui.block` kind (`social_links`) storing an ordered list of links (network + url), plus a site-wide icon style (flat/monochrome or colored badge) and label visibility - no dedicated entity/table
 - **Admin CRUD** for the social links block via EasyAdmin, outside of any page's block collection
 - **Rendering component** to display the block wherever it lives, page-attached or not
 - **Pickable pointer block** (`social_links_display`) to drop the same site-wide links into any page's block flow, with no data re-entry
-- **Share buttons**: a `share_buttons()` Twig function to let visitors share the current (or a given) page on 15 social networks, with several display styles
-- **Share buttons dashboard settings**: pick which networks and which style are used site-wide, and an `enable-share-buttons` config key to auto-display them on every page with no template change
+- **Share buttons**: a `share_buttons()` Twig function to let visitors share the current (or a given) page on 20 social networks, with an independently picked button shape and fill
+- **Share buttons dashboard settings**: pick which networks, and which button shape and fill, are used site-wide, plus an `enable-share-buttons` config key to auto-display them on every page with no template change
 - **Pickable pointer block** (`share_buttons_display`) to drop those same site-wide share buttons into any page's block flow, with no data re-entry
 - **Icon picker** reusing [c975L/UiBundle](https://github.com/975L/UiBundle)'s searchable `IconPickerType`
 - **Stylesheet auto-registration** via UiBundle's `BundleStylesheetProviderInterface` — no manual `<link>` needed
 - **Script auto-registration** via UiBundle's `BundleScriptProviderInterface` — no manual `<script>` needed
 - **Admin menu entry** registered automatically via `MenuProviderInterface`
 - **Admin help procedures** contributed automatically via `ProcedureProviderInterface`
+- **Guided projects** contributed automatically via `GuidedProjectProviderInterface` — see [Guided projects](#guided-projects)
 
 ---
 
@@ -124,29 +132,37 @@ Migrated from the now-abandoned [c975L/ShareButtonsBundle](https://github.com/97
 
 ```twig
 {# Full signature #}
-{{ share_buttons(networks, style, alignment, displayIcon, displayText, url, id) }}
+{{ share_buttons(networks, shape, fill, alignment, displayIcon, displayText, url, id) }}
 
-{# Display the main networks with default style #}
+{# Display the main networks at the default shape and fill #}
 {{ share_buttons() }}
 
-{# Custom selection, ellipse style, centered, icon only #}
+{# Custom selection, ellipse-shaped, centered, icon only #}
 {{ share_buttons(['facebook', 'linkedin', 'email'], 'ellipse') }}
 
+{# Round buttons, brand-colored ring instead of a solid fill #}
+{{ share_buttons('main', 'circle', 'outline') }}
+
 {# Override the shared URL (defaults to the current page) #}
-{{ share_buttons('main', 'distinct', 'center', true, false, 'https://example.com/my-page') }}
+{{ share_buttons('main', 'wide', 'solid', 'center', true, false, 'https://example.com/my-page') }}
 ```
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `networks` | `string[]\|'main'` | `'main'` | Network keys, or `'main'` for the default set (`facebook`, `bluesky`, `linkedin`, `pinterest`, `email`) |
-| `style` | `string` | `'distinct'` | `distinct`, `ellipse`, `circle`, `square`, `rounded`, `outline`, or `minimal` |
+| `shape` | `string` | `'wide'` | `wide`, `ellipse`, `square`, `rounded`, or `circle` |
+| `fill` | `string` | `'solid'` | `solid`, `transparent`, `outline`, or `minimal` |
 | `alignment` | `string` | `'center'` | `left`, `center`, or `right` |
 | `displayIcon` | `bool` | `true` | Show the network icon |
 | `displayText` | `bool` | `false` | Show the network name |
 | `url` | `string\|null` | `null` | URL to share, defaults to the current page |
 | `id` | `string\|null` | `null` | HTML id set on the band, to link to it from a menu — only printed when set, an empty `id=""` being invalid and a repeated one worse |
 
-`distinct` and `ellipse` render wide (65×50) buttons, one filled with the network's brand color; the others render square (50×50) ones - `circle`/`rounded`/`square` filled, `outline` a brand-colored ring that fills on hover, and `minimal` icon-only with no background.
+**Shape** is the button's box and corners, nothing else: `wide` and `ellipse` render 65×50 (square and fully round corners respectively), `square`, `rounded` and `circle` render 50×50 (square, 12px and fully round). **Fill** is what paints that box, whatever its shape: `solid` is the network's own brand color, `outline` a brand-colored ring on a transparent background that fills in on hover, `minimal` the icon alone with no background or border, and `transparent` one translucent white fill for every button instead of the brand colors.
+
+The two are independent, so any of the 20 combinations is reachable — `circle` + `outline` and `square` + `minimal` are just two of them. Only `transparent` has an expectation of its own: it carries no color, so it needs a band painted through `--social-share-background` (see below) and shows nothing on an unpainted one — which is exactly the case where the brand fills of `solid` would compete with the flat's own color.
+
+> **Upgrading:** these two parameters replaced a single `style` one, whose seven values were fixed shape/fill pairs. Those values are gone, not mapped — a call still passing one, or a singleton still carrying one, renders at the defaults `wide` + `solid`. See [UPGRADE.md](UPGRADE.md).
 
 All networks are supported: `facebook`, `bluesky`, `linkedin`, `pinterest`, `email`, `blogger`, `buffer`, `delicious`, `evernote`, `line`, `reddit`, `skype`, `stumbleupon`, `telegram`, `threads`, `tumblr`, `vk`, `whatsapp`, `wordpress`, `xing`. Icons are resolved by network key through UiBundle's `IconServiceInterface` — the same brand SVGs used by the [icon picker](#social-links-block) (`public/icons/facebook.svg` and so on), so dropping your own `public/icons/{network}.svg` in the consuming app overrides a bundle-provided one.
 
@@ -160,19 +176,22 @@ The band and its buttons are retuned through custom properties rather than by re
 | `--social-share-background` | `transparent` | The band as a full-width colored flat, what UiBundle's sections get from their "background" field |
 | `--social-share-padding` | `0` | Its breathing room, once painted |
 | `--social-share-gap` | `0.2em` | The space between buttons |
-| `--social-share-btn-width` / `-height` | `65px`/`50px` (`distinct`, `ellipse`), `50px`/`50px` (others) | The button box, whatever style is picked |
+| `--social-share-btn-width` / `-height` | `65px`/`50px` (shape `wide`, `ellipse`), `50px`/`50px` (the other three) | The button box, whatever shape is picked |
 | `--social-share-btn-margin` | `0.2em` | Its own margin, on top of the band's gap |
-| `--social-share-btn-radius` | `0`, `50%` (`ellipse`, `circle`, `outline`), `12px` (`rounded`) | The corners, whatever style is picked |
-| `--social-share-btn-background` / `-hover` | the network's brand color | One uniform button instead of the brand fill (e.g. a translucent white over a colored band) |
+| `--social-share-btn-radius` | `0` (shape `wide`, `square`), `50%` (`ellipse`, `circle`), `12px` (`rounded`) | The corners, whatever shape is picked |
+| `--social-share-btn-background` / `-hover` | the network's brand color, `rgba(255, 255, 255, 0.16)` / `0.3` (fill `transparent`) | One uniform button instead of the brand fill |
+| `--social-share-preview-background` / `-padding` | `#4a4a4a` / `1em` | The stand-in band the `transparent` fill is previewed over, in the dashboard and the block gallery — never on a real page |
+
+Note the last four have a **per-variant** default, one value per shape or fill. Declaring one of them in `:root` — a site's `theme.css`, typically — replaces all of them at once, collapsing every variant into a single look: the shape and fill picked in the dashboard then change nothing visible. Set them only for a look no combination covers, and in the app's own `app.css` rather than its theme, next to the rules it already takes over.
 
 ### Site-wide auto-display
 
 To show share buttons on every page without touching a single template, two pieces work together:
 
-- **"Boutons de partage"** in the management menu (`ShareButtonsSettingsCrudController`) — a small dashboard singleton (same `Block`-reuse technique as the [social links block](#social-links-block), no dedicated entity/table) letting you pick which networks and which [style](#share-buttons) are used site-wide. Networks are a drag-sortable checkbox list (see `assets/js/share-buttons-networks-sort.js`) - their order controls the order buttons render in. A live preview (see `assets/js/share-buttons-preview.js`) updates as you check/uncheck/reorder networks or change the style.
+- **"Boutons de partage"** in the management menu (`ShareButtonsSettingsCrudController`) — a small dashboard singleton (same `Block`-reuse technique as the [social links block](#social-links-block), no dedicated entity/table) letting you pick which networks, and which button [shape and fill](#share-buttons), are used site-wide. Networks are a drag-sortable checkbox list (see `assets/js/share-buttons-networks-sort.js`) - their order controls the order buttons render in. A live preview (see `assets/js/share-buttons-preview.js`) updates as you check/uncheck/reorder networks or change either select.
 - **`social-enable-share-buttons`** — a boolean [c975L/ConfigBundle](https://github.com/975L/ConfigBundle) config key (`false` by default), auto-loaded from this bundle's `config/configs.json`.
 
-[c975L/SiteBundle](https://github.com/975L/SiteBundle)'s base layout calls the `share_buttons_default()` Twig function — which reads those dashboard settings, falling back to `share_buttons()`'s own defaults (`'main'` networks, `'distinct'` style) as long as nothing's been saved yet — and to the main networks again if every one of them is unchecked, `social-enable-share-buttons` being what hides the band — gated behind that config key:
+[c975L/SiteBundle](https://github.com/975L/SiteBundle)'s base layout calls the `share_buttons_default()` Twig function — which reads those dashboard settings, falling back to `share_buttons()`'s own defaults (`'main'` networks, `'wide'` shape, `'solid'` fill) as long as nothing's been saved yet — and to the main networks again if every one of them is unchecked, `social-enable-share-buttons` being what hides the band — gated behind that config key:
 
 ```twig
 {% if config('social-enable-share-buttons') %}
@@ -193,6 +212,16 @@ Its one field is an **anchor** (same as UiBundle's page-section kinds, see that 
 ## Admin help procedures
 
 `ProcedureProvider` (implements ConfigBundle's `ProcedureProviderInterface`) reads `config/procedures.json` and contributes one entry per documented admin workflow (configuring social links, configuring share buttons) to ConfigBundle's `ProcedureBuilder`, which aggregates every bundle's procedures for the dashboard AI assistant. Each entry ships `fr`/`en`/`es` translations, resolved to the current locale by `ProcedureJsonReader`.
+
+---
+
+## Guided projects
+
+`SocialGuidedProjectProvider` (implements ConfigBundle's `GuidedProjectProviderInterface`, auto-tagged like `MenuProviderInterface`) contributes two replayable exercises to the `/management` dashboard's "Guided projects" panel: **"Mettre les liens vers vos réseaux"** (one list for the whole site, rendered wherever the block is put) and **"Régler les boutons de partage"** (which networks, in which order, and what they look like). They continue the order sequence after ConfigBundle (10-30), SiteBundle (50-80) and UiBundle (90-110), picking up at 120.
+
+The share buttons project is contributed **only while `social-enable-share-buttons` is on** — the same condition `MenuProvider` applies to its own entry, since with the feature off that screen isn't in the sidebar either and a parcours walking to an unreachable screen reads as a broken one.
+
+Only the opening step of each carries an `url`: from there the panel walks the screen the user has been sent to, highlighting the button or the field they are meant to use next. The two singleton screens are pointed at with `.action-new, .action-edit` — the index offers "create" until the row exists and "edit" ever after, and whichever is on screen is the one to click. The settings fields reuse the markers their own JS already reads (`[data-share-networks-sortable]`, `[data-share-shape-select]`, `[data-share-fill-select]`, `[data-social-links-icon-style-select]`), rather than ids of their own.
 
 ---
 

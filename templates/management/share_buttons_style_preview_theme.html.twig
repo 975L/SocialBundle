@@ -1,34 +1,20 @@
-{# Overrides ShareButtonsStylePreviewType's and the "networks" field's widgets - registered via
-   Crud::addFormTheme() in ShareButtonsSettingsCrudController. #}
+{# Overrides the preview and "networks" widgets, registered via Crud::addFormTheme() #}
 
-{# Renders every known network (not just the checked ones) - assets/js/share-buttons-preview.js hides
-   the unchecked ones and reorders the rest to match the "networks" checkboxes live, on page load and on
-   every change/reorder. Starts on the "distinct" style: the style <select> below is authoritative for
-   the real, saved value, and that same script re-syncs the class to match it too. #}
+{# Every known network is rendered, the preview script hiding and reordering them live #}
 {% block share_buttons_style_preview_widget %}
-    {# Scoped to SocialBundle's own compiled stylesheet only ("social-share*" classes don't collide with
-       EasyAdmin's Bootstrap/AdminLTE ones) - never load the app's main front-end stylesheet here, see
-       c975L/UiBundle's README ("Automatic CSS injection for EasyAdmin management pages") #}
-    {# Root-relative, unlike the front-end's bundle_stylesheets() (StylesheetProvider::getStylesheets()):
-       the front-end layout resolves those against a <base href> pointing at the domain root, but EasyAdmin
-       pages live several segments deep (e.g. /management/social/share-buttons-settings/1/edit) with no such
-       <base> tag, so a bare "bundles/..." path would 404 against the current page's own URL instead #}
+    {# This bundle's stylesheet only, never the app's front-end one #}
+    {# Root-relative: EasyAdmin pages have no <base href>, so a bare path would 404 against the current URL #}
     <link rel="stylesheet" href="/bundles/c975lsocial/css/styles.min.css">
+    {# "social-share--preview-backdrop" is added/removed here by assets/js/share-buttons-preview.js, only while the "transparent" fill is picked - see the class in sass/_share-buttons.scss #}
     <div id="ss-style-preview">
-        {{ share_buttons(all_networks, 'distinct') }}
+        {{ share_buttons(all_networks, 'wide', 'solid') }}
     </div>
 {% endblock %}
 
-{# Draggable checkbox list for the "networks" field (see ShareButtonsSettingsType's "block_prefix"
-   option) instead of ChoiceType's default choice_widget_expanded layout - drag order is read back
-   through the checkboxes' own DOM order on submit (see ShareButtonsSettingsType::reorderNetworkChoices()
-   for how it's restored on the next load), no hidden "position" field needed.
-   Mirrors Symfony's own "choice_widget_expanded" block (form_div_layout.html.twig) for the
-   widget/label pairing - only the wrapping markup differs. #}
+{# Draggable checkbox list; the order is read back off the checkboxes' DOM order, no position field needed #}
 {% block share_buttons_networks_widget %}
     <style>
-        /* Scoped to this field only - see the README section this template's other block already
-           references for why this isn't a whole separate management stylesheet asset for so little CSS */
+        /* Scoped to this field only, too little CSS to warrant its own management stylesheet */
         .ss-networks-sortable { list-style: none; margin: 0; padding: 0; }
         .ss-networks-sortable-item { display: flex; align-items: center; gap: .5em; padding: .25em 0; }
         .ss-networks-sortable-item.ss-dragging { opacity: .4; }

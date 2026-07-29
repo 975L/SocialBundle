@@ -8,6 +8,7 @@
  */
 namespace c975L\SocialBundle\Tests\Twig;
 
+use c975L\SocialBundle\Service\ShareButtonsService;
 use c975L\SocialBundle\Service\ShareButtonsServiceInterface;
 use c975L\SocialBundle\Twig\ShareButtonsExtension;
 use c975L\UiBundle\Entity\Block;
@@ -37,8 +38,12 @@ class ShareButtonsExtensionTest extends TestCase
         array &$calls,
         array $shareUrlsByNetwork = [],
     ): ShareButtonsServiceInterface {
+        // Shapes come from the real service rather than being restated here: a pure lookup the extension only reads through, and a copy of it would let this suite keep passing against a list the bundle no longer has
+        $real = new ShareButtonsService();
+
         $service = $this->createStub(ShareButtonsServiceInterface::class);
         $service->method('getMainNetworks')->willReturn($mainNetworks);
+        $service->method('getShapes')->willReturn($real->getShapes());
         $service->method('getShareUrl')->willReturnCallback(
             function (string $network, string $pageUrl) use (&$calls, $shareUrlsByNetwork): ?string {
                 $calls[] = [$network, $pageUrl];
@@ -143,7 +148,8 @@ class ShareButtonsExtensionTest extends TestCase
             ],
             $context['buttons']
         );
-        $this->assertSame('distinct', $context['style']);
+        $this->assertSame('wide', $context['shape']);
+        $this->assertSame('solid', $context['fill']);
         $this->assertSame('center', $context['alignment']);
         $this->assertTrue($context['displayIcon']);
         $this->assertFalse($context['displayText']);
@@ -209,7 +215,7 @@ class ShareButtonsExtensionTest extends TestCase
         $renderCallCount = 0;
         $environment = $this->createEnvironment($template, $context, $renderCallCount);
 
-        $extension->renderShareButtons($environment, ['facebook'], 'distinct', 'center', true, false, 'https://example.com/explicit');
+        $extension->renderShareButtons($environment, ['facebook'], 'wide', 'solid', 'center', true, false, 'https://example.com/explicit');
 
         $this->assertSame([['facebook', 'https://example.com/explicit']], $calls);
     }
@@ -234,8 +240,8 @@ class ShareButtonsExtensionTest extends TestCase
         $this->assertSame([['facebook', '']], $calls);
     }
 
-    // The dashboard-configured singleton block overrides the default networks/style, once it has been saved
-    public function testRenderDefaultShareButtonsUsesSettingsBlockNetworksAndStyleWhenPresent(): void
+    // A saved shape without a fill next to it must keep the fill at its own default rather than dragging the shape's down with it
+    public function testRenderDefaultShareButtonsUsesSettingsBlockNetworksAndShapeWhenPresent(): void
     {
         $calls = [];
         $shareButtonsService = $this->createShareButtonsService(
@@ -243,7 +249,7 @@ class ShareButtonsExtensionTest extends TestCase
             $calls,
             ['telegram' => 'https://share/telegram'],
         );
-        $settingsBlock = (new Block())->setData(['networks' => ['telegram'], 'style' => 'circle']);
+        $settingsBlock = (new Block())->setData(['networks' => ['telegram'], 'shape' => 'circle']);
         $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
         $template = null;
         $context = null;
@@ -252,13 +258,36 @@ class ShareButtonsExtensionTest extends TestCase
 
         $extension->renderDefaultShareButtons($environment);
 
-        $this->assertSame('circle', $context['style']);
+        $this->assertSame('circle', $context['shape']);
+        $this->assertSame('solid', $context['fill']);
         $this->assertCount(1, $context['buttons']);
         $this->assertSame('telegram', $context['buttons'][0]['network']);
     }
 
+    // Both settings saved must both be read - the pair is what the dashboard writes on every save
+    public function testRenderDefaultShareButtonsUsesBothSettingsBlockShapeAndFillWhenPresent(): void
+    {
+        $calls = [];
+        $shareButtonsService = $this->createShareButtonsService(
+            ['facebook'],
+            $calls,
+            ['facebook' => 'https://share/facebook'],
+        );
+        $settingsBlock = (new Block())->setData(['networks' => ['facebook'], 'shape' => 'rounded', 'fill' => 'minimal']);
+        $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
+        $template = null;
+        $context = null;
+        $renderCallCount = 0;
+        $environment = $this->createEnvironment($template, $context, $renderCallCount);
+
+        $extension->renderDefaultShareButtons($environment);
+
+        $this->assertSame('rounded', $context['shape']);
+        $this->assertSame('minimal', $context['fill']);
+    }
+
     // Before the settings singleton has ever been saved, share_buttons_default() must behave like share_buttons()
-    public function testRenderDefaultShareButtonsFallsBackToMainNetworksAndDistinctStyleWhenNoSettingsBlockExists(): void
+    public function testRenderDefaultShareButtonsFallsBackToMainNetworksAndDefaultPairWhenNoSettingsBlockExists(): void
     {
         $calls = [];
         $shareButtonsService = $this->createShareButtonsService(
@@ -274,7 +303,8 @@ class ShareButtonsExtensionTest extends TestCase
 
         $extension->renderDefaultShareButtons($environment);
 
-        $this->assertSame('distinct', $context['style']);
+        $this->assertSame('wide', $context['shape']);
+        $this->assertSame('solid', $context['fill']);
         $this->assertSame('facebook', $context['buttons'][0]['network']);
     }
 
@@ -283,7 +313,7 @@ class ShareButtonsExtensionTest extends TestCase
     {
         $calls = [];
         $shareButtonsService = $this->createShareButtonsService(['facebook'], $calls, ['facebook' => 'https://share/facebook']);
-        $settingsBlock = (new Block())->setKind('share_buttons_settings')->setData(['networks' => ['facebook'], 'style' => 'circle']);
+        $settingsBlock = (new Block())->setKind('share_buttons_settings')->setData(['networks' => ['facebook'], 'shape' => 'circle']);
 
         $blockRepository = $this->createMock(BlockRepository::class);
         $blockRepository->expects($this->once())->method('findOneByKind')->with('share_buttons_settings')->willReturn($settingsBlock);
@@ -305,7 +335,7 @@ class ShareButtonsExtensionTest extends TestCase
     {
         $calls = [];
         $shareButtonsService = $this->createShareButtonsService(['facebook'], $calls, ['telegram' => 'https://share/telegram']);
-        $settingsBlock = (new Block())->setKind('share_buttons_settings')->setData(['networks' => ['telegram'], 'style' => 'circle']);
+        $settingsBlock = (new Block())->setKind('share_buttons_settings')->setData(['networks' => ['telegram'], 'shape' => 'circle']);
 
         $blockRepository = $this->createMock(BlockRepository::class);
         $blockRepository->expects($this->once())->method('findOneByKind')->with('share_buttons_settings')->willReturn($settingsBlock);
@@ -318,11 +348,13 @@ class ShareButtonsExtensionTest extends TestCase
         $renderCallCount = 0;
         $environment = $this->createEnvironment($template, $context, $renderCallCount);
         $firstRequest->renderDefaultShareButtons($environment);
-        $this->assertSame('circle', $context['style']);
+        $this->assertSame('circle', $context['shape']);
+        $this->assertSame('solid', $context['fill']);
 
         $secondRequest = new ShareButtonsExtension($shareButtonsService, $iconService, new RequestStack(), $blockRepository, $cache);
         $secondRequest->renderDefaultShareButtons($environment);
-        $this->assertSame('circle', $context['style']);
+        $this->assertSame('circle', $context['shape']);
+        $this->assertSame('solid', $context['fill']);
     }
 
     // The "share_buttons_display" block's own anchor travels down to the template, which turns it into the band's id so a menu entry can link to it (see blocks/ShareButtonsDisplay.html.twig)
@@ -354,7 +386,7 @@ class ShareButtonsExtensionTest extends TestCase
             $calls,
             ['facebook' => 'https://share/facebook'],
         );
-        $settingsBlock = (new Block())->setData(['networks' => ['facebook'], 'style' => 'circle', 'anchor' => 'partage']);
+        $settingsBlock = (new Block())->setData(['networks' => ['facebook'], 'shape' => 'circle', 'anchor' => 'partage']);
         $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
         $template = null;
         $context = null;
@@ -375,7 +407,7 @@ class ShareButtonsExtensionTest extends TestCase
             $calls,
             ['facebook' => 'https://share/facebook'],
         );
-        $settingsBlock = (new Block())->setData(['networks' => ['facebook'], 'style' => 'circle', 'anchor' => 'partage']);
+        $settingsBlock = (new Block())->setData(['networks' => ['facebook'], 'shape' => 'circle', 'anchor' => 'partage']);
         $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
         $template = null;
         $context = null;
@@ -396,7 +428,7 @@ class ShareButtonsExtensionTest extends TestCase
             $calls,
             ['facebook' => 'https://share/facebook'],
         );
-        $settingsBlock = (new Block())->setData(['networks' => ['facebook'], 'style' => 'circle', 'anchor' => 'partage']);
+        $settingsBlock = (new Block())->setData(['networks' => ['facebook'], 'shape' => 'circle', 'anchor' => 'partage']);
         $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
         $template = null;
         $context = null;
@@ -417,7 +449,7 @@ class ShareButtonsExtensionTest extends TestCase
             $calls,
             ['facebook' => 'https://share/facebook', 'bluesky' => 'https://share/bluesky'],
         );
-        $settingsBlock = (new Block())->setData(['networks' => [], 'style' => 'circle']);
+        $settingsBlock = (new Block())->setData(['networks' => [], 'shape' => 'circle']);
         $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
         $template = null;
         $context = null;
@@ -427,7 +459,8 @@ class ShareButtonsExtensionTest extends TestCase
         $extension->renderDefaultShareButtons($environment);
 
         $this->assertSame(['facebook', 'bluesky'], array_column($context['buttons'], 'network'));
-        $this->assertSame('circle', $context['style']);
+        $this->assertSame('circle', $context['shape']);
+        $this->assertSame('solid', $context['fill']);
     }
 
     // Manual share_buttons() calls set no id unless one is passed, and the template only prints the attribute when it is set

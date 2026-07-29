@@ -65,7 +65,7 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
         return $variants;
     }
 
-    // One per ShareButtonsService::getStyles() choice. displayText stays at its real default (false): every style is a fixed 50-65px icon badge (see _share-buttons.scss), too narrow to fit a network name next to the icon without it overlapping/getting clipped - real integrators leave it off for the same reason, relying on the icon/brand color to identify the network and the button's own aria-label (already rendered regardless of displayText) for accessibility.
+    // One card per shape, then one per fill other than "solid" - not the 20 cells of the two axes crossed, which would bury what each setting actually does under repetition. Each axis is shown against the other's default, "solid" being what the shape cards already stand on. displayText stays at its real default (false): every button is a fixed 50-65px icon badge (see _share-buttons.scss), too narrow to fit a network name next to the icon without it overlapping/getting clipped - real integrators leave it off for the same reason, relying on the icon/brand color to identify the network and the button's own aria-label (already rendered regardless of displayText) for accessibility.
     private function shareButtonsVariants(): array
     {
         $icons = $this->iconService->getIcons();
@@ -75,16 +75,32 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
         );
 
         $variants = [];
-        foreach ($this->shareButtonsService->getStyles() as $style) {
-            $variants[ucfirst($style)] = $this->twig->render('@c975LSocial/shareButtons/ShareButtons.html.twig', [
-                'buttons' => $buttons,
-                'style' => $style,
-                'alignment' => 'center',
-                'displayIcon' => true,
-                'displayText' => false,
-            ]);
+        foreach ($this->shareButtonsService->getShapes() as $shape) {
+            $variants[ucfirst($shape)] = $this->renderShareButtons($buttons, $shape, 'solid');
+        }
+
+        // "circle" rather than the default shape: the three carry a border or no background at all, which a 65x50 box shows off less clearly than a round one
+        foreach (array_diff($this->shareButtonsService->getFills(), ['solid']) as $fill) {
+            $variants[ucfirst($fill)] = $this->renderShareButtons($buttons, 'circle', $fill);
         }
 
         return $variants;
+    }
+
+    // "transparent" is wrapped in the stand-in band of sass/_share-buttons.scss: it carries no color of its own, so on the gallery's own page background its card would show an empty row. The class only declares custom properties, which inherit, so wrapping paints the band inside just as putting it on the band would - and does it without ShareButtons.html.twig, a real front-end template, growing a preview-only parameter.
+    private function renderShareButtons(array $buttons, string $shape, string $fill): string
+    {
+        $rendered = $this->twig->render('@c975LSocial/shareButtons/ShareButtons.html.twig', [
+            'buttons' => $buttons,
+            'shape' => $shape,
+            'fill' => $fill,
+            'alignment' => 'center',
+            'displayIcon' => true,
+            'displayText' => false,
+        ]);
+
+        return 'transparent' === $fill
+            ? '<div class="social-share--preview-backdrop">' . $rendered . '</div>'
+            : $rendered;
     }
 }

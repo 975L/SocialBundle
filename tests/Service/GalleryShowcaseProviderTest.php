@@ -26,7 +26,8 @@ class GalleryShowcaseProviderTest extends TestCase
         );
 
         $shareButtonsService = $this->createStub(ShareButtonsServiceInterface::class);
-        $shareButtonsService->method('getStyles')->willReturn(['distinct', 'ellipse', 'circle']);
+        $shareButtonsService->method('getShapes')->willReturn(['wide', 'ellipse', 'circle']);
+        $shareButtonsService->method('getFills')->willReturn(['solid', 'transparent', 'outline']);
 
         $iconService = $this->createStub(IconServiceInterface::class);
         $iconService->method('getIcons')->willReturn(['facebook' => 'icons/facebook.svg']);
@@ -74,14 +75,33 @@ class GalleryShowcaseProviderTest extends TestCase
         $this->assertSame('share_buttons_display', $showcases['label.gallery_showcase_share_buttons']['kind']);
     }
 
-    // One variant per ShareButtonsServiceInterface::getStyles() choice
-    public function testShareButtonsShowcaseCoversEveryStyleReturnedByTheService(): void
+    // One card per shape, then one per fill other than "solid" - the two axes shown side by side rather than crossed into every combination, which would bury what each setting does
+    public function testShareButtonsShowcaseCoversEveryShapeThenEveryNonSolidFill(): void
     {
         $showcases = $this->createProvider()->getShowcases();
 
         $this->assertSame(
-            ['Distinct', 'Ellipse', 'Circle'],
+            ['Wide', 'Ellipse', 'Circle', 'Transparent', 'Outline'],
             array_keys($showcases['label.gallery_showcase_share_buttons']['variants'])
         );
+    }
+
+    // "transparent" carries no color of its own, so its card would be an empty row on the gallery's own background without a band standing in for the one a real page paints
+    public function testTransparentFillCardIsWrappedInThePreviewBackdrop(): void
+    {
+        $variants = $this->createProvider()->getShowcases()['label.gallery_showcase_share_buttons']['variants'];
+
+        $this->assertStringStartsWith('<div class="social-share--preview-backdrop">', $variants['Transparent']);
+        $this->assertStringEndsWith('</div>', $variants['Transparent']);
+    }
+
+    // Every other card stands on its own colors, and must not be boxed in a band that isn't part of what it shows
+    public function testOtherCardsAreNotWrappedInThePreviewBackdrop(): void
+    {
+        $variants = $this->createProvider()->getShowcases()['label.gallery_showcase_share_buttons']['variants'];
+
+        foreach (['Wide', 'Ellipse', 'Circle', 'Outline'] as $label) {
+            $this->assertStringNotContainsString('social-share--preview-backdrop', $variants[$label]);
+        }
     }
 }

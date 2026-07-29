@@ -160,7 +160,7 @@ class ShareButtonsSettingsCrudControllerTest extends TestCase
     public function testConfigureFieldsIndexColumnsFormatNetworksAndStyleFromBlockData(): void
     {
         $controller = $this->createController(null);
-        $entity = (new Block())->setData(['networks' => ['facebook', 'bluesky'], 'style' => 'circle']);
+        $entity = (new Block())->setData(['networks' => ['facebook', 'bluesky'], 'shape' => 'circle', 'fill' => 'outline']);
 
         $fields = iterator_to_array($controller->configureFields('index'));
         $dtosByProperty = [];
@@ -174,7 +174,25 @@ class ShareButtonsSettingsCrudControllerTest extends TestCase
             ($dtosByProperty['shareButtonsNetworks']->getFormatValueCallable())(null, $entity)
         );
         $this->assertSame(
-            'circle',
+            'label.shape_circle / label.fill_outline',
+            ($dtosByProperty['shareButtonsStyle']->getFormatValueCallable())(null, $entity)
+        );
+    }
+
+    // A singleton saved before shape and fill became two settings carries neither: the column must show the defaults, rather than two blanks, until an admin re-saves it
+    public function testConfigureFieldsIndexStyleColumnFallsBackToTheDefaultsWhenNeitherIsSaved(): void
+    {
+        $controller = $this->createController(null);
+        $entity = (new Block())->setData(['networks' => ['facebook'], 'style' => 'minimal']);
+
+        $fields = iterator_to_array($controller->configureFields('index'));
+        $dtosByProperty = [];
+        foreach ($fields as $field) {
+            $dtosByProperty[$field->getAsDto()->getProperty()] = $field->getAsDto();
+        }
+
+        $this->assertSame(
+            'label.shape_wide / label.fill_solid',
             ($dtosByProperty['shareButtonsStyle']->getFormatValueCallable())(null, $entity)
         );
     }

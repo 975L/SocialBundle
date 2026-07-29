@@ -26,6 +26,62 @@
                 <source>block.social_links_display_description</source>
                 <target>Inserta las redes sociales del panel, sin redefinir los enlaces</target>
             </trans-unit>
+            <trans-unit id="FrDtWdT">
+                <source>description.guided_project_social_links</source>
+                <target>Una única lista para todo el sitio, mostrada allí donde se coloque el bloque de enlaces sociales</target>
+            </trans-unit>
+            <trans-unit id="GjyFwm5">
+                <source>description.guided_project_social_share_buttons</source>
+                <target>Elegir las redes que se ofrecen a sus visitantes, su orden y su aspecto</target>
+            </trans-unit>
+            <trans-unit id="vgXH0gX">
+                <source>description.guided_step_social_links_display_label</source>
+                <target>Sin marcar, el nombre lo siguen leyendo los lectores de pantalla: desaparece de la pantalla, nunca de la accesibilidad.</target>
+            </trans-unit>
+            <trans-unit id="TOBz.H3">
+                <source>description.guided_step_social_links_edit</source>
+                <target>Créela si aún no existe, ábrala si ya está: solo hay una para todo el sitio.</target>
+            </trans-unit>
+            <trans-unit id="ajiJRR8">
+                <source>description.guided_step_social_links_entries</source>
+                <target>Una fila por red: su icono, la dirección de su página allí, y una etiqueta si quiere sustituir la de la red.</target>
+            </trans-unit>
+            <trans-unit id="CbQbxws">
+                <source>description.guided_step_social_links_icon_style</source>
+                <target>Icono solo, pastilla con los colores de la red, o anillo que se rellena al pasar por encima. La vista previa de abajo muestra el resultado.</target>
+            </trans-unit>
+            <trans-unit id="IiZiN6F">
+                <source>description.guided_step_social_links_open</source>
+                <target>Sus redes no son contenido de página: se introducen una vez aquí y el sitio las recoge en todas partes.</target>
+            </trans-unit>
+            <trans-unit id="qTr5m1O">
+                <source>description.guided_step_social_links_place</source>
+                <target>Añada el bloque de enlaces sociales a una página o al pie: muestra esta lista, esté donde esté.</target>
+            </trans-unit>
+            <trans-unit id="qRGp6fm">
+                <source>description.guided_step_social_share_buttons_check</source>
+                <target>Abra cualquier página publicada: los botones están ahí, con el aspecto que acaba de darles.</target>
+            </trans-unit>
+            <trans-unit id="dcxhtln">
+                <source>description.guided_step_social_share_buttons_edit</source>
+                <target>Créelos si aún no existen, ábralos si ya están: solo hay un juego para todo el sitio.</target>
+            </trans-unit>
+            <trans-unit id="k0_UuQi">
+                <source>description.guided_step_social_share_buttons_fill</source>
+                <target>La vista previa de abajo se actualiza con cada cambio, incluso antes de guardar.</target>
+            </trans-unit>
+            <trans-unit id="XwJ3XNI">
+                <source>description.guided_step_social_share_buttons_networks</source>
+                <target>Marque los que quiera y arrástrelos: el orden de la lista es el orden mostrado.</target>
+            </trans-unit>
+            <trans-unit id="LxtX23p">
+                <source>description.guided_step_social_share_buttons_open</source>
+                <target>Los botones de compartir ya están en sus páginas: aquí se decide cuáles y qué aspecto tienen.</target>
+            </trans-unit>
+            <trans-unit id="bRoisnG">
+                <source>description.guided_step_social_share_buttons_shape</source>
+                <target>Botón ancho, cuadrado o redondo: es el espacio que ocupan los botones bajo sus páginas.</target>
+            </trans-unit>
             <trans-unit id="PmT6SQr">
                 <source>label.anchor</source>
                 <target>Ancla</target>
@@ -42,6 +98,30 @@
                 <source>label.display_label</source>
                 <target>Mostrar etiqueta</target>
             </trans-unit>
+            <trans-unit id="ShygsJr">
+                <source>label.fill</source>
+                <target>Relleno</target>
+            </trans-unit>
+            <trans-unit id="5qL7rY1">
+                <source>label.fill_help</source>
+                <target>«Transparente» no tiene color propio: solo se ve sobre una banda pintada con --social-share-background</target>
+            </trans-unit>
+            <trans-unit id="aCKBcFm">
+                <source>label.fill_minimal</source>
+                <target>Minimalista</target>
+            </trans-unit>
+            <trans-unit id="qgzorvj">
+                <source>label.fill_outline</source>
+                <target>Contorno</target>
+            </trans-unit>
+            <trans-unit id="jF.QrcU">
+                <source>label.fill_solid</source>
+                <target>Color de marca</target>
+            </trans-unit>
+            <trans-unit id="p42povi">
+                <source>label.fill_transparent</source>
+                <target>Transparente</target>
+            </trans-unit>
             <trans-unit id="QI77jSF">
                 <source>label.gallery_showcase_share_buttons</source>
                 <target>Botones para compartir</target>
@@ -57,6 +137,70 @@
             <trans-unit id="nECqDP1">
                 <source>label.gallery_showcase_social_links_description</source>
                 <target>Estilos disponibles para los enlaces a redes sociales.</target>
+            </trans-unit>
+            <trans-unit id="__S_HiT">
+                <source>label.guided_project_social_links</source>
+                <target>Poner los enlaces a sus redes</target>
+            </trans-unit>
+            <trans-unit id="QAWYjtj">
+                <source>label.guided_project_social_share_buttons</source>
+                <target>Ajustar los botones de compartir</target>
+            </trans-unit>
+            <trans-unit id="xNJPblz">
+                <source>label.guided_step_social_links_display_label</source>
+                <target>Mostrar o no el nombre de la red</target>
+            </trans-unit>
+            <trans-unit id="PjuQ1t4">
+                <source>label.guided_step_social_links_edit</source>
+                <target>Abrir la lista</target>
+            </trans-unit>
+            <trans-unit id="bVVoZ2.">
+                <source>label.guided_step_social_links_entries</source>
+                <target>Añadir una red</target>
+            </trans-unit>
+            <trans-unit id="3ATLUxM">
+                <source>label.guided_step_social_links_icon_style</source>
+                <target>Elegir el estilo de los iconos</target>
+            </trans-unit>
+            <trans-unit id="X38SgbN">
+                <source>label.guided_step_social_links_open</source>
+                <target>Abrir los enlaces sociales</target>
+            </trans-unit>
+            <trans-unit id="pHgHpAK">
+                <source>label.guided_step_social_links_place</source>
+                <target>Colocarlos en el sitio</target>
+            </trans-unit>
+            <trans-unit id="VwEvHxL">
+                <source>label.guided_step_social_links_save</source>
+                <target>Guardar</target>
+            </trans-unit>
+            <trans-unit id="eSKLNGw">
+                <source>label.guided_step_social_share_buttons_check</source>
+                <target>Comprobar en una página</target>
+            </trans-unit>
+            <trans-unit id="mMv1zf_">
+                <source>label.guided_step_social_share_buttons_edit</source>
+                <target>Abrir los ajustes</target>
+            </trans-unit>
+            <trans-unit id="pTxyhi3">
+                <source>label.guided_step_social_share_buttons_fill</source>
+                <target>Elegir el relleno</target>
+            </trans-unit>
+            <trans-unit id="88vw93b">
+                <source>label.guided_step_social_share_buttons_networks</source>
+                <target>Elegir las redes</target>
+            </trans-unit>
+            <trans-unit id="WKTLxCm">
+                <source>label.guided_step_social_share_buttons_open</source>
+                <target>Abrir los ajustes de compartir</target>
+            </trans-unit>
+            <trans-unit id="YIUIIz9">
+                <source>label.guided_step_social_share_buttons_save</source>
+                <target>Guardar</target>
+            </trans-unit>
+            <trans-unit id="YskjhFu">
+                <source>label.guided_step_social_share_buttons_shape</source>
+                <target>Elegir la forma</target>
             </trans-unit>
             <trans-unit id="lqEFtzf">
                 <source>label.icon</source>
@@ -102,6 +246,30 @@
                 <source>label.preview</source>
                 <target>Vista previa</target>
             </trans-unit>
+            <trans-unit id="TRS_z2w">
+                <source>label.shape</source>
+                <target>Forma</target>
+            </trans-unit>
+            <trans-unit id="SUMjBUS">
+                <source>label.shape_circle</source>
+                <target>Círculo</target>
+            </trans-unit>
+            <trans-unit id="29fwXaP">
+                <source>label.shape_ellipse</source>
+                <target>Elipse</target>
+            </trans-unit>
+            <trans-unit id="OKH2tFU">
+                <source>label.shape_rounded</source>
+                <target>Redondeado</target>
+            </trans-unit>
+            <trans-unit id="5MAcXvo">
+                <source>label.shape_square</source>
+                <target>Cuadrado</target>
+            </trans-unit>
+            <trans-unit id=".NVRNIf">
+                <source>label.shape_wide</source>
+                <target>Ancho</target>
+            </trans-unit>
             <trans-unit id="QGQ5OoP">
                 <source>label.share_buttons_settings</source>
                 <target>Botones para compartir</target>
@@ -122,37 +290,9 @@
                 <source>label.style</source>
                 <target>Estilo</target>
             </trans-unit>
-            <trans-unit id="TGKLvs1">
-                <source>label.style_circle</source>
-                <target>Círculo</target>
-            </trans-unit>
-            <trans-unit id="DiTkKlj">
-                <source>label.style_distinct</source>
-                <target>Distinto</target>
-            </trans-unit>
-            <trans-unit id="bDCzg9D">
-                <source>label.style_ellipse</source>
-                <target>Elipse</target>
-            </trans-unit>
-            <trans-unit id="LApIp6i">
-                <source>label.style_minimal</source>
-                <target>Minimalista</target>
-            </trans-unit>
-            <trans-unit id="qz282lV">
-                <source>label.style_outline</source>
-                <target>Contorno</target>
-            </trans-unit>
             <trans-unit id="kOYnrgC">
                 <source>label.style_preview</source>
                 <target>Vista previa</target>
-            </trans-unit>
-            <trans-unit id="GHdn8Ip">
-                <source>label.style_rounded</source>
-                <target>Redondeado</target>
-            </trans-unit>
-            <trans-unit id="g6VgKWm">
-                <source>label.style_square</source>
-                <target>Cuadrado</target>
             </trans-unit>
             <trans-unit id="mcQ1Bzu">
                 <source>label.url</source>

@@ -1,5 +1,30 @@
 [
     {
+        "date": "2026-07-29",
+        "description": [
+            {
+                "en": "The shape and the fill of the share buttons are now picked separately, opening far more combinations than the fixed styles allowed",
+                "fr": "La forme et le remplissage des boutons de partage se choisissent maintenant séparément, ce qui ouvre bien plus de combinaisons que les styles figés",
+                "es": "La forma y el relleno de los botones de compartir ahora se eligen por separado, lo que abre muchas más combinaciones que los estilos fijos"
+            },
+            {
+                "en": "New translucent fill for the share buttons, for a band that already has a background color of its own",
+                "fr": "Nouveau remplissage translucide pour les boutons de partage, pour un bandeau qui a déjà sa propre couleur de fond",
+                "es": "Nuevo relleno translúcido para los botones de compartir, para una banda que ya tiene su propio color de fondo"
+            },
+            {
+                "en": "The preview on the share buttons settings screen now matches the selection instead of keeping the previous one",
+                "fr": "L'aperçu de l'écran des réglages des boutons de partage correspond maintenant à la sélection, au lieu de conserver la précédente",
+                "es": "La vista previa de la pantalla de ajustes de los botones de compartir ahora coincide con la selección, en lugar de conservar la anterior"
+            },
+            {
+                "en": "The dashboard now offers guided projects for your social presence: putting up the links to your networks once for the whole site, and picking which share buttons your visitors get, in which order and with which look",
+                "fr": "Le tableau de bord propose désormais des parcours guidés pour votre présence sociale : mettre les liens vers vos réseaux une seule fois pour tout le site, et choisir les boutons de partage proposés à vos visiteurs, leur ordre et leur allure",
+                "es": "El panel ofrece ahora recorridos guiados para su presencia social: poner los enlaces a sus redes una sola vez para todo el sitio, y elegir qué botones de compartir reciben sus visitantes, en qué orden y con qué aspecto"
+            }
+        ]
+    },
+    {
         "date": "2026-07-27",
         "description": [
             {

@@ -48,8 +48,8 @@ class ShareButtonsExtension extends AbstractExtension
         ];
     }
 
-    // Renders with the networks/style configured in the dashboard (see ShareButtonsSettingsCrudController), falling back to the same defaults as share_buttons() as long as the settings singleton hasn't been saved yet. Meant to be called unconditionally from the site layout, gated by the "social-enable-share-buttons" config key - not by the settings themselves being present.
-    // $id carries the "share_buttons_display" block's own anchor when the buttons are placed in a page's block flow (see blocks/ShareButtonsDisplay.html.twig). Null (the layout's site-wide call, which passes nothing) falls back to the singleton's own anchor, so the band gets the same id on every page - which is what a navbar entry linking to it needs, the site-wide display being all-pages or nothing. An empty string (a block with no anchor set) does not fall back: both bands can appear on the same page, and they would then carry the very same id.
+    // Uses the dashboard settings, falling back to share_buttons()' defaults until the singleton is saved
+    // A null $id falls back to the singleton's anchor; an empty string does not, both bands sharing a page
     public function renderDefaultShareButtons(Environment $environment, ?string $id = null): string
     {
         $settings = $this->getSettingsBlock()?->getData() ?? [];
@@ -58,7 +58,9 @@ class ShareButtonsExtension extends AbstractExtension
             $environment,
             // Every network unchecked falls back to the main set, same as a never-saved singleton - "??" alone wouldn't, an empty array being neither null nor a missing key. Hiding the band is what the "social-enable-share-buttons" config key is for.
             ($settings['networks'] ?? []) ?: 'main',
-            $settings['style'] ?? 'distinct',
+            // A singleton saved before shape and fill became two settings only carries the old "style", which is ignored: it renders at these defaults until an admin saves the form again
+            $settings['shape'] ?? 'wide',
+            $settings['fill'] ?? 'solid',
             id: null !== $id ? ($id ?: null) : ($settings['anchor'] ?? null),
         );
     }
@@ -80,7 +82,8 @@ class ShareButtonsExtension extends AbstractExtension
     public function renderShareButtons(
         Environment $environment,
         array|string $networks = 'main',
-        string $style = 'distinct',
+        string $shape = 'wide',
+        string $fill = 'solid',
         string $alignment = 'center',
         bool $displayIcon = true,
         bool $displayText = false,
@@ -110,7 +113,8 @@ class ShareButtonsExtension extends AbstractExtension
 
         return $environment->render('@c975LSocial/shareButtons/ShareButtons.html.twig', [
             'buttons' => $buttons,
-            'style' => $style,
+            'shape' => $shape,
+            'fill' => $fill,
             'alignment' => $alignment,
             'displayIcon' => $displayIcon,
             'displayText' => $displayText,

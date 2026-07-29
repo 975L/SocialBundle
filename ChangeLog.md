@@ -1,5 +1,30 @@
 # Changelog
 
+## v1.3.0
+
+Split the share buttons style into shape and fill
+
+- Added `SocialGuidedProjectProvider`, contributing this bundle's guided projects to the dashboard (29/07/2026)
+- Added the "Mettre les liens vers vos réseaux" and "Régler les boutons de partage" projects (29/07/2026)
+- The share buttons project is only contributed while `social-enable-share-buttons` is on (29/07/2026)
+- Added the `label.guided_project_social_*`/`label.guided_step_social_*` translations (29/07/2026)
+- Added `SocialGuidedProjectProviderTest` (29/07/2026)
+- The share buttons index now shows the translated shape and fill instead of the raw `style` (29/07/2026)
+- Split the share buttons `style` setting into `shape` (`wide`, `ellipse`, `square`, `rounded`, `circle`) and `fill` (`solid`, `transparent`, `outline`, `minimal`) (29/07/2026)
+- Removed the old `style` values, no longer read anywhere - see UPGRADE.md (29/07/2026) [BC-Break]
+- Added a `transparent` fill, one translucent white instead of the brand colors (29/07/2026)
+- The band now carries `social-share--shape-{shape}` and `social-share--fill-{fill}` instead of a single `social-share--{style}` (29/07/2026) [BC-Break]
+- `ShareButtonsServiceInterface::getStyles()` replaced by `getShapes()` and `getFills()` (29/07/2026) [BC-Break]
+- `share_buttons()` gained a `fill` parameter in third position, shifting `alignment` and everything after it (29/07/2026) [BC-Break]
+- Added an `UPGRADE.md` (29/07/2026)
+- Fixed the dashboard preview stacking the previously selected variant's class under the next one (29/07/2026)
+- The block gallery now shows one share buttons card per shape, then one per fill (29/07/2026)
+- Added a neutral stand-in band behind the `transparent` fill in the dashboard preview and the block gallery (29/07/2026)
+- Added `--social-share-preview-background` and `--social-share-preview-padding` to retune that stand-in band (29/07/2026)
+- Documented that the per-variant `--social-share-btn-*` custom properties collapse every variant into one when declared in `:root` (29/07/2026)
+- Updated the share buttons admin help procedure (29/07/2026)
+- Removed the unused `templates/emails/styles.min.css` (29/07/2026)
+
 ## v1.2.11
 
 - Replaced ids by hash in translations (27/07/2026)

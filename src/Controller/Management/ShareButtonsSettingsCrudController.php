@@ -132,10 +132,18 @@ class ShareButtonsSettingsCrudController extends AbstractCrudController
                 ->onlyOnIndex()
                 ->setValue('')
                 ->formatValue(static fn (mixed $value, Block $entity): string => implode(', ', $entity->getData()['networks'] ?? [])),
+            // Shows the same defaults the form and the Twig function fall back to (see ShareButtonsSettingsType/ShareButtonsExtension), a singleton still carrying the single "style" this pair replaced having none of the two saved
             Field::new('shareButtonsStyle', t('label.style', [], 'social'))
                 ->onlyOnIndex()
                 ->setValue('')
-                ->formatValue(static fn (mixed $value, Block $entity): string => $entity->getData()['style'] ?? ''),
+                ->formatValue(function (mixed $value, Block $entity): string {
+                    $data = $entity->getData();
+
+                    return implode(' / ', [
+                        $this->translator->trans('label.shape_' . ($data['shape'] ?? 'wide'), [], 'social'),
+                        $this->translator->trans('label.fill_' . ($data['fill'] ?? 'solid'), [], 'social'),
+                    ]);
+                }),
 
             // HiddenField, not Field/TextField: see SocialLinksCrudController for why a plain Field gets silently rebuilt into an ArrayField/TextField that crashes against a JSON column
             HiddenField::new('data')

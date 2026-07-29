@@ -36,8 +36,11 @@ class ShareButtonsService implements ShareButtonsServiceInterface
 
     private const MAIN_NETWORKS = ['facebook', 'bluesky', 'linkedin', 'pinterest', 'email'];
 
-    // Matches the ".social-share--{style}" variants styled in sass/_share-buttons.scss
-    private const STYLES = ['distinct', 'ellipse', 'circle', 'square', 'rounded', 'outline', 'minimal'];
+    // Matches the ".social-share--shape-{shape}" variants styled in sass/_share-buttons.scss - the button's box and corners only, "wide" and "ellipse" rendering 65x50 against the other three's 50x50
+    private const SHAPES = ['wide', 'ellipse', 'square', 'rounded', 'circle'];
+
+    // Matches the ".social-share--fill-{fill}" variants there too - what paints the box, independently of its shape. "solid" is the per-network brand color, and carries no rule of its own: it IS the base styling every button gets
+    private const FILLS = ['solid', 'transparent', 'outline', 'minimal'];
 
     public function getMainNetworks(): array
     {
@@ -49,9 +52,14 @@ class ShareButtonsService implements ShareButtonsServiceInterface
         return array_keys(self::NETWORKS);
     }
 
-    public function getStyles(): array
+    public function getShapes(): array
     {
-        return self::STYLES;
+        return self::SHAPES;
+    }
+
+    public function getFills(): array
+    {
+        return self::FILLS;
     }
 
     public function getShareUrl(string $network, string $pageUrl): ?string

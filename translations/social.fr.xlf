@@ -26,6 +26,62 @@
                 <source>block.social_links_display_description</source>
                 <target>Insère les réseaux sociaux du tableau de bord, liens non redéfinis</target>
             </trans-unit>
+            <trans-unit id="FrDtWdT">
+                <source>description.guided_project_social_links</source>
+                <target>Une seule liste pour tout le site, rendue partout où le block « liens sociaux » est posé</target>
+            </trans-unit>
+            <trans-unit id="GjyFwm5">
+                <source>description.guided_project_social_share_buttons</source>
+                <target>Choisir les réseaux proposés à vos visiteurs, leur ordre et leur allure</target>
+            </trans-unit>
+            <trans-unit id="vgXH0gX">
+                <source>description.guided_step_social_links_display_label</source>
+                <target>Décoché, le nom reste lu par les lecteurs d'écran : il disparaît de l'écran, jamais de l'accessibilité.</target>
+            </trans-unit>
+            <trans-unit id="TOBz.H3">
+                <source>description.guided_step_social_links_edit</source>
+                <target>Créez-la si elle n'existe pas encore, ouvrez-la sinon : il n'y en a qu'une pour tout le site.</target>
+            </trans-unit>
+            <trans-unit id="ajiJRR8">
+                <source>description.guided_step_social_links_entries</source>
+                <target>Une ligne par réseau : son icône, l'adresse de votre page là-bas, et un libellé si vous voulez remplacer celui du réseau.</target>
+            </trans-unit>
+            <trans-unit id="CbQbxws">
+                <source>description.guided_step_social_links_icon_style</source>
+                <target>Icône seule, pastille colorée aux couleurs du réseau, ou anneau qui se remplit au survol. L'aperçu juste en dessous montre le résultat.</target>
+            </trans-unit>
+            <trans-unit id="IiZiN6F">
+                <source>description.guided_step_social_links_open</source>
+                <target>Vos réseaux ne sont pas un contenu de page : ils sont saisis une fois ici, et le site les reprend partout.</target>
+            </trans-unit>
+            <trans-unit id="qTr5m1O">
+                <source>description.guided_step_social_links_place</source>
+                <target>Ajoutez le block « liens sociaux » à une page ou au pied de page : il rend cette liste, où qu'il soit.</target>
+            </trans-unit>
+            <trans-unit id="qRGp6fm">
+                <source>description.guided_step_social_share_buttons_check</source>
+                <target>Ouvrez n'importe quelle page publiée : les boutons y sont, avec l'allure que vous venez de leur donner.</target>
+            </trans-unit>
+            <trans-unit id="dcxhtln">
+                <source>description.guided_step_social_share_buttons_edit</source>
+                <target>Créez-les s'ils n'existent pas encore, ouvrez-les sinon : il n'y en a qu'un jeu pour tout le site.</target>
+            </trans-unit>
+            <trans-unit id="k0_UuQi">
+                <source>description.guided_step_social_share_buttons_fill</source>
+                <target>L'aperçu juste en dessous se met à jour à chaque changement, avant même d'enregistrer.</target>
+            </trans-unit>
+            <trans-unit id="XwJ3XNI">
+                <source>description.guided_step_social_share_buttons_networks</source>
+                <target>Cochez ceux que vous voulez, et faites-les glisser : l'ordre de la liste est l'ordre affiché.</target>
+            </trans-unit>
+            <trans-unit id="LxtX23p">
+                <source>description.guided_step_social_share_buttons_open</source>
+                <target>Les boutons de partage sont déjà sur vos pages : ce qui se règle ici, c'est lesquels et à quoi ils ressemblent.</target>
+            </trans-unit>
+            <trans-unit id="bRoisnG">
+                <source>description.guided_step_social_share_buttons_shape</source>
+                <target>Bouton large, carré ou rond : c'est la place que les boutons prennent sous vos pages.</target>
+            </trans-unit>
             <trans-unit id="PmT6SQr">
                 <source>label.anchor</source>
                 <target>Ancre</target>
@@ -42,6 +98,30 @@
                 <source>label.display_label</source>
                 <target>Afficher le libellé</target>
             </trans-unit>
+            <trans-unit id="ShygsJr">
+                <source>label.fill</source>
+                <target>Remplissage</target>
+            </trans-unit>
+            <trans-unit id="5qL7rY1">
+                <source>label.fill_help</source>
+                <target>« Transparent » n'a pas de couleur propre : il n'apparaît que sur un bandeau peint via --social-share-background</target>
+            </trans-unit>
+            <trans-unit id="aCKBcFm">
+                <source>label.fill_minimal</source>
+                <target>Minimaliste</target>
+            </trans-unit>
+            <trans-unit id="qgzorvj">
+                <source>label.fill_outline</source>
+                <target>Contour</target>
+            </trans-unit>
+            <trans-unit id="jF.QrcU">
+                <source>label.fill_solid</source>
+                <target>Couleur de marque</target>
+            </trans-unit>
+            <trans-unit id="p42povi">
+                <source>label.fill_transparent</source>
+                <target>Transparent</target>
+            </trans-unit>
             <trans-unit id="QI77jSF">
                 <source>label.gallery_showcase_share_buttons</source>
                 <target>Boutons de partage</target>
@@ -57,6 +137,70 @@
             <trans-unit id="nECqDP1">
                 <source>label.gallery_showcase_social_links_description</source>
                 <target>Styles disponibles pour les liens vers les réseaux sociaux.</target>
+            </trans-unit>
+            <trans-unit id="__S_HiT">
+                <source>label.guided_project_social_links</source>
+                <target>Mettre les liens vers vos réseaux</target>
+            </trans-unit>
+            <trans-unit id="QAWYjtj">
+                <source>label.guided_project_social_share_buttons</source>
+                <target>Régler les boutons de partage</target>
+            </trans-unit>
+            <trans-unit id="xNJPblz">
+                <source>label.guided_step_social_links_display_label</source>
+                <target>Afficher ou non le nom du réseau</target>
+            </trans-unit>
+            <trans-unit id="PjuQ1t4">
+                <source>label.guided_step_social_links_edit</source>
+                <target>Ouvrir la liste</target>
+            </trans-unit>
+            <trans-unit id="bVVoZ2.">
+                <source>label.guided_step_social_links_entries</source>
+                <target>Ajouter un réseau</target>
+            </trans-unit>
+            <trans-unit id="3ATLUxM">
+                <source>label.guided_step_social_links_icon_style</source>
+                <target>Choisir le style des icônes</target>
+            </trans-unit>
+            <trans-unit id="X38SgbN">
+                <source>label.guided_step_social_links_open</source>
+                <target>Ouvrir les liens sociaux</target>
+            </trans-unit>
+            <trans-unit id="pHgHpAK">
+                <source>label.guided_step_social_links_place</source>
+                <target>Les poser dans le site</target>
+            </trans-unit>
+            <trans-unit id="VwEvHxL">
+                <source>label.guided_step_social_links_save</source>
+                <target>Enregistrer</target>
+            </trans-unit>
+            <trans-unit id="eSKLNGw">
+                <source>label.guided_step_social_share_buttons_check</source>
+                <target>Vérifier sur une page</target>
+            </trans-unit>
+            <trans-unit id="mMv1zf_">
+                <source>label.guided_step_social_share_buttons_edit</source>
+                <target>Ouvrir les réglages</target>
+            </trans-unit>
+            <trans-unit id="pTxyhi3">
+                <source>label.guided_step_social_share_buttons_fill</source>
+                <target>Choisir le remplissage</target>
+            </trans-unit>
+            <trans-unit id="88vw93b">
+                <source>label.guided_step_social_share_buttons_networks</source>
+                <target>Choisir les réseaux</target>
+            </trans-unit>
+            <trans-unit id="WKTLxCm">
+                <source>label.guided_step_social_share_buttons_open</source>
+                <target>Ouvrir les réglages de partage</target>
+            </trans-unit>
+            <trans-unit id="YIUIIz9">
+                <source>label.guided_step_social_share_buttons_save</source>
+                <target>Enregistrer</target>
+            </trans-unit>
+            <trans-unit id="YskjhFu">
+                <source>label.guided_step_social_share_buttons_shape</source>
+                <target>Choisir la forme</target>
             </trans-unit>
             <trans-unit id="lqEFtzf">
                 <source>label.icon</source>
@@ -102,6 +246,30 @@
                 <source>label.preview</source>
                 <target>Aperçu</target>
             </trans-unit>
+            <trans-unit id="TRS_z2w">
+                <source>label.shape</source>
+                <target>Forme</target>
+            </trans-unit>
+            <trans-unit id="SUMjBUS">
+                <source>label.shape_circle</source>
+                <target>Cercle</target>
+            </trans-unit>
+            <trans-unit id="29fwXaP">
+                <source>label.shape_ellipse</source>
+                <target>Ellipse</target>
+            </trans-unit>
+            <trans-unit id="OKH2tFU">
+                <source>label.shape_rounded</source>
+                <target>Arrondi</target>
+            </trans-unit>
+            <trans-unit id="5MAcXvo">
+                <source>label.shape_square</source>
+                <target>Carré</target>
+            </trans-unit>
+            <trans-unit id=".NVRNIf">
+                <source>label.shape_wide</source>
+                <target>Large</target>
+            </trans-unit>
             <trans-unit id="QGQ5OoP">
                 <source>label.share_buttons_settings</source>
                 <target>Boutons de partage</target>
@@ -122,37 +290,9 @@
                 <source>label.style</source>
                 <target>Style</target>
             </trans-unit>
-            <trans-unit id="TGKLvs1">
-                <source>label.style_circle</source>
-                <target>Cercle</target>
-            </trans-unit>
-            <trans-unit id="DiTkKlj">
-                <source>label.style_distinct</source>
-                <target>Distinct</target>
-            </trans-unit>
-            <trans-unit id="bDCzg9D">
-                <source>label.style_ellipse</source>
-                <target>Ellipse</target>
-            </trans-unit>
-            <trans-unit id="LApIp6i">
-                <source>label.style_minimal</source>
-                <target>Minimaliste</target>
-            </trans-unit>
-            <trans-unit id="qz282lV">
-                <source>label.style_outline</source>
-                <target>Contour</target>
-            </trans-unit>
             <trans-unit id="kOYnrgC">
                 <source>label.style_preview</source>
                 <target>Aperçu</target>
-            </trans-unit>
-            <trans-unit id="GHdn8Ip">
-                <source>label.style_rounded</source>
-                <target>Arrondi</target>
-            </trans-unit>
-            <trans-unit id="g6VgKWm">
-                <source>label.style_square</source>
-                <target>Carré</target>
             </trans-unit>
             <trans-unit id="mcQ1Bzu">
                 <source>label.url</source>

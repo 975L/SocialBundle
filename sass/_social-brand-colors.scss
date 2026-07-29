@@ -1,10 +1,6 @@
-/* Shared constants for both _share-buttons.scss and _social.scss - single source of truth so their
-   per-network coloring stays in sync (they both use the same flat Font Awesome glyphs, recolored
-   entirely via CSS - see README's "Icons" section). */
+// Single source of truth so both stylesheets' per-network coloring stays in sync
 
-/* Every icon (public/icons/*.svg) is a flat glyph with no explicit "fill" (black by default) - as an
-   <img>, its pixels can't be tinted via "color"/"fill", only inverted to white via "filter" against a
-   colored background (used by both "colored" styles below). */
+// The icons are <img>, so their pixels can only be inverted to white, never tinted
 $white-icon-filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
 
 /* Official-ish brand colors per network */

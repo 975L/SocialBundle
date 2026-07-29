@@ -1,5 +1,4 @@
-{# Adapter for the dynamic Block system - "data.links"/"data.displayLabel"/"data.iconStyle" (see
-   SocialLinksType) are spread as "links"/"displayLabel"/"iconStyle" #}
+{# Adapter spreading the stored data keys onto the component's props #}
 {% if links is defined and links is not empty %}
     <ul class="social-links social-links--{{ iconStyle|default('minimal') }}">
         {% for link in links %}

@@ -20,7 +20,8 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 class ShareButtonsSettingsTypeTest extends TypeTestCase
 {
     private const NETWORKS = ['facebook', 'bluesky', 'linkedin', 'pinterest', 'email'];
-    private const STYLES = ['distinct', 'ellipse', 'circle'];
+    private const SHAPES = ['wide', 'ellipse', 'circle'];
+    private const FILLS = ['solid', 'transparent', 'outline'];
 
     // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own EventDispatcherInterface mock with no configured expectations - forms do dispatch events internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
     protected function setUp(): void
@@ -33,7 +34,8 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
     {
         $shareButtonsService = $this->createStub(ShareButtonsServiceInterface::class);
         $shareButtonsService->method('getNetworks')->willReturn(self::NETWORKS);
-        $shareButtonsService->method('getStyles')->willReturn(self::STYLES);
+        $shareButtonsService->method('getShapes')->willReturn(self::SHAPES);
+        $shareButtonsService->method('getFills')->willReturn(self::FILLS);
 
         return $shareButtonsService;
     }
@@ -48,7 +50,7 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
     {
         $form = $this->factory->create(ShareButtonsSettingsType::class);
 
-        $this->assertSame(['networks', 'style', 'anchor'], array_keys($form->all()));
+        $this->assertSame(['networks', 'shape', 'fill', 'anchor'], array_keys($form->all()));
     }
 
     public function testNetworksFieldIsMultipleExpandedChoiceOfAllNetworks(): void
@@ -62,17 +64,50 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
         $this->assertFalse($networksField->getConfig()->getRequired());
     }
 
-    public function testStyleFieldIsSingleChoiceOfAllStylesWithTranslatedLabels(): void
+    public function testShapeFieldIsSingleChoiceOfAllShapesWithTranslatedLabels(): void
     {
         $form = $this->factory->create(ShareButtonsSettingsType::class);
 
-        $styleField = $form->get('style');
-        $this->assertInstanceOf(ChoiceType::class, $styleField->getConfig()->getType()->getInnerType());
-        $this->assertFalse($styleField->getConfig()->getOption('expanded'));
+        $shapeField = $form->get('shape');
+        $this->assertInstanceOf(ChoiceType::class, $shapeField->getConfig()->getType()->getInnerType());
+        $this->assertFalse($shapeField->getConfig()->getOption('expanded'));
         $this->assertSame(
-            ['label.style_distinct' => 'distinct', 'label.style_ellipse' => 'ellipse', 'label.style_circle' => 'circle'],
-            $styleField->getConfig()->getOption('choices')
+            ['label.shape_wide' => 'wide', 'label.shape_ellipse' => 'ellipse', 'label.shape_circle' => 'circle'],
+            $shapeField->getConfig()->getOption('choices')
         );
+    }
+
+    public function testFillFieldIsSingleChoiceOfAllFillsWithTranslatedLabels(): void
+    {
+        $form = $this->factory->create(ShareButtonsSettingsType::class);
+
+        $fillField = $form->get('fill');
+        $this->assertInstanceOf(ChoiceType::class, $fillField->getConfig()->getType()->getInnerType());
+        $this->assertFalse($fillField->getConfig()->getOption('expanded'));
+        $this->assertSame(
+            ['label.fill_solid' => 'solid', 'label.fill_transparent' => 'transparent', 'label.fill_outline' => 'outline'],
+            $fillField->getConfig()->getOption('choices')
+        );
+    }
+
+    // A singleton saved before shape and fill became two settings carries neither: both selects must open on the defaults, its single "style" not being read at all anymore
+    public function testBothSelectsOpenOnTheDefaultsForASingletonCarryingOnlyTheOldStyleKey(): void
+    {
+        $form = $this->factory->create(ShareButtonsSettingsType::class, ['networks' => ['facebook'], 'style' => 'outline']);
+
+        $this->assertSame('wide', $form->get('shape')->getData());
+        $this->assertSame('solid', $form->get('fill')->getData());
+    }
+
+    // ... and that single key must not survive the save, now that the pair replacing it is written alongside
+    public function testSubmitDropsTheLegacyStyleKey(): void
+    {
+        $form = $this->factory->create(ShareButtonsSettingsType::class, ['networks' => ['facebook'], 'style' => 'outline']);
+
+        $form->submit(['networks' => ['facebook'], 'shape' => 'circle', 'fill' => 'outline']);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertArrayNotHasKey('style', $form->getData());
     }
 
     // Without any previously saved data, the networks choices stay in ShareButtonsService's own fixed order
@@ -89,7 +124,7 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
     // Previously saved, checked networks come first (in their saved order), then every other network in the fixed order - without this, the sortable list would reset on every page load, discarding whatever order was last dragged and saved
     public function testNetworksChoicesPutSavedOrderFirstThenRemainingNetworksInFixedOrder(): void
     {
-        $form = $this->factory->create(ShareButtonsSettingsType::class, ['networks' => ['linkedin', 'facebook'], 'style' => 'circle']);
+        $form = $this->factory->create(ShareButtonsSettingsType::class, ['networks' => ['linkedin', 'facebook'], 'shape' => 'circle', 'fill' => 'solid']);
 
         $this->assertSame(
             ['linkedin', 'facebook', 'bluesky', 'pinterest', 'email'],
@@ -101,10 +136,10 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
     {
         $form = $this->factory->create(ShareButtonsSettingsType::class);
 
-        $form->submit(['networks' => ['bluesky', 'email'], 'style' => 'ellipse']);
+        $form->submit(['networks' => ['bluesky', 'email'], 'shape' => 'ellipse', 'fill' => 'transparent']);
 
         $this->assertTrue($form->isSynchronized());
-        $this->assertSame(['networks' => ['bluesky', 'email'], 'style' => 'ellipse', 'anchor' => null], $form->getData());
+        $this->assertSame(['networks' => ['bluesky', 'email'], 'shape' => 'ellipse', 'fill' => 'transparent', 'anchor' => null], $form->getData());
     }
 
     // Site-wide anchor: filled in, the band carries that id on every page, so a menu entry can link to it (see ShareButtonsExtension::renderDefaultShareButtons())
@@ -112,7 +147,7 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
     {
         $form = $this->factory->create(ShareButtonsSettingsType::class);
 
-        $form->submit(['networks' => ['email'], 'style' => 'ellipse', 'anchor' => 'Partage le ras-le-bol']);
+        $form->submit(['networks' => ['email'], 'shape' => 'ellipse', 'fill' => 'solid', 'anchor' => 'Partage le ras-le-bol']);
 
         $this->assertTrue($form->isSynchronized());
         $this->assertSame('partage-le-ras-le-bol', $form->getData()['anchor']);
@@ -123,7 +158,7 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
     {
         $form = $this->factory->create(ShareButtonsSettingsType::class);
 
-        $form->submit(['networks' => ['email'], 'style' => 'ellipse', 'anchor' => '']);
+        $form->submit(['networks' => ['email'], 'shape' => 'ellipse', 'fill' => 'solid', 'anchor' => '']);
 
         $this->assertTrue($form->isSynchronized());
         $this->assertNull($form->getData()['anchor']);

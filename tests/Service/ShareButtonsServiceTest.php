@@ -44,14 +44,25 @@ class ShareButtonsServiceTest extends TestCase
         $this->assertCount(20, $networks);
     }
 
-    // Styles must match the ".social-share--{style}" variants defined in sass/_share-buttons.scss
-    public function testGetStylesReturnsSupportedCssVariants(): void
+    // Shapes must match the ".social-share--shape-{shape}" variants defined in sass/_share-buttons.scss
+    public function testGetShapesReturnsSupportedCssVariants(): void
     {
         $service = $this->createService();
 
         $this->assertSame(
-            ['distinct', 'ellipse', 'circle', 'square', 'rounded', 'outline', 'minimal'],
-            $service->getStyles()
+            ['wide', 'ellipse', 'square', 'rounded', 'circle'],
+            $service->getShapes()
+        );
+    }
+
+    // Fills must match the ".social-share--fill-{fill}" variants there too - "solid" included, even though it has no rule of its own, it being the choice that leaves the brand colors in place
+    public function testGetFillsReturnsSupportedCssVariants(): void
+    {
+        $service = $this->createService();
+
+        $this->assertSame(
+            ['solid', 'transparent', 'outline', 'minimal'],
+            $service->getFills()
         );
     }
 

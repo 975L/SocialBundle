@@ -37,14 +37,19 @@ class ShareButtonsSettingsType extends AbstractType
             $this->shareButtonsService->getNetworks(),
         );
 
-        $styleChoices = array_combine(
-            array_map(static fn (string $style): string => 'label.style_' . $style, $this->shareButtonsService->getStyles()),
-            $this->shareButtonsService->getStyles(),
+        $shapeChoices = array_combine(
+            array_map(static fn (string $shape): string => 'label.shape_' . $shape, $this->shareButtonsService->getShapes()),
+            $this->shareButtonsService->getShapes(),
+        );
+
+        $fillChoices = array_combine(
+            array_map(static fn (string $fill): string => 'label.fill_' . $fill, $this->shareButtonsService->getFills()),
+            $this->shareButtonsService->getFills(),
         );
 
         $builder->addEventListener(
             FormEvents::PRE_SET_DATA,
-            function (FormEvent $event) use ($networkChoices, $styleChoices): void {
+            function (FormEvent $event) use ($networkChoices, $shapeChoices, $fillChoices): void {
                 $data = $event->getData() ?? [];
                 $savedOrder = is_array($data['networks'] ?? null) ? $data['networks'] : [];
 
@@ -58,12 +63,21 @@ class ShareButtonsSettingsType extends AbstractType
                         // Rendered as a draggable list, not ChoiceType's default expanded layout - see share_buttons_style_preview_theme.html.twig's "share_buttons_networks_widget" block and assets/js/share-buttons-networks-sort.js. Reordering it there changes the checkboxes' DOM order, which is what reorderNetworkChoices() above reads back on the next save (plain checkbox submission follows DOM order).
                         'block_prefix' => 'share_buttons_networks',
                     ])
-                    ->add('style', ChoiceType::class, [
-                        'label' => 'label.style',
-                        'choices' => $styleChoices,
+                    ->add('shape', ChoiceType::class, [
+                        'label' => 'label.shape',
+                        'choices' => $shapeChoices,
+                        'data' => $data['shape'] ?? 'wide',
                         'expanded' => false,
                         // Hooked by assets/js/share-buttons-preview.js to refresh the live preview below this field (see ShareButtonsSettingsCrudController) on change
-                        'attr' => ['data-share-style-select' => true],
+                        'attr' => ['data-share-shape-select' => true],
+                    ])
+                    ->add('fill', ChoiceType::class, [
+                        'label' => 'label.fill',
+                        'help' => 'label.fill_help',
+                        'choices' => $fillChoices,
+                        'data' => $data['fill'] ?? 'solid',
+                        'expanded' => false,
+                        'attr' => ['data-share-fill-select' => true],
                     ])
                     // Not added through UiBundle's HasAnchorFieldTrait, unlike every block kind offering an anchor: that trait adds its field directly, which would place it before the two above (fields added from inside this listener are appended after any added directly) - an anchor ahead of the networks reads backwards on a settings screen
                     ->add('anchor', TextType::class, [
@@ -81,6 +95,8 @@ class ShareButtonsSettingsType extends AbstractType
             function (FormEvent $event): void {
                 $data = $event->getData();
                 $data['anchor'] = $this->anchorSlugger->slugify($data['anchor'] ?? null, null);
+                // The old, single "style" key was only read to open the two selects on the right values (see PRE_SET_DATA above) - keys no field maps to survive a submit untouched, so it's dropped here rather than left behind, now stale, next to the pair that replaced it
+                unset($data['style']);
                 $event->setData($data);
             },
         );

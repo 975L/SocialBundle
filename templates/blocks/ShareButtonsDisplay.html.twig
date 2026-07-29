@@ -1,7 +1,2 @@
-{# Pointer block kind ("share_buttons_display"): holds no display data of its own, always renders the
-   site-wide "share_buttons_settings" singleton (see ShareButtonsSettingsCrudController) - lets editors
-   drop it into any page's block flow, in addition to (or instead of) the layout's own automatic
-   share_buttons_default() call, gated by "social-enable-share-buttons" (see layout.html.twig).
-   Its only field is the in-page anchor, passed on so a menu entry can link straight to this band -
-   anchor_id is computed by UiBundle's BlockExtension, and is an empty string when no anchor is set #}
+{# Pointer kind holding no data of its own, always rendering the site-wide singleton; its only field is the anchor #}
 {{ share_buttons_default(anchor_id) }}

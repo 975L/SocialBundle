@@ -1,13 +1,7 @@
 /* SHARE BUTTONS (share_buttons() Twig function - migrated from c975L/ShareButtonsBundle) */
 @use '_social-brand-colors.scss';
 
-/* Hidden below 768px: mobile/tablet browsers have their own native share sheet. Only the visibility
-   toggle is gated by the breakpoint - every other rule below applies unconditionally, the same way
-   _social.scss's own per-network styling isn't width-gated, so anything forcing .social-share visible
-   outside this breakpoint (e.g. the block gallery, which can't rely on a real viewport width inside an
-   iframe) still gets the real styling instead of a plain unstyled fallback.
-   A design showing the band at every width sets --social-share-display: flex once, rather than
-   restating the rule (and the breakpoint) in its own stylesheet. */
+// Only the visibility is gated by the breakpoint, so anything forcing the band visible still gets the real styling
 .social-share {
     display: var(--social-share-display, none);
 }
@@ -18,9 +12,7 @@
     }
 }
 
-/* The band is transparent and tight by default, sitting in a page's flow. A design making it a
-   full-width colored flat - what UiBundle's own sections get from their "background" field, which this
-   one has no form to carry - paints it through these three, instead of overriding the rule. */
+// Transparent and tight by default; a design paints it as a colored flat through these three tokens
 .social-share {
     flex-direction: row;
     align-items: center;
@@ -39,8 +31,7 @@
     justify-content: flex-end;
 }
 
-/* Size, spacing and radius go through tokens too, each style below keeping its own value as the
-   fallback - a design retunes the buttons whatever style it picked, without restating the selectors */
+// Tokens with each style's own value as the fallback, so a design retunes without restating selectors
 .social-share-btn {
     display: flex;
     flex-direction: row;
@@ -60,28 +51,29 @@
     filter: social-brand-colors.$white-icon-filter;
 }
 
-.social-share--distinct .social-share-btn,
-.social-share--ellipse .social-share-btn {
+/* SHAPE - the button's box and corners, nothing else. Every rule below is on ".social-share--shape-*"
+   alone, so it composes with whichever fill is picked (see the next section): the two are independent
+   settings in the dashboard, not the fixed pairs the single "style" setting used to offer. */
+.social-share--shape-wide .social-share-btn,
+.social-share--shape-ellipse .social-share-btn {
     width: var(--social-share-btn-width, 65px);
     height: var(--social-share-btn-height, 50px);
 }
 
-.social-share--circle .social-share-btn,
-.social-share--square .social-share-btn,
-.social-share--rounded .social-share-btn,
-.social-share--outline .social-share-btn,
-.social-share--minimal .social-share-btn {
+.social-share--shape-square .social-share-btn,
+.social-share--shape-rounded .social-share-btn,
+.social-share--shape-circle .social-share-btn {
     width: var(--social-share-btn-width, 50px);
     height: var(--social-share-btn-height, 50px);
 }
 
-.social-share--ellipse .social-share-btn,
-.social-share--circle .social-share-btn,
-.social-share--outline .social-share-btn {
+// "wide" and "square" keep the square corners of .social-share-btn's own rule above
+.social-share--shape-ellipse .social-share-btn,
+.social-share--shape-circle .social-share-btn {
     border-radius: var(--social-share-btn-radius, 50%);
 }
 
-.social-share--rounded .social-share-btn {
+.social-share--shape-rounded .social-share-btn {
     border-radius: var(--social-share-btn-radius, 12px);
 }
 
@@ -89,47 +81,62 @@
     animation: bounceVertical 0.5s infinite ease-in-out;
 }
 
-/* "Outline": transparent with a brand-colored ring, filling in on hover - the icon can't be tinted
-   to the brand color itself (it's an <img>, "filter" can't target arbitrary colors), so it stays
-   neutral (no filter) until hover, when the button fills and the icon turns white like the other styles */
-.social-share--outline .social-share-btn {
+/* FILL - what paints the box, whatever its shape. "solid" has no rule of its own: it's the per-network
+   brand color of the @each at the bottom of this file, which every button gets unless one of the three
+   below (all more specific, at 0-2-0 against its 0-1-0) takes it over. That @each also has a :hover rule,
+   at 0-2-0 too: a fill only keeps its background on hover by declaring its own :hover, which wins on
+   source order. "Transparent" and "outline" do; "minimal" doesn't, so it takes the brand color on hover. */
+
+/* "Transparent": one translucent white fill instead of the brand colors - for a band painted through --social-share-background, where a row of brand fills competes with the flat. The only fill with no color of its own, so it needs that painted band to show at all */
+.social-share--fill-transparent .social-share-btn {
+    background-color: var(--social-share-btn-background, rgba(255, 255, 255, 0.16));
+}
+
+.social-share--fill-transparent .social-share-btn:hover {
+    background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, rgba(255, 255, 255, 0.3)));
+}
+
+/* Stand-in band for previewing the "transparent" fill away from a real page: the dashboard preview and the block gallery both render on their own light background, where a translucent white fill is simply invisible. Only declares the two custom properties the band already reads, so it works on the band itself or on any wrapper around it - they inherit. Retune it through --social-share-preview-background/-padding; nothing on a real page carries this class, a real band being painted by the site through --social-share-background itself. */
+.social-share--preview-backdrop {
+    --social-share-background: var(--social-share-preview-background, #4a4a4a);
+    --social-share-padding: var(--social-share-preview-padding, 1em);
+}
+
+// The icon is an <img> that "filter" can't tint to a brand color, so it stays neutral until hover
+.social-share--fill-outline .social-share-btn {
     background-color: transparent;
     border: 2px solid var(--network-color, #fff);
     color: var(--network-color, #fff);
 }
 
-.social-share--outline .social-share-btn:hover {
+.social-share--fill-outline .social-share-btn:hover {
     background-color: var(--network-color, #000);
     color: #fff;
 }
 
-.social-share--outline .social-share-btn:hover img,
-.social-share--outline .social-share-btn:hover svg {
+.social-share--fill-outline .social-share-btn:hover img,
+.social-share--fill-outline .social-share-btn:hover svg {
     filter: social-brand-colors.$white-icon-filter;
 }
 
 /* "Minimal": icon only, no background/border - same reasoning on icon color as "outline" above */
-.social-share--minimal .social-share-btn {
+.social-share--fill-minimal .social-share-btn {
     background-color: transparent;
     color: inherit;
 }
 
-.social-share--minimal .social-share-btn:hover {
+.social-share--fill-minimal .social-share-btn:hover {
     color: var(--network-color, inherit);
 }
 
-.social-share--outline .social-share-btn img,
-.social-share--outline .social-share-btn svg,
-.social-share--minimal .social-share-btn img,
-.social-share--minimal .social-share-btn svg {
+.social-share--fill-outline .social-share-btn img,
+.social-share--fill-outline .social-share-btn svg,
+.social-share--fill-minimal .social-share-btn img,
+.social-share--fill-minimal .social-share-btn svg {
     filter: none;
 }
 
-/* Social networks colors - also exposed as "--network-color", used by the "outline" style's
-   border/hover-fill and "minimal"'s hover color (see above). Shared with _social.scss's own
-   per-network coloring - see _social-brand-colors.scss for the single source of truth.
-   --social-share-btn-background overrides the brand fill for a design wanting one uniform button
-   (e.g. a translucent white on a colored band), the hover one falling back on it when left unset. */
+// Also exposed as "--network-color"; --social-share-btn-background overrides the brand fill for a uniform button
 @each $network, $color in social-brand-colors.$social-brand-colors {
     .social-share-btn--#{$network} {
         --network-color: #{$color};
