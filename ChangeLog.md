@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.3.1
+
+Ship the share band as an includable template
+
+- Added `templates/shareButtons/default.html.twig`, the share band a host layout includes (29/07/2026)
+- Documented that template as the site-wide auto-display entry point in the readme (29/07/2026)
+- Fixed the guided steps highlighting `.action-save`, EasyAdmin naming that button `action-saveAndReturn` (29/07/2026)
+- Added a `SocialGuidedProjectProviderTest` case on the save steps' highlight (29/07/2026)
+
 ## v1.3.0
 
 Split the share buttons style into shape and fill

@@ -109,6 +109,26 @@ class SocialGuidedProjectProviderTest extends TestCase
         );
     }
 
+    // EasyAdmin renders the form's save button as action-saveAndReturn, .action-save matching nothing and leaving the step highlighting an empty selection
+    public function testEverySaveStepHighlightsTheEasyAdminSaveButton(): void
+    {
+        $saveSteps = [];
+
+        foreach ($this->createProvider(true)->getGuidedProjects() as $project) {
+            foreach ($project['steps'] as $step) {
+                if (str_ends_with($step['label'], '_save')) {
+                    $saveSteps[] = $step;
+                }
+            }
+        }
+
+        $this->assertCount(2, $saveSteps, 'Each project walks the user to the save button once');
+
+        foreach ($saveSteps as $step) {
+            $this->assertSame('.action-saveAndReturn', $step['highlight']);
+        }
+    }
+
     // A label or description with no translation reads as its own key in the panel
     public function testEveryLabelAndDescriptionIsTranslated(): void
     {

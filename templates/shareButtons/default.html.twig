@@ -1,0 +1,7 @@
+{# Self-contained share band, included by a host layout through `include('@c975LSocial/shareButtons/default.html.twig', ignore_missing: true)` - that path is a public contract, renaming it is a BC-break. The host stays free of any hard dependency on this bundle: Twig resolves an include at runtime, where it resolves a function call at compile time. Markup and config guard both live here, the bundle owning the domain owning its fragment. #}
+{% if config('social-enable-share-buttons') %}
+    {# Meant to sit outside <main>, inside a landmark so it isn't orphan content for a screen reader - "complementary" being what buttons tangential to the page's content are #}
+    <aside class="page-share">
+        {{ share_buttons_default() }}
+    </aside>
+{% endif %}

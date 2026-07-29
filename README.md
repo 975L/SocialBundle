@@ -191,13 +191,15 @@ To show share buttons on every page without touching a single template, two piec
 - **"Boutons de partage"** in the management menu (`ShareButtonsSettingsCrudController`) — a small dashboard singleton (same `Block`-reuse technique as the [social links block](#social-links-block), no dedicated entity/table) letting you pick which networks, and which button [shape and fill](#share-buttons), are used site-wide. Networks are a drag-sortable checkbox list (see `assets/js/share-buttons-networks-sort.js`) - their order controls the order buttons render in. A live preview (see `assets/js/share-buttons-preview.js`) updates as you check/uncheck/reorder networks or change either select.
 - **`social-enable-share-buttons`** — a boolean [c975L/ConfigBundle](https://github.com/975L/ConfigBundle) config key (`false` by default), auto-loaded from this bundle's `config/configs.json`.
 
-[c975L/SiteBundle](https://github.com/975L/SiteBundle)'s base layout calls the `share_buttons_default()` Twig function — which reads those dashboard settings, falling back to `share_buttons()`'s own defaults (`'main'` networks, `'wide'` shape, `'solid'` fill) as long as nothing's been saved yet — and to the main networks again if every one of them is unchecked, `social-enable-share-buttons` being what hides the band — gated behind that config key:
+This bundle ships the band itself, as `templates/shareButtons/default.html.twig` — an `<aside class="page-share">` wrapping the `share_buttons_default()` Twig function, already guarded by that config key. It reads those dashboard settings, falling back to `share_buttons()`'s own defaults (`'main'` networks, `'wide'` shape, `'solid'` fill) as long as nothing's been saved yet — and to the main networks again if every one of them is unchecked, `social-enable-share-buttons` being what hides the band.
+
+[c975L/SiteBundle](https://github.com/975L/SiteBundle)'s base layout includes it, outside `<main>` so the flex column leaves it against the footer:
 
 ```twig
-{% if config('social-enable-share-buttons') %}
-    {{ share_buttons_default() }}
-{% endif %}
+{{ include('@c975LSocial/shareButtons/default.html.twig', ignore_missing: true) }}
 ```
+
+An include resolves at runtime where a function call resolves at compile time, so a layout written that way keeps this bundle optional: `ignore_missing` renders nothing on a site not installing it, instead of failing on an unknown `share_buttons_default()`. That template path is a public contract — renaming it is a BC-break — and the markup lives here, the bundle owning the domain owning its fragment.
 
 Flip `social-enable-share-buttons` to `true` in the dashboard and every page gets the buttons; leave it `false` (the default) and nothing changes. Calling `share_buttons()` directly, anywhere else in your own templates, is unaffected by any of this — it's a separate, always-manual entry point.
 

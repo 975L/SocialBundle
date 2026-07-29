@@ -21,6 +21,11 @@
                 "en": "The dashboard now offers guided projects for your social presence: putting up the links to your networks once for the whole site, and picking which share buttons your visitors get, in which order and with which look",
                 "fr": "Le tableau de bord propose désormais des parcours guidés pour votre présence sociale : mettre les liens vers vos réseaux une seule fois pour tout le site, et choisir les boutons de partage proposés à vos visiteurs, leur ordre et leur allure",
                 "es": "El panel ofrece ahora recorridos guiados para su presencia social: poner los enlaces a sus redes una sola vez para todo el sitio, y elegir qué botones de compartir reciben sus visitantes, en qué orden y con qué aspecto"
+            },
+            {
+                "en": "The guided steps asking you to save now point at the right button instead of highlighting nothing",
+                "fr": "Les étapes guidées qui vous demandent d'enregistrer désignent maintenant le bon bouton, au lieu de ne rien mettre en évidence",
+                "es": "Los pasos guiados que le piden guardar ahora señalan el botón correcto, en lugar de no resaltar nada"
             }
         ]
     },

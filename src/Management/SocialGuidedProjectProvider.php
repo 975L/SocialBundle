@@ -76,7 +76,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                 ],
                 [
                     'label' => 'label.guided_step_social_links_save',
-                    'highlight' => '.action-save',
+                    'highlight' => '.action-saveAndReturn',
                 ],
                 [
                     'label' => 'label.guided_step_social_links_place',
@@ -123,7 +123,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                 ],
                 [
                     'label' => 'label.guided_step_social_share_buttons_save',
-                    'highlight' => '.action-save',
+                    'highlight' => '.action-saveAndReturn',
                 ],
                 [
                     'label' => 'label.guided_step_social_share_buttons_check',
