@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4.2
+
+Add the Codacy grade badge to the README
+
+- Added the Codacy grade badge to the README (30/07/2026)
+
 ## v1.4.1
 
 Pin the CI actions and tune the linters' configuration

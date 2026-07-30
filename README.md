@@ -5,6 +5,7 @@ Symfony bundle managing social features for the c975L ecosystem — starting wit
 [![GitHub](https://img.shields.io/github/license/975L/SocialBundle)](https://github.com/975L/SocialBundle/blob/master/LICENSE)
 [![Packagist Version](https://img.shields.io/packagist/v/c975l/social-bundle)](https://packagist.org/packages/c975l/social-bundle)
 [![PHP Version](https://img.shields.io/packagist/php-v/c975l/social-bundle)](https://packagist.org/packages/c975l/social-bundle)
+[![Codacy Grade](https://app.codacy.com/project/badge/Grade/025dc54614d64d80a0ee456262e98b1c)](https://app.codacy.com/gh/975L/SocialBundle/dashboard)
 
 ## Why SocialBundle
 
