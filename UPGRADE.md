@@ -1,5 +1,9 @@
 # Upgrade
 
+## To 1.4
+
+**The bundle now requires PHP 8.4 and Symfony 8.** It used to declare `"php": ">=8.1"` and `"symfony/*": "*"`, an unbound constraint that let Composer resolve Symfony against whatever PHP the application ran on - so an application on PHP 8.2 silently got Symfony 7 with a bundle only ever tested against Symfony 8. The requirements now say what is actually built and tested: `"php": ">=8.4"` and `"symfony/*": "^8.0"`. If your application is still on Symfony 7, stay on the previous release until you migrate - `composer update` will simply refuse to move rather than break anything.
+
 ## To 1.3
 
 ### Share buttons: the single `style` setting became `shape` + `fill`

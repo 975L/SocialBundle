@@ -51,7 +51,7 @@ class SocialLinksCrudController extends AbstractCrudController
     }
 
     // Redirects to editing the existing singleton instead of letting a second "social_links" Block be created - BlockRepository::findOneByKind() (used by the front-end renderer) has no ordering, so a duplicate row silently makes the newest links invisible instead of erroring
-    public function new(AdminContext $context): KeyValueStore|Response
+    public function new(AdminContext $context): KeyValueStore | Response
     {
         $existing = $this->blockRepository->findOneByKind(self::KIND);
         if (null !== $existing) {

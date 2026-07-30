@@ -43,7 +43,8 @@ See it in action at [975l.com/pages/social-bundle](https://975l.com/pages/social
 
 ## Requirements
 
-- PHP >= 8.1
+- PHP >= 8.4
+- Symfony 8
 - [c975L/ConfigBundle](https://github.com/975L/ConfigBundle)
 - [c975L/UiBundle](https://github.com/975L/UiBundle)
 - EasyAdmin

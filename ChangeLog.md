@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.4.0
+
+Require PHP 8.4 and Symfony 8, and set up the quality toolchain
+
+- `php` is now required in `>=8.4` instead of `>=8.1` (30/07/2026) [BC-Break]
+- The `symfony/*` requirements are now constrained to `^8.0` instead of `*` (30/07/2026) [BC-Break]
+- The third-party requirements left in `*` are now bounded on their installed version (30/07/2026)
+- The `c975l/*` requirements are now bounded on their major (30/07/2026)
+- The `c975l/*` requirements are now constrained to `^5` and `^1` instead of `*` (30/07/2026) [BC-Break]
+- Updated the requirements in the readme (30/07/2026)
+- Added `.codacy.yaml`, `phpcs.xml.dist` and `eslint.config.mjs` (30/07/2026)
+- Applied PSR-12 to the codebase (30/07/2026)
+- Added `.php-cs-fixer.dist.php`, applying the Symfony coding standards (30/07/2026)
+- Added `phpstan.dist.neon`, running the static analysis at level 5 (30/07/2026)
+- Added the `CI` GitHub Actions workflow (30/07/2026)
+- The local Codacy CLI now runs `eslint@9.39.5` (30/07/2026)
+
 ## v1.3.1
 
 Ship the share band as an includable template

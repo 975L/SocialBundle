@@ -50,7 +50,7 @@ class ShareButtonsSettingsCrudController extends AbstractCrudController
     }
 
     // Redirects to editing the existing singleton instead of letting a second "share_buttons_settings" Block be created - see SocialLinksCrudController::new() for why a duplicate row is a silent bug, not a hard error
-    public function new(AdminContext $context): KeyValueStore|Response
+    public function new(AdminContext $context): KeyValueStore | Response
     {
         $existing = $this->blockRepository->findOneByKind(self::KIND);
         if (null !== $existing) {
