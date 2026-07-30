@@ -1091,14 +1091,6 @@ footer .social-link a:hover {
 /* SHARE BUTTONS (share_buttons() Twig function - migrated from c975L/ShareButtonsBundle) */
 .social-share {
   display: var(--social-share-display, none);
-}
-
-@media (min-width: 768px) {
-  .social-share {
-    display: var(--social-share-display, flex);
-  }
-}
-.social-share {
   flex-direction: row;
   align-items: center;
   justify-content: center;
@@ -1108,6 +1100,11 @@ footer .social-link a:hover {
   margin: 0;
 }
 
+@media (min-width: 768px) {
+  .social-share {
+    display: var(--social-share-display, flex);
+  }
+}
 .social-share--left {
   justify-content: flex-start;
 }

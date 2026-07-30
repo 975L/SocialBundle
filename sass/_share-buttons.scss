@@ -1,19 +1,10 @@
 /* SHARE BUTTONS (share_buttons() Twig function - migrated from c975L/ShareButtonsBundle) */
 @use '_social-brand-colors.scss';
 
-// Only the visibility is gated by the breakpoint, so anything forcing the band visible still gets the real styling
+// Transparent and tight by default; a design paints it as a colored flat through these three tokens
+// Only the visibility is gated by the breakpoint below, so anything forcing the band visible still gets this styling
 .social-share {
     display: var(--social-share-display, none);
-}
-
-@media (min-width: 768px) {
-    .social-share {
-        display: var(--social-share-display, flex);
-    }
-}
-
-// Transparent and tight by default; a design paints it as a colored flat through these three tokens
-.social-share {
     flex-direction: row;
     align-items: center;
     justify-content: center;
@@ -21,6 +12,12 @@
     gap: var(--social-share-gap, 0.2em);
     padding: var(--social-share-padding, 0);
     margin: 0;
+}
+
+@media (min-width: 768px) {
+    .social-share {
+        display: var(--social-share-display, flex);
+    }
 }
 
 .social-share--left {

@@ -6,6 +6,7 @@ Pin the CI actions and tune the linters' configuration
 
 - Added a `.stylelintrc.json`, read by Codacy in place of its default ruleset (30/07/2026)
 - Dropped the `monospace` exception from the Stylelint `font-family-no-duplicate-names` rule (30/07/2026)
+- Removed the duplicate `.social-share` rule, its styling folded into the first and the breakpoint override moved below it (30/07/2026)
 - The `CI` workflow now uses `actions/checkout@v5` (30/07/2026)
 - The `CI` workflow now pins `setup-php` and `codacy-coverage-reporter-action` on their commit SHA (30/07/2026)
 
