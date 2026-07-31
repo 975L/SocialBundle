@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4.3
+
+Point the README's demo links at the ecosystem's dedicated site
+
+- The README's demo and block gallery links now point at `bundles.975l.com` (31/07/2026)
+
 ## v1.4.2
 
 Add the Codacy grade badge to the README
