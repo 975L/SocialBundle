@@ -1,0 +1,23 @@
+/* This site's SocialBundle tokens, in the c975L theme format: everything ships commented out at the
+   bundle's own default, so the active lines below are, at a glance, exactly what this design decides. The
+   format and how it layers are documented in c975l/site-bundle's readme ("Themes"), the defaults themselves
+   are the inline fallbacks in this bundle's sass/_share-buttons.scss.
+
+   One file per bundle, each holding what that bundle reads. Shapes, colors and every token shared with the
+   rest of the ecosystem live in themes/ui.css - only what is SocialBundle's own is here.
+
+   --network-color is deliberately absent: it is set per network (.social-share-btn--facebook and its
+   siblings each declare their own brand color), so one value in :root would paint every network alike and
+   flatten the whole point of the picker. A design that really wants a single color for all of them
+   overrides those rules in the app's own assets/styles/app.css instead. */
+:root {
+    /* The row the share buttons sit in - transparent by default, i.e. the page shows through */
+    /* --social-share-background: transparent; */
+    /* --social-share-gap: 0.2em; */
+    /* --social-share-padding: 0; */
+
+    /* A button's own surface. Both default to the network's own brand color, so leaving them alone is what
+       keeps each button recognizable - set them for a design wanting one uniform row */
+    /* --social-share-btn-background: var(--network-color); */
+    /* --social-share-btn-background-hover: var(--social-share-btn-background); */
+}

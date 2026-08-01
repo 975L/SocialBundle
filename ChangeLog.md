@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.4.4
+
+One theme file per bundle, concatenated into a single request
+
+- Added `scaffold/assets/styles/themes/social.css`, this bundle's own tokens (01/08/2026)
+- Added `ScaffoldThemeTest`, checking that file against the sass it mirrors (01/08/2026)
+- Documented the theme file in the readme (01/08/2026)
+
 ## v1.4.3
 
 Point the README's demo links at the ecosystem's dedicated site
