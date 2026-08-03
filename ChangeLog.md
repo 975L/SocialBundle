@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.0.0
+
+Require c975l/core-bundle instead of ConfigBundle and UiBundle
+
+- Replaced the `c975l/config-bundle` and `c975l/ui-bundle` requirements with `c975l/core-bundle` (03/08/2026) [BC-Break]
+- `ImportmapProvider` declares its two entrypoints relative to this bundle (03/08/2026) [BC-Break]
+- Added `--page-share-margin-top`, the gap above the share band (03/08/2026)
+- Rewrote the bundle's description in the readme and `composer.json` (03/08/2026)
+- The readme's requirements now list `c975l/core-bundle` (03/08/2026)
+- Shortened the scaffolded `themes/social.css` header to four one-line comments (02/08/2026)
+
 ## v1.4.4
 
 One theme file per bundle, concatenated into a single request

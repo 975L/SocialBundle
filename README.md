@@ -1,6 +1,6 @@
 # SocialBundle
 
-Symfony bundle managing social features for the c975L ecosystem — starting with a user-defined social links block, with post retrieval, scheduled posting, and more planned.
+Symfony bundle for the social side of a c975L site — social links managed in one single place and share buttons for 15 networks, placed anywhere as blocks. Replaces the former ShareButtonsBundle.
 
 [![GitHub](https://img.shields.io/github/license/975L/SocialBundle)](https://github.com/975L/SocialBundle/blob/master/LICENSE)
 [![Packagist Version](https://img.shields.io/packagist/v/c975l/social-bundle)](https://packagist.org/packages/c975l/social-bundle)
@@ -46,8 +46,7 @@ See it in action at [bundles.975l.com/pages/social-bundle](https://bundles.975l.
 
 - PHP >= 8.4
 - Symfony 8
-- [c975L/ConfigBundle](https://github.com/975L/ConfigBundle)
-- [c975L/UiBundle](https://github.com/975L/UiBundle)
+- [c975L/CoreBundle](https://github.com/975L/CoreBundle), the single package shipping ConfigBundle and UiBundle
 - EasyAdmin
 
 ---
@@ -174,6 +173,7 @@ The band and its buttons are retuned through custom properties rather than by re
 
 | Property | Default | Retunes |
 | --- | --- | --- |
+| `--page-share-margin-top` | `2em` | The gap above the band, which sits between the page's content and the footer |
 | `--social-share-display` | `none` below 768px, `flex` above | The band's visibility, for a design showing it at every width |
 | `--social-share-background` | `transparent` | The band as a full-width colored flat, what UiBundle's sections get from their "background" field |
 | `--social-share-padding` | `0` | Its breathing room, once painted |

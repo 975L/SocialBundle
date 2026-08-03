@@ -21,7 +21,7 @@ class ImportmapProviderTest extends TestCase
 
         $this->assertSame([
             '@c975l/social-bundle/controllers-admin.js' => [
-                'path' => './vendor/c975l/social-bundle/assets/controllers-admin.js',
+                'path' => 'assets/controllers-admin.js',
                 'entrypoint' => true,
             ],
         ], $entries);
@@ -33,7 +33,7 @@ class ImportmapProviderTest extends TestCase
 
         $this->assertSame([
             '@c975l/social-bundle/controllers.js' => [
-                'path' => './vendor/c975l/social-bundle/assets/controllers.js',
+                'path' => 'assets/controllers.js',
                 'entrypoint' => true,
             ],
         ], $entries);

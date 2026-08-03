@@ -1089,6 +1089,10 @@ footer .social-link a:hover {
 }
 
 /* SHARE BUTTONS (share_buttons() Twig function - migrated from c975L/ShareButtonsBundle) */
+.page-share {
+  margin-top: var(--page-share-margin-top, 2em);
+}
+
 .social-share {
   display: var(--social-share-display, none);
   flex-direction: row;

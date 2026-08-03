@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-08-03",
+        "description": [
+            {
+                "en": "The share buttons band is no longer stuck against the page's content - it now gets some breathing room above it",
+                "fr": "Le bandeau des boutons de partage n'est plus collé au contenu de la page : il dispose maintenant d'un espace au-dessus",
+                "es": "La banda de botones de compartir ya no queda pegada al contenido de la página: ahora dispone de un espacio por encima"
+            }
+        ]
+    },
+    {
         "date": "2026-07-29",
         "description": [
             {

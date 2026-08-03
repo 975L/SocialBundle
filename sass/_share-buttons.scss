@@ -1,6 +1,12 @@
 /* SHARE BUTTONS (share_buttons() Twig function - migrated from c975L/ShareButtonsBundle) */
 @use '_social-brand-colors.scss';
 
+// The band's own gap above it: .page-share sits between main and the footer, where the space used to be
+// whatever bottom margin the page's last block happened to carry - nothing when that block carried none
+.page-share {
+    margin-top: var(--page-share-margin-top, 2em);
+}
+
 // Transparent and tight by default; a design paints it as a colored flat through these three tokens
 // Only the visibility is gated by the breakpoint below, so anything forcing the band visible still gets this styling
 .social-share {
