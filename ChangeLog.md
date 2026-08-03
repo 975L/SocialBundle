@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.0.1
+
+Run the CI checks from Composer scripts, replayable locally
+
+- Added the `cs`, `fixer`, `stan` and `qa` Composer scripts (03/08/2026)
+- The CI workflow now calls those Composer scripts (03/08/2026)
+- Added `bin/ci.sh`, replaying the CI checks on freshly resolved dependencies (03/08/2026)
+- PHPUnit now fails on its own notices (03/08/2026)
+
 ## v2.0.0
 
 Require c975l/core-bundle instead of ConfigBundle and UiBundle
