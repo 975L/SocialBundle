@@ -45,6 +45,12 @@ class ScaffoldThemeTest extends TestCase
         '--social-share-btn-margin',
     ];
 
+    // UiBundle's own page rhythm, read here so the social links block steps like every other block of the page -
+    // offered by its themes/ui.css, not restated here (the scaffold's header: only what is SocialBundle's own)
+    private const UI_OWNED = [
+        '--section-space-tight',
+    ];
+
     // A. Every token a site is meant to set is offered, so the file stays the single place to look
     public function testScaffoldOffersEveryThemableToken(): void
     {
@@ -54,7 +60,8 @@ class ScaffoldThemeTest extends TestCase
             self::PER_NETWORK,
             self::PER_VARIANT,
             self::PREVIEW_ONLY,
-            self::NOT_THEMABLE
+            self::NOT_THEMABLE,
+            self::UI_OWNED
         ));
 
         $this->assertSame([], $missing, sprintf(

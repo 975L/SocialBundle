@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Form\Block;
 
+use c975L\UiBundle\Form\TrixEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -26,6 +27,12 @@ class SocialLinksType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            // Optional lead-in rendered centered above the icon row (see templates/blocks/SocialLinks.html.twig) - left empty, nothing at all is rendered, not even an empty wrapper. TrixEditorType, the editor every other rich-text field of the ecosystem uses: its widget/assets are registered dashboard-wide (see ConfigBundle's DashboardController), so nothing extra is needed here
+            ->add('intro', TrixEditorType::class, [
+                'label' => 'label.intro',
+                'help' => 'label.intro_help',
+                'required' => false,
+            ])
             // Whether every icon keeps its plain, monochrome color (inheriting the surrounding text color), gets a solid brand-colored badge behind it (white icon on top), or a lighter brand-colored ring that fills in on hover - same Font Awesome glyph in every case (see SocialLinkExtension::getSocialLinkIcon()), just recolored via CSS (sass/_social.scss), mirroring share_buttons()'s own per-network coloring/styles
             ->add('iconStyle', ChoiceType::class, [
                 'label' => 'label.icon_style',

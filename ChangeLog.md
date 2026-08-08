@@ -1,5 +1,19 @@
 # Changelog
 
+## v2.1
+
+Add an introduction line to the social links block and the share band
+
+- Added an optional rich-text `intro` field to the `social_links` block (08/08/2026)
+- The social links preview in the dashboard now shows that introduction text (08/08/2026)
+- Wrapped the social links block in a `.social-links-block` div (08/08/2026)
+- That wrapper steps the block above with `--section-space-tight`, except in a footer (08/08/2026)
+- Added a `displayIntro` argument to `share_buttons()`, off by default (08/08/2026)
+- Added an "afficher le texte d'invitation" setting to the share buttons singleton, on by default (08/08/2026)
+- The share buttons preview now follows that checkbox (08/08/2026)
+- Added the `label.share_intro`, `label.intro` and `label.display_share_intro` translations (08/08/2026)
+- Documented both introduction texts in the readme (08/08/2026)
+
 ## v2.0.1
 
 Run the CI checks from Composer scripts, replayable locally

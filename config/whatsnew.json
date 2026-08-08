@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-08-08",
+        "description": [
+            {
+                "en": "An introduction text can now be added above the social network icons, to invite visitors to follow you",
+                "fr": "Un texte d'introduction peut maintenant être ajouté au-dessus des icônes des réseaux sociaux, pour inviter les visiteurs à vous suivre",
+                "es": "Ahora se puede añadir un texto de introducción encima de los iconos de las redes sociales, para invitar a los visitantes a seguirle"
+            },
+            {
+                "en": "The share buttons now carry an invitation line above them, which can be turned off from their settings screen",
+                "fr": "Les boutons de partage sont maintenant surmontés d'une ligne d'invitation, qui peut être désactivée depuis leur écran de réglages",
+                "es": "Los botones de compartir ahora llevan encima una línea de invitación, que puede desactivarse desde su pantalla de ajustes"
+            },
+            {
+                "en": "The social network icons are no longer stuck against the content placed above them",
+                "fr": "Les icônes des réseaux sociaux ne sont plus collées au contenu placé au-dessus d'elles",
+                "es": "Los iconos de las redes sociales ya no quedan pegados al contenido situado encima de ellos"
+            }
+        ]
+    },
+    {
         "date": "2026-08-03",
         "description": [
             {

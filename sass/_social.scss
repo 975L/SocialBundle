@@ -17,6 +17,24 @@
     }
 }
 
+// The step above the block, so it doesn't sit flush against whatever page block precedes it. Same rhythm as
+// every UiBundle section (--section-space-tight, its fallback restated here so a site retuning the token moves
+// this too) and, like them, on the top edge only: a block owns the room above it and declares nothing below
+.social-links-block {
+    padding-top: var(--section-space-tight, clamp(24px, 4vw, 48px));
+}
+
+// The footer band sets its own room (see _footer-social.scss), which the page step would add to
+footer .social-links-block {
+    padding-top: 0;
+}
+
+// Optional lead-in above the icon row (see templates/blocks/SocialLinks.html.twig), centered like the row itself
+.social-links-intro {
+    text-align: center;
+    margin: 0 0 1em;
+}
+
 .social-links {
     list-style: none;
     display: flex;

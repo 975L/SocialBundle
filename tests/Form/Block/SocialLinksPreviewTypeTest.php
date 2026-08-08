@@ -33,21 +33,23 @@ class SocialLinksPreviewTypeTest extends TypeTestCase
         $this->assertSame('social_links_preview', $type->getBlockPrefix());
     }
 
-    public function testConfigureOptionsDefaultsToEmptyLinksVisibleLabelAndMinimalStyle(): void
+    public function testConfigureOptionsDefaultsToNoIntroEmptyLinksVisibleLabelAndMinimalStyle(): void
     {
         $form = $this->factory->create(SocialLinksPreviewType::class);
 
+        $this->assertSame('', $form->getConfig()->getOption('intro'));
         $this->assertSame([], $form->getConfig()->getOption('links'));
         $this->assertTrue($form->getConfig()->getOption('display_label'));
         $this->assertSame('minimal', $form->getConfig()->getOption('icon_style'));
     }
 
-    // buildView() copies the options straight onto the view - the theme template only ever reads $links/$display_label/$icon_style off the view, never the (unmapped) form data
-    public function testBuildViewExposesLinksDisplayLabelAndIconStyleAsViewVars(): void
+    // buildView() copies the options straight onto the view - the theme template only ever reads $intro/$links/$display_label/$icon_style off the view, never the (unmapped) form data
+    public function testBuildViewExposesIntroLinksDisplayLabelAndIconStyleAsViewVars(): void
     {
         $links = [['network' => 'facebook', 'url' => 'https://facebook.com/975l', 'customLabel' => null, 'customIcon' => null]];
 
         $form = $this->factory->create(SocialLinksPreviewType::class, null, [
+            'intro' => '<div>Retrouvez-nous</div>',
             'links' => $links,
             'display_label' => false,
             'icon_style' => 'colored',
@@ -55,6 +57,7 @@ class SocialLinksPreviewTypeTest extends TypeTestCase
 
         $view = $form->createView();
 
+        $this->assertSame('<div>Retrouvez-nous</div>', $view->vars['intro']);
         $this->assertSame($links, $view->vars['links']);
         $this->assertFalse($view->vars['display_label']);
         $this->assertSame('colored', $view->vars['icon_style']);

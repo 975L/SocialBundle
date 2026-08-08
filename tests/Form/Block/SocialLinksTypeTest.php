@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Tests\Form\Block;
 use c975L\SocialBundle\Form\Block\SocialLinkEntryType;
 use c975L\SocialBundle\Form\Block\SocialLinksType;
 use c975L\UiBundle\Form\IconPickerType;
+use c975L\UiBundle\Form\TrixEditorType;
 use c975L\UiBundle\Service\IconServiceInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -39,11 +40,21 @@ class SocialLinksTypeTest extends TypeTestCase
         return [new PreloadedExtension([new IconPickerType($iconService)], [])];
     }
 
-    public function testBuildFormAddsIconStyleDisplayLabelAndLinksFields(): void
+    public function testBuildFormAddsIntroIconStyleDisplayLabelAndLinksFields(): void
     {
         $form = $this->factory->create(SocialLinksType::class);
 
-        $this->assertSame(['iconStyle', 'displayLabel', 'links'], array_keys($form->all()));
+        $this->assertSame(['intro', 'iconStyle', 'displayLabel', 'links'], array_keys($form->all()));
+    }
+
+    // Optional: an empty intro renders nothing at all above the icon row (see templates/blocks/SocialLinks.html.twig)
+    public function testIntroFieldIsOptionalRichTextEditor(): void
+    {
+        $form = $this->factory->create(SocialLinksType::class);
+
+        $introField = $form->get('intro');
+        $this->assertInstanceOf(TrixEditorType::class, $introField->getConfig()->getType()->getInnerType());
+        $this->assertFalse($introField->getConfig()->getRequired());
     }
 
     // Matches the ".social-links--{style}" variants styled in sass/_social.scss
@@ -86,6 +97,7 @@ class SocialLinksTypeTest extends TypeTestCase
         $form = $this->factory->create(SocialLinksType::class);
 
         $form->submit([
+            'intro' => '<div>Retrouvez-nous</div>',
             'iconStyle' => 'colored',
             'displayLabel' => '1',
             'links' => [
@@ -94,6 +106,7 @@ class SocialLinksTypeTest extends TypeTestCase
         ]);
 
         $this->assertTrue($form->isSynchronized());
+        $this->assertSame('<div>Retrouvez-nous</div>', $form->getData()['intro']);
         $this->assertSame('colored', $form->getData()['iconStyle']);
         $this->assertTrue($form->getData()['displayLabel']);
         $this->assertSame('facebook', $form->getData()['links'][0]['network']);

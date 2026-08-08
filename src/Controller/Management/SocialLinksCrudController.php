@@ -159,6 +159,7 @@ class SocialLinksCrudController extends AbstractCrudController
                 ->setFormType(SocialLinksPreviewType::class)
                 ->setFormTypeOptions([
                     'mapped' => false,
+                    'intro' => $data['intro'] ?? '',
                     'links' => $data['links'] ?? [],
                     'display_label' => $data['displayLabel'] ?? true,
                     'icon_style' => $data['iconStyle'] ?? 'minimal',

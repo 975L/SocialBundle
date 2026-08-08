@@ -90,8 +90,9 @@ Symfony's AssetMapper still requires the entrypoint to be declared in your app's
 
 Registers a `social_links` `ui.block` kind (see [c975L/UiBundle](https://github.com/975L/UiBundle)'s Block system) with a dedicated form (`c975L\SocialBundle\Form\Block\SocialLinksType`) and template (`templates/blocks/SocialLinks.html.twig`). Each link is a `network` (picked from every icon found under `public/icons/` and `public/bundles/*/icons/`) and a `url`; label and icon are derived from the network at render time, not stored. Pick **"Autre"** to fall back to a free-text label and UiBundle's `IconPickerType` for a network with no icon of its own.
 
-Two settings apply to the whole block:
+Three settings apply to the whole block:
 
+- **Introduction text** (`intro`) - an optional rich-text lead-in (UiBundle's `TrixEditorType`, the ecosystem's editor) rendered centered above the icon row (`.social-links-intro`). Left empty, nothing at all is rendered — no wrapper, no blank space.
 - **Icon style** (`iconStyle`) - `minimal` (the flat, monochrome glyph, inheriting the surrounding text color), `colored` ("Version colorée": the same glyph turned white on a solid, brand-colored pill background) or `outline` (a lighter brand-colored ring on a transparent background, filling in on hover). All CSS only (see [Styling](#styling) below), no separate icon asset - same glyph in every case.
 - **Display label** (`displayLabel`) - whether the network name is shown as text next to the icon (still used as `aria-label` regardless).
 
@@ -111,7 +112,7 @@ Icon glyphs are derived from [Font Awesome Free](https://fontawesome.com/) (CC B
 
 Because a `Block` can normally only be created by attaching it to a Page (there's no page-independent block library in UiBundle), `SocialLinksCrudController` gives it its own small dashboard entry, scoped to `kind = social_links` — so it can be created/edited without needing a host page. The menu entry ("Réseaux sociaux") is registered automatically through `MenuProvider`, under the "Management" section. Access is controlled by the `site-role-admin` key in ConfigBundle.
 
-The edit form shows a preview of the rendered links below the list. The links themselves are static (reflects the last saved state, not unsaved edits to the list above), but "icon style" and "display label" update it live (see `assets/js/social-links-preview.js`) as you change them.
+The edit form shows a preview of the rendered links below the list. The introduction text and the links themselves are static (reflects the last saved state, not unsaved edits to the form above), but "icon style" and "display label" update it live (see `assets/js/social-links-preview.js`) as you change them.
 
 ### Rendering the block
 
@@ -123,7 +124,9 @@ Under the hood, this looks up the first `social_links` block via `BlockRepositor
 
 ### Styling
 
-Ships `.social-links` / `.social-link` styles (flex list of icon links) plus a `footer .social-links` variant for a centered, wrapped layout when used in a page footer. Loaded automatically via the `ui.stylesheet` tag — override the classes in your own SCSS if you need a different look.
+The whole block is wrapped in a `.social-links-block` (a `<div>`, not a `<section>`: it carries no heading of its own, and a headingless `<section>` is invalid HTML — the same fallback UiBundle's own block components use). That wrapper owns the vertical step above the block, `--section-space-tight` (UiBundle's page rhythm, so the links are parted from the block above them exactly like any two page sections are), on the top edge only — and none of it inside a `footer`, where the band already sets its own room.
+
+Ships `.social-links` / `.social-link` styles (flex list of icon links), a `.social-links-intro` one (the optional introduction text, centered above the row) plus a `footer .social-links` variant for a centered, wrapped layout when used in a page footer. Loaded automatically via the `ui.stylesheet` tag — override the classes in your own SCSS if you need a different look.
 
 The list also carries a `.social-links--minimal` / `.social-links--colored` / `.social-links--outline` modifier class (from the block's icon style setting, see [Social links block](#social-links-block)) and each `<li>` a `.social-link--{network}` one — hooks to target from your own SCSS rather than opinions this bundle imposes, except for two, both driven by `sass/_social-brand-colors.scss` (shared with `share_buttons()`'s own per-network colors below): under `.social-links--colored`, each `.social-link--{network}` gets a solid, brand-colored badge - background + white icon (same $white-icon-filter trick as `share_buttons()`) + black-or-white text, whichever reads on that background; under `.social-links--outline`, a brand-colored ring on a transparent background instead, filling in (and turning the icon white) on hover. "Autre" entries keep the default, unstyled look in both cases (no brand color to badge them with). Kept deliberately smaller (32px) and visually distinct from `share_buttons()`'s own badges (50-65px, see below) so the two icon rows don't compete for attention on the same page.
 
@@ -133,7 +136,7 @@ Migrated from the now-abandoned [c975L/ShareButtonsBundle](https://github.com/97
 
 ```twig
 {# Full signature #}
-{{ share_buttons(networks, shape, fill, alignment, displayIcon, displayText, url, id) }}
+{{ share_buttons(networks, shape, fill, alignment, displayIcon, displayText, url, id, displayIntro) }}
 
 {# Display the main networks at the default shape and fill #}
 {{ share_buttons() }}
@@ -158,6 +161,7 @@ Migrated from the now-abandoned [c975L/ShareButtonsBundle](https://github.com/97
 | `displayText` | `bool` | `false` | Show the network name |
 | `url` | `string\|null` | `null` | URL to share, defaults to the current page |
 | `id` | `string\|null` | `null` | HTML id set on the band, to link to it from a menu — only printed when set, an empty `id=""` being invalid and a repeated one worse |
+| `displayIntro` | `bool` | `false` | Show the invitation line above the buttons (`.social-share-intro`, wording translated by this bundle). Off here, on for the site-wide band, which reads it from the dashboard instead (see [Site-wide auto-display](#site-wide-auto-display)) |
 
 **Shape** is the button's box and corners, nothing else: `wide` and `ellipse` render 65×50 (square and fully round corners respectively), `square`, `rounded` and `circle` render 50×50 (square, 12px and fully round). **Fill** is what paints that box, whatever its shape: `solid` is the network's own brand color, `outline` a brand-colored ring on a transparent background that fills in on hover, `minimal` the icon alone with no background or border, and `transparent` one translucent white fill for every button instead of the brand colors.
 
@@ -192,7 +196,7 @@ Note the last four have a **per-variant** default, one value per shape or fill: 
 
 To show share buttons on every page without touching a single template, two pieces work together:
 
-- **"Boutons de partage"** in the management menu (`ShareButtonsSettingsCrudController`) — a small dashboard singleton (same `Block`-reuse technique as the [social links block](#social-links-block), no dedicated entity/table) letting you pick which networks, and which button [shape and fill](#share-buttons), are used site-wide. Networks are a drag-sortable checkbox list (see `assets/js/share-buttons-networks-sort.js`) - their order controls the order buttons render in. A live preview (see `assets/js/share-buttons-preview.js`) updates as you check/uncheck/reorder networks or change either select.
+- **"Boutons de partage"** in the management menu (`ShareButtonsSettingsCrudController`) — a small dashboard singleton (same `Block`-reuse technique as the [social links block](#social-links-block), no dedicated entity/table) letting you pick which networks, and which button [shape and fill](#share-buttons), are used site-wide. Networks are a drag-sortable checkbox list (see `assets/js/share-buttons-networks-sort.js`) - their order controls the order buttons render in. A live preview (see `assets/js/share-buttons-preview.js`) updates as you check/uncheck/reorder networks, change either select or toggle the invitation line below. That line (**"Afficher le texte d'invitation"**, `displayIntro`, checked by default) is the one shown above the buttons: its wording is the bundle's own, translated in every language it ships (`label.share_intro`), only its display being a setting — a singleton saved before the setting existed shows it too, and only an explicit uncheck turns it off.
 - **`social-enable-share-buttons`** — a boolean [c975L/ConfigBundle](https://github.com/975L/ConfigBundle) config key (`false` by default), auto-loaded from this bundle's `config/configs.json`.
 
 This bundle ships the band itself, as `templates/shareButtons/default.html.twig` — an `<aside class="page-share">` wrapping the `share_buttons_default()` Twig function, already guarded by that config key. It reads those dashboard settings, falling back to `share_buttons()`'s own defaults (`'main'` networks, `'wide'` shape, `'solid'` fill) as long as nothing's been saved yet — and to the main networks again if every one of them is unchecked, `social-enable-share-buttons` being what hides the band.

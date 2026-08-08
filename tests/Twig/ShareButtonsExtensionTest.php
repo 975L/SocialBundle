@@ -155,6 +155,8 @@ class ShareButtonsExtensionTest extends TestCase
         $this->assertSame('center', $context['alignment']);
         $this->assertTrue($context['displayIcon']);
         $this->assertFalse($context['displayText']);
+        // Off for a hand-written share_buttons() call: the invitation line is what the dashboard-driven band opts into, not what every explicitly placed row grows on its own
+        $this->assertFalse($context['displayIntro']);
         // Every network is resolved against the current request's own uri, since no explicit url was given
         $this->assertSame([['facebook', 'https://example.com/page'], ['bluesky', 'https://example.com/page']], $calls);
     }
@@ -308,6 +310,39 @@ class ShareButtonsExtensionTest extends TestCase
         $this->assertSame('wide', $context['shape']);
         $this->assertSame('solid', $context['fill']);
         $this->assertSame('facebook', $context['buttons'][0]['network']);
+    }
+
+    // The invitation line above the buttons is on by default - including on a singleton saved before the setting existed, which carries no key at all - and only off once an admin unchecks it
+    public function testRenderDefaultShareButtonsShowsTheIntroUnlessItWasTurnedOff(): void
+    {
+        foreach (['never saved' => true, 'legacy' => true, 'on' => true, 'off' => false] as $case => $expected) {
+            $calls = [];
+            $shareButtonsService = $this->createShareButtonsService(
+                ['facebook'],
+                $calls,
+                ['facebook' => 'https://share/facebook'],
+            );
+            $data = match ($case) {
+                'legacy' => ['networks' => ['facebook']],
+                'on' => ['networks' => ['facebook'], 'displayIntro' => true],
+                'off' => ['networks' => ['facebook'], 'displayIntro' => false],
+                default => null,
+            };
+            $extension = $this->createExtension(
+                $shareButtonsService,
+                [],
+                null !== $data ? (new Block())->setData($data) : null,
+                Request::create('https://example.com'),
+            );
+            $template = null;
+            $context = null;
+            $renderCallCount = 0;
+            $environment = $this->createEnvironment($template, $context, $renderCallCount);
+
+            $extension->renderDefaultShareButtons($environment);
+
+            $this->assertSame($expected, $context['displayIntro'], sprintf('case "%s"', $case));
+        }
     }
 
     // renderDefaultShareButtons() reads the settings singleton on every call - only the first one in a request should hit the repository

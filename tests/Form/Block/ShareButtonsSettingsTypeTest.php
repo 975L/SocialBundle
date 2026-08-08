@@ -52,7 +52,7 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
     {
         $form = $this->factory->create(ShareButtonsSettingsType::class);
 
-        $this->assertSame(['networks', 'shape', 'fill', 'anchor'], array_keys($form->all()));
+        $this->assertSame(['networks', 'shape', 'fill', 'displayIntro', 'anchor'], array_keys($form->all()));
     }
 
     public function testNetworksFieldIsMultipleExpandedChoiceOfAllNetworks(): void
@@ -141,7 +141,26 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
         $form->submit(['networks' => ['bluesky', 'email'], 'shape' => 'ellipse', 'fill' => 'transparent']);
 
         $this->assertTrue($form->isSynchronized());
-        $this->assertSame(['networks' => ['bluesky', 'email'], 'shape' => 'ellipse', 'fill' => 'transparent', 'anchor' => null], $form->getData());
+        $this->assertSame(['networks' => ['bluesky', 'email'], 'shape' => 'ellipse', 'fill' => 'transparent', 'displayIntro' => false, 'anchor' => null], $form->getData());
+    }
+
+    // The invitation line is on unless an admin turns it off, including on a singleton saved before the setting existed - "data", not empty_data, is what does it (see the field's own comment)
+    public function testDisplayIntroIsCheckedByDefaultAndFollowsWhatWasSaved(): void
+    {
+        $this->assertTrue($this->factory->create(ShareButtonsSettingsType::class)->get('displayIntro')->getData());
+        $this->assertTrue($this->factory->create(ShareButtonsSettingsType::class, ['networks' => ['facebook'], 'style' => 'outline'])->get('displayIntro')->getData());
+        $this->assertFalse($this->factory->create(ShareButtonsSettingsType::class, ['networks' => ['facebook'], 'displayIntro' => false])->get('displayIntro')->getData());
+    }
+
+    // An unchecked box submits no value at all, which has to end up stored as false - not as a missing key, which would read as "never set" and turn the line back on
+    public function testSubmitStoresDisplayIntroAsFalseWhenUnchecked(): void
+    {
+        $form = $this->factory->create(ShareButtonsSettingsType::class, ['networks' => ['facebook'], 'displayIntro' => true]);
+
+        $form->submit(['networks' => ['facebook'], 'shape' => 'wide', 'fill' => 'solid']);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertFalse($form->getData()['displayIntro']);
     }
 
     // Site-wide anchor: filled in, the band carries that id on every page, so a menu entry can link to it (see ShareButtonsExtension::renderDefaultShareButtons())

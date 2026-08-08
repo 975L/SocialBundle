@@ -215,7 +215,7 @@ class SocialLinksCrudControllerTest extends TestCase
         $this->assertSame(SocialLinksType::class, $dataField->getAsDto()->getFormType());
     }
 
-    // Before any singleton has ever been saved, the preview field falls back to an empty link list, visible labels and the "minimal" icon style
+    // Before any singleton has ever been saved, the preview field falls back to no intro, an empty link list, visible labels and the "minimal" icon style
     public function testConfigureFieldsPreviewFieldDefaultsWhenNoEntityDataYet(): void
     {
         $controller = $this->createController(null);
@@ -227,6 +227,7 @@ class SocialLinksCrudControllerTest extends TestCase
 
         $this->assertSame(SocialLinksPreviewType::class, $previewField->getAsDto()->getFormType());
         $this->assertFalse($options['mapped']);
+        $this->assertSame('', $options['intro']);
         $this->assertSame([], $options['links']);
         $this->assertTrue($options['display_label']);
         $this->assertSame('minimal', $options['icon_style']);
@@ -236,7 +237,7 @@ class SocialLinksCrudControllerTest extends TestCase
     public function testConfigureFieldsPreviewFieldReadsSavedEntityData(): void
     {
         $links = [['label' => 'Facebook', 'url' => 'https://facebook.com/975l', 'icon' => 'facebook']];
-        $entity = (new Block())->setData(['links' => $links, 'displayLabel' => false, 'iconStyle' => 'colored']);
+        $entity = (new Block())->setData(['intro' => '<div>Retrouvez-nous</div>', 'links' => $links, 'displayLabel' => false, 'iconStyle' => 'colored']);
 
         $controller = $this->createController($entity);
         $this->setContextEntity($controller, $entity);
@@ -245,6 +246,7 @@ class SocialLinksCrudControllerTest extends TestCase
         $previewField = current(array_filter($fields, static fn ($field) => 'socialLinksPreview' === $field->getAsDto()->getProperty()));
         $options = $previewField->getAsDto()->getFormTypeOptions();
 
+        $this->assertSame('<div>Retrouvez-nous</div>', $options['intro']);
         $this->assertSame($links, $options['links']);
         $this->assertFalse($options['display_label']);
         $this->assertSame('colored', $options['icon_style']);

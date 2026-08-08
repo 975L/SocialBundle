@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Form\Block;
 use c975L\SocialBundle\Service\ShareButtonsServiceInterface;
 use c975L\UiBundle\Service\BlockAnchorSlugger;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -78,6 +79,15 @@ class ShareButtonsSettingsType extends AbstractType
                         'data' => $data['fill'] ?? 'solid',
                         'expanded' => false,
                         'attr' => ['data-share-fill-select' => true],
+                    ])
+                    // The invitation line above the buttons ("label.share_intro"), whose wording is the bundle's own, translated - only its display is a setting. "data" (not empty_data) is what makes it default to checked: an unchecked box submits no value at all, and empty_data would then force it back to true on every save, making it impossible to ever uncheck
+                    ->add('displayIntro', CheckboxType::class, [
+                        'label' => 'label.display_share_intro',
+                        'help' => 'label.display_share_intro_help',
+                        'required' => false,
+                        'data' => $data['displayIntro'] ?? true,
+                        // Hooked by assets/js/share-buttons-preview.js to show/hide the line in the live preview below
+                        'attr' => ['data-share-display-intro-checkbox' => true],
                     ])
                     // Not added through UiBundle's HasAnchorFieldTrait, unlike every block kind offering an anchor: that trait adds its field directly, which would place it before the two above (fields added from inside this listener are appended after any added directly) - an anchor ahead of the networks reads backwards on a settings screen
                     ->add('anchor', TextType::class, [

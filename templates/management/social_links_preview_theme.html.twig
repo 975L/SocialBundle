@@ -1,10 +1,13 @@
-{# The list shows the last saved state, but icon style and display label are live, CSS doing the recoloring #}
+{# The intro and the list show the last saved state, but icon style and display label are live, CSS doing the recoloring #}
 {% block social_links_preview_widget %}
     {# This bundle's stylesheet only, never the app's front-end one #}
     {# Root-relative: EasyAdmin pages have no <base href>, so a bare path would 404 against the current URL #}
     <link rel="stylesheet" href="/bundles/c975lsocial/css/styles.min.css">
     <div id="sl-links-preview">
         {% if links is not empty %}
+            {% if intro is not empty %}
+                <div class="social-links-intro">{{ intro|raw }}</div>
+            {% endif %}
             <ul class="social-links social-links--{{ icon_style }}" data-social-links-preview-list>
                 {% for link in links %}
                     {% set label = link.network is not empty ? link.network|capitalize : link.customLabel %}

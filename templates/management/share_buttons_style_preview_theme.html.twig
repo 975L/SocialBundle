@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="/bundles/c975lsocial/css/styles.min.css">
     {# "social-share--preview-backdrop" is added/removed here by assets/js/share-buttons-preview.js, only while the "transparent" fill is picked - see the class in sass/_share-buttons.scss #}
     <div id="ss-style-preview">
-        {{ share_buttons(all_networks, 'wide', 'solid') }}
+        {# Always rendered, the preview script hiding it when the "display intro" checkbox is unchecked #}
+        {{ share_buttons(all_networks, 'wide', 'solid', displayIntro: true) }}
     </div>
 {% endblock %}
 

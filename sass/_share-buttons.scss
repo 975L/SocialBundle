@@ -12,6 +12,8 @@
 .social-share {
     display: var(--social-share-display, none);
     flex-direction: row;
+    // Wraps so the optional invitation line takes a full row of its own above the buttons (see below)
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     background-color: var(--social-share-background, transparent);
@@ -24,6 +26,14 @@
     .social-share {
         display: var(--social-share-display, flex);
     }
+}
+
+// Optional invitation line (see templates/shareButtons/ShareButtons.html.twig), a flex item forced onto its
+// own full-width row - centered whatever the band's alignment, the buttons being what that alignment is about
+.social-share-intro {
+    flex-basis: 100%;
+    margin: 0 0 0.5em;
+    text-align: center;
 }
 
 .social-share--left {

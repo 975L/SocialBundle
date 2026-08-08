@@ -1,19 +1,26 @@
 {# Adapter spreading the stored data keys onto the component's props #}
 {% if links is defined and links is not empty %}
-    <ul class="social-links social-links--{{ iconStyle|default('minimal') }}">
-        {% for link in links %}
-            {% set label = link.network is not empty ? link.network|capitalize : link.customLabel %}
-            {% set icon = link.network is not empty ? social_link_icon(link.network) : link.customIcon %}
-            <li class="social-link social-link--{{ link.network is not empty ? link.network : 'other' }}">
-                <a href="{{ link.url }}" aria-label="{{ label }}" target="_blank" rel="noopener">
-                    {% if icon is not empty %}
-                        <twig:c975LUi:Image:Icon src="{{ icon }}" width="32" height="32" class="social-link-icon" title="{{ label }}" />
-                    {% endif %}
-                    {% if displayLabel is not defined or displayLabel %}
-                        {{ label }}
-                    {% endif %}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+    {# A <div>, not a <section>: this block carries no heading of its own, and a headingless <section> is invalid HTML (same fallback as UiBundle's own block components). It owns the vertical room above it, see sass/_social.scss #}
+    <div class="social-links-block">
+        {# Rich text (TrixEditorType), rendered raw; no wrapper at all when left empty #}
+        {% if intro is defined and intro is not empty %}
+            <div class="social-links-intro">{{ intro|raw }}</div>
+        {% endif %}
+        <ul class="social-links social-links--{{ iconStyle|default('minimal') }}">
+            {% for link in links %}
+                {% set label = link.network is not empty ? link.network|capitalize : link.customLabel %}
+                {% set icon = link.network is not empty ? social_link_icon(link.network) : link.customIcon %}
+                <li class="social-link social-link--{{ link.network is not empty ? link.network : 'other' }}">
+                    <a href="{{ link.url }}" aria-label="{{ label }}" target="_blank" rel="noopener">
+                        {% if icon is not empty %}
+                            <twig:c975LUi:Image:Icon src="{{ icon }}" width="32" height="32" class="social-link-icon" title="{{ label }}" />
+                        {% endif %}
+                        {% if displayLabel is not defined or displayLabel %}
+                            {{ label }}
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 {% endif %}

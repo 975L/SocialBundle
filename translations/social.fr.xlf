@@ -98,6 +98,14 @@
                 <source>label.display_label</source>
                 <target>Afficher le libellé</target>
             </trans-unit>
+            <trans-unit id="rw_F3pR">
+                <source>label.display_share_intro</source>
+                <target>Afficher le texte d'invitation</target>
+            </trans-unit>
+            <trans-unit id="K89VtQk">
+                <source>label.display_share_intro_help</source>
+                <target>Ligne affichée au-dessus des boutons - voir l'aperçu ci-dessous.</target>
+            </trans-unit>
             <trans-unit id="ShygsJr">
                 <source>label.fill</source>
                 <target>Remplissage</target>
@@ -230,6 +238,14 @@
                 <source>label.info_social_links</source>
                 <target>Liens sociaux affichés en pied de page - singleton, un seul jeu de liens. Modifiez la liste pour ajouter, retirer ou réordonner un réseau social.</target>
             </trans-unit>
+            <trans-unit id="YtqDGiK">
+                <source>label.intro</source>
+                <target>Texte d'introduction</target>
+            </trans-unit>
+            <trans-unit id="4f9lXsG">
+                <source>label.intro_help</source>
+                <target>Affiché centré au-dessus des icônes. Laissé vide, rien n'est affiché.</target>
+            </trans-unit>
             <trans-unit id="y.9x3G.">
                 <source>label.label</source>
                 <target>Libellé</target>
@@ -273,6 +289,10 @@
             <trans-unit id="QGQ5OoP">
                 <source>label.share_buttons_settings</source>
                 <target>Boutons de partage</target>
+            </trans-unit>
+            <trans-unit id="HxmLC3v">
+                <source>label.share_intro</source>
+                <target>Cette page vous a plu ? Partagez-la !</target>
             </trans-unit>
             <trans-unit id="YKoIXTJ">
                 <source>label.share_on</source>

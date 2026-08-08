@@ -21,6 +21,7 @@ class SocialLinksPreviewType extends AbstractType
 {
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
+        $view->vars['intro'] = $options['intro'];
         $view->vars['links'] = $options['links'];
         $view->vars['display_label'] = $options['display_label'];
         $view->vars['icon_style'] = $options['icon_style'];
@@ -39,10 +40,12 @@ class SocialLinksPreviewType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
+            'intro' => '',
             'links' => [],
             'display_label' => true,
             'icon_style' => 'minimal',
         ]);
+        $resolver->setAllowedTypes('intro', 'string');
         $resolver->setAllowedTypes('links', 'array');
         $resolver->setAllowedTypes('display_label', 'bool');
         $resolver->setAllowedTypes('icon_style', 'string');

@@ -64,6 +64,8 @@ class ShareButtonsExtension extends AbstractExtension
             $settings['shape'] ?? 'wide',
             $settings['fill'] ?? 'solid',
             id: null !== $id ? ($id ?: null) : ($settings['anchor'] ?? null),
+            // Shown unless an admin unchecked it - a singleton saved before this setting existed carries no key at all, and the line is what the band is meant to look like
+            displayIntro: $settings['displayIntro'] ?? true,
         );
     }
 
@@ -91,6 +93,7 @@ class ShareButtonsExtension extends AbstractExtension
         bool $displayText = false,
         ?string $url = null,
         ?string $id = null,
+        bool $displayIntro = false,
     ): string {
         $networks = 'main' === $networks ? $this->shareButtonsService->getMainNetworks() : $networks;
         $pageUrl = $url ?? $this->requestStack->getCurrentRequest()?->getUri() ?? '';
@@ -121,6 +124,7 @@ class ShareButtonsExtension extends AbstractExtension
             'displayIcon' => $displayIcon,
             'displayText' => $displayText,
             'id' => $id,
+            'displayIntro' => $displayIntro,
         ]);
     }
 }
