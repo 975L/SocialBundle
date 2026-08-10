@@ -1,11 +1,8 @@
 /* FOOTER SOCIAL LINKS (SiteBundle's Footer.html.twig calls <twig:c975LSocial:SocialLinks/>) */
+// Only what differs from the page row (see _social.scss): a tighter gap and the band's own vertical room
 footer .social-links {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     gap: 1em;
     margin: 1em 0;
-    padding: 0;
 }
 
 footer .social-link a:hover {

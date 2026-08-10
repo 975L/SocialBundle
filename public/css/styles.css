@@ -23,6 +23,7 @@ footer .social-links-block {
 .social-links {
   list-style: none;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   padding: 0;
   margin: 0;
@@ -49,6 +50,21 @@ footer .social-links-block {
   width: 32px;
   height: 32px;
   flex-shrink: 0;
+}
+
+.social-links--text .social-link a {
+  padding: 0;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.social-links--text .social-link a:hover {
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+.social-links--text .social-link-icon {
+  display: none;
 }
 
 .social-links--colored .social-link--behance a {
@@ -1089,12 +1105,8 @@ footer .social-links-block {
 
 /* FOOTER SOCIAL LINKS (SiteBundle's Footer.html.twig calls <twig:c975LSocial:SocialLinks/>) */
 footer .social-links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
   gap: 1em;
   margin: 1em 0;
-  padding: 0;
 }
 
 footer .social-link a:hover {

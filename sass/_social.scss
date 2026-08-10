@@ -35,9 +35,12 @@ footer .social-links-block {
     margin: 0 0 1em;
 }
 
+// Wraps: a centered flex row that overflows is clipped on both sides, so a narrow screen loses the first and
+// last networks of the row instead of pushing them to a second line
 .social-links {
     list-style: none;
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     padding: 0;
     margin: 0;
@@ -64,6 +67,26 @@ footer .social-links-block {
     width: 32px;
     height: 32px;
     flex-shrink: 0;
+}
+
+// Text only, the network's name standing as the link. The pill goes with the glyph: a background and a radius
+// drawn around a bare word read as a button rather than as a link, and the row is meant to sit in a footer
+// among the site's other text links. Nothing is colored here, so the row follows whatever it is placed in
+.social-links--text .social-link a {
+    padding: 0;
+    border-radius: 0;
+    background-color: transparent;
+}
+
+.social-links--text .social-link a:hover {
+    background-color: transparent;
+    text-decoration: underline;
+}
+
+// The real row prints no glyph at all under this style, but the back-office preview renders every one of them and
+// lets CSS decide (see templates/management/social_links_preview_theme.html.twig) - this is what keeps the two alike
+.social-links--text .social-link-icon {
+    display: none;
 }
 
 // A solid brand-colored pill, its text picked for contrast; known networks only, "Autre" having no brand color

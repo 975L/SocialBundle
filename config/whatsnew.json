@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-08-10",
+        "description": [
+            {
+                "en": "The social networks can now be shown as plain text, their names standing as the links, for a footer set as words rather than as icons",
+                "fr": "Les réseaux sociaux peuvent maintenant être affichés en texte seul, leur nom tenant lieu de lien, pour un pied de page en mots plutôt qu'en icônes",
+                "es": "Las redes sociales ahora pueden mostrarse en texto solo, con su nombre como enlace, para un pie de página en palabras en lugar de iconos"
+            },
+            {
+                "en": "A long row of social networks now wraps onto a second line on a small screen, instead of losing the ones at each end",
+                "fr": "Une longue rangée de réseaux sociaux passe maintenant à la ligne sur un petit écran, au lieu de perdre ceux de chaque extrémité",
+                "es": "Una fila larga de redes sociales ahora pasa a una segunda línea en una pantalla pequeña, en vez de perder las de cada extremo"
+            },
+            {
+                "en": "A personal link saved without a name now shows its address, instead of an empty line no one can click",
+                "fr": "Un lien personnalisé enregistré sans nom affiche maintenant son adresse, au lieu d'une ligne vide sur laquelle personne ne peut cliquer",
+                "es": "Un enlace personalizado guardado sin nombre ahora muestra su dirección, en lugar de una línea vacía en la que nadie puede hacer clic"
+            }
+        ]
+    },
+    {
         "date": "2026-08-08",
         "description": [
             {

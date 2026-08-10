@@ -1,5 +1,20 @@
 # Changelog
 
+## v2.1.1
+
+Add a text-only icon style to the social links block
+
+- Added a "text only" icon style to the `social_links` block (10/08/2026)
+- That style prints the label whatever the "display label" setting says (10/08/2026)
+- Custom entries left without a label now fall back to their url (10/08/2026)
+- Dropped the `title` attribute from the decorative social link icons (10/08/2026)
+- The social links row now wraps instead of being clipped on narrow screens (10/08/2026)
+- Moved the footer row's shared layout rules up to `.social-links` (10/08/2026)
+- The dashboard preview follows the new style (10/08/2026)
+- `GalleryShowcaseProvider` now reads the icon styles from `SocialLinksType` (10/08/2026)
+- Added the `label.icon_style_text` translations (10/08/2026)
+- Documented the new style in the readme (10/08/2026)
+
 ## v2.1
 
 Add an introduction line to the social links block and the share band

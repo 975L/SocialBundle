@@ -21,8 +21,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 // Data form of the "social_links" block kind - the list of links is a plain array stored in the Block's JSON "data" column (data.links), not a separate entity/table (see SocialLinkEntryType)
 class SocialLinksType extends AbstractType
 {
-    // Matches the ".social-links--{style}" variants styled in sass/_social.scss
-    private const ICON_STYLES = ['minimal', 'colored', 'outline'];
+    // Matches the ".social-links--{style}" variants styled in sass/_social.scss. Public: the block showcase renders one card per style (see GalleryShowcaseProvider) and must not carry a second copy of the list
+    public const ICON_STYLES = ['minimal', 'colored', 'outline', 'text'];
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -34,6 +34,7 @@ class SocialLinksType extends AbstractType
                 'required' => false,
             ])
             // Whether every icon keeps its plain, monochrome color (inheriting the surrounding text color), gets a solid brand-colored badge behind it (white icon on top), or a lighter brand-colored ring that fills in on hover - same Font Awesome glyph in every case (see SocialLinkExtension::getSocialLinkIcon()), just recolored via CSS (sass/_social.scss), mirroring share_buttons()'s own per-network coloring/styles
+            // "text" is the one that shows no glyph at all, the network's name standing as the link - a footer row set as words, where a row of marks would compete with the site's own. It prints the label whatever the box below says (see templates/blocks/SocialLinks.html.twig): with the icon gone, an entry without it would have nothing left to click
             ->add('iconStyle', ChoiceType::class, [
                 'label' => 'label.icon_style',
                 'choices' => array_combine(

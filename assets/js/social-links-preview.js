@@ -7,7 +7,7 @@
  */
 
 // Keeps the "social_links" preview (see social_links_preview_theme.html.twig) in sync with the "icon style" <select> and "display label" checkbox - both styles share the same icon (CSS alone recolors it, see sass/_social.scss), so this just swaps the list's modifier class and toggles the label, never rebuilds entries. The "links" list itself stays static (see SocialLinksPreviewType for why). Runs once on load too, not just on "change", to match their actual, server-rendered initial state.
-const ICON_STYLES = ['minimal', 'colored', 'outline'];
+const ICON_STYLES = ['minimal', 'colored', 'outline', 'text'];
 
 function syncPreview() {
     const list = document.querySelector('[data-social-links-preview-list]');
@@ -19,10 +19,13 @@ function syncPreview() {
         list.classList.add(`social-links--${styleSelect.value}`);
     }
 
+    // "text" hides the icons through CSS alone (see sass/_social.scss), so the label is all that is left to show:
+    // it is forced on whatever the checkbox says, exactly as the real render does (see blocks/SocialLinks.html.twig)
+    const textOnly = styleSelect !== null && styleSelect.value === 'text';
     const displayLabelCheckbox = document.querySelector('[data-social-links-display-label-checkbox]');
     if (displayLabelCheckbox) {
         list.querySelectorAll('.social-link-label').forEach(label => {
-            label.hidden = !displayLabelCheckbox.checked;
+            label.hidden = !textOnly && !displayLabelCheckbox.checked;
         });
     }
 }

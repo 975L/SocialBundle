@@ -57,15 +57,15 @@ class SocialLinksTypeTest extends TypeTestCase
         $this->assertFalse($introField->getConfig()->getRequired());
     }
 
-    // Matches the ".social-links--{style}" variants styled in sass/_social.scss
-    public function testIconStyleFieldOffersMinimalColoredAndOutlineChoices(): void
+    // Matches the ".social-links--{style}" variants styled in sass/_social.scss, "text" being the one showing no glyph at all
+    public function testIconStyleFieldOffersMinimalColoredOutlineAndTextChoices(): void
     {
         $form = $this->factory->create(SocialLinksType::class);
 
         $iconStyleField = $form->get('iconStyle');
         $this->assertInstanceOf(ChoiceType::class, $iconStyleField->getConfig()->getType()->getInnerType());
         $this->assertSame(
-            ['label.icon_style_minimal' => 'minimal', 'label.icon_style_colored' => 'colored', 'label.icon_style_outline' => 'outline'],
+            ['label.icon_style_minimal' => 'minimal', 'label.icon_style_colored' => 'colored', 'label.icon_style_outline' => 'outline', 'label.icon_style_text' => 'text'],
             $iconStyleField->getConfig()->getOption('choices')
         );
     }

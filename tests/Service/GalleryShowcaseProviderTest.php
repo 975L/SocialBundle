@@ -55,7 +55,7 @@ class GalleryShowcaseProviderTest extends TestCase
         $showcases = $this->createProvider()->getShowcases();
 
         $this->assertSame(
-            ['Minimal', 'Colored', 'Outline'],
+            ['Minimal', 'Colored', 'Outline', 'Text'],
             array_keys($showcases['label.gallery_showcase_social_links']['variants'])
         );
     }

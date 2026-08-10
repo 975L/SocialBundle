@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Service;
 
+use c975L\SocialBundle\Form\Block\SocialLinksType;
 use c975L\UiBundle\Contract\GalleryShowcaseProviderInterface;
 use c975L\UiBundle\Service\IconServiceInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -56,7 +57,7 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
         );
 
         $variants = [];
-        foreach (['minimal', 'colored', 'outline'] as $style) {
+        foreach (SocialLinksType::ICON_STYLES as $style) {
             $variants[ucfirst($style)] = $this->twig->render('@c975LSocial/blocks/SocialLinks.html.twig', [
                 'links' => $links,
                 'iconStyle' => $style,

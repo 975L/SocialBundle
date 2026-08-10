@@ -48,7 +48,7 @@
             </trans-unit>
             <trans-unit id="CbQbxws">
                 <source>description.guided_step_social_links_icon_style</source>
-                <target>Icono solo, pastilla con los colores de la red, o anillo que se rellena al pasar por encima. La vista previa de abajo muestra el resultado.</target>
+                <target>Icono solo, pastilla con los colores de la red, anillo que se rellena al pasar por encima, o solo texto sin icono. La vista previa de abajo muestra el resultado.</target>
             </trans-unit>
             <trans-unit id="IiZiN6F">
                 <source>description.guided_step_social_links_open</source>
@@ -229,6 +229,10 @@
             <trans-unit id="eu0IPxW">
                 <source>label.icon_style_outline</source>
                 <target>Contorno</target>
+            </trans-unit>
+            <trans-unit id="eTKzqbN">
+                <source>label.icon_style_text</source>
+                <target>Solo texto</target>
             </trans-unit>
             <trans-unit id="AuLTjz5">
                 <source>label.info_share_buttons_settings</source>
