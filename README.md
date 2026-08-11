@@ -110,7 +110,7 @@ Icon glyphs are derived from [Font Awesome Free](https://fontawesome.com/) (CC B
 
 ### Admin management
 
-Because a `Block` can normally only be created by attaching it to a Page (there's no page-independent block library in UiBundle), `SocialLinksCrudController` gives it its own small dashboard entry, scoped to `kind = social_links` — so it can be created/edited without needing a host page. The menu entry ("Réseaux sociaux") is registered automatically through `MenuProvider`, under the "Management" section. Access is controlled by the `site-role-admin` key in ConfigBundle.
+Because a `Block` can normally only be created by attaching it to a Page (there's no page-independent block library in UiBundle), `SocialLinksCrudController` gives it its own small dashboard entry, scoped to `kind = social_links` — so it can be created/edited without needing a host page. The menu entry ("Réseaux sociaux") is registered automatically through `MenuProvider`, under the "Management" section. Access is controlled by the `site-role-editor` key in ConfigBundle.
 
 The edit form shows a preview of the rendered links below the list. The introduction text and the links themselves are static (reflects the last saved state, not unsaved edits to the form above), but "icon style" and "display label" update it live (see `assets/js/social-links-preview.js`) as you change them.
 
@@ -210,6 +210,8 @@ This bundle ships the band itself, as `templates/shareButtons/default.html.twig`
 An include resolves at runtime where a function call resolves at compile time, so a layout written that way keeps this bundle optional: `ignore_missing` renders nothing on a site not installing it, instead of failing on an unknown `share_buttons_default()`. That template path is a public contract — renaming it is a BC-break — and the markup lives here, the bundle owning the domain owning its fragment.
 
 Flip `social-enable-share-buttons` to `true` in the dashboard and every page gets the buttons; leave it `false` (the default) and nothing changes. Calling `share_buttons()` directly, anywhere else in your own templates, is unaffected by any of this — it's a separate, always-manual entry point.
+
+Hovering that band as an editor (the `site-role-editor` role) raises the same floating **"Editer"** button [c975L/UiBundle](https://github.com/975L/UiBundle) draws over a block, pointing at the "Boutons de partage" screen — at the creation form as long as the singleton has never been saved. The fragment mounts UiBundle's `blockEditOverlay` controller itself, since a page composing no block at all renders no `.blocks` collection to mount it. The url comes from a **`share_buttons_edit_url()`** Twig function, usable in your own templates if you display the band some other way.
 
 The "Boutons de partage" screen also carries an **anchor**: fill it in and the band gets that id on every page, so a navbar or footer entry can link straight to it (`/#partage`). Left empty — the default — the band renders with no id, exactly as before. It belongs to the site-wide settings rather than to a page, the auto-display being all-pages or nothing. `share_buttons_default(id)` also takes an optional id of its own, overriding that anchor for a single call.
 

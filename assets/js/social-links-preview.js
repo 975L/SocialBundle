@@ -19,8 +19,7 @@ function syncPreview() {
         list.classList.add(`social-links--${styleSelect.value}`);
     }
 
-    // "text" hides the icons through CSS alone (see sass/_social.scss), so the label is all that is left to show:
-    // it is forced on whatever the checkbox says, exactly as the real render does (see blocks/SocialLinks.html.twig)
+    // "text" hides the icons through CSS alone (see sass/_social.scss), so the label is all that is left to show: it is forced on whatever the checkbox says, exactly as the real render does (see blocks/SocialLinks.html.twig)
     const textOnly = styleSelect !== null && styleSelect.value === 'text';
     const displayLabelCheckbox = document.querySelector('[data-social-links-display-label-checkbox]');
     if (displayLabelCheckbox) {

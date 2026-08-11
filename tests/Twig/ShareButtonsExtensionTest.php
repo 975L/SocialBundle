@@ -10,12 +10,15 @@
 
 namespace c975L\SocialBundle\Tests\Twig;
 
+use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
 use c975L\SocialBundle\Service\ShareButtonsService;
 use c975L\SocialBundle\Service\ShareButtonsServiceInterface;
 use c975L\SocialBundle\Twig\ShareButtonsExtension;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Repository\BlockRepository;
 use c975L\UiBundle\Service\IconServiceInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\TagAwareAdapter;
@@ -57,6 +60,19 @@ class ShareButtonsExtensionTest extends TestCase
         return $service;
     }
 
+    // Builds an AdminUrlGenerator double, fluent all the way through and answering a fixed url - what a test asserts of it is the screen it is asked for, never the url EasyAdmin makes of it
+    private function createAdminUrlGenerator(): AdminUrlGeneratorInterface
+    {
+        $adminUrlGenerator = $this->createStub(AdminUrlGeneratorInterface::class);
+        $adminUrlGenerator->method('unsetAll')->willReturnSelf();
+        $adminUrlGenerator->method('setController')->willReturnSelf();
+        $adminUrlGenerator->method('setAction')->willReturnSelf();
+        $adminUrlGenerator->method('setEntityId')->willReturnSelf();
+        $adminUrlGenerator->method('generateUrl')->willReturn('/management/?crudAction=edit');
+
+        return $adminUrlGenerator;
+    }
+
     // Builds a Twig Environment double, recording the template and context of its last render() call
     private function createEnvironment(?string &$template, ?array &$context, int &$renderCallCount): Environment
     {
@@ -81,6 +97,7 @@ class ShareButtonsExtensionTest extends TestCase
         ?Block $settingsBlock = null,
         ?Request $currentRequest = null,
         ?TagAwareCacheInterface $cache = null,
+        ?AdminUrlGeneratorInterface $adminUrlGenerator = null,
     ): ShareButtonsExtension {
         $iconService = $this->createStub(IconServiceInterface::class);
         $iconService->method('getIcons')->willReturn($icons);
@@ -95,10 +112,10 @@ class ShareButtonsExtensionTest extends TestCase
             static fn (string $kind) => 'share_buttons_settings' === $kind ? $settingsBlock : null
         );
 
-        return new ShareButtonsExtension($shareButtonsService, $iconService, $requestStack, $blockRepository, $cache ?? $this->createCache());
+        return new ShareButtonsExtension($shareButtonsService, $iconService, $requestStack, $blockRepository, $cache ?? $this->createCache(), $adminUrlGenerator ?? $this->createAdminUrlGenerator());
     }
 
-    // Both functions render raw HTML and must receive the Twig Environment to call render() themselves
+    // Both rendering functions render raw HTML and must receive the Twig Environment to call render() themselves - "share_buttons_edit_url" returns an url, escaped like any other attribute value
     public function testGetFunctionsRegistersShareButtonsAndShareButtonsDefaultAsSafeHtmlNeedingEnvironment(): void
     {
         $calls = [];
@@ -106,15 +123,66 @@ class ShareButtonsExtensionTest extends TestCase
 
         $functions = $extension->getFunctions();
 
-        $this->assertCount(2, $functions);
         $this->assertSame(
-            ['share_buttons', 'share_buttons_default'],
+            ['share_buttons', 'share_buttons_default', 'share_buttons_edit_url'],
             array_map(static fn (TwigFunction $function) => $function->getName(), $functions)
         );
-        foreach ($functions as $function) {
+        foreach (\array_slice($functions, 0, 2) as $function) {
             $this->assertTrue($function->needsEnvironment());
             $this->assertSame(['html'], $function->getSafe(new TextNode('', 0)));
         }
+        $this->assertFalse($functions[2]->needsEnvironment());
+        $this->assertSame([], $functions[2]->getSafe(new TextNode('', 0)));
+    }
+
+    // The hover button offered to an editor on the public band (see shareButtons/default.html.twig) opens the singleton holding its networks and its style, not the page it was hovered on
+    public function testGetEditUrlPointsAtTheSavedSettingsSingleton(): void
+    {
+        $settingsBlock = (new Block())->setKind('share_buttons_settings');
+        (new \ReflectionProperty(Block::class, 'id'))->setValue($settingsBlock, 42);
+
+        $adminUrlGenerator = $this->createMock(AdminUrlGeneratorInterface::class);
+        $adminUrlGenerator->method('unsetAll')->willReturnSelf();
+        $adminUrlGenerator->expects($this->once())->method('setController')->with(ShareButtonsSettingsCrudController::class)->willReturnSelf();
+        $adminUrlGenerator->expects($this->once())->method('setAction')->with(Action::EDIT)->willReturnSelf();
+        $adminUrlGenerator->expects($this->once())->method('setEntityId')->with(42)->willReturnSelf();
+        $adminUrlGenerator->method('generateUrl')->willReturn('/management/?crudAction=edit&entityId=42');
+
+        $calls = [];
+        $extension = $this->createExtension($this->createShareButtonsService([], $calls), [], $settingsBlock, null, null, $adminUrlGenerator);
+
+        $this->assertSame('/management/?crudAction=edit&entityId=42', $extension->getEditUrl());
+    }
+
+    // Nothing to edit until the singleton is saved, and the band is rendered from its defaults all the same: the screen creating it is the one an editor is sent to, rather than an edit form for a row with no id
+    public function testGetEditUrlPointsAtTheCreationScreenWhenNoSettingsAreSavedYet(): void
+    {
+        $adminUrlGenerator = $this->createMock(AdminUrlGeneratorInterface::class);
+        $adminUrlGenerator->method('unsetAll')->willReturnSelf();
+        $adminUrlGenerator->method('setController')->willReturnSelf();
+        $adminUrlGenerator->expects($this->once())->method('setAction')->with(Action::NEW)->willReturnSelf();
+        $adminUrlGenerator->expects($this->never())->method('setEntityId');
+        $adminUrlGenerator->method('generateUrl')->willReturn('/management/?crudAction=new');
+
+        $calls = [];
+        $extension = $this->createExtension($this->createShareButtonsService([], $calls), [], null, null, null, $adminUrlGenerator);
+
+        $this->assertSame('/management/?crudAction=new', $extension->getEditUrl());
+    }
+
+    // EasyAdmin reads the dashboard an admin URL is mounted under from a cache map only written when the route collection is regenerated, so it can be missing on a perfectly working site (a wiped cache pool, fresh compiled routes) - the band's hover button then simply isn't offered, where a thrown error would take the whole public page down for the editor
+    public function testGetEditUrlReturnsNullWhenTheAdminUrlCannotBeGenerated(): void
+    {
+        $adminUrlGenerator = $this->createStub(AdminUrlGeneratorInterface::class);
+        $adminUrlGenerator->method('unsetAll')->willReturnSelf();
+        $adminUrlGenerator->method('setController')->willReturnSelf();
+        $adminUrlGenerator->method('setAction')->willReturnSelf();
+        $adminUrlGenerator->method('generateUrl')->willThrowException(new \TypeError('setDashboard(): Argument #1 must be of type string, null given'));
+
+        $calls = [];
+        $extension = $this->createExtension($this->createShareButtonsService([], $calls), [], null, null, null, $adminUrlGenerator);
+
+        $this->assertNull($extension->getEditUrl());
     }
 
     // Default networks/style/alignment must resolve the main networks and build one button per network
@@ -357,7 +425,7 @@ class ShareButtonsExtensionTest extends TestCase
 
         $iconService = $this->createStub(IconServiceInterface::class);
         $cache = $this->createCache();
-        $extension = new ShareButtonsExtension($shareButtonsService, $iconService, new RequestStack(), $blockRepository, $cache);
+        $extension = new ShareButtonsExtension($shareButtonsService, $iconService, new RequestStack(), $blockRepository, $cache, $this->createAdminUrlGenerator());
 
         $template = null;
         $context = null;
@@ -379,7 +447,7 @@ class ShareButtonsExtensionTest extends TestCase
         $iconService = $this->createStub(IconServiceInterface::class);
 
         $cache = $this->createCache();
-        $firstRequest = new ShareButtonsExtension($shareButtonsService, $iconService, new RequestStack(), $blockRepository, $cache);
+        $firstRequest = new ShareButtonsExtension($shareButtonsService, $iconService, new RequestStack(), $blockRepository, $cache, $this->createAdminUrlGenerator());
         $template = null;
         $context = null;
         $renderCallCount = 0;
@@ -388,7 +456,7 @@ class ShareButtonsExtensionTest extends TestCase
         $this->assertSame('circle', $context['shape']);
         $this->assertSame('solid', $context['fill']);
 
-        $secondRequest = new ShareButtonsExtension($shareButtonsService, $iconService, new RequestStack(), $blockRepository, $cache);
+        $secondRequest = new ShareButtonsExtension($shareButtonsService, $iconService, new RequestStack(), $blockRepository, $cache, $this->createAdminUrlGenerator());
         $secondRequest->renderDefaultShareButtons($environment);
         $this->assertSame('circle', $context['shape']);
         $this->assertSame('solid', $context['fill']);

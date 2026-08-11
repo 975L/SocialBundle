@@ -12,19 +12,15 @@ namespace c975L\SocialBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// The scaffolded social.css is a hand-maintained copy of the token defaults, so it drifts on its own. This
-// bundle declares no :root of its own, every token being read with an inline fallback, so the sass is the
-// only place those defaults exist - and the only thing this file can be checked against
+// The scaffolded social.css is a hand-maintained copy of the token defaults, so it drifts on its own. This bundle declares no :root of its own, every token being read with an inline fallback, so the sass is the only place those defaults exist - and the only thing this file can be checked against
 class ScaffoldThemeTest extends TestCase
 {
-    // Set per network by the @each at the bottom of _share-buttons.scss, so one value in :root would paint
-    // every button alike (the scaffold's own header says as much)
+    // Set per network by the @each at the bottom of _share-buttons.scss, so one value in :root would paint every button alike (the scaffold's own header says as much)
     private const PER_NETWORK = [
         '--network-color',
     ];
 
-    // Read with one fallback per shape or per breakpoint, so a single :root value collapses every variant
-    // into one look: the readme sends a design needing that to the app's own app.css instead
+    // Read with one fallback per shape or per breakpoint, so a single :root value collapses every variant into one look: the readme sends a design needing that to the app's own app.css instead
     private const PER_VARIANT = [
         '--social-share-display',
         '--social-share-btn-width',
@@ -32,21 +28,18 @@ class ScaffoldThemeTest extends TestCase
         '--social-share-btn-radius',
     ];
 
-    // Only read by .social-share--preview-backdrop, the stand-in band of the dashboard preview and the block
-    // gallery - never carried by a real page, so a site has nothing to retune there
+    // Only read by .social-share--preview-backdrop, the stand-in band of the dashboard preview and the block gallery - never carried by a real page, so a site has nothing to retune there
     private const PREVIEW_ONLY = [
         '--social-share-preview-background',
         '--social-share-preview-padding',
     ];
 
-    // The space between buttons is already --social-share-gap's, so offering this one too would hand a
-    // design two ways to write the same look
+    // The space between buttons is already --social-share-gap's, so offering this one too would hand a design two ways to write the same look
     private const NOT_THEMABLE = [
         '--social-share-btn-margin',
     ];
 
-    // UiBundle's own page rhythm, read here so the social links block steps like every other block of the page -
-    // offered by its themes/ui.css, not restated here (the scaffold's header: only what is SocialBundle's own)
+    // UiBundle's own page rhythm, read here so the social links block steps like every other block of the page - offered by its themes/ui.css, not restated here (the scaffold's header: only what is SocialBundle's own)
     private const UI_OWNED = [
         '--section-space-tight',
     ];

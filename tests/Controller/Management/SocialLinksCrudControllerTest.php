@@ -38,10 +38,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SocialLinksCrudControllerTest extends TestCase
 {
+    // Answers on the key rather than on any call: a service handing the same role back whatever it is asked for would let the screen's own key drift to another role's unnoticed
     private function createConfigService(string $role = 'ROLE_ADMIN'): ConfigServiceInterface
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturn($role);
+        $configService->method('get')->willReturnCallback(
+            static fn (string $key) => 'site-role-editor' === $key ? $role : null
+        );
 
         return $configService;
     }
@@ -145,7 +148,7 @@ class SocialLinksCrudControllerTest extends TestCase
         $this->assertContains('@c975LSocial/management/social_links_preview_theme.html.twig', $dto->getFormThemes());
     }
 
-    public function testConfigureActionsGrantsSiteRoleAdminOnEveryAction(): void
+    public function testConfigureActionsGrantsSiteRoleEditorOnEveryAction(): void
     {
         $controller = $this->createController(null, 'ROLE_SOCIAL_ADMIN');
 

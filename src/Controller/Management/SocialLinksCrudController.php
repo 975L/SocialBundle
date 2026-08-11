@@ -85,7 +85,7 @@ class SocialLinksCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular(t('label.social_links', [], 'social'))
             ->setEntityLabelInPlural(t('label.social_links', [], 'social'))
-            ->setEntityPermission($this->configService->get('site-role-admin'))
+            ->setEntityPermission($this->configService->get('site-role-editor'))
             // EasyAdmin's new/edit templates apply "ea.crud.formThemes only", which drops the app-wide twig.form_themes (where UiBundle registers icon_picker_theme.html.twig) entirely - without this, the icon field silently falls back to a plain text input, no picker at all.
             ->addFormTheme('@c975LUi/form/icon_picker_theme.html.twig')
             // Overrides how each SocialLinkEntryType is rendered inside the "links" CollectionType - see the template for why this is needed instead of EasyAdmin's default rendering.
@@ -102,7 +102,7 @@ class SocialLinksCrudController extends AbstractCrudController
 
     public function configureActions(Actions $actions): Actions
     {
-        $role = $this->configService->get('site-role-admin');
+        $role = $this->configService->get('site-role-editor');
 
         // Lets the admin back out of a create/edit without saving - mirrors EasyAdmin's own built-in actions (linkToCrudAction targeting INDEX, same as Action::INDEX itself)
         $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')

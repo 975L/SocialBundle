@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.1.2
+
+Open the share band's settings from a hover button
+
+- Added a `share_buttons_edit_url()` Twig function pointing at the share buttons settings screen (11/08/2026)
+- The share band now raises UiBundle's edit button on hover, for editors only (11/08/2026)
+- That band mounts the `blockEditOverlay` controller itself (11/08/2026)
+- The social links and share buttons screens are now gated by `site-role-editor` (11/08/2026)
+- Translated the remaining French comments to English (11/08/2026)
+- Collapsed the multi-line comments onto a single line (11/08/2026)
+- Documented the hover edit button in the readme (11/08/2026)
+
 ## v2.1.1
 
 Add a text-only icon style to the social links block

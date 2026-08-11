@@ -1,7 +1,9 @@
 {# Self-contained share band, included by a host layout through `include('@c975LSocial/shareButtons/default.html.twig', ignore_missing: true)` - that path is a public contract, renaming it is a BC-break. The host stays free of any hard dependency on this bundle: Twig resolves an include at runtime, where it resolves a function call at compile time. Markup and config guard both live here, the bundle owning the domain owning its fragment. #}
 {% if config('social-enable-share-buttons') %}
+    {# Editor-only: the band is the same one on every page, so its hover button points at the singleton it is rendered from rather than at the page under it (see ShareButtonsExtension::getEditUrl). The controller is mounted here too, UiBundle's own ".blocks" being nowhere on a page composing no block at all #}
+    {% set editUrl = is_granted(config('site-role-editor')) ? share_buttons_edit_url() : null %}
     {# Meant to sit outside <main>, inside a landmark so it isn't orphan content for a screen reader - "complementary" being what buttons tangential to the page's content are #}
-    <aside class="page-share">
+    <aside class="page-share"{% if editUrl %} data-controller="blockEditOverlay" data-edit-label="{{ 'label.edit'|trans({}, 'ui') }}" data-block-edit-url="{{ editUrl }}"{% endif %}>
         {{ share_buttons_default() }}
     </aside>
 {% endif %}

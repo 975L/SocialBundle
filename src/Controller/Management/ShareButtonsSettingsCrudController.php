@@ -84,7 +84,7 @@ class ShareButtonsSettingsCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular(t('label.share_buttons_settings', [], 'social'))
             ->setEntityLabelInPlural(t('label.share_buttons_settings', [], 'social'))
-            ->setEntityPermission($this->configService->get('site-role-admin'))
+            ->setEntityPermission($this->configService->get('site-role-editor'))
             // Renders the style preview below the style <select> - see share_buttons_style_preview_theme.html.twig and ShareButtonsStylePreviewType
             ->addFormTheme('@c975LSocial/management/share_buttons_style_preview_theme.html.twig')
             // Single-row index (it's a singleton): showing Edit/Delete inline avoids an extra click through the "..." dropdown to reach them.
@@ -97,7 +97,7 @@ class ShareButtonsSettingsCrudController extends AbstractCrudController
 
     public function configureActions(Actions $actions): Actions
     {
-        $role = $this->configService->get('site-role-admin');
+        $role = $this->configService->get('site-role-editor');
 
         // Lets the admin back out of a create/edit without saving - mirrors EasyAdmin's own built-in actions (linkToCrudAction targeting INDEX, same as Action::INDEX itself)
         $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')

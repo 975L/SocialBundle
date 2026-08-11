@@ -31,8 +31,7 @@ services:
               pickable: false
               cacheable: true
 
-    # Pickable pointer to the singleton above - no data of its own, so it can be dropped on any page
-    # without re-defining the links (see SocialLinksDisplayType / SocialLinksDisplay.html.twig)
+    # Pickable pointer to the singleton above - no data of its own, so it can be dropped on any page without re-defining the links (see SocialLinksDisplayType / SocialLinksDisplay.html.twig)
     social.block.social_links_display:
         class: stdClass
         tags:
@@ -45,13 +44,10 @@ services:
               template: '@c975LSocial/blocks/SocialLinksDisplay.html.twig'
               category: 'label.category_navigation'
               pickable: true
-              # Its render depends on the "social_links" singleton's data, not its own - caching it
-              # under its own block id would go stale whenever the singleton is edited elsewhere
+              # Its render depends on the "social_links" singleton's data, not its own - caching it under its own block id would go stale whenever the singleton is edited elsewhere
               cacheable: false
 
-    # Pickable pointer to the "share_buttons_settings" singleton (see ShareButtonsSettingsCrudController)
-    # - same pattern as social_links_display above, so editors can drop the share buttons somewhere
-    # specific on a page too, on top of the layout's own automatic share_buttons_default() call
+    # Pickable pointer to the "share_buttons_settings" singleton (see ShareButtonsSettingsCrudController) - same pattern as social_links_display above, so editors can drop the share buttons somewhere specific on a page too, on top of the layout's own automatic share_buttons_default() call
     social.block.share_buttons_display:
         class: stdClass
         tags:
@@ -64,7 +60,5 @@ services:
               template: '@c975LSocial/blocks/ShareButtonsDisplay.html.twig'
               category: 'label.category_navigation'
               pickable: true
-              # Its render depends on the current request's URL (see ShareButtonsExtension::
-              # renderShareButtons()), not its own data - caching it under its own block id would reuse
-              # the first page's share URL on every other page the same block instance is placed on
+              # Its render depends on the current request's URL (see ShareButtonsExtension:: renderShareButtons()), not its own data - caching it under its own block id would reuse the first page's share URL on every other page the same block instance is placed on
               cacheable: false

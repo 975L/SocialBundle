@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-08-11",
+        "description": [
+            {
+                "en": "Passing the mouse over the sharing band on a page now opens its settings straight away, without going through the menu",
+                "fr": "Passer la souris sur le bandeau de partage d'une page permet maintenant d'ouvrir directement ses réglages, sans passer par le menu",
+                "es": "Al pasar el ratón por la banda de compartir de una página ahora se abren directamente sus ajustes, sin pasar por el menú"
+            },
+            {
+                "en": "The social networks and the sharing buttons can now be managed by an editor, and no longer by an administrator only",
+                "fr": "Les réseaux sociaux et les boutons de partage peuvent maintenant être gérés par un éditeur, et non plus par un administrateur seulement",
+                "es": "Las redes sociales y los botones de compartir ahora pueden ser gestionados por un editor, y ya no solo por un administrador"
+            }
+        ]
+    },
+    {
         "date": "2026-08-10",
         "description": [
             {
