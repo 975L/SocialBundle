@@ -29,19 +29,19 @@ class SocialLinksExportProviderTest extends TestCase
         $repository = $this->createStub(BlockRepository::class);
         $repository->method('findOneByKind')->willReturn(null);
 
-        $data = (new SocialLinksExportProvider($repository))->exportAll();
+        $data = new SocialLinksExportProvider($repository)->exportAll();
 
         $this->assertSame(['items' => [], 'files' => []], $data);
     }
 
     public function testExportAllReturnsTheSingletonBlocksData(): void
     {
-        $block = (new Block())->setKind('social_links')->setData(['links' => [['label' => 'Bluesky', 'url' => 'https://bsky.app/profile/975l.com', 'icon' => 'bluesky']]]);
+        $block = new Block()->setKind('social_links')->setData(['links' => [['label' => 'Bluesky', 'url' => 'https://bsky.app/profile/975l.com', 'icon' => 'bluesky']]]);
 
         $repository = $this->createStub(BlockRepository::class);
         $repository->method('findOneByKind')->willReturn($block);
 
-        $data = (new SocialLinksExportProvider($repository))->exportAll();
+        $data = new SocialLinksExportProvider($repository)->exportAll();
 
         $this->assertSame([
             'items' => [['data' => ['links' => [['label' => 'Bluesky', 'url' => 'https://bsky.app/profile/975l.com', 'icon' => 'bluesky']]]]],

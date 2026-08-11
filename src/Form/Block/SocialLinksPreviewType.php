@@ -27,11 +27,13 @@ class SocialLinksPreviewType extends AbstractType
         $view->vars['icon_style'] = $options['icon_style'];
     }
 
+    #[\Override]
     public function getParent(): string
     {
         return TextType::class;
     }
 
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return 'social_links_preview';

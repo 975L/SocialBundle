@@ -46,11 +46,13 @@
         "cs": "phpcs -q",
         "fixer": "php-cs-fixer check --diff",
         "stan": "phpstan analyse --no-progress",
+        "rector": "rector process --dry-run",
         "test": "phpunit",
         "qa": [
             "@cs",
             "@fixer",
             "@stan",
+            "@rector",
             "@test"
         ]
     },
@@ -58,6 +60,7 @@
         "cs": "PSR-12 (phpcs)",
         "fixer": "Standard Symfony (php-cs-fixer)",
         "stan": "Analyse statique du bundle, level 5",
+        "rector": "Modernisation du code, en simulation (rector)",
         "test": "Suite PHPUnit",
         "qa": "Tous les contrôles de la CI, dans l'ordre - voir bin/ci.sh pour les rejouer sur des dépendances fraîches"
     },

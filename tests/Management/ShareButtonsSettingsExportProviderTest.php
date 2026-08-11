@@ -29,19 +29,19 @@ class ShareButtonsSettingsExportProviderTest extends TestCase
         $repository = $this->createStub(BlockRepository::class);
         $repository->method('findOneByKind')->willReturn(null);
 
-        $data = (new ShareButtonsSettingsExportProvider($repository))->exportAll();
+        $data = new ShareButtonsSettingsExportProvider($repository)->exportAll();
 
         $this->assertSame(['items' => [], 'files' => []], $data);
     }
 
     public function testExportAllReturnsTheSingletonBlocksData(): void
     {
-        $block = (new Block())->setKind('share_buttons_settings')->setData(['networks' => ['facebook', 'x'], 'style' => 'rounded']);
+        $block = new Block()->setKind('share_buttons_settings')->setData(['networks' => ['facebook', 'x'], 'style' => 'rounded']);
 
         $repository = $this->createStub(BlockRepository::class);
         $repository->method('findOneByKind')->willReturn($block);
 
-        $data = (new ShareButtonsSettingsExportProvider($repository))->exportAll();
+        $data = new ShareButtonsSettingsExportProvider($repository)->exportAll();
 
         $this->assertSame([
             'items' => [['data' => ['networks' => ['facebook', 'x'], 'style' => 'rounded']]],

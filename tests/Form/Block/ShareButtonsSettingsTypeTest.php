@@ -21,9 +21,9 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class ShareButtonsSettingsTypeTest extends TypeTestCase
 {
-    private const NETWORKS = ['facebook', 'bluesky', 'linkedin', 'pinterest', 'email'];
-    private const SHAPES = ['wide', 'ellipse', 'circle'];
-    private const FILLS = ['solid', 'transparent', 'outline'];
+    private const array NETWORKS = ['facebook', 'bluesky', 'linkedin', 'pinterest', 'email'];
+    private const array SHAPES = ['wide', 'ellipse', 'circle'];
+    private const array FILLS = ['solid', 'transparent', 'outline'];
 
     // Pre-seeds a stub before TypeTestCase::setUp() runs, since it otherwise creates its own EventDispatcherInterface mock with no configured expectations - forms do dispatch events internally (PRE_SET_DATA...), which PHPUnit 13 now flags as "mock used without expectations"
     protected function setUp(): void
@@ -42,6 +42,7 @@ class ShareButtonsSettingsTypeTest extends TypeTestCase
         return $shareButtonsService;
     }
 
+    #[\Override]
     protected function getExtensions(): array
     {
         return [new PreloadedExtension([new ShareButtonsSettingsType($this->createShareButtonsService(), new BlockAnchorSlugger(new AsciiSlugger()))], [])];

@@ -13,7 +13,7 @@ namespace c975L\SocialBundle\Service;
 // Networks supported by the "share_buttons()" Twig function
 class ShareButtonsService implements ShareButtonsServiceInterface
 {
-    private const NETWORKS = [
+    private const array NETWORKS = [
         'facebook' => 'https://www.facebook.com/sharer/sharer.php?u=',
         'bluesky' => 'https://bsky.app/intent/compose?text=',
         'linkedin' => 'https://www.linkedin.com/shareArticle?url=',
@@ -36,13 +36,13 @@ class ShareButtonsService implements ShareButtonsServiceInterface
         'xing' => 'https://www.xing.com/spi/shares/new?url=',
     ];
 
-    private const MAIN_NETWORKS = ['facebook', 'bluesky', 'linkedin', 'pinterest', 'email'];
+    private const array MAIN_NETWORKS = ['facebook', 'bluesky', 'linkedin', 'pinterest', 'email'];
 
     // Matches the ".social-share--shape-{shape}" variants styled in sass/_share-buttons.scss - the button's box and corners only, "wide" and "ellipse" rendering 65x50 against the other three's 50x50
-    private const SHAPES = ['wide', 'ellipse', 'square', 'rounded', 'circle'];
+    private const array SHAPES = ['wide', 'ellipse', 'square', 'rounded', 'circle'];
 
     // Matches the ".social-share--fill-{fill}" variants there too - what paints the box, independently of its shape. "solid" is the per-network brand color, and carries no rule of its own: it IS the base styling every button gets
-    private const FILLS = ['solid', 'transparent', 'outline', 'minimal'];
+    private const array FILLS = ['solid', 'transparent', 'outline', 'minimal'];
 
     public function getMainNetworks(): array
     {

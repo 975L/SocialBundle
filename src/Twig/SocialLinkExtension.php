@@ -21,7 +21,7 @@ use Twig\TwigFunction;
 class SocialLinkExtension extends AbstractExtension
 {
     // Kind of the "social_links" singleton Block (see SocialLinksCrudController) - not shared as a public constant there either, matching ShareButtonsExtension's own literal use of "share_buttons_settings" for the same reason (no other consumer needs it)
-    private const KIND = 'social_links';
+    private const string KIND = 'social_links';
 
     public function __construct(
         private readonly BlockRepository $blockRepository,
@@ -30,11 +30,12 @@ class SocialLinkExtension extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('social_link_block', [$this, 'getSocialLinkBlock']),
-            new TwigFunction('social_link_icon', [$this, 'getSocialLinkIcon']),
+            new TwigFunction('social_link_block', $this->getSocialLinkBlock(...)),
+            new TwigFunction('social_link_icon', $this->getSocialLinkIcon(...)),
         ];
     }
 

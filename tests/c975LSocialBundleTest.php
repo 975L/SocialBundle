@@ -22,7 +22,7 @@ class c975LSocialBundleTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new c975LSocialBundle())->getContainerExtension()->load([], $container);
+        new c975LSocialBundle()->getContainerExtension()->load([], $container);
 
         $this->assertTrue($container->hasDefinition(ShareButtonsService::class));
     }
@@ -32,7 +32,7 @@ class c975LSocialBundleTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new c975LSocialBundle())->getContainerExtension()->prepend($container);
+        new c975LSocialBundle()->getContainerExtension()->prepend($container);
 
         $frameworkConfig = $container->getExtensionConfig('framework');
         $this->assertSame(

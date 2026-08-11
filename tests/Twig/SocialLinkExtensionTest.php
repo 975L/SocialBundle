@@ -65,7 +65,7 @@ class SocialLinkExtensionTest extends TestCase
     // The layout renders the "social_links" singleton block whenever it has been created
     public function testGetSocialLinkBlockReturnsBlockPersistedUnderSocialLinksKind(): void
     {
-        $block = (new Block())->setKind('social_links')->setData(['links' => []]);
+        $block = new Block()->setKind('social_links')->setData(['links' => []]);
         $extension = $this->createExtension($block);
 
         // Not assertSame(): the cached-and-reconstructed Block is a fresh object after the pool's (de)serialization round-trip, equal in value but no longer the same instance
@@ -83,7 +83,7 @@ class SocialLinkExtensionTest extends TestCase
     // A base layout typically calls social_link_block() once per render, but a page could embed it more than once (e.g. header and footer) - only the first call in a request should hit the repository
     public function testGetSocialLinkBlockMemoizesWithinTheSameCacheInstance(): void
     {
-        $block = (new Block())->setKind('social_links')->setData(['links' => []]);
+        $block = new Block()->setKind('social_links')->setData(['links' => []]);
         $blockRepository = $this->createMock(BlockRepository::class);
         $blockRepository->expects($this->once())->method('findOneByKind')->with('social_links')->willReturn($block);
 
@@ -98,7 +98,7 @@ class SocialLinkExtensionTest extends TestCase
     // The whole point of a cross-request cache: a fresh SocialLinkExtension instance (simulating a new request) sharing the same cache pool must not hit the repository again
     public function testGetSocialLinkBlockSurvivesAcrossInstancesSharingTheSameCachePool(): void
     {
-        $block = (new Block())->setKind('social_links')->setData(['links' => []]);
+        $block = new Block()->setKind('social_links')->setData(['links' => []]);
         $blockRepository = $this->createMock(BlockRepository::class);
         $blockRepository->expects($this->once())->method('findOneByKind')->with('social_links')->willReturn($block);
         $iconService = $this->createStub(IconServiceInterface::class);

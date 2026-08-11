@@ -138,8 +138,8 @@ class ShareButtonsExtensionTest extends TestCase
     // The hover button offered to an editor on the public band (see shareButtons/default.html.twig) opens the singleton holding its networks and its style, not the page it was hovered on
     public function testGetEditUrlPointsAtTheSavedSettingsSingleton(): void
     {
-        $settingsBlock = (new Block())->setKind('share_buttons_settings');
-        (new \ReflectionProperty(Block::class, 'id'))->setValue($settingsBlock, 42);
+        $settingsBlock = new Block()->setKind('share_buttons_settings');
+        new \ReflectionProperty(Block::class, 'id')->setValue($settingsBlock, 42);
 
         $adminUrlGenerator = $this->createMock(AdminUrlGeneratorInterface::class);
         $adminUrlGenerator->method('unsetAll')->willReturnSelf();
@@ -321,7 +321,7 @@ class ShareButtonsExtensionTest extends TestCase
             $calls,
             ['telegram' => 'https://share/telegram'],
         );
-        $settingsBlock = (new Block())->setData(['networks' => ['telegram'], 'shape' => 'circle']);
+        $settingsBlock = new Block()->setData(['networks' => ['telegram'], 'shape' => 'circle']);
         $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
         $template = null;
         $context = null;
@@ -345,7 +345,7 @@ class ShareButtonsExtensionTest extends TestCase
             $calls,
             ['facebook' => 'https://share/facebook'],
         );
-        $settingsBlock = (new Block())->setData(['networks' => ['facebook'], 'shape' => 'rounded', 'fill' => 'minimal']);
+        $settingsBlock = new Block()->setData(['networks' => ['facebook'], 'shape' => 'rounded', 'fill' => 'minimal']);
         $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
         $template = null;
         $context = null;
@@ -399,7 +399,7 @@ class ShareButtonsExtensionTest extends TestCase
             $extension = $this->createExtension(
                 $shareButtonsService,
                 [],
-                null !== $data ? (new Block())->setData($data) : null,
+                null !== $data ? new Block()->setData($data) : null,
                 Request::create('https://example.com'),
             );
             $template = null;
@@ -418,7 +418,7 @@ class ShareButtonsExtensionTest extends TestCase
     {
         $calls = [];
         $shareButtonsService = $this->createShareButtonsService(['facebook'], $calls, ['facebook' => 'https://share/facebook']);
-        $settingsBlock = (new Block())->setKind('share_buttons_settings')->setData(['networks' => ['facebook'], 'shape' => 'circle']);
+        $settingsBlock = new Block()->setKind('share_buttons_settings')->setData(['networks' => ['facebook'], 'shape' => 'circle']);
 
         $blockRepository = $this->createMock(BlockRepository::class);
         $blockRepository->expects($this->once())->method('findOneByKind')->with('share_buttons_settings')->willReturn($settingsBlock);
@@ -440,7 +440,7 @@ class ShareButtonsExtensionTest extends TestCase
     {
         $calls = [];
         $shareButtonsService = $this->createShareButtonsService(['facebook'], $calls, ['telegram' => 'https://share/telegram']);
-        $settingsBlock = (new Block())->setKind('share_buttons_settings')->setData(['networks' => ['telegram'], 'shape' => 'circle']);
+        $settingsBlock = new Block()->setKind('share_buttons_settings')->setData(['networks' => ['telegram'], 'shape' => 'circle']);
 
         $blockRepository = $this->createMock(BlockRepository::class);
         $blockRepository->expects($this->once())->method('findOneByKind')->with('share_buttons_settings')->willReturn($settingsBlock);
@@ -491,7 +491,7 @@ class ShareButtonsExtensionTest extends TestCase
             $calls,
             ['facebook' => 'https://share/facebook'],
         );
-        $settingsBlock = (new Block())->setData(['networks' => ['facebook'], 'shape' => 'circle', 'anchor' => 'partage']);
+        $settingsBlock = new Block()->setData(['networks' => ['facebook'], 'shape' => 'circle', 'anchor' => 'partage']);
         $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
         $template = null;
         $context = null;
@@ -512,7 +512,7 @@ class ShareButtonsExtensionTest extends TestCase
             $calls,
             ['facebook' => 'https://share/facebook'],
         );
-        $settingsBlock = (new Block())->setData(['networks' => ['facebook'], 'shape' => 'circle', 'anchor' => 'partage']);
+        $settingsBlock = new Block()->setData(['networks' => ['facebook'], 'shape' => 'circle', 'anchor' => 'partage']);
         $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
         $template = null;
         $context = null;
@@ -533,7 +533,7 @@ class ShareButtonsExtensionTest extends TestCase
             $calls,
             ['facebook' => 'https://share/facebook'],
         );
-        $settingsBlock = (new Block())->setData(['networks' => ['facebook'], 'shape' => 'circle', 'anchor' => 'partage']);
+        $settingsBlock = new Block()->setData(['networks' => ['facebook'], 'shape' => 'circle', 'anchor' => 'partage']);
         $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
         $template = null;
         $context = null;
@@ -554,7 +554,7 @@ class ShareButtonsExtensionTest extends TestCase
             $calls,
             ['facebook' => 'https://share/facebook', 'bluesky' => 'https://share/bluesky'],
         );
-        $settingsBlock = (new Block())->setData(['networks' => [], 'shape' => 'circle']);
+        $settingsBlock = new Block()->setData(['networks' => [], 'shape' => 'circle']);
         $extension = $this->createExtension($shareButtonsService, [], $settingsBlock, Request::create('https://example.com'));
         $template = null;
         $context = null;

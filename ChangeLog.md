@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.2.0
+
+Add Rector to the quality pipeline and modernise the code
+
+- Added a `rector.php` running the same sets as `SymfonyMigrate.sh`, over `src/`, `tests/` and `scaffold/` (11/08/2026)
+- Added a `composer rector` script, in dry-run, and wired it into `composer qa` and the CI (11/08/2026)
+- Skipped `ReadOnlyClassRector` and `AddParamBasedOnParentClassMethodRector` (11/08/2026)
+- Typed the class constants (11/08/2026)
+- Added `#[\Override]` on the inherited methods (11/08/2026)
+- Dropped the parentheses around the instantiations chained with a method call (11/08/2026)
+- `SocialLinkExtension` now declares its Twig functions as first-class callables (11/08/2026)
+
 ## v2.1.2
 
 Open the share band's settings from a hover button

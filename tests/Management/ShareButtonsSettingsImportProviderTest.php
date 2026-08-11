@@ -53,7 +53,7 @@ class ShareButtonsSettingsImportProviderTest extends TestCase
 
     public function testImportUpdatesTheExistingSingletonBlockInPlaceInsteadOfCreatingASecondOne(): void
     {
-        $existing = (new Block())->setKind('share_buttons_settings')->setData(['networks' => ['facebook'], 'style' => 'minimal']);
+        $existing = new Block()->setKind('share_buttons_settings')->setData(['networks' => ['facebook'], 'style' => 'minimal']);
 
         $provider = new ShareButtonsSettingsImportProvider($this->createStub(EntityManagerInterface::class), $this->createBlockRepository($existing));
 

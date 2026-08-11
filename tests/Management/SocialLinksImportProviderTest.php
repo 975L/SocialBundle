@@ -40,7 +40,7 @@ class SocialLinksImportProviderTest extends TestCase
         $em->expects($this->never())->method('persist');
         $em->expects($this->never())->method('flush');
 
-        $result = (new SocialLinksImportProvider($em, $this->createBlockRepository()))->import([]);
+        $result = new SocialLinksImportProvider($em, $this->createBlockRepository())->import([]);
 
         $this->assertSame(['created' => 0, 'updated' => 0], $result);
     }
@@ -64,7 +64,7 @@ class SocialLinksImportProviderTest extends TestCase
 
     public function testImportUpdatesTheExistingSingletonBlockInPlaceInsteadOfCreatingASecondOne(): void
     {
-        $existing = (new Block())->setKind('social_links')->setData(['links' => [['label' => 'Old', 'url' => 'https://old.com']]]);
+        $existing = new Block()->setKind('social_links')->setData(['links' => [['label' => 'Old', 'url' => 'https://old.com']]]);
 
         $provider = new SocialLinksImportProvider($this->createStub(EntityManagerInterface::class), $this->createBlockRepository($existing));
 

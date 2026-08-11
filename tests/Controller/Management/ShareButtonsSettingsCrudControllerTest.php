@@ -165,7 +165,7 @@ class ShareButtonsSettingsCrudControllerTest extends TestCase
     public function testConfigureFieldsIndexColumnsFormatNetworksAndStyleFromBlockData(): void
     {
         $controller = $this->createController(null);
-        $entity = (new Block())->setData(['networks' => ['facebook', 'bluesky'], 'shape' => 'circle', 'fill' => 'outline']);
+        $entity = new Block()->setData(['networks' => ['facebook', 'bluesky'], 'shape' => 'circle', 'fill' => 'outline']);
 
         $fields = iterator_to_array($controller->configureFields('index'));
         $dtosByProperty = [];
@@ -188,7 +188,7 @@ class ShareButtonsSettingsCrudControllerTest extends TestCase
     public function testConfigureFieldsIndexStyleColumnFallsBackToTheDefaultsWhenNeitherIsSaved(): void
     {
         $controller = $this->createController(null);
-        $entity = (new Block())->setData(['networks' => ['facebook'], 'style' => 'minimal']);
+        $entity = new Block()->setData(['networks' => ['facebook'], 'style' => 'minimal']);
 
         $fields = iterator_to_array($controller->configureFields('index'));
         $dtosByProperty = [];

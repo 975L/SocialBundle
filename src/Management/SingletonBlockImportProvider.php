@@ -39,7 +39,7 @@ abstract class SingletonBlockImportProvider implements ImportProviderInterface
 
         $block = $this->blockRepository->findOneByKind($this->getKind());
         $isNew = null === $block;
-        $block ??= (new Block())->setKind($this->getKind());
+        $block ??= new Block()->setKind($this->getKind());
 
         $block->setData($items[0]['data'] ?? []);
         $this->em->persist($block);

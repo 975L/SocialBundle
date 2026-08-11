@@ -28,7 +28,7 @@ use Twig\TwigFunction;
 class ShareButtonsExtension extends AbstractExtension
 {
     // Kind of the "share_buttons_settings" singleton Block (see ShareButtonsSettingsCrudController) - not shared as a public constant there either, matching SocialLinkExtension's own literal use of "social_links" for the same reason (no other consumer needs it)
-    private const SETTINGS_KIND = 'share_buttons_settings';
+    private const string SETTINGS_KIND = 'share_buttons_settings';
 
     public function __construct(
         private readonly ShareButtonsServiceInterface $shareButtonsService,
@@ -40,6 +40,7 @@ class ShareButtonsExtension extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [

@@ -29,6 +29,7 @@ class SocialLinkEntryTypeTest extends TypeTestCase
     }
 
     // "network"/"customIcon" both build on UiBundle's IconPickerType, so it must be resolvable by the form factory exactly as it is in the real app (an autowired service)
+    #[\Override]
     protected function getExtensions(): array
     {
         $iconService = $this->createStub(IconServiceInterface::class);

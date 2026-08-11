@@ -26,6 +26,7 @@ class ShareButtonsDisplayTypeTest extends TypeTestCase
     }
 
     // The type now takes a BlockAnchorSlugger, so it can no longer be instantiated by class name alone
+    #[\Override]
     protected function getTypes(): array
     {
         return [new ShareButtonsDisplayType(new BlockAnchorSlugger(new AsciiSlugger()))];

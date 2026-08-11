@@ -34,6 +34,7 @@ class ShareButtonsStylePreviewTypeTest extends TypeTestCase
         return $shareButtonsService;
     }
 
+    #[\Override]
     protected function getExtensions(): array
     {
         return [new PreloadedExtension([new ShareButtonsStylePreviewType($this->createShareButtonsService())], [])];

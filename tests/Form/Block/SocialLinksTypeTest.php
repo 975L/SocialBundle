@@ -32,6 +32,7 @@ class SocialLinksTypeTest extends TypeTestCase
     }
 
     // "links" is a CollectionType of SocialLinkEntryType, which itself builds on IconPickerType - so it must be resolvable by the form factory exactly as it is in the real app
+    #[\Override]
     protected function getExtensions(): array
     {
         $iconService = $this->createStub(IconServiceInterface::class);

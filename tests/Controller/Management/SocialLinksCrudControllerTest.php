@@ -184,7 +184,7 @@ class SocialLinksCrudControllerTest extends TestCase
     {
         $controller = $this->createController(null);
         $this->setContextEntity($controller, null);
-        $entity = (new Block())->setData(['links' => [
+        $entity = new Block()->setData(['links' => [
             ['label' => 'Facebook', 'url' => 'https://facebook.com/975l', 'icon' => 'facebook'],
             ['label' => 'Bluesky', 'url' => 'https://bsky.app/975l', 'icon' => 'bluesky'],
         ]]);
@@ -240,7 +240,7 @@ class SocialLinksCrudControllerTest extends TestCase
     public function testConfigureFieldsPreviewFieldReadsSavedEntityData(): void
     {
         $links = [['label' => 'Facebook', 'url' => 'https://facebook.com/975l', 'icon' => 'facebook']];
-        $entity = (new Block())->setData(['intro' => '<div>Retrouvez-nous</div>', 'links' => $links, 'displayLabel' => false, 'iconStyle' => 'colored']);
+        $entity = new Block()->setData(['intro' => '<div>Retrouvez-nous</div>', 'links' => $links, 'displayLabel' => false, 'iconStyle' => 'colored']);
 
         $controller = $this->createController($entity);
         $this->setContextEntity($controller, $entity);

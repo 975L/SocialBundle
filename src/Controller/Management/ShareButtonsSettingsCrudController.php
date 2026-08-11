@@ -34,7 +34,7 @@ use function Symfony\Component\Translation\t;
 // Manages the site-wide "share_buttons_settings" singleton (networks + style used by share_buttons_default(), see ShareButtonsExtension), reusing UiBundle's generic Block/data JSON storage - no dedicated entity/table, no "ui.block" tag of its own (this singleton is never placed on a page or rendered via render_block() - same as "social_links" - see SocialLinksCrudController for the pattern this mirrors). Its pickable pointer, "share_buttons_display", is a separate block kind (see services.yaml) that lets editors drop these same settings into a specific page's block flow.
 class ShareButtonsSettingsCrudController extends AbstractCrudController
 {
-    private const KIND = 'share_buttons_settings';
+    private const string KIND = 'share_buttons_settings';
 
     public function __construct(
         private readonly ConfigServiceInterface $configService,
@@ -50,6 +50,7 @@ class ShareButtonsSettingsCrudController extends AbstractCrudController
     }
 
     // Redirects to editing the existing singleton instead of letting a second "share_buttons_settings" Block be created - see SocialLinksCrudController::new() for why a duplicate row is a silent bug, not a hard error
+    #[\Override]
     public function new(AdminContext $context): KeyValueStore | Response
     {
         $existing = $this->blockRepository->findOneByKind(self::KIND);
@@ -66,6 +67,7 @@ class ShareButtonsSettingsCrudController extends AbstractCrudController
         return parent::new($context);
     }
 
+    #[\Override]
     public function createIndexQueryBuilder(...$args): QueryBuilder
     {
         return parent::createIndexQueryBuilder(...$args)
@@ -74,11 +76,13 @@ class ShareButtonsSettingsCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function createEntity(string $entityFqcn): Block
     {
-        return (new Block())->setKind(self::KIND);
+        return new Block()->setKind(self::KIND);
     }
 
+    #[\Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -95,6 +99,7 @@ class ShareButtonsSettingsCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureActions(Actions $actions): Actions
     {
         $role = $this->configService->get('site-role-editor');
@@ -124,6 +129,7 @@ class ShareButtonsSettingsCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
         return [

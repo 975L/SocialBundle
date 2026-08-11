@@ -29,11 +29,13 @@ class ShareButtonsStylePreviewType extends AbstractType
         $view->vars['all_networks'] = $this->shareButtonsService->getNetworks();
     }
 
+    #[\Override]
     public function getParent(): string
     {
         return TextType::class;
     }
 
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return 'share_buttons_style_preview';

@@ -21,7 +21,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class SocialLinkEntryType extends AbstractType
 {
     // Curated on purpose, not the full IconServiceInterface::getIcons(): that also serves UiBundle's generic UI glyphs (alerts, faces, arrows...), which have no business showing up as a "network" choice. Every key here is expected to have a public/icons/{key}.svg (see README).
-    private const NETWORKS = [
+    private const array NETWORKS = [
         'behance', 'blogger', 'bluesky', 'buffer', 'delicious', 'discord', 'dribbble', 'email',
         'evernote', 'facebook', 'flickr', 'github', 'instagram', 'line', 'linkedin', 'mastodon',
         'medium', 'messenger', 'pinterest', 'reddit', 'skype', 'snapchat', 'soundcloud', 'spotify',

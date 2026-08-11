@@ -35,7 +35,7 @@ use function Symfony\Component\Translation\t;
 // Manages the site-wide "social_links" Block outside of any Page's block collection, reusing UiBundle's generic Block/data JSON storage - no dedicated entity/table. Its "kind" is fixed (never chosen), so the site-wide footer can render it via BlockRepository::findOneByKind() without it needing to be attached to a page first (see SiteBundle's SocialLinks Twig component). Tagged "pickable: false" in services.yaml, so it's deliberately absent from the normal per-page block picker - it's a singleton, editable only here, to avoid editors accidentally creating independent, separately-filled copies of it on individual pages.
 class SocialLinksCrudController extends AbstractCrudController
 {
-    private const KIND = 'social_links';
+    private const string KIND = 'social_links';
 
     public function __construct(
         private readonly ConfigServiceInterface $configService,
@@ -51,6 +51,7 @@ class SocialLinksCrudController extends AbstractCrudController
     }
 
     // Redirects to editing the existing singleton instead of letting a second "social_links" Block be created - BlockRepository::findOneByKind() (used by the front-end renderer) has no ordering, so a duplicate row silently makes the newest links invisible instead of erroring
+    #[\Override]
     public function new(AdminContext $context): KeyValueStore | Response
     {
         $existing = $this->blockRepository->findOneByKind(self::KIND);
@@ -67,6 +68,7 @@ class SocialLinksCrudController extends AbstractCrudController
         return parent::new($context);
     }
 
+    #[\Override]
     public function createIndexQueryBuilder(...$args): QueryBuilder
     {
         return parent::createIndexQueryBuilder(...$args)
@@ -75,11 +77,13 @@ class SocialLinksCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function createEntity(string $entityFqcn): Block
     {
-        return (new Block())->setKind(self::KIND);
+        return new Block()->setKind(self::KIND);
     }
 
+    #[\Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -100,6 +104,7 @@ class SocialLinksCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureActions(Actions $actions): Actions
     {
         $role = $this->configService->get('site-role-editor');
@@ -129,6 +134,7 @@ class SocialLinksCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
         // Read once for the preview field below - only actually populated on New/Edit, where getContext()->getEntity()->getInstance() is already resolved by the time configureFields() runs (see AbstractCrudController::edit()/new())

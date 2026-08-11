@@ -41,7 +41,7 @@ class WhatsNewProviderTest extends TestCase
     {
         $rawEntries = $this->readRawEntries();
 
-        $entries = (new WhatsNewProvider())->getEntries();
+        $entries = new WhatsNewProvider()->getEntries();
 
         $this->assertCount(\count($rawEntries), $entries);
     }
@@ -51,7 +51,7 @@ class WhatsNewProviderTest extends TestCase
     {
         $rawEntries = $this->readRawEntries();
 
-        $entries = (new WhatsNewProvider())->getEntries();
+        $entries = new WhatsNewProvider()->getEntries();
 
         foreach ($entries as $index => $entry) {
             $this->assertInstanceOf(\DateTimeImmutable::class, $entry['date']);
@@ -65,7 +65,7 @@ class WhatsNewProviderTest extends TestCase
         \Locale::setDefault('fr');
         $rawEntries = $this->readRawEntries();
 
-        $entries = (new WhatsNewProvider())->getEntries();
+        $entries = new WhatsNewProvider()->getEntries();
 
         foreach ($entries as $index => $entry) {
             foreach ($entry['description'] as $descriptionIndex => $description) {

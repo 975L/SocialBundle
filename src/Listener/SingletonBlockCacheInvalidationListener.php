@@ -24,7 +24,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[AsDoctrineListener(event: Events::preRemove)]
 class SingletonBlockCacheInvalidationListener
 {
-    private const CACHED_KINDS = ['social_links', 'share_buttons_settings'];
+    private const array CACHED_KINDS = ['social_links', 'share_buttons_settings'];
 
     public function __construct(private readonly TagAwareCacheInterface $cache)
     {

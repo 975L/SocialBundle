@@ -19,8 +19,8 @@ use Twig\Environment;
 // Shows every visual style of "social_links_display"/"share_buttons_display" in a block gallery/showcase (see UiBundle's GalleryShowcaseRegistry, consumed by the public block showcase). Neither fits BlockFixtureProviderInterface: both always render a site-wide singleton regardless of their own data (see SocialLinksDisplay.html.twig/ShareButtonsDisplay.html.twig) - rendered here instead, directly against the same underlying components/markup, with a fixed sample set of networks (Laurent's own picks, one set per showcase) instead of the real singleton/current page URL that real render depends on.
 class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
 {
-    private const SOCIAL_LINKS_NETWORKS = ['facebook', 'bluesky', 'linkedin'];
-    private const SHARE_BUTTONS_NETWORKS = ['facebook', 'bluesky', 'pinterest'];
+    private const array SOCIAL_LINKS_NETWORKS = ['facebook', 'bluesky', 'linkedin'];
+    private const array SHARE_BUTTONS_NETWORKS = ['facebook', 'bluesky', 'pinterest'];
 
     public function __construct(
         private readonly Environment $twig,

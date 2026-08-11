@@ -16,12 +16,12 @@ use PHPUnit\Framework\TestCase;
 class ScaffoldThemeTest extends TestCase
 {
     // Set per network by the @each at the bottom of _share-buttons.scss, so one value in :root would paint every button alike (the scaffold's own header says as much)
-    private const PER_NETWORK = [
+    private const array PER_NETWORK = [
         '--network-color',
     ];
 
     // Read with one fallback per shape or per breakpoint, so a single :root value collapses every variant into one look: the readme sends a design needing that to the app's own app.css instead
-    private const PER_VARIANT = [
+    private const array PER_VARIANT = [
         '--social-share-display',
         '--social-share-btn-width',
         '--social-share-btn-height',
@@ -29,18 +29,18 @@ class ScaffoldThemeTest extends TestCase
     ];
 
     // Only read by .social-share--preview-backdrop, the stand-in band of the dashboard preview and the block gallery - never carried by a real page, so a site has nothing to retune there
-    private const PREVIEW_ONLY = [
+    private const array PREVIEW_ONLY = [
         '--social-share-preview-background',
         '--social-share-preview-padding',
     ];
 
     // The space between buttons is already --social-share-gap's, so offering this one too would hand a design two ways to write the same look
-    private const NOT_THEMABLE = [
+    private const array NOT_THEMABLE = [
         '--social-share-btn-margin',
     ];
 
     // UiBundle's own page rhythm, read here so the social links block steps like every other block of the page - offered by its themes/ui.css, not restated here (the scaffold's header: only what is SocialBundle's own)
-    private const UI_OWNED = [
+    private const array UI_OWNED = [
         '--section-space-tight',
     ];
 
