@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.2.1
+
+Make the colorless share button fills follow their background
+
+- The `transparent` fill is now mixed off `currentColor` instead of a fixed translucent white (12/08/2026)
+- Added `--social-share-icon-filter`, driving the glyphs of the `transparent`, `outline` and `minimal` fills (12/08/2026)
+- That filter flips to `invert(1)` under `:root[data-theme="dark"]`, and under the OS preference when no `data-theme` is set (12/08/2026)
+- The `transparent` fill's buttons now inherit the surrounding text color (12/08/2026)
+- The `transparent` fill's preview backdrop now carries white text and icons (12/08/2026)
+- Documented `--social-share-icon-filter` in the readme and the scaffolded theme (12/08/2026)
+
 ## v2.2.0
 
 Add Rector to the quality pipeline and modernise the code

@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-08-12",
+        "description": [
+            {
+                "en": "The discreet sharing buttons now adapt on their own to the page they are placed on, staying readable on a light background as well as on a dark one",
+                "fr": "Les boutons de partage discrets s'adaptent maintenant tout seuls à la page où ils sont placés, et restent lisibles aussi bien sur un fond clair que sur un fond sombre",
+                "es": "Los botones de compartir discretos ahora se adaptan solos a la página donde se colocan y siguen siendo legibles tanto sobre un fondo claro como sobre uno oscuro"
+            }
+        ]
+    },
+    {
         "date": "2026-08-11",
         "description": [
             {

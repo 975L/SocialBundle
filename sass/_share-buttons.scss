@@ -92,19 +92,23 @@
 
 /* FILL - what paints the box, whatever its shape. "solid" has no rule of its own: it's the per-network brand color of the @each at the bottom of this file, which every button gets unless one of the three below (all more specific, at 0-2-0 against its 0-1-0) takes it over. That @each also has a :hover rule, at 0-2-0 too: a fill only keeps its background on hover by declaring its own :hover, which wins on source order. "Transparent" and "outline" do; "minimal" doesn't, so it takes the brand color on hover. */
 
-/* "Transparent": one translucent white fill instead of the brand colors - for a band painted through --social-share-background, where a row of brand fills competes with the flat. The only fill with no color of its own, so it needs that painted band to show at all */
+/* "Transparent": one translucent veil of the surrounding text color instead of the brand colors - for a band where a row of brand fills competes with what it sits on. Mixed off currentColor rather than a fixed white (same idiom as the social links pill in _social.scss), so the veil darkens on a light background and lightens on a dark one on its own: the fill carries no color, and the only thing that can tell it which way to go is the text color it inherits. */
 .social-share--fill-transparent .social-share-btn {
-    background-color: var(--social-share-btn-background, rgba(255, 255, 255, 0.16));
+    background-color: var(--social-share-btn-background, color-mix(in srgb, currentColor 16%, transparent));
+    color: inherit;
 }
 
 .social-share--fill-transparent .social-share-btn:hover {
-    background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, rgba(255, 255, 255, 0.3)));
+    background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, color-mix(in srgb, currentColor 30%, transparent)));
 }
 
-/* Stand-in band for previewing the "transparent" fill away from a real page: the dashboard preview and the block gallery both render on their own light background, where a translucent white fill is simply invisible. Only declares the two custom properties the band already reads, so it works on the band itself or on any wrapper around it - they inherit. Retune it through --social-share-preview-background/-padding; nothing on a real page carries this class, a real band being painted by the site through --social-share-background itself. */
+/* Stand-in band for previewing the "transparent" fill away from a real page: the dashboard preview and the block gallery both render on their own light background, where the veil reads too faintly to show what the fill does. Only declares the custom properties the band already reads, so it works on the band itself or on any wrapper around it - they inherit. The icon filter goes with the dark stand-in: the veil follows the inherited (dark) text color, the icon can't. Retune it through --social-share-preview-background/-padding; nothing on a real page carries this class, a real band being painted by the site through --social-share-background itself. */
 .social-share--preview-backdrop {
     --social-share-background: var(--social-share-preview-background, #4a4a4a);
     --social-share-padding: var(--social-share-preview-padding, 1em);
+    --social-share-icon-filter: invert(1);
+
+    color: #fff;
 }
 
 // The icon is an <img> that "filter" can't tint to a brand color, so it stays neutral until hover
@@ -134,11 +138,25 @@
     color: var(--network-color, inherit);
 }
 
+/* The three fills that paint no dark badge under the icon. The glyphs are <img> pointing at black Font Awesome SVGs, which "filter" can only leave alone or invert - so where the other rules of this file force them white over a brand color, these follow the page instead: black as shipped, inverted to white by the dark-mode block at the end of this file. A site painting a dark band under a light theme (--social-share-background) sets --social-share-icon-filter: invert(1) along with it, the band being the one thing this stylesheet can't see. */
+.social-share--fill-transparent .social-share-btn img,
+.social-share--fill-transparent .social-share-btn svg,
 .social-share--fill-outline .social-share-btn img,
 .social-share--fill-outline .social-share-btn svg,
 .social-share--fill-minimal .social-share-btn img,
 .social-share--fill-minimal .social-share-btn svg {
-    filter: none;
+    filter: var(--social-share-icon-filter, none);
+}
+
+/* DARK MODE - the icon half of what the fills above can't derive from currentColor. Declared here rather than left to the site: this bundle depends on no theme of its own (c975L/SiteBundle owns the site-wide dark palette, and is not a dependency), so a band dropped in a dark-themed page would otherwise ship black glyphs on a dark surface. Same two selectors SiteBundle's own dark block uses, the attribute on <html> being the shared contract: set to "dark", or absent (theme left on "auto") with the visitor's OS asking for dark. */
+:root[data-theme="dark"] {
+    --social-share-icon-filter: invert(1);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --social-share-icon-filter: invert(1);
+    }
 }
 
 // Also exposed as "--network-color"; --social-share-btn-background overrides the brand fill for a uniform button
