@@ -18,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Twig\Extension\AttributeExtension;
 use Twig\TwigFunction;
 
 class SocialLinkExtensionTest extends TestCase
@@ -46,11 +47,9 @@ class SocialLinkExtensionTest extends TestCase
     }
 
     // Both functions are plain value-returning helpers, not html-rendering ones (no needs_environment/is_safe)
-    public function testGetFunctionsRegistersSocialLinkBlockAndSocialLinkIcon(): void
+    public function testAttributesRegisterSocialLinkBlockAndSocialLinkIcon(): void
     {
-        $extension = $this->createExtension(null);
-
-        $functions = $extension->getFunctions();
+        $functions = new AttributeExtension(SocialLinkExtension::class)->getFunctions();
 
         $this->assertCount(2, $functions);
         $this->assertSame(

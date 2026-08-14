@@ -20,12 +20,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Twig\Attribute\AsTwigFunction;
 use Twig\Environment;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
 
 // Migrated from c975L/ShareButtonsBundle's ShareButtons Twig extension. Renders direct links to each network's share URL - no internal redirect route: the previous ShareButtonsController only existed to proxy that redirect, which needed a double urlencode of the target URL to work around it being carried as an Apache path segment. Building the final URL once here, at render time, sidesteps both.
-class ShareButtonsExtension extends AbstractExtension
+class ShareButtonsExtension
 {
     // Kind of the "share_buttons_settings" singleton Block (see ShareButtonsSettingsCrudController) - not shared as a public constant there either, matching SocialLinkExtension's own literal use of "social_links" for the same reason (no other consumer needs it)
     private const string SETTINGS_KIND = 'share_buttons_settings';
@@ -40,25 +39,10 @@ class ShareButtonsExtension extends AbstractExtension
     ) {
     }
 
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('share_buttons', $this->renderShareButtons(...), [
-                'needs_environment' => true,
-                'is_safe' => ['html'],
-            ]),
-            new TwigFunction('share_buttons_default', $this->renderDefaultShareButtons(...), [
-                'needs_environment' => true,
-                'is_safe' => ['html'],
-            ]),
-            new TwigFunction('share_buttons_edit_url', $this->getEditUrl(...)),
-        ];
-    }
-
     // Where the band hovered on a public page is really changed - the singleton holding its networks and its style, not the page it happens to sit under (see shareButtons/default.html.twig, which is what asks for it, and only for an editor: the role is checked there, where it costs no query)
     // Its screen before it exists is the one creating it: the CRUD hands back an edit form for the singleton already saved, and a new one otherwise (see ShareButtonsSettingsCrudController::new())
     // Null rather than a fatal when the URL can't be built: EasyAdmin resolves the dashboard an admin URL is mounted under through a cache map written only when the route collection is regenerated (see AdminRouteGenerator::saveAdminRoutesInCache()), so that pool being emptied while the compiled routes stay fresh makes every generateUrl() call from a public page throw, and it stays that way until the routes are regenerated. The hover button is an editor-only convenience - losing it beats taking the page down for the only people able to fix it
+    #[AsTwigFunction('share_buttons_edit_url')]
     public function getEditUrl(): ?string
     {
         $settingsBlock = $this->getSettingsBlock();
@@ -79,6 +63,7 @@ class ShareButtonsExtension extends AbstractExtension
 
     // Uses the dashboard settings, falling back to share_buttons()' defaults until the singleton is saved
     // A null $id falls back to the singleton's anchor; an empty string does not, both bands sharing a page
+    #[AsTwigFunction('share_buttons_default', needsEnvironment: true, isSafe: ['html'])]
     public function renderDefaultShareButtons(Environment $environment, ?string $id = null): string
     {
         $settings = $this->getSettingsBlock()?->getData() ?? [];
@@ -110,6 +95,7 @@ class ShareButtonsExtension extends AbstractExtension
     /**
      * @param string[]|'main' $networks list of network keys, or 'main' for the default set
      */
+    #[AsTwigFunction('share_buttons', needsEnvironment: true, isSafe: ['html'])]
     public function renderShareButtons(
         Environment $environment,
         array | string $networks = 'main',

@@ -1,5 +1,19 @@
 # Changelog
 
+## v2.2.2
+
+Declare the Twig functions with attributes
+
+- The Twig extensions now declare their functions with `#[AsTwigFunction]` (13/08/2026)
+- They no longer extend `AbstractExtension` (13/08/2026)
+- `rector.php` now uses `withComposerBased()` instead of `SymfonySetList::SYMFONY_80` (13/08/2026)
+- `composer rector` now clears its cache before running (13/08/2026)
+- `bin/ci.sh` now gives Rector a private cache directory (13/08/2026)
+- `bin/ci.sh` now installs the quality tools in their latest version (13/08/2026)
+- `.codacy/codacy.yaml` pins `eslint@9.39.5` (13/08/2026)
+- Added `tests/ConfigsJsonTest.php` for `config/configs.json` and its translations (13/08/2026)
+- Added `tests/Management/ManagementTargetsTest.php` for the management providers (13/08/2026)
+
 ## v2.2.1
 
 Make the colorless share button fills follow their background

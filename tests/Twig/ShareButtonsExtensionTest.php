@@ -26,8 +26,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Twig\Environment;
+use Twig\Extension\AttributeExtension;
 use Twig\Node\TextNode;
-use Twig\TwigFunction;
 
 class ShareButtonsExtensionTest extends TestCase
 {
@@ -116,23 +116,24 @@ class ShareButtonsExtensionTest extends TestCase
     }
 
     // Both rendering functions render raw HTML and must receive the Twig Environment to call render() themselves - "share_buttons_edit_url" returns an url, escaped like any other attribute value
-    public function testGetFunctionsRegistersShareButtonsAndShareButtonsDefaultAsSafeHtmlNeedingEnvironment(): void
+    public function testAttributesRegisterShareButtonsAndShareButtonsDefaultAsSafeHtmlNeedingEnvironment(): void
     {
-        $calls = [];
-        $extension = $this->createExtension($this->createShareButtonsService([], $calls));
-
-        $functions = $extension->getFunctions();
-
-        $this->assertSame(
-            ['share_buttons', 'share_buttons_default', 'share_buttons_edit_url'],
-            array_map(static fn (TwigFunction $function) => $function->getName(), $functions)
-        );
-        foreach (\array_slice($functions, 0, 2) as $function) {
-            $this->assertTrue($function->needsEnvironment());
-            $this->assertSame(['html'], $function->getSafe(new TextNode('', 0)));
+        $functions = [];
+        foreach (new AttributeExtension(ShareButtonsExtension::class)->getFunctions() as $function) {
+            $functions[$function->getName()] = $function;
         }
-        $this->assertFalse($functions[2]->needsEnvironment());
-        $this->assertSame([], $functions[2]->getSafe(new TextNode('', 0)));
+
+        // Indexed by name rather than read in order: the attributes are collected in the methods' declaration order, which says nothing about the contract
+        $names = array_keys($functions);
+        sort($names);
+        $this->assertSame(['share_buttons', 'share_buttons_default', 'share_buttons_edit_url'], $names);
+
+        foreach (['share_buttons', 'share_buttons_default'] as $name) {
+            $this->assertTrue($functions[$name]->needsEnvironment());
+            $this->assertSame(['html'], $functions[$name]->getSafe(new TextNode('', 0)));
+        }
+        $this->assertFalse($functions['share_buttons_edit_url']->needsEnvironment());
+        $this->assertSame([], $functions['share_buttons_edit_url']->getSafe(new TextNode('', 0)));
     }
 
     // The hover button offered to an editor on the public band (see shareButtons/default.html.twig) opens the singleton holding its networks and its style, not the page it was hovered on

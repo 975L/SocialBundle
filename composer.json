@@ -46,7 +46,7 @@
         "cs": "phpcs -q",
         "fixer": "php-cs-fixer check --diff",
         "stan": "phpstan analyse --no-progress",
-        "rector": "rector process --dry-run",
+        "rector": "rector process --dry-run --clear-cache",
         "test": "phpunit",
         "qa": [
             "@cs",
