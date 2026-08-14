@@ -50,6 +50,10 @@
                 <source>description.guided_step_social_links_icon_style</source>
                 <target>Icono solo, pastilla con los colores de la red, anillo que se rellena al pasar por encima, o solo texto sin icono. La vista previa de abajo muestra el resultado.</target>
             </trans-unit>
+            <trans-unit id="XKnrijD">
+                <source>description.guided_step_social_links_intro</source>
+                <target>Opcional: una línea encima de los iconos, para invitar a seguirle. Si se deja vacía, no se muestra nada.</target>
+            </trans-unit>
             <trans-unit id="IiZiN6F">
                 <source>description.guided_step_social_links_open</source>
                 <target>Sus redes no son contenido de página: se introducen una vez aquí y el sitio las recoge en todas partes.</target>
@@ -58,9 +62,17 @@
                 <source>description.guided_step_social_links_place</source>
                 <target>Añada el bloque de enlaces sociales a una página o al pie: muestra esta lista, esté donde esté.</target>
             </trans-unit>
+            <trans-unit id="i3T88kV">
+                <source>description.guided_step_social_share_buttons_anchor</source>
+                <target>Opcional: un identificador corto («compartir») para que una entrada de menú apunte directamente a la banda. Sin ancla, se llega igualmente desplazando la página.</target>
+            </trans-unit>
             <trans-unit id="qRGp6fm">
                 <source>description.guided_step_social_share_buttons_check</source>
-                <target>Abra cualquier página publicada: los botones están ahí, con el aspecto que acaba de darles.</target>
+                <target>Abra cualquier página publicada: los botones están ahí, con el aspecto que acaba de darles. Al pasar por encima de la banda, un botón le trae directamente aquí.</target>
+            </trans-unit>
+            <trans-unit id="XoOi0Jd">
+                <source>description.guided_step_social_share_buttons_display_intro</source>
+                <target>La línea «comparta esta página» encima de los botones: su texto es el del sitio, aquí solo se ajusta su visualización.</target>
             </trans-unit>
             <trans-unit id="dcxhtln">
                 <source>description.guided_step_social_share_buttons_edit</source>
@@ -170,6 +182,10 @@
                 <source>label.guided_step_social_links_icon_style</source>
                 <target>Elegir el estilo de los iconos</target>
             </trans-unit>
+            <trans-unit id="Hvrgr.T">
+                <source>label.guided_step_social_links_intro</source>
+                <target>Añadir una frase de introducción</target>
+            </trans-unit>
             <trans-unit id="X38SgbN">
                 <source>label.guided_step_social_links_open</source>
                 <target>Abrir los enlaces sociales</target>
@@ -182,9 +198,17 @@
                 <source>label.guided_step_social_links_save</source>
                 <target>Guardar</target>
             </trans-unit>
+            <trans-unit id="GHatm_S">
+                <source>label.guided_step_social_share_buttons_anchor</source>
+                <target>Nombrar la banda</target>
+            </trans-unit>
             <trans-unit id="eSKLNGw">
                 <source>label.guided_step_social_share_buttons_check</source>
                 <target>Comprobar en una página</target>
+            </trans-unit>
+            <trans-unit id="Vk569UO">
+                <source>label.guided_step_social_share_buttons_display_intro</source>
+                <target>Mostrar o no la frase de invitación</target>
             </trans-unit>
             <trans-unit id="mMv1zf_">
                 <source>label.guided_step_social_share_buttons_edit</source>

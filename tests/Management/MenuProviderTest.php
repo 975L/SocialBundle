@@ -68,4 +68,28 @@ class MenuProviderTest extends TestCase
 
         $this->assertSame([], $provider->getLinks());
     }
+
+    // Every entry gets a step in the onboarding tour, one without a description showing its label alone - and an untranslated one reads as its own key
+    public function testEveryMenuCarriesATranslatedDescription(): void
+    {
+        $translated = $this->translatedKeys();
+
+        foreach ($this->createProvider(true)->getMenus() as $slug => $menu) {
+            $this->assertArrayHasKey('description', $menu, sprintf('Menu "%s" says nothing about the screen it opens', $slug));
+            $this->assertContains($menu['description'], $translated);
+        }
+    }
+
+    private function translatedKeys(): array
+    {
+        $xliff = new \DOMDocument();
+        $xliff->load(\dirname(__DIR__, 2) . '/translations/social.fr.xlf');
+
+        $keys = [];
+        foreach ($xliff->getElementsByTagName('source') as $source) {
+            $keys[] = $source->textContent;
+        }
+
+        return $keys;
+    }
 }

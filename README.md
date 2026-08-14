@@ -110,7 +110,7 @@ Icon glyphs are derived from [Font Awesome Free](https://fontawesome.com/) (CC B
 
 ### Admin management
 
-Because a `Block` can normally only be created by attaching it to a Page (there's no page-independent block library in UiBundle), `SocialLinksCrudController` gives it its own small dashboard entry, scoped to `kind = social_links` — so it can be created/edited without needing a host page. The menu entry ("Réseaux sociaux") is registered automatically through `MenuProvider`, under the "Management" section. Access is controlled by the `site-role-editor` key in ConfigBundle.
+Because a `Block` can normally only be created by attaching it to a Page (there's no page-independent block library in UiBundle), `SocialLinksCrudController` gives it its own small dashboard entry, scoped to `kind = social_links` — so it can be created/edited without needing a host page. The menu entry ("Réseaux sociaux") is registered automatically through `MenuProvider`, under the "Management" section. Access is controlled by the `site-role-editor` key in ConfigBundle. Each entry also carries a `description` — the very sentence its own screen shows, not a separate onboarding-only string — which the dashboard's onboarding tour picks up.
 
 The edit form shows a preview of the rendered links below the list. The introduction text and the links themselves are static (reflects the last saved state, not unsaved edits to the form above), but "icon style" and "display label" update it live (see `assets/js/social-links-preview.js`) as you change them.
 
@@ -232,11 +232,13 @@ Its one field is an **anchor** (same as UiBundle's page-section kinds, see that 
 
 ## Guided projects
 
-`SocialGuidedProjectProvider` (implements ConfigBundle's `GuidedProjectProviderInterface`, auto-tagged like `MenuProviderInterface`) contributes two replayable exercises to the `/management` dashboard's "Guided projects" panel: **"Mettre les liens vers vos réseaux"** (one list for the whole site, rendered wherever the block is put) and **"Régler les boutons de partage"** (which networks, in which order, and what they look like). They continue the order sequence after ConfigBundle (10-30), SiteBundle (50-80) and UiBundle (90-110), picking up at 120.
+`SocialGuidedProjectProvider` (implements ConfigBundle's `GuidedProjectProviderInterface`, auto-tagged like `MenuProviderInterface`) contributes two replayable exercises to the `/management` dashboard's "Guided projects" panel: **"Mettre les liens vers vos réseaux"** (one list for the whole site, rendered wherever the block is put) and **"Régler les boutons de partage"** (which networks, in which order, and what they look like). They continue the order sequence after ConfigBundle (10-40), SiteBundle (50-80) and UiBundle (90-110), running 130 and 135 — below the 140 GalleryBundle's own first project takes.
 
 The share buttons project is contributed **only while `social-enable-share-buttons` is on** — the same condition `MenuProvider` applies to its own entry, since with the feature off that screen isn't in the sidebar either and a parcours walking to an unreachable screen reads as a broken one.
 
-Only the opening step of each carries an `url`: from there the panel walks the screen the user has been sent to, highlighting the button or the field they are meant to use next. The two singleton screens are pointed at with `.action-new, .action-edit` — the index offers "create" until the row exists and "edit" ever after, and whichever is on screen is the one to click. The settings fields reuse the markers their own JS already reads (`[data-share-networks-sortable]`, `[data-share-shape-select]`, `[data-share-fill-select]`, `[data-social-links-icon-style-select]`), rather than ids of their own.
+Both projects declare the `site-role-editor` role their screens demand, rather than the dashboard's own: the two are separate roles, neither implying the other, so `GuidedProjectBuilder` drops the parcours for an admin lacking it instead of opening on a 403.
+
+Only the opening step of each carries an `url`: from there the panel walks the screen the user has been sent to, highlighting the button or the field they are meant to use next, in the order the form renders them. The two singleton screens are pointed at with `.action-new, .action-edit` — the index offers "create" until the row exists and "edit" ever after, and whichever is on screen is the one to click. The settings fields reuse the markers their own JS already reads (`[data-share-networks-sortable]`, `[data-share-shape-select]`, `[data-share-fill-select]`, `[data-share-display-intro-checkbox]`, `[data-social-links-icon-style-select]`), rather than ids of their own; the two fields with no marker of their own are pointed at with the `trix-editor` the introduction's textarea is replaced by, and with the anchor field's EasyAdmin id (`#Block_data_anchor`).
 
 ---
 

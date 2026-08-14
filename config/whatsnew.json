@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-08-14",
+        "description": [
+            {
+                "en": "The guided walk-throughs now cover every setting of the two screens, including the lead-in line above the networks, the invitation line above the sharing buttons and the band's name",
+                "fr": "Les visites guidées couvrent maintenant tous les réglages des deux écrans, dont la phrase d'accroche au-dessus des réseaux, la phrase d'invitation au-dessus des boutons de partage et le nom du bandeau",
+                "es": "Las visitas guiadas ahora cubren todos los ajustes de las dos pantallas, incluidas la frase de introducción encima de las redes, la frase de invitación encima de los botones de compartir y el nombre de la banda"
+            },
+            {
+                "en": "The guided walk-throughs are now only offered to those who can actually open the screens they walk through",
+                "fr": "Les visites guidées ne sont maintenant proposées qu'à ceux qui peuvent réellement ouvrir les écrans qu'elles parcourent",
+                "es": "Las visitas guiadas ahora solo se ofrecen a quienes realmente pueden abrir las pantallas que recorren"
+            },
+            {
+                "en": "The welcome tour now says what each of the two screens is for, and no longer just its name",
+                "fr": "La visite d'accueil indique maintenant à quoi sert chacun des deux écrans, et non plus seulement son nom",
+                "es": "La visita de bienvenida ahora indica para qué sirve cada una de las dos pantallas, y ya no solo su nombre"
+            }
+        ]
+    },
+    {
         "date": "2026-08-12",
         "description": [
             {

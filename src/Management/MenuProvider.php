@@ -38,6 +38,8 @@ class MenuProvider implements MenuProviderInterface
                 'label' => 'label.social_links',
                 'translation_domain' => 'social',
                 'icon' => 'fas fa-share-alt',
+                // Same key as the screen's own explanatory text (see its crud/index and crud/edit overrides) - one text, reused, not a separate onboarding-only string (see MenuProviderInterface::getMenus())
+                'description' => 'label.info_social_links',
             ],
         ];
 
@@ -48,6 +50,7 @@ class MenuProvider implements MenuProviderInterface
                 'label' => 'label.share_buttons_settings',
                 'translation_domain' => 'social',
                 'icon' => 'fas fa-share-nodes',
+                'description' => 'label.info_share_buttons_settings',
             ];
         }
 

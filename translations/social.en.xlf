@@ -50,6 +50,10 @@
                 <source>description.guided_step_social_links_icon_style</source>
                 <target>Plain icon, badge in the network's own colors, a ring filling in on hover, or text only with no icon. The preview right below shows the result.</target>
             </trans-unit>
+            <trans-unit id="XKnrijD">
+                <source>description.guided_step_social_links_intro</source>
+                <target>Optional: a line above the icons, inviting visitors to follow you. Left empty, nothing at all is rendered.</target>
+            </trans-unit>
             <trans-unit id="IiZiN6F">
                 <source>description.guided_step_social_links_open</source>
                 <target>Your networks are not page content: they are entered once here, and the site picks them up everywhere.</target>
@@ -58,9 +62,17 @@
                 <source>description.guided_step_social_links_place</source>
                 <target>Add the social links block to a page or to the footer: it renders this list, wherever it sits.</target>
             </trans-unit>
+            <trans-unit id="i3T88kV">
+                <source>description.guided_step_social_share_buttons_anchor</source>
+                <target>Optional: a short id ("share") so a menu entry can point straight at the band. Without an anchor, it is still reached by scrolling the page.</target>
+            </trans-unit>
             <trans-unit id="qRGp6fm">
                 <source>description.guided_step_social_share_buttons_check</source>
-                <target>Open any published page: the buttons are there, with the look you have just given them.</target>
+                <target>Open any published page: the buttons are there, with the look you have just given them. Hovering the band raises a button bringing you straight back here.</target>
+            </trans-unit>
+            <trans-unit id="XoOi0Jd">
+                <source>description.guided_step_social_share_buttons_display_intro</source>
+                <target>The "share this page" line above the buttons: its wording is the site's own, only its display is set here.</target>
             </trans-unit>
             <trans-unit id="dcxhtln">
                 <source>description.guided_step_social_share_buttons_edit</source>
@@ -170,6 +182,10 @@
                 <source>label.guided_step_social_links_icon_style</source>
                 <target>Pick the icons' style</target>
             </trans-unit>
+            <trans-unit id="Hvrgr.T">
+                <source>label.guided_step_social_links_intro</source>
+                <target>Add a lead-in line</target>
+            </trans-unit>
             <trans-unit id="X38SgbN">
                 <source>label.guided_step_social_links_open</source>
                 <target>Open the social links</target>
@@ -182,9 +198,17 @@
                 <source>label.guided_step_social_links_save</source>
                 <target>Save</target>
             </trans-unit>
+            <trans-unit id="GHatm_S">
+                <source>label.guided_step_social_share_buttons_anchor</source>
+                <target>Name the band</target>
+            </trans-unit>
             <trans-unit id="eSKLNGw">
                 <source>label.guided_step_social_share_buttons_check</source>
                 <target>Check on a page</target>
+            </trans-unit>
+            <trans-unit id="Vk569UO">
+                <source>label.guided_step_social_share_buttons_display_intro</source>
+                <target>Show the invitation line or not</target>
             </trans-unit>
             <trans-unit id="mMv1zf_">
                 <source>label.guided_step_social_share_buttons_edit</source>

@@ -1,5 +1,21 @@
 # Changelog
 
+## v2.2.3
+
+Complete the guided projects and gate them on the editor role
+
+- The guided projects now declare the `site-role-editor` role their screens demand (14/08/2026)
+- Added a guided step for the social links introduction text (14/08/2026)
+- Added guided steps for the share buttons invitation line and anchor (14/08/2026)
+- The social links steps now follow the form's own field order (14/08/2026)
+- The guided projects moved to the orders 130 and 135 (14/08/2026)
+- The share buttons "check on a page" step now mentions the hover edit button (14/08/2026)
+- The menu entries now carry a `description`, reused by the onboarding tour (14/08/2026)
+- Added a `composer audit-deps` script, wired into `composer qa` and the CI (14/08/2026)
+- Added `.gitattributes`, keeping the dev-only paths out of the Composer dist archive (14/08/2026)
+- Added `.github/FUNDING.yml` (14/08/2026)
+- `MenuProviderTest` now checks that every entry carries a translated description (14/08/2026)
+
 ## v2.2.2
 
 Declare the Twig functions with attributes

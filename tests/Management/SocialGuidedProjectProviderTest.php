@@ -32,23 +32,26 @@ class SocialGuidedProjectProviderTest extends TestCase
         return $generator;
     }
 
-    // Same stubbing as MenuProviderTest: the ConfigService answers "social-enable-share-buttons" with the given value
+    // Same stubbing as MenuProviderTest: the ConfigService answers "social-enable-share-buttons" with the given value. "site-role-editor" is answered apart, the projects declaring it as their own role
     private function createProvider(bool $shareButtonsEnabled, array &$controllers = []): SocialGuidedProjectProvider
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturn($shareButtonsEnabled ? '1' : '0');
+        $configService->method('get')->willReturnCallback(static fn (string $slug): string => match ($slug) {
+            'site-role-editor' => 'ROLE_EDITOR',
+            default => $shareButtonsEnabled ? '1' : '0',
+        });
         $configService->method('getBool')->willReturnCallback(static fn ($value) => '1' === $value);
 
         return new SocialGuidedProjectProvider($configService, $this->createAdminUrlGenerator($controllers));
     }
 
-    // Continues the sequence after ConfigBundle (10-30), SiteBundle (50-80) and UiBundle (90-110)
+    // Continues the sequence after ConfigBundle (10-40), SiteBundle (50-80) and UiBundle (90-110), staying below GalleryBundle's own 140
     public function testGetGuidedProjectsContinuesTheOrderSequence(): void
     {
         $projects = $this->createProvider(true)->getGuidedProjects();
 
         $this->assertSame(['social-links', 'social-share-buttons'], array_column($projects, 'slug'));
-        $this->assertSame([120, 130], array_column($projects, 'order'));
+        $this->assertSame([130, 135], array_column($projects, 'order'));
     }
 
     // The share buttons screen isn't in the sidebar while the feature is off, so no parcours walks to it either
@@ -63,6 +66,14 @@ class SocialGuidedProjectProviderTest extends TestCase
     {
         foreach ($this->createProvider(true)->getGuidedProjects() as $project) {
             $this->assertStringStartsWith('social-', $project['slug'], 'A slug is unique across every bundle contributing projects');
+        }
+    }
+
+    // Both screens gate their own INDEX by site-role-editor, a role the dashboard's own site-role-admin doesn't imply - without this, GuidedProjectBuilder would offer an admin lacking it a parcours ending on a 403
+    public function testEveryProjectDemandsTheRoleItsScreenDoes(): void
+    {
+        foreach ($this->createProvider(true)->getGuidedProjects() as $project) {
+            $this->assertSame('ROLE_EDITOR', $project['role'], sprintf('Project "%s" walks to an editor-only screen', $project['slug']));
         }
     }
 

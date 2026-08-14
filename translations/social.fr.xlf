@@ -50,6 +50,10 @@
                 <source>description.guided_step_social_links_icon_style</source>
                 <target>Icône seule, pastille colorée aux couleurs du réseau, anneau qui se remplit au survol, ou texte seul sans icône. L'aperçu juste en dessous montre le résultat.</target>
             </trans-unit>
+            <trans-unit id="XKnrijD">
+                <source>description.guided_step_social_links_intro</source>
+                <target>Facultatif : une ligne au-dessus des icônes, pour inviter à vous suivre. Laissée vide, rien n'est rendu du tout.</target>
+            </trans-unit>
             <trans-unit id="IiZiN6F">
                 <source>description.guided_step_social_links_open</source>
                 <target>Vos réseaux ne sont pas un contenu de page : ils sont saisis une fois ici, et le site les reprend partout.</target>
@@ -58,9 +62,17 @@
                 <source>description.guided_step_social_links_place</source>
                 <target>Ajoutez le block « liens sociaux » à une page ou au pied de page : il rend cette liste, où qu'il soit.</target>
             </trans-unit>
+            <trans-unit id="i3T88kV">
+                <source>description.guided_step_social_share_buttons_anchor</source>
+                <target>Facultatif : un identifiant court (« partage ») pour qu'une entrée de menu puisse pointer directement sur le bandeau. Sans ancre, il reste atteignable en faisant défiler la page.</target>
+            </trans-unit>
             <trans-unit id="qRGp6fm">
                 <source>description.guided_step_social_share_buttons_check</source>
-                <target>Ouvrez n'importe quelle page publiée : les boutons y sont, avec l'allure que vous venez de leur donner.</target>
+                <target>Ouvrez n'importe quelle page publiée : les boutons y sont, avec l'allure que vous venez de leur donner. Au survol du bandeau, un bouton vous ramène directement ici.</target>
+            </trans-unit>
+            <trans-unit id="XoOi0Jd">
+                <source>description.guided_step_social_share_buttons_display_intro</source>
+                <target>La ligne « partagez cette page » au-dessus des boutons : son texte est celui du site, seul son affichage se règle ici.</target>
             </trans-unit>
             <trans-unit id="dcxhtln">
                 <source>description.guided_step_social_share_buttons_edit</source>
@@ -170,6 +182,10 @@
                 <source>label.guided_step_social_links_icon_style</source>
                 <target>Choisir le style des icônes</target>
             </trans-unit>
+            <trans-unit id="Hvrgr.T">
+                <source>label.guided_step_social_links_intro</source>
+                <target>Ajouter une phrase d'accroche</target>
+            </trans-unit>
             <trans-unit id="X38SgbN">
                 <source>label.guided_step_social_links_open</source>
                 <target>Ouvrir les liens sociaux</target>
@@ -182,9 +198,17 @@
                 <source>label.guided_step_social_links_save</source>
                 <target>Enregistrer</target>
             </trans-unit>
+            <trans-unit id="GHatm_S">
+                <source>label.guided_step_social_share_buttons_anchor</source>
+                <target>Nommer le bandeau</target>
+            </trans-unit>
             <trans-unit id="eSKLNGw">
                 <source>label.guided_step_social_share_buttons_check</source>
                 <target>Vérifier sur une page</target>
+            </trans-unit>
+            <trans-unit id="Vk569UO">
+                <source>label.guided_step_social_share_buttons_display_intro</source>
+                <target>Afficher ou non la phrase d'invitation</target>
             </trans-unit>
             <trans-unit id="mMv1zf_">
                 <source>label.guided_step_social_share_buttons_edit</source>
