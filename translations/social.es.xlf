@@ -26,6 +26,10 @@
                 <source>block.social_links_display_description</source>
                 <target>Inserta las redes sociales del panel, sin redefinir los enlaces</target>
             </trans-unit>
+            <trans-unit id="VNxe2Mo">
+                <source>description.guided_project_social_google_reviews</source>
+                <target>Conectar la ficha de Google del establecimiento y mostrar sus opiniones en el sitio.</target>
+            </trans-unit>
             <trans-unit id="FrDtWdT">
                 <source>description.guided_project_social_links</source>
                 <target>Una única lista para todo el sitio, mostrada allí donde se coloque el bloque de enlaces sociales</target>
@@ -33,6 +37,30 @@
             <trans-unit id="GjyFwm5">
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Elegir las redes que se ofrecen a sus visitantes, su orden y su aspecto</target>
+            </trans-unit>
+            <trans-unit id="Q2.88W1">
+                <source>description.guided_step_social_google_connect</source>
+                <target>En el submenú "Avanzado" de la barra lateral, hacer clic en "Conectar Google" y autorizar el acceso con la cuenta de Google propietaria de la ficha. El sitio guarda por sí mismo el token, la cuenta y la ficha.</target>
+            </trans-unit>
+            <trans-unit id="XzEU5fT">
+                <source>description.guided_step_social_google_credentials</source>
+                <target>Buscar "social-google-oauth-client-id" y "social-google-oauth-client-secret" en la lista y pegar los dos valores obtenidos en la consola de Google Cloud. Las otras tres claves de Google se rellenan solas en el paso siguiente.</target>
+            </trans-unit>
+            <trans-unit id="RJQ_vuA">
+                <source>description.guided_step_social_google_display</source>
+                <target>En la página deseada, añadir un bloque "Colección" y elegir la fuente "Opiniones de clientes". Las opiniones se muestran con su valoración, su fecha y el enlace a la opinión original.</target>
+            </trans-unit>
+            <trans-unit id="6xgYazB">
+                <source>description.guided_step_social_google_prerequisites</source>
+                <target>Esta primera parte ocurre en Google y tarda de 7 a 10 días hábiles: acceso a la API Business Profile y luego publicación de la aplicación OAuth. El procedimiento de ayuda "Mostrar las opiniones de Google de su establecimiento" da los enlaces y el orden exacto. Volver aquí una vez concedido el acceso.</target>
+            </trans-unit>
+            <trans-unit id="cFM7OuY">
+                <source>description.guided_step_social_google_reply</source>
+                <target>Aquí solo se escribe la respuesta pública, y se envía a Google al guardar. El texto y la valoración de la opinión pertenecen a su autor: no se pueden modificar ni eliminar. Una opinión abusiva se denuncia a Google.</target>
+            </trans-unit>
+            <trans-unit id="pu1hp1o">
+                <source>description.guided_step_social_google_reviews</source>
+                <target>Las opiniones llegan con el comando "c975l:social:reviews:sync", que conviene programar una vez al día. La lista permanece vacía hasta que se haya ejecutado.</target>
             </trans-unit>
             <trans-unit id="vgXH0gX">
                 <source>description.guided_step_social_links_display_label</source>
@@ -158,6 +186,14 @@
                 <source>label.gallery_showcase_social_links_description</source>
                 <target>Estilos disponibles para los enlaces a redes sociales.</target>
             </trans-unit>
+            <trans-unit id="Hw3DjDB">
+                <source>label.google_connect</source>
+                <target>Conectar Google</target>
+            </trans-unit>
+            <trans-unit id="9gMwOTb">
+                <source>label.guided_project_social_google_reviews</source>
+                <target>Mostrar las opiniones de Google de su establecimiento</target>
+            </trans-unit>
             <trans-unit id="__S_HiT">
                 <source>label.guided_project_social_links</source>
                 <target>Poner los enlaces a sus redes</target>
@@ -165,6 +201,30 @@
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Ajustar los botones de compartir</target>
+            </trans-unit>
+            <trans-unit id="WWlxIlv">
+                <source>label.guided_step_social_google_connect</source>
+                <target>Iniciar la conexión</target>
+            </trans-unit>
+            <trans-unit id="mAuOzTf">
+                <source>label.guided_step_social_google_credentials</source>
+                <target>Introducir las dos claves OAuth</target>
+            </trans-unit>
+            <trans-unit id="jO4qa1.">
+                <source>label.guided_step_social_google_display</source>
+                <target>Mostrar las opiniones en una página</target>
+            </trans-unit>
+            <trans-unit id="ilGA6aD">
+                <source>label.guided_step_social_google_prerequisites</source>
+                <target>Preparar el acceso en Google</target>
+            </trans-unit>
+            <trans-unit id="cZJLDf8">
+                <source>label.guided_step_social_google_reply</source>
+                <target>Responder a una opinión</target>
+            </trans-unit>
+            <trans-unit id="SupTUqT">
+                <source>label.guided_step_social_google_reviews</source>
+                <target>Consultar las opiniones importadas</target>
             </trans-unit>
             <trans-unit id="xNJPblz">
                 <source>label.guided_step_social_links_display_label</source>
@@ -258,6 +318,14 @@
                 <source>label.icon_style_text</source>
                 <target>Solo texto</target>
             </trans-unit>
+            <trans-unit id="stDBjT.">
+                <source>label.info_google_connect</source>
+                <target>Permite al sitio leer las opiniones de su ficha de Google y responderlas.</target>
+            </trans-unit>
+            <trans-unit id="zkQpL1I">
+                <source>label.info_reviews</source>
+                <target>Las opiniones importadas de tu ficha de Google. No se pueden modificar ni eliminar: solo la respuesta pública es tuya.</target>
+            </trans-unit>
             <trans-unit id="AuLTjz5">
                 <source>label.info_share_buttons_settings</source>
                 <target>Redes/estilo predeterminados de los botones de compartir - singleton, sobrescribible por página con el bloque "share_buttons_display". Modifique las redes activas, su orden y el estilo de visualización.</target>
@@ -289,6 +357,42 @@
             <trans-unit id="Fa3jTj1">
                 <source>label.preview</source>
                 <target>Vista previa</target>
+            </trans-unit>
+            <trans-unit id="v8wA8im">
+                <source>label.review</source>
+                <target>Opinión</target>
+            </trans-unit>
+            <trans-unit id="MmMODqe">
+                <source>label.review_author</source>
+                <target>Autor</target>
+            </trans-unit>
+            <trans-unit id="1cpgR1E">
+                <source>label.review_comment</source>
+                <target>Opinión</target>
+            </trans-unit>
+            <trans-unit id="NYV_onC">
+                <source>label.review_published_at</source>
+                <target>Publicada el</target>
+            </trans-unit>
+            <trans-unit id="8ZUrZE5">
+                <source>label.review_rating</source>
+                <target>Valoración</target>
+            </trans-unit>
+            <trans-unit id="1ej3NQp">
+                <source>label.review_reply</source>
+                <target>Respuesta pública</target>
+            </trans-unit>
+            <trans-unit id="B4BXRXE">
+                <source>label.review_reply_help</source>
+                <target>Se publica en la plataforma al guardar; vaciarla elimina la respuesta.</target>
+            </trans-unit>
+            <trans-unit id="QeGrNPM">
+                <source>label.review_source</source>
+                <target>Fuente</target>
+            </trans-unit>
+            <trans-unit id="dMxRFXX">
+                <source>label.reviews</source>
+                <target>Opiniones de clientes</target>
             </trans-unit>
             <trans-unit id="TRS_z2w">
                 <source>label.shape</source>
@@ -345,6 +449,42 @@
             <trans-unit id="mcQ1Bzu">
                 <source>label.url</source>
                 <target>URL</target>
+            </trans-unit>
+            <trans-unit id="WLPk5w2">
+                <source>review.anonymous_author</source>
+                <target>Anónimo</target>
+            </trans-unit>
+            <trans-unit id="rau13w0">
+                <source>review.google_authorization_refused</source>
+                <target>Se ha denegado la autorización de Google.</target>
+            </trans-unit>
+            <trans-unit id="R5rv6GX">
+                <source>review.google_connected</source>
+                <target>Sitio conectado a Google: las opiniones se importarán en la próxima sincronización.</target>
+            </trans-unit>
+            <trans-unit id="TQ449uD">
+                <source>review.google_not_configured</source>
+                <target>Introduce primero el identificador y el secreto de cliente OAuth de Google.</target>
+            </trans-unit>
+            <trans-unit id="Vbjyj2g">
+                <source>review.google_state_mismatch</source>
+                <target>Conexión con Google interrumpida: vuelve a iniciarla desde el panel.</target>
+            </trans-unit>
+            <trans-unit id="pyMBi7y">
+                <source>review.rating</source>
+                <target>Valoración: %rating% sobre 5</target>
+            </trans-unit>
+            <trans-unit id="WzaMA3.">
+                <source>review.reply</source>
+                <target>Respuesta del responsable</target>
+            </trans-unit>
+            <trans-unit id="TrZcNxS">
+                <source>review.see_original</source>
+                <target>Ver la opinión original</target>
+            </trans-unit>
+            <trans-unit id="PK5gbBx">
+                <source>review.verified</source>
+                <target>Opinión verificada</target>
             </trans-unit>
         </body>
     </file>

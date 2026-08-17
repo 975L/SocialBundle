@@ -50,8 +50,8 @@ class SocialGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider(true)->getGuidedProjects();
 
-        $this->assertSame(['social-links', 'social-share-buttons'], array_column($projects, 'slug'));
-        $this->assertSame([130, 135], array_column($projects, 'order'));
+        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-reviews'], array_column($projects, 'slug'));
+        $this->assertSame([130, 135, 137], array_column($projects, 'order'));
     }
 
     // The share buttons screen isn't in the sidebar while the feature is off, so no parcours walks to it either
@@ -59,7 +59,7 @@ class SocialGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider(false)->getGuidedProjects();
 
-        $this->assertSame(['social-links'], array_column($projects, 'slug'));
+        $this->assertSame(['social-links', 'social-google-reviews'], array_column($projects, 'slug'));
     }
 
     public function testEverySlugIsPrefixedWithTheBundleName(): void
@@ -116,8 +116,9 @@ class SocialGuidedProjectProviderTest extends TestCase
         $controllers = [];
         $this->createProvider(true, $controllers)->getGuidedProjects();
 
+        // The reviews parcours is the exception: the two keys its connection needs are configs, so it opens on ConfigBundle's own screen rather than on one of this bundle's
         $this->assertSame(
-            ['SocialLinksCrudController', 'ShareButtonsSettingsCrudController'],
+            ['SocialLinksCrudController', 'ShareButtonsSettingsCrudController', 'ConfigCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
     }

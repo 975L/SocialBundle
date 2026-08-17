@@ -1,16 +1,16 @@
 ---
 name: c975l-social
-description: "Use this skill when working with social links or share buttons in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display and the CSS tokens. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, social links, share buttons, network icon, brand color."
+description: "Use this skill when working with social links, share buttons or customer reviews in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, and the Google Business Profile review import with its pluggable sources. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewCollectionSourceProvider, ReviewSynchronizer, c975l:social:reviews:sync, social-google-oauth-client-id, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile."
 ---
 
 # c975L SocialBundle
 
 > The social side of a c975L site — one site-wide list of social links, and share buttons for 20 networks, both placed anywhere as blocks. Replaces the former ShareButtonsBundle.
 
-**Package:** `c975l/social-bundle` · **Namespace:** `c975L\SocialBundle\` · **Twig namespace:** `@c975LSocial` · **Translation domain:** `social`
+**Package:** `c975l/social-bundle` · **Namespace:** `c975L\SocialBundle\` · **Twig namespace:** `@c975LSocial` · **Translation domain:** `social`, plus `ui` for what UiBundle renders on this bundle's behalf (`translations/ui.*.xlf`, the collection source's own label)
 
 **Key source paths** (relative to the package root):
-`src/Service/ShareButtonsService.php`, `src/Twig/`, `src/Form/Block/`, `src/Controller/Management/`, `src/Management/`, `templates/blocks/`, `templates/components/SocialLinks.html.twig`, `templates/shareButtons/`, `config/configs.json`, `config/services.yaml`, `public/icons/`, `sass/_social-brand-colors.scss`, `scaffold/assets/styles/themes/social.css`
+`src/Service/ShareButtonsService.php`, `src/Twig/`, `src/Form/Block/`, `src/Controller/`, `src/Controller/Management/`, `src/Management/`, `src/Contract/`, `src/Entity/Review.php`, `src/Repository/ReviewRepository.php`, `src/Command/ReviewsSyncCommand.php`, `templates/blocks/`, `templates/collection/ReviewItem.html.twig`, `templates/components/SocialLinks.html.twig`, `templates/shareButtons/`, `config/configs.json`, `config/services.yaml`, `public/icons/`, `sass/_social-brand-colors.scss`, `scaffold/assets/styles/themes/social.css`
 
 **Related documentation:** this package's `README.md` is the exhaustive reference. The block system, the icon service and the media library it builds on live in `c975l/core-bundle`.
 
@@ -23,10 +23,13 @@ php bin/console assets:install --symlink
 php bin/console c975l:scaffold:install     # copies assets/styles/themes/social.css into the app
 ```
 
-No route to declare, no entity, no migration: **this bundle creates no table of its own**. Both features
-are stored as a singleton UiBundle `Block`, edited from their own dashboard screens.
+Social links and share buttons need **no route, no entity and no migration**: both are stored as a
+singleton UiBundle `Block`, edited from their own dashboard screens.
 
-## The two features, and where their data lives
+Customer reviews do need all three — see [Customer reviews](#customer-reviews) for the routes to import,
+the Doctrine mapping to declare and the migration to generate.
+
+## The two singleton features, and where their data lives
 
 | Feature | Stored as | Edited in |
 | --- | --- | --- |
@@ -120,13 +123,63 @@ The four box tokens have a **per-variant default**, one value per shape or fill:
 nothing visible. `scaffold/assets/styles/themes/social.css` is the catalogue of what is meant to be set
 site-wide, every line shipped commented out at its default.
 
+## Customer reviews
+
+Imported from the site's own Google Business Profile listing into the `Review` entity (table
+`site_review`) and displayed through **UiBundle's generic `collection` block** — this feature ships
+**no block kind of its own**. `ReviewCollectionSourceProvider` implements
+`CollectionSourceProviderInterface`, exposing the source `social.collection.reviews` with the cache tag
+`social_reviews` and the item template `templates/collection/ReviewItem.html.twig`.
+
+| Piece | Class |
+| --- | --- |
+| Source contract | `Contract\ReviewsSourceInterface` (`getName()`, `isConfigured()`, `fetch()`) |
+| Reply capability | `Contract\ReviewsReplySourceInterface` (adds `reply()`) |
+| Google source | `Service\GoogleBusinessProfileSource` |
+| OAuth | `Service\GoogleOAuthClient`, `Controller\GoogleOAuthController` |
+| Import | `Service\ReviewSynchronizer`, `Command\ReviewsSyncCommand` |
+| Back office | `Controller\Management\ReviewCrudController`, `Service\ReviewReplyPublisher` |
+
+Sources are auto-tagged by interface (`social.reviews_source`, see `c975LSocialBundle::build()`), so a
+new platform is a class implementing `ReviewsSourceInterface` and nothing else.
+
+**Setup in the consuming app**, on top of the usual `c975l:config:load-all`:
+
+```yaml
+# config/routes.yaml — this bundle's only routes
+c975l_social:
+    resource: '@c975LSocialBundle/src/Controller/'
+    type: attribute
+```
+
+Map `src/Entity` in `doctrine.yaml`, run `make:migration`, then schedule
+`php bin/console c975l:social:reviews:sync` as a cron job. The five config slugs are
+`social-google-oauth-client-id`, `social-google-oauth-client-secret`,
+`social-google-oauth-refresh-token`, `social-google-business-account-id` and
+`social-google-business-location-id` — only the first two are typed, `/social/google/connect` writing
+the rest.
+
+Google's reviews endpoints need the Cloud project to be **allowlisted** (7-10 business days) and the
+OAuth app **published in production**, or its refresh tokens expire every seven days.
+
+The connection is started from **"Connecter Google"**, a `getLinks()` entry tiered `advanced` — so it
+sits in the sidebar's collapsed "Avancé" submenu, not next to the CRUD screens.
+
+`Service\SameAsProvider` implements UiBundle's `SameAsProviderInterface`, so a `contact_details` block
+publishes the listing (`social-google-listing-url`, a `maps?cid=…` address) and the social links in its
+`sameAs` — the property stating the site and those profiles are one business, where the block's own
+`mapUrl` publishes `hasMap` and only says a map exists. Nothing is retyped into the contact form.
+
 ## What the bundle already contributes
 
-Nothing below is declared in the app: `MenuProvider` (the two dashboard entries), `ProcedureProvider`
+Nothing below is declared in the app: `MenuProvider` (the dashboard entries, plus the "Connecter
+Google" link in the "Avancé" tier), `ProcedureProvider`
 (the admin help procedures), `SocialGuidedProjectProvider` (the guided walk-through of each screen,
 offered only to who can open it), `WhatsNewProvider`, `ImportmapProvider`, `Service\ScriptProvider`,
 `Service\StylesheetProvider`, `Service\BlockFixtureProvider`, and an export/import provider per
-singleton (`SocialLinksExportProvider`, `ShareButtonsSettingsExportProvider` and their import twins).
+singleton (`SocialLinksExportProvider`, `ShareButtonsSettingsExportProvider` and their import twins),
+`Service\ReviewCollectionSourceProvider` (the "Avis clients" collection source) and
+`Listener\ReviewCacheInvalidationListener` (empties the `social_reviews` tag on every `Review` change).
 
 ## Do not
 
@@ -143,3 +196,11 @@ singleton (`SocialLinksExportProvider`, `ShareButtonsSettingsExportProvider` and
 - **Do not give the `*_display` blocks fields of their own.** They are pointers on purpose; storing a
   copy is what makes a page's links drift from the site's.
 - **Do not add a page layout to this bundle.** A satellite never ships one.
+- **Do not create, edit, delete or hide a `Review` from the back office.** A review is its author's
+  statement: rewriting it falsifies it, and dropping the ones that displease is what art. L111-7-2 of
+  the French consumer code forbids — while the review stays published on the platform anyway. Only the
+  public reply is writable, and it goes to the platform before it is stored.
+- **Do not create a `reviews` block kind.** The display goes through UiBundle's `collection` block and
+  `ReviewCollectionSourceProvider`; a kind of its own would duplicate a block that already exists.
+- **Do not call a review platform from a page render.** Quotas are counted per call and the site must
+  keep serving its reviews while the platform is down — `c975l:social:reviews:sync` runs on cron.

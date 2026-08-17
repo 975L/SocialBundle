@@ -1,0 +1,44 @@
+{# Item template of the "social.collection.reviews" source (see ReviewCollectionSourceProvider): the generic collection_item card draws neither a rating nor the link back to the platform, both of which a review has to carry #}
+<article class="review-item">
+    <header class="review-item-header">
+        {# The author's avatar as the platform serves it; decorative, the name right next to it being what identifies the review #}
+        {% if imageUrl %}
+            <img src="{{ imageUrl }}" alt="" class="review-item-avatar" width="48" height="48" loading="lazy" referrerpolicy="no-referrer">
+        {% endif %}
+        <div class="review-item-identity">
+            {# A platform can serve a review with no display name, which is said rather than left blank #}
+            <p class="review-item-author">{{ title ?: 'review.anonymous_author'|trans({}, 'social') }}</p>
+            {# Stars are decorative markup, the accessible name carrying the figure itself #}
+            <p class="review-item-rating" aria-label="{{ 'review.rating'|trans({'%rating%': rating}, 'social') }}">
+                {% for star in 1..5 %}
+                    <span class="review-item-star{{ star <= rating ? ' review-item-star--filled' }}" aria-hidden="true">★</span>
+                {% endfor %}
+            </p>
+        </div>
+    </header>
+
+    {# A rating with no text is a review too, and renders as its stars alone #}
+    {% if content %}
+        <blockquote class="review-item-comment">{{ content }}</blockquote>
+    {% endif %}
+
+    {# The owner's public answer, the only part of a review this site ever writes #}
+    {% if replyComment %}
+        <div class="review-item-reply">
+            <p class="review-item-reply-label">{{ 'review.reply'|trans({}, 'social') }}</p>
+            <p>{{ replyComment }}</p>
+        </div>
+    {% endif %}
+
+    <footer class="review-item-footer">
+        <time datetime="{{ publishedAt|date('Y-m-d') }}">{{ publishedAt|format_datetime('medium', 'none') }}</time>
+        {# L111-7-2 asks a site to say which reviews are verified, so the badge is printed rather than assumed #}
+        {% if verified %}
+            <span class="review-item-verified">{{ 'review.verified'|trans({}, 'social') }}</span>
+        {% endif %}
+        {# Attribution: the visitor must be able to reach the review where it was published, and check it #}
+        {% if url %}
+            <a href="{{ url }}" class="review-item-source" target="_blank" rel="noopener noreferrer nofollow">{{ 'review.see_original'|trans({}, 'social') }}</a>
+        {% endif %}
+    </footer>
+</article>

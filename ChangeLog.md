@@ -1,5 +1,43 @@
 # Changelog
 
+## v2.4.0
+
+Import and display the Google reviews of the site's listing
+
+- The CI caches Composer's downloaded archives between runs (17/08/2026)
+- The workflow runs on a push to main and on pull requests only (17/08/2026)
+- Added a `concurrency` group cancelling a run the next push supersedes (17/08/2026)
+- The workflow's `GITHUB_TOKEN` is pinned to `contents: read` (17/08/2026)
+- Added a `Review` entity and its repository, table `site_review` (17/08/2026) [Needs db update]
+- Added `ReviewsSourceInterface`, auto-tagged by interface (17/08/2026)
+- Added `ReviewsReplySourceInterface` for the platforms taking a public reply (17/08/2026)
+- Added `GoogleBusinessProfileSource`, importing the reviews of the connected listing (17/08/2026)
+- Added `GoogleOAuthClient` and `GoogleOAuthController`, the bundle's first routes (17/08/2026)
+- Added `ConfigValueWriter`, storing what the Google connection hands back (17/08/2026)
+- Added `GoogleBusinessLocationResolver`, storing the account and listing after consent (17/08/2026)
+- Added `ReviewSynchronizer` and the `c975l:social:reviews:sync` command (17/08/2026)
+- Added `ReviewCollectionSourceProvider`, exposing the reviews to UiBundle's `collection` block (17/08/2026)
+- Added `ReviewItem.html.twig` and its `--review-*` tokens (17/08/2026)
+- A review served without an author name renders a translated "Anonymous" label (17/08/2026)
+- Added `ReviewCrudController`, read-only apart from the public reply (17/08/2026)
+- Added `ReviewReplyPublisher`, publishing a reply before it is stored (17/08/2026)
+- Added `ReviewCacheInvalidationListener` on the `social_reviews` tag (17/08/2026)
+- Added five Google config keys, the secret and the refresh token sensitive (17/08/2026)
+- Added the "Avis clients" dashboard entry (17/08/2026)
+- Added the admin help procedure for connecting the listing (17/08/2026)
+- Added `SameAsProvider`, publishing the listing and the social links in the contact block's `sameAs` (17/08/2026)
+- Requires c975l/core-bundle ^1.12.2, doctrine/orm ^3.6 and doctrine/doctrine-bundle ^3.3 (17/08/2026)
+- Added the `social-google-listing-url` config key (17/08/2026)
+- Added the "Connecter Google" sidebar link, in the "Avancé" tier (17/08/2026)
+- Added the guided project for connecting the listing and displaying its reviews (17/08/2026)
+- Added the `ui` translation domain, for what UiBundle renders on this bundle's behalf (17/08/2026)
+- Added tests for the OAuth client, the location resolver, the config writer and the reviews command (17/08/2026)
+- Added tests for `ReviewCrudController`, `GoogleOAuthController` and `ReviewCacheInvalidationListener` (17/08/2026)
+- Added tests for the `Review` entity and its repository (17/08/2026)
+- README documents the routes, the Doctrine mapping and the migration to declare (17/08/2026)
+- UPGRADE documents the three steps a site upgrading has to add (17/08/2026)
+- The shipped skill covers the reviews, their sources and what the back office may not do (17/08/2026)
+
 ## v2.3.0
 
 The bundle documents itself for the coding agents installing it

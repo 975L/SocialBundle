@@ -6,7 +6,7 @@ services:
 
     c975L\SocialBundle\:
         resource: '../src/'
-        exclude: '../src/{DependencyInjection,Entity}'
+        exclude: '../src/{Contract,DependencyInjection,Entity,Model}'
 
     c975L\SocialBundle\Service\StylesheetProvider:
         tags:
@@ -16,6 +16,15 @@ services:
         tags:
             - { name: 'ui.script', priority: 100 }
             - { name: 'ui.admin_script', priority: 100 }
+
+    # The review sources are auto-tagged from ReviewsSourceInterface (see c975LSocialBundle::build()), so a site adding a platform of its own only implements the interface - nothing to declare here
+    c975L\SocialBundle\Service\ReviewSynchronizer:
+        arguments:
+            $sources: !tagged_iterator social.reviews_source
+
+    c975L\SocialBundle\Service\ReviewReplyPublisher:
+        arguments:
+            $sources: !tagged_iterator social.reviews_source
 
     social.block.social_links:
         class: stdClass

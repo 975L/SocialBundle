@@ -1,5 +1,39 @@
 # Upgrade
 
+## To 2.4
+
+**The bundle now ships an entity, and its first routes.** Customer reviews are stored in a `Review` entity (table `site_review`), and the Google connection needs two controller routes — neither of which an application declared before, this bundle having had no table and no route of its own until now. Three things to add, all of them optional if you never enable the reviews:
+
+- **Map the entity**, in `config/packages/doctrine.yaml`:
+
+```yaml
+doctrine:
+    orm:
+        mappings:
+            c975LSocialBundle:
+                type: attribute
+                dir: '%kernel.project_dir%/vendor/c975l/social-bundle/src/Entity'
+                prefix: 'c975L\SocialBundle\Entity'
+```
+
+- **Import the controllers**, in `config/routes.yaml`:
+
+```yaml
+c975l_social:
+    resource: '@c975LSocialBundle/src/Controller/'
+    type: attribute
+```
+
+- **Generate and run the migration** [Needs db update]:
+
+```bash
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
+php bin/console c975l:config:load-all
+```
+
+Nothing else changes: the social links and share buttons stay singleton blocks, with no table and no route.
+
 ## To 1.4
 
 **The bundle now requires PHP 8.4 and Symfony 8.** It used to declare `"php": ">=8.1"` and `"symfony/*": "*"`, an unbound constraint that let Composer resolve Symfony against whatever PHP the application ran on - so an application on PHP 8.2 silently got Symfony 7 with a bundle only ever tested against Symfony 8. The requirements now say what is actually built and tested: `"php": ">=8.4"` and `"symfony/*": "^8.0"`. If your application is still on Symfony 7, stay on the previous release until you migrate - `composer update` will simply refuse to move rather than break anything.

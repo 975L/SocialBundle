@@ -6,9 +6,57 @@
                 <source>description.social_enable_share_buttons</source>
                 <target>Muestra automáticamente los botones de compartir en cada página (ajustes en "Botones para compartir").</target>
             </trans-unit>
+            <trans-unit id="TELuAM2">
+                <source>description.social_google_business_account_id</source>
+                <target>Cuenta de Google Business Profile que posee la ficha, elegida tras la conexión.</target>
+            </trans-unit>
+            <trans-unit id="E7lJkTq">
+                <source>description.social_google_business_location_id</source>
+                <target>Ficha de establecimiento cuyas opiniones se importan, elegida tras la conexión.</target>
+            </trans-unit>
+            <trans-unit id="R3dEfsB">
+                <source>description.social_google_listing_url</source>
+                <target>Dirección pública de la ficha, por ejemplo https://www.google.com/maps?cid=... : publicada como sameAs en el bloque de contacto, vincula el sitio y la ficha como una sola empresa.</target>
+            </trans-unit>
+            <trans-unit id="3Uz1NWR">
+                <source>description.social_google_oauth_client_id</source>
+                <target>Identificador de cliente OAuth creado en la consola de Google Cloud.</target>
+            </trans-unit>
+            <trans-unit id="pgmScSU">
+                <source>description.social_google_oauth_client_secret</source>
+                <target>Secreto de cliente OAuth asociado al identificador anterior.</target>
+            </trans-unit>
+            <trans-unit id="5Phnt3P">
+                <source>description.social_google_oauth_refresh_token</source>
+                <target>Token obtenido al conectar con Google; sustituirlo interrumpe la importación de opiniones.</target>
+            </trans-unit>
             <trans-unit id="Dfr17Uy">
                 <source>label.social_enable_share_buttons</source>
                 <target>Activar botones para compartir</target>
+            </trans-unit>
+            <trans-unit id="9BLGp.J">
+                <source>label.social_google_business_account_id</source>
+                <target>Cuenta de Google Business Profile</target>
+            </trans-unit>
+            <trans-unit id="yO2l7Ek">
+                <source>label.social_google_business_location_id</source>
+                <target>Ficha de establecimiento de Google</target>
+            </trans-unit>
+            <trans-unit id="g3YkJT5">
+                <source>label.social_google_listing_url</source>
+                <target>Enlace de la ficha de Google</target>
+            </trans-unit>
+            <trans-unit id="hZffD1Y">
+                <source>label.social_google_oauth_client_id</source>
+                <target>Identificador de cliente OAuth de Google</target>
+            </trans-unit>
+            <trans-unit id="iJJMfbS">
+                <source>label.social_google_oauth_client_secret</source>
+                <target>Secreto de cliente OAuth de Google</target>
+            </trans-unit>
+            <trans-unit id="sWcVVas">
+                <source>label.social_google_oauth_refresh_token</source>
+                <target>Token de actualización de Google</target>
             </trans-unit>
         </body>
     </file>

@@ -17,4 +17,21 @@
 
     /* The glyphs of the fills that paint no dark badge under them (transparent, outline, minimal). They are black <img> that only invert, so they follow the page: left alone here, turned white by the bundle's own dark-mode rule. Set to invert(1) for a design painting a dark band (--social-share-background) while the site stays light - the one case neither currentColor nor the theme can tell */
     /* --social-share-icon-filter: none; */
+
+    /* A review card as rendered inside a "collection" block - transparent by default, i.e. the page shows through, the surrounding block owning the surface */
+    /* --review-background: transparent; */
+    /* --review-border-color: #dcdcdc; */
+    /* --review-gap: 0.5rem; */
+    /* --review-padding: 1rem; */
+    /* --review-radius: 0.5rem; */
+
+    /* The author's avatar, always square whatever the platform serves */
+    /* --review-avatar-size: 48px; */
+
+    /* The rating row. Both are set, an unfilled star staying in the flow so every card's rating takes the same width */
+    /* --review-star-color: #d0d0d0; */
+    /* --review-star-color-filled: #f5a623; */
+
+    /* The date, the verified badge and the reply label, all secondary to the review itself */
+    /* --review-secondary-size: 0.875em; */
 }

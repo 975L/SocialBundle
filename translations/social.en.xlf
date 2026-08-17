@@ -26,6 +26,10 @@
                 <source>block.social_links_display_description</source>
                 <target>Inserts the dashboard's social links, without redefining them</target>
             </trans-unit>
+            <trans-unit id="VNxe2Mo">
+                <source>description.guided_project_social_google_reviews</source>
+                <target>Connect the listing's Google profile, then display its reviews on the site.</target>
+            </trans-unit>
             <trans-unit id="FrDtWdT">
                 <source>description.guided_project_social_links</source>
                 <target>One single list for the whole site, rendered wherever the social links block is put</target>
@@ -33,6 +37,30 @@
             <trans-unit id="GjyFwm5">
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Pick the networks offered to your visitors, their order and their look</target>
+            </trans-unit>
+            <trans-unit id="Q2.88W1">
+                <source>description.guided_step_social_google_connect</source>
+                <target>In the sidebar's "Advanced" submenu, click "Connect Google", then grant access with the Google account owning the listing. The site stores the token, the account and the listing by itself.</target>
+            </trans-unit>
+            <trans-unit id="XzEU5fT">
+                <source>description.guided_step_social_google_credentials</source>
+                <target>Search for "social-google-oauth-client-id" and "social-google-oauth-client-secret" in the list, and paste the two values taken from the Google Cloud console. The three other Google keys fill themselves in at the next step.</target>
+            </trans-unit>
+            <trans-unit id="RJQ_vuA">
+                <source>description.guided_step_social_google_display</source>
+                <target>On the page you want, add a "Collection" block and pick the "Customer reviews" source. Reviews are shown with their rating, their date and the link to the original review.</target>
+            </trans-unit>
+            <trans-unit id="6xgYazB">
+                <source>description.guided_step_social_google_prerequisites</source>
+                <target>This first part happens at Google and takes 7 to 10 business days: access to the Business Profile API, then publishing the OAuth app. The help procedure "Display your listing's Google reviews" gives the links and the exact order. Come back here once access is granted.</target>
+            </trans-unit>
+            <trans-unit id="cFM7OuY">
+                <source>description.guided_step_social_google_reply</source>
+                <target>Only the public reply is written here, and it goes to Google as soon as it is saved. The review's text and rating belong to its author: they can be neither edited nor deleted. An abusive review is reported to Google.</target>
+            </trans-unit>
+            <trans-unit id="pu1hp1o">
+                <source>description.guided_step_social_google_reviews</source>
+                <target>Reviews come in with the "c975l:social:reviews:sync" command, to be scheduled once a day. The list stays empty until it has run.</target>
             </trans-unit>
             <trans-unit id="vgXH0gX">
                 <source>description.guided_step_social_links_display_label</source>
@@ -158,6 +186,14 @@
                 <source>label.gallery_showcase_social_links_description</source>
                 <target>Available styles for social network links.</target>
             </trans-unit>
+            <trans-unit id="Hw3DjDB">
+                <source>label.google_connect</source>
+                <target>Connect Google</target>
+            </trans-unit>
+            <trans-unit id="9gMwOTb">
+                <source>label.guided_project_social_google_reviews</source>
+                <target>Display your listing's Google reviews</target>
+            </trans-unit>
             <trans-unit id="__S_HiT">
                 <source>label.guided_project_social_links</source>
                 <target>Put up the links to your networks</target>
@@ -165,6 +201,30 @@
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Set the share buttons</target>
+            </trans-unit>
+            <trans-unit id="WWlxIlv">
+                <source>label.guided_step_social_google_connect</source>
+                <target>Start the connection</target>
+            </trans-unit>
+            <trans-unit id="mAuOzTf">
+                <source>label.guided_step_social_google_credentials</source>
+                <target>Fill in the two OAuth keys</target>
+            </trans-unit>
+            <trans-unit id="jO4qa1.">
+                <source>label.guided_step_social_google_display</source>
+                <target>Display the reviews on a page</target>
+            </trans-unit>
+            <trans-unit id="ilGA6aD">
+                <source>label.guided_step_social_google_prerequisites</source>
+                <target>Prepare the access at Google</target>
+            </trans-unit>
+            <trans-unit id="cZJLDf8">
+                <source>label.guided_step_social_google_reply</source>
+                <target>Answer a review</target>
+            </trans-unit>
+            <trans-unit id="SupTUqT">
+                <source>label.guided_step_social_google_reviews</source>
+                <target>Read the imported reviews</target>
             </trans-unit>
             <trans-unit id="xNJPblz">
                 <source>label.guided_step_social_links_display_label</source>
@@ -258,6 +318,14 @@
                 <source>label.icon_style_text</source>
                 <target>Text only</target>
             </trans-unit>
+            <trans-unit id="stDBjT.">
+                <source>label.info_google_connect</source>
+                <target>Lets the site read the reviews of your Google listing and answer them.</target>
+            </trans-unit>
+            <trans-unit id="zkQpL1I">
+                <source>label.info_reviews</source>
+                <target>The reviews imported from your Google listing. They can be neither edited nor deleted: only the public reply is yours.</target>
+            </trans-unit>
             <trans-unit id="AuLTjz5">
                 <source>label.info_share_buttons_settings</source>
                 <target>Default networks/style for share buttons - a singleton, overridable per page via the "share_buttons_display" block. Edit the active networks, their order and the display style.</target>
@@ -289,6 +357,42 @@
             <trans-unit id="Fa3jTj1">
                 <source>label.preview</source>
                 <target>Preview</target>
+            </trans-unit>
+            <trans-unit id="v8wA8im">
+                <source>label.review</source>
+                <target>Review</target>
+            </trans-unit>
+            <trans-unit id="MmMODqe">
+                <source>label.review_author</source>
+                <target>Author</target>
+            </trans-unit>
+            <trans-unit id="1cpgR1E">
+                <source>label.review_comment</source>
+                <target>Review</target>
+            </trans-unit>
+            <trans-unit id="NYV_onC">
+                <source>label.review_published_at</source>
+                <target>Published on</target>
+            </trans-unit>
+            <trans-unit id="8ZUrZE5">
+                <source>label.review_rating</source>
+                <target>Rating</target>
+            </trans-unit>
+            <trans-unit id="1ej3NQp">
+                <source>label.review_reply</source>
+                <target>Public reply</target>
+            </trans-unit>
+            <trans-unit id="B4BXRXE">
+                <source>label.review_reply_help</source>
+                <target>Published on the platform as soon as it is saved; emptying it removes the reply.</target>
+            </trans-unit>
+            <trans-unit id="QeGrNPM">
+                <source>label.review_source</source>
+                <target>Source</target>
+            </trans-unit>
+            <trans-unit id="dMxRFXX">
+                <source>label.reviews</source>
+                <target>Customer reviews</target>
             </trans-unit>
             <trans-unit id="TRS_z2w">
                 <source>label.shape</source>
@@ -345,6 +449,42 @@
             <trans-unit id="mcQ1Bzu">
                 <source>label.url</source>
                 <target>URL</target>
+            </trans-unit>
+            <trans-unit id="WLPk5w2">
+                <source>review.anonymous_author</source>
+                <target>Anonymous</target>
+            </trans-unit>
+            <trans-unit id="rau13w0">
+                <source>review.google_authorization_refused</source>
+                <target>The Google authorization was refused.</target>
+            </trans-unit>
+            <trans-unit id="R5rv6GX">
+                <source>review.google_connected</source>
+                <target>Site connected to Google: reviews will be imported on the next synchronization.</target>
+            </trans-unit>
+            <trans-unit id="TQ449uD">
+                <source>review.google_not_configured</source>
+                <target>Fill in the Google OAuth client id and secret first.</target>
+            </trans-unit>
+            <trans-unit id="Vbjyj2g">
+                <source>review.google_state_mismatch</source>
+                <target>Google connection interrupted: start it again from the dashboard.</target>
+            </trans-unit>
+            <trans-unit id="pyMBi7y">
+                <source>review.rating</source>
+                <target>Rating: %rating% out of 5</target>
+            </trans-unit>
+            <trans-unit id="WzaMA3.">
+                <source>review.reply</source>
+                <target>Owner's reply</target>
+            </trans-unit>
+            <trans-unit id="TrZcNxS">
+                <source>review.see_original</source>
+                <target>See the original review</target>
+            </trans-unit>
+            <trans-unit id="PK5gbBx">
+                <source>review.verified</source>
+                <target>Verified review</target>
             </trans-unit>
         </body>
     </file>

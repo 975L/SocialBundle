@@ -1,0 +1,79 @@
+/* REVIEWS */
+
+// One imported review, rendered by ReviewItem.html.twig inside UiBundle's generic "collection" block - so only the card's inside is styled here, the grid around it belonging to that block
+.review-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--review-gap, 0.5rem);
+    padding: var(--review-padding, 1rem);
+    border: 1px solid var(--review-border-color, #dcdcdc);
+    border-radius: var(--review-radius, 0.5rem);
+    background-color: var(--review-background, transparent);
+    height: 100%;
+}
+
+.review-item-header {
+    display: flex;
+    align-items: center;
+    gap: var(--review-gap, 0.5rem);
+}
+
+// Fixed square, whatever the platform serves: an avatar arriving in another ratio would otherwise stretch the whole row
+.review-item-avatar {
+    width: var(--review-avatar-size, 48px);
+    height: var(--review-avatar-size, 48px);
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.review-item-author {
+    margin: 0;
+    font-weight: 600;
+}
+
+.review-item-rating {
+    margin: 0;
+    line-height: 1;
+}
+
+// Unfilled stars stay in the flow rather than being dropped, so every card's rating occupies the same width
+.review-item-star {
+    color: var(--review-star-color, #d0d0d0);
+}
+
+.review-item-star--filled {
+    color: var(--review-star-color-filled, #f5a623);
+}
+
+.review-item-comment {
+    margin: 0;
+    font-style: normal;
+}
+
+// Set in from the review it answers, so the two are never read as one voice
+.review-item-reply {
+    margin-inline-start: var(--review-padding, 1rem);
+    padding-inline-start: var(--review-gap, 0.5rem);
+    border-inline-start: 2px solid var(--review-border-color, #dcdcdc);
+}
+
+.review-item-reply-label {
+    margin: 0;
+    font-weight: 600;
+    font-size: var(--review-secondary-size, 0.875em);
+}
+
+.review-item-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--review-gap, 0.5rem);
+    margin-top: auto;
+    font-size: var(--review-secondary-size, 0.875em);
+}
+
+.review-item-verified::before {
+    content: '✓';
+    margin-inline-end: 0.25em;
+}

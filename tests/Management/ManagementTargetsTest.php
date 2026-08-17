@@ -36,10 +36,14 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
         return $configService;
     }
 
-    // This bundle's own controllers on top of ConfigBundle's, whose screens its entries point to as well
+    // This bundle's own controllers on top of ConfigBundle's, whose screens its entries point to as well - both directories, the sidebar's "Connecter Google" link naming a route declared outside Management/
     #[\Override]
     protected function controllerDirectories(): array
     {
-        return [...parent::controllerDirectories(), __DIR__ . '/../../src/Controller/Management'];
+        return [
+            ...parent::controllerDirectories(),
+            __DIR__ . '/../../src/Controller',
+            __DIR__ . '/../../src/Controller/Management',
+        ];
     }
 }

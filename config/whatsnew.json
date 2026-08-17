@@ -1,5 +1,30 @@
 [
     {
+        "date": "2026-08-17",
+        "description": [
+            {
+                "en": "The reviews of your Google listing can now be shown on your site: connect it once, and they arrive on their own",
+                "fr": "Les avis de votre fiche Google peuvent maintenant être affichés sur votre site : connectez-la une fois, ils arrivent tout seuls",
+                "es": "Las opiniones de su ficha de Google ya se pueden mostrar en su sitio: conéctela una vez y llegan solas"
+            },
+            {
+                "en": "You can answer a review from the back office, and your reply appears on Google right away",
+                "fr": "Vous pouvez répondre à un avis depuis l'administration, et votre réponse apparaît aussitôt sur Google",
+                "es": "Puede responder a una opinión desde la administración, y su respuesta aparece enseguida en Google"
+            },
+            {
+                "en": "A guided walk-through takes you from the Google paperwork to the reviews displayed on a page",
+                "fr": "Une visite guidée vous mène des démarches chez Google jusqu'aux avis affichés sur une page",
+                "es": "Una visita guiada le lleva desde los trámites en Google hasta las opiniones mostradas en una página"
+            },
+            {
+                "en": "Reviews are shown exactly as their authors wrote them: they cannot be edited or removed, which is what the law asks of a site displaying them",
+                "fr": "Les avis sont affichés tels que leurs auteurs les ont écrits : ils ne peuvent être ni modifiés ni supprimés, ce que la loi demande à un site qui les affiche",
+                "es": "Las opiniones se muestran tal como las escribieron sus autores: no se pueden modificar ni eliminar, que es lo que la ley exige a un sitio que las muestra"
+            }
+        ]
+    },
+    {
         "date": "2026-08-14",
         "description": [
             {

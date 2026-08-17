@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Management;
 
+use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Management\GuidedProjectProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
@@ -17,7 +18,7 @@ use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 
-// This bundle's guided projects, continuing the order sequence after ConfigBundle (10-40), SiteBundle (50-80) and UiBundle (90-110), running 130-135 to leave GalleryBundle's own 140 clear. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
+// This bundle's guided projects, continuing the order sequence after ConfigBundle (10-40), SiteBundle (50-80) and UiBundle (90-110), running 130-137 to leave GalleryBundle's own 140 clear. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
 class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -35,7 +36,54 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             $projects[] = $this->shareButtonsProject();
         }
 
+        $projects[] = $this->googleReviewsProject();
+
         return $projects;
+    }
+
+    // The only parcours whose first move happens outside the site: the Google side is left to the "afficher-avis-google" help procedure, which is text and can carry links to Google's own pages, where a step's description is inserted as plain text and could not
+    private function googleReviewsProject(): array
+    {
+        return [
+            'slug' => 'social-google-reviews',
+            'label' => 'label.guided_project_social_google_reviews',
+            'description' => 'description.guided_project_social_google_reviews',
+            'translation_domain' => 'social',
+            'order' => 137,
+            'role' => $this->configService->get('site-role-editor'),
+            'steps' => [
+                [
+                    // Opens on ConfigBundle's own screen rather than on one of this bundle's: the two keys the connection needs are configs, and this is where the user will be working once Google has answered
+                    'label' => 'label.guided_step_social_google_prerequisites',
+                    'description' => 'description.guided_step_social_google_prerequisites',
+                    'url' => $this->indexUrl(ConfigCrudController::class),
+                ],
+                [
+                    // The slugs are named in the description and found with the screen's own search: a selector into another bundle's form would break on its next release
+                    'label' => 'label.guided_step_social_google_credentials',
+                    'description' => 'description.guided_step_social_google_credentials',
+                ],
+                [
+                    // Matched on the href rather than on a marker: the entry is a plain link in the sidebar's "Avancé" submenu (see MenuProvider::getLinks()), not a rendered action of a screen
+                    'label' => 'label.guided_step_social_google_connect',
+                    'description' => 'description.guided_step_social_google_connect',
+                    'highlight' => 'a[href*="/social/google/connect"]',
+                ],
+                // The three steps below carry no highlight: consenting leaves the site entirely and comes back through the callback's own redirect, so there is no screen left for the panel to walk
+                [
+                    'label' => 'label.guided_step_social_google_reviews',
+                    'description' => 'description.guided_step_social_google_reviews',
+                ],
+                [
+                    'label' => 'label.guided_step_social_google_reply',
+                    'description' => 'description.guided_step_social_google_reply',
+                ],
+                [
+                    'label' => 'label.guided_step_social_google_display',
+                    'description' => 'description.guided_step_social_google_display',
+                ],
+            ],
+        ];
     }
 
     // One list of links for the whole site, rendered wherever the block is put - not one per page

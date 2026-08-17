@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="en" datatype="plaintext" original="ui.en.xlf">
+        <body>
+            <trans-unit id="I5Q3dri">
+                <source>label.reviews_collection_source</source>
+                <target>Customer reviews</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

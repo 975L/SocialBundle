@@ -26,6 +26,10 @@
                 <source>block.social_links_display_description</source>
                 <target>Insère les réseaux sociaux du tableau de bord, liens non redéfinis</target>
             </trans-unit>
+            <trans-unit id="VNxe2Mo">
+                <source>description.guided_project_social_google_reviews</source>
+                <target>Connecter la fiche Google de l'établissement, puis afficher ses avis sur le site.</target>
+            </trans-unit>
             <trans-unit id="FrDtWdT">
                 <source>description.guided_project_social_links</source>
                 <target>Une seule liste pour tout le site, rendue partout où le block « liens sociaux » est posé</target>
@@ -33,6 +37,30 @@
             <trans-unit id="GjyFwm5">
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Choisir les réseaux proposés à vos visiteurs, leur ordre et leur allure</target>
+            </trans-unit>
+            <trans-unit id="Q2.88W1">
+                <source>description.guided_step_social_google_connect</source>
+                <target>Dans le menu "Avancé" de la barre latérale, cliquer sur "Connecter Google", puis autoriser l'accès avec le compte Google propriétaire de la fiche. Le site enregistre lui-même le jeton, le compte et la fiche.</target>
+            </trans-unit>
+            <trans-unit id="XzEU5fT">
+                <source>description.guided_step_social_google_credentials</source>
+                <target>Chercher "social-google-oauth-client-id" et "social-google-oauth-client-secret" dans la liste, et y coller les deux valeurs relevées dans la console Google Cloud. Les trois autres clés Google se remplissent toutes seules à l'étape suivante.</target>
+            </trans-unit>
+            <trans-unit id="RJQ_vuA">
+                <source>description.guided_step_social_google_display</source>
+                <target>Sur la page voulue, ajouter un bloc "Collection" et choisir la source "Avis clients". Les avis s'affichent avec leur note, leur date et le lien vers l'avis d'origine.</target>
+            </trans-unit>
+            <trans-unit id="6xgYazB">
+                <source>description.guided_step_social_google_prerequisites</source>
+                <target>Cette première partie se passe chez Google et prend 7 à 10 jours ouvrés : accès à l'API Business Profile, puis publication de l'application OAuth. La procédure d'aide "Afficher les avis Google de votre établissement" donne les liens et l'ordre exact. Revenir ici une fois l'accès accordé.</target>
+            </trans-unit>
+            <trans-unit id="cFM7OuY">
+                <source>description.guided_step_social_google_reply</source>
+                <target>Seule la réponse publique s'écrit ici, et elle part sur Google dès l'enregistrement. Le texte et la note de l'avis appartiennent à son auteur : ils ne sont ni modifiables ni supprimables. Un avis abusif se signale à Google.</target>
+            </trans-unit>
+            <trans-unit id="pu1hp1o">
+                <source>description.guided_step_social_google_reviews</source>
+                <target>Les avis arrivent avec la commande "c975l:social:reviews:sync", à planifier une fois par jour. La liste reste vide tant qu'elle n'a pas tourné.</target>
             </trans-unit>
             <trans-unit id="vgXH0gX">
                 <source>description.guided_step_social_links_display_label</source>
@@ -158,6 +186,14 @@
                 <source>label.gallery_showcase_social_links_description</source>
                 <target>Styles disponibles pour les liens vers les réseaux sociaux.</target>
             </trans-unit>
+            <trans-unit id="Hw3DjDB">
+                <source>label.google_connect</source>
+                <target>Connecter Google</target>
+            </trans-unit>
+            <trans-unit id="9gMwOTb">
+                <source>label.guided_project_social_google_reviews</source>
+                <target>Afficher les avis Google de votre établissement</target>
+            </trans-unit>
             <trans-unit id="__S_HiT">
                 <source>label.guided_project_social_links</source>
                 <target>Mettre les liens vers vos réseaux</target>
@@ -165,6 +201,30 @@
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Régler les boutons de partage</target>
+            </trans-unit>
+            <trans-unit id="WWlxIlv">
+                <source>label.guided_step_social_google_connect</source>
+                <target>Lancer la connexion</target>
+            </trans-unit>
+            <trans-unit id="mAuOzTf">
+                <source>label.guided_step_social_google_credentials</source>
+                <target>Renseigner les deux clés OAuth</target>
+            </trans-unit>
+            <trans-unit id="jO4qa1.">
+                <source>label.guided_step_social_google_display</source>
+                <target>Afficher les avis sur une page</target>
+            </trans-unit>
+            <trans-unit id="ilGA6aD">
+                <source>label.guided_step_social_google_prerequisites</source>
+                <target>Préparer l'accès chez Google</target>
+            </trans-unit>
+            <trans-unit id="cZJLDf8">
+                <source>label.guided_step_social_google_reply</source>
+                <target>Répondre à un avis</target>
+            </trans-unit>
+            <trans-unit id="SupTUqT">
+                <source>label.guided_step_social_google_reviews</source>
+                <target>Consulter les avis importés</target>
             </trans-unit>
             <trans-unit id="xNJPblz">
                 <source>label.guided_step_social_links_display_label</source>
@@ -258,6 +318,14 @@
                 <source>label.icon_style_text</source>
                 <target>Texte seul</target>
             </trans-unit>
+            <trans-unit id="stDBjT.">
+                <source>label.info_google_connect</source>
+                <target>Autorise le site à lire les avis de votre fiche Google et à y répondre.</target>
+            </trans-unit>
+            <trans-unit id="zkQpL1I">
+                <source>label.info_reviews</source>
+                <target>Les avis importés de ta fiche Google. Ils ne peuvent être ni modifiés ni supprimés : seule la réponse publique t'appartient.</target>
+            </trans-unit>
             <trans-unit id="AuLTjz5">
                 <source>label.info_share_buttons_settings</source>
                 <target>Réseaux/style par défaut des boutons de partage - singleton, surchargeable par page via le bloc "share_buttons_display". Modifiez les réseaux actifs, leur ordre et le style d'affichage.</target>
@@ -289,6 +357,42 @@
             <trans-unit id="Fa3jTj1">
                 <source>label.preview</source>
                 <target>Aperçu</target>
+            </trans-unit>
+            <trans-unit id="v8wA8im">
+                <source>label.review</source>
+                <target>Avis</target>
+            </trans-unit>
+            <trans-unit id="MmMODqe">
+                <source>label.review_author</source>
+                <target>Auteur</target>
+            </trans-unit>
+            <trans-unit id="1cpgR1E">
+                <source>label.review_comment</source>
+                <target>Avis</target>
+            </trans-unit>
+            <trans-unit id="NYV_onC">
+                <source>label.review_published_at</source>
+                <target>Publié le</target>
+            </trans-unit>
+            <trans-unit id="8ZUrZE5">
+                <source>label.review_rating</source>
+                <target>Note</target>
+            </trans-unit>
+            <trans-unit id="1ej3NQp">
+                <source>label.review_reply</source>
+                <target>Réponse publique</target>
+            </trans-unit>
+            <trans-unit id="B4BXRXE">
+                <source>label.review_reply_help</source>
+                <target>Publiée sur la plateforme dès l'enregistrement ; la vider retire la réponse.</target>
+            </trans-unit>
+            <trans-unit id="QeGrNPM">
+                <source>label.review_source</source>
+                <target>Source</target>
+            </trans-unit>
+            <trans-unit id="dMxRFXX">
+                <source>label.reviews</source>
+                <target>Avis clients</target>
             </trans-unit>
             <trans-unit id="TRS_z2w">
                 <source>label.shape</source>
@@ -345,6 +449,42 @@
             <trans-unit id="mcQ1Bzu">
                 <source>label.url</source>
                 <target>URL</target>
+            </trans-unit>
+            <trans-unit id="WLPk5w2">
+                <source>review.anonymous_author</source>
+                <target>Anonyme</target>
+            </trans-unit>
+            <trans-unit id="rau13w0">
+                <source>review.google_authorization_refused</source>
+                <target>L'autorisation Google a été refusée.</target>
+            </trans-unit>
+            <trans-unit id="R5rv6GX">
+                <source>review.google_connected</source>
+                <target>Site connecté à Google : les avis seront importés à la prochaine synchronisation.</target>
+            </trans-unit>
+            <trans-unit id="TQ449uD">
+                <source>review.google_not_configured</source>
+                <target>Renseigne d'abord l'identifiant et le secret client OAuth Google.</target>
+            </trans-unit>
+            <trans-unit id="Vbjyj2g">
+                <source>review.google_state_mismatch</source>
+                <target>Connexion Google interrompue : relance-la depuis le tableau de bord.</target>
+            </trans-unit>
+            <trans-unit id="pyMBi7y">
+                <source>review.rating</source>
+                <target>Note : %rating% sur 5</target>
+            </trans-unit>
+            <trans-unit id="WzaMA3.">
+                <source>review.reply</source>
+                <target>Réponse du responsable</target>
+            </trans-unit>
+            <trans-unit id="TrZcNxS">
+                <source>review.see_original</source>
+                <target>Voir l'avis d'origine</target>
+            </trans-unit>
+            <trans-unit id="PK5gbBx">
+                <source>review.verified</source>
+                <target>Avis vérifié</target>
             </trans-unit>
         </body>
     </file>

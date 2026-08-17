@@ -22,7 +22,7 @@ See it in action at [bundles.975l.com/pages/social-bundle](https://bundles.975l.
 ## Contents
 
 - **Setup** — [requirements](#requirements) · [installation](#installation) · [assets](#install-assets)
-- **Using it** — [social links block](#social-links-block) · [admin management](#admin-management) · [rendering](#rendering-the-block) · [styling](#styling) · [share buttons](#share-buttons) · [site-wide auto-display](#site-wide-auto-display) · [admin help procedures](#admin-help-procedures) · [guided projects](#guided-projects) · [AI agent skills](#ai-agent-skills)
+- **Using it** — [social links block](#social-links-block) · [admin management](#admin-management) · [rendering](#rendering-the-block) · [styling](#styling) · [share buttons](#share-buttons) · [site-wide auto-display](#site-wide-auto-display) · [customer reviews](#customer-reviews) · [admin help procedures](#admin-help-procedures) · [guided projects](#guided-projects) · [AI agent skills](#ai-agent-skills)
 
 ## Features
 
@@ -39,6 +39,8 @@ See it in action at [bundles.975l.com/pages/social-bundle](https://bundles.975l.
 - **Admin menu entry** registered automatically via `MenuProviderInterface`
 - **Admin help procedures** contributed automatically via `ProcedureProviderInterface`
 - **Guided projects** contributed automatically via `GuidedProjectProviderInterface` — see [Guided projects](#guided-projects)
+- **Customer reviews**: imported from the site's own Google Business Profile listing into a `Review` entity by a cron command, displayed through UiBundle's generic `collection` block — read-only, the public reply being the only thing the back office writes; see [Customer reviews](#customer-reviews)
+- **Pluggable review sources** via `ReviewsSourceInterface` — auto-discovered by interface, so a site adds its own platform without touching this bundle
 - **A skill for coding agents**, shipped in the package and read straight from `vendor/` — see [AI agent skills](#ai-agent-skills)
 
 ---
@@ -225,6 +227,92 @@ Its one field is an **anchor** (same as UiBundle's page-section kinds, see that 
 
 ---
 
+## Customer reviews
+
+The reviews of the site's own Google listing, imported into a `Review` entity by a cron command and displayed through [c975L/UiBundle](https://github.com/975L/UiBundle)'s generic `collection` block. **No block kind of its own**: `ReviewCollectionSourceProvider` implements UiBundle's `CollectionSourceProviderInterface`, so an editor picks **"Avis clients"** as the source of a collection block already on the page, and `templates/collection/ReviewItem.html.twig` draws each card — the built-in one knowing neither a rating nor a link back to the platform.
+
+### What the back office may and may not do
+
+A review is its author's statement, so `ReviewCrudController` disables **new**, **delete** and **detail**: creating one would be fabricating it, editing its text would falsify it, and hiding the ones that displease is exactly what the French consumer code (art. L111-7-2) forbids — while the review stays published on Google anyway, leaving the site's average visibly apart from the listing's. An abusive review is reported to the platform, where it also has to disappear.
+
+The **public reply** is the one thing the site writes. Saving it publishes it on the platform first and stores it only then, so a visitor never reads an answer its author never received; emptying the field removes the reply on both sides. Sources able to take a reply implement `ReviewsReplySourceInterface` on top of `ReviewsSourceInterface`, so a read-only platform has no method to stub.
+
+The `verified` flag travels with each review and is printed as a badge, L111-7-2 asking a site to say which of its reviews are verified.
+
+### Connecting the site to Google
+
+The reviews endpoints live on the Business Profile API, whose access is **not open by default**: the Google Cloud project has to be allowlisted (a form in the Business Profile help centre, 7-10 business days) before its quota leaves 0 QPM. The OAuth app also has to be **published "in production"**, or the refresh tokens it issues expire every seven days.
+
+Once that is done, five config keys are auto-loaded from `config/configs.json` like any other c975L bundle's, via `php bin/console c975l:config:load-all`:
+
+| Key | Filled by |
+| --- | --- |
+| `social-google-oauth-client-id` | the admin, from the Google Cloud console |
+| `social-google-oauth-client-secret` | the admin — `sensitive`, so encrypted at rest by ConfigBundle's `VaultEncryptor` |
+| `social-google-oauth-refresh-token` | the connection itself — `sensitive` |
+| `social-google-business-account-id` | the connection itself |
+| `social-google-business-location-id` | the connection itself |
+
+The last three are never typed: **"Connecter Google"**, in the sidebar's collapsed "Avancé" submenu (a `getLinks()` entry tiered `advanced`, run once when the site is first connected and once more the day the token is revoked), sends the editor to Google's consent screen, and `/social/google/callback` stores the refresh token, then resolves the account and listing the consenting account holds. A site owning several listings edits the two ids by hand afterwards, a picker for a case most sites never meet being a screen built for nobody.
+
+An agency running several client sites fills the same client id and secret on each, and each client consents with their own Google account — so the token stored on one site only ever reaches that site's own listing.
+
+### Routes
+
+This bundle's **only** routes, and the reason a consuming app now has to import its controllers:
+
+```yaml
+# config/routes.yaml
+c975l_social:
+    resource: '@c975LSocialBundle/src/Controller/'
+    type: attribute
+```
+
+### Doctrine mapping and migration
+
+`Review` is this bundle's first entity, and like every c975L bundle it ships no migration of its own — the consuming app maps it and generates one:
+
+```yaml
+# config/packages/doctrine.yaml
+doctrine:
+    orm:
+        mappings:
+            c975LSocialBundle:
+                type: attribute
+                dir: '%kernel.project_dir%/vendor/c975l/social-bundle/src/Entity'
+                prefix: 'c975L\SocialBundle\Entity'
+```
+
+```bash
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
+```
+
+### Importing
+
+```bash
+php bin/console c975l:social:reviews:sync              # every configured source
+php bin/console c975l:social:reviews:sync --source=google
+```
+
+Meant for cron, never for a page render: platform quotas are counted per call, and a site has to keep serving its reviews while they are down. Each run upserts on `(source, external_id)`, so re-running updates rather than duplicates, and the platform stays authoritative on every field — a reply withdrawn there disappears here too. An unconfigured source is stepped over rather than failing the run.
+
+`ReviewCacheInvalidationListener` empties the `social_reviews` cache tag whenever a `Review` changes, which is the tag the collection source declares — so a sync leaves no stale block behind, with nothing to call by hand.
+
+### Tying the site to the listing
+
+`SameAsProvider` implements [c975L/UiBundle](https://github.com/975L/UiBundle)'s `SameAsProviderInterface`, so a page carrying a `contact_details` block publishes, in its `sameAs`, the Google listing and every social link this bundle already stores — nothing of it is retyped into the contact form.
+
+The listing's public address goes in **`social-google-listing-url`** (`https://www.google.com/maps?cid=…`, the `cid` being permanent where a Place ID is not). It is listed first, being the profile Google reconciles the site against, where a social account only corroborates it.
+
+`sameAs` is what states that the site and those profiles are **one business**; the contact block's own `mapUrl` field publishes `hasMap`, which only says a map of the place exists. Both are worth filling, they answer different questions.
+
+### Adding another source
+
+Implement `ReviewsSourceInterface` (`getName()`, `isConfigured()`, `fetch()` yielding `ReviewData`) anywhere in the app: it is auto-tagged by interface, exactly like `MenuProviderInterface` and friends, so there is nothing to declare in `services.yaml`. Add `ReviewsReplySourceInterface` if the platform takes replies.
+
+---
+
 ## Admin help procedures
 
 `ProcedureProvider` (implements ConfigBundle's `ProcedureProviderInterface`) reads `config/procedures.json` and contributes one entry per documented admin workflow (configuring social links, configuring share buttons) to ConfigBundle's `ProcedureBuilder`, which aggregates every bundle's procedures for the dashboard AI assistant. Each entry ships `fr`/`en`/`es` translations, resolved to the current locale by `ProcedureJsonReader`.
@@ -233,7 +321,9 @@ Its one field is an **anchor** (same as UiBundle's page-section kinds, see that 
 
 ## Guided projects
 
-`SocialGuidedProjectProvider` (implements ConfigBundle's `GuidedProjectProviderInterface`, auto-tagged like `MenuProviderInterface`) contributes two replayable exercises to the `/management` dashboard's "Guided projects" panel: **"Mettre les liens vers vos réseaux"** (one list for the whole site, rendered wherever the block is put) and **"Régler les boutons de partage"** (which networks, in which order, and what they look like). They continue the order sequence after ConfigBundle (10-40), SiteBundle (50-80) and UiBundle (90-110), running 130 and 135 — below the 140 GalleryBundle's own first project takes.
+`SocialGuidedProjectProvider` (implements ConfigBundle's `GuidedProjectProviderInterface`, auto-tagged like `MenuProviderInterface`) contributes three replayable exercises to the `/management` dashboard's "Guided projects" panel: **"Mettre les liens vers vos réseaux"** (one list for the whole site, rendered wherever the block is put), **"Régler les boutons de partage"** (which networks, in which order, and what they look like) and **"Afficher les avis Google de votre établissement"**. They continue the order sequence after ConfigBundle (10-40), SiteBundle (50-80) and UiBundle (90-110), running 130, 135 and 137 — below the 140 GalleryBundle's own first project takes.
+
+The reviews parcours is the only one whose first move happens off the site, and it deliberately **doesn't re-document the Google Cloud console**: a step's description is inserted as plain text (`buildElement('p', …)` in ConfigBundle's `guided-project.js`), so it could carry no link anyway, and a walkthrough of screens Google redesigns would rot silently in every site installing the package. Its first step names the wait and sends the reader to the `afficher-avis-google` help procedure, which is markdown and links to Google's own pages. It is also the only one opening on **another bundle's** screen — ConfigBundle's config list, the two OAuth keys being configs — and the only one whose last three steps carry no highlight, consenting leaving the site entirely and coming back through the callback's own redirect.
 
 The share buttons project is contributed **only while `social-enable-share-buttons` is on** — the same condition `MenuProvider` applies to its own entry, since with the feature off that screen isn't in the sidebar either and a parcours walking to an unreachable screen reads as a broken one.
 

@@ -11,6 +11,7 @@
 namespace c975L\SocialBundle\Tests\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\SocialBundle\Controller\Management\ReviewCrudController;
 use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use c975L\SocialBundle\Management\MenuProvider;
@@ -39,34 +40,37 @@ class MenuProviderTest extends TestCase
         );
     }
 
-    // Share buttons settings must stay hidden while the feature is disabled site-wide
-    public function testGetMenusOnlyIncludesSocialLinksWhenShareButtonsDisabled(): void
+    // Share buttons settings must stay hidden while the feature is disabled site-wide; reviews are unconditional, an unconnected site showing an empty list rather than no entry at all
+    public function testGetMenusOnlyIncludesSocialLinksAndReviewsWhenShareButtonsDisabled(): void
     {
         $provider = $this->createProvider(false);
 
         $menus = $provider->getMenus();
 
-        $this->assertSame(['social_links'], array_keys($menus));
+        $this->assertSame(['social_links', 'reviews'], array_keys($menus));
         $this->assertSame(SocialLinksCrudController::class, $menus['social_links']['controller']);
+        $this->assertSame(ReviewCrudController::class, $menus['reviews']['controller']);
     }
 
-    // Enabling "social-enable-share-buttons" exposes its own settings entry, after social_links
+    // Enabling "social-enable-share-buttons" exposes its own settings entry, after the unconditional ones
     public function testGetMenusIncludesShareButtonsSettingsWhenEnabled(): void
     {
         $provider = $this->createProvider(true);
 
         $menus = $provider->getMenus();
 
-        $this->assertSame(['social_links', 'share_buttons_settings'], array_keys($menus));
+        $this->assertSame(['social_links', 'reviews', 'share_buttons_settings'], array_keys($menus));
         $this->assertSame(ShareButtonsSettingsCrudController::class, $menus['share_buttons_settings']['controller']);
     }
 
-    // This bundle contributes no standalone dashboard links, only Crud menus
-    public function testGetLinksReturnsEmptyArray(): void
+    // The Google connection is a route, not a Crud screen, so it is a link - tiered "advanced", being run once when the site is first connected
+    public function testGetLinksOffersTheGoogleConnectionInTheAdvancedTier(): void
     {
-        $provider = $this->createProvider(true);
+        $links = $this->createProvider(true)->getLinks();
 
-        $this->assertSame([], $provider->getLinks());
+        $this->assertSame(['social_google_connect'], array_keys($links));
+        $this->assertSame('social_google_oauth_connect', $links['social_google_connect']['name']);
+        $this->assertSame('advanced', $links['social_google_connect']['tier']);
     }
 
     // Every entry gets a step in the onboarding tour, one without a description showing its label alone - and an untranslated one reads as its own key

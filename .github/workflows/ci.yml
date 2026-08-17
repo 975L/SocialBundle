@@ -2,8 +2,17 @@ name: CI
 
 on:
     push:
-        branches: [main, dev]
+        branches: [main]
     pull_request:
+
+# main only, as the whole Symfony ecosystem does: dev carries the same commit, and running both branches meant two twin jobs resolving and downloading the same dependencies at the same second, from the same runner IP pool
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+# Without this block, the workflow's GITHUB_TOKEN inherits the repository's default permissions, which are write. Only the checkout needs it, and only to read: the coverage upload goes through the Codacy secret, not through the GitHub token
+permissions:
+    contents: read
 
 jobs:
     quality:
@@ -22,6 +31,19 @@ jobs:
                   php-version: '8.4'
                   coverage: pcov
                   tools: phpcs, phpstan, php-cs-fixer, rector
+
+            # Composer decides where it keeps the downloaded archives; asking it beats hard-coding a path that depends on the runner image
+            - name: Répertoire de cache de Composer
+              id: composer-cache
+              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+            # The archives are indexed on their own content, not on a lock file, so caching them costs nothing to the practice of not versioning composer.lock. Without it every package was downloaded again on every run, and codeload.github.com throttles per IP
+            - name: Cache des dépendances
+              uses: actions/cache@v6
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: composer-${{ runner.os }}-php84-${{ hashFiles('composer.json') }}
+                  restore-keys: composer-${{ runner.os }}-php84-
 
             # update rather than install: composer.lock is not versioned, and the bundles point at one another
             - name: Dépendances

@@ -10,12 +10,19 @@
 
 namespace c975L\SocialBundle;
 
+use c975L\ConfigBundle\DependencyInjection\Compiler\TaggedInterfacePass;
+use c975L\SocialBundle\Contract\ReviewsSourceInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
 class c975LSocialBundle extends AbstractBundle
 {
+    public function build(ContainerBuilder $container): void
+    {
+        $container->addCompilerPass(new TaggedInterfacePass(ReviewsSourceInterface::class, 'social.reviews_source'));
+    }
+
     public function loadExtension(array $config, ContainerConfigurator $containerConfigurator, ContainerBuilder $containerBuilder): void
     {
         $containerConfigurator->import('../config/services.yaml');

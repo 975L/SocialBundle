@@ -4,11 +4,59 @@
         <body>
             <trans-unit id="qi3JaGX">
                 <source>description.social_enable_share_buttons</source>
-                <target>Automatically shows share buttons on every page (settings in "Share buttons").</target>
+                <target>Automatically displays the share buttons on every page (settings under "Share buttons").</target>
+            </trans-unit>
+            <trans-unit id="TELuAM2">
+                <source>description.social_google_business_account_id</source>
+                <target>Google Business Profile account holding the listing, picked after connecting.</target>
+            </trans-unit>
+            <trans-unit id="E7lJkTq">
+                <source>description.social_google_business_location_id</source>
+                <target>Business listing whose reviews are imported, picked after connecting.</target>
+            </trans-unit>
+            <trans-unit id="R3dEfsB">
+                <source>description.social_google_listing_url</source>
+                <target>Public address of the listing, e.g. https://www.google.com/maps?cid=... : published as sameAs on the contact block, it ties the site and the listing into one business.</target>
+            </trans-unit>
+            <trans-unit id="3Uz1NWR">
+                <source>description.social_google_oauth_client_id</source>
+                <target>OAuth client id created in the Google Cloud console.</target>
+            </trans-unit>
+            <trans-unit id="pgmScSU">
+                <source>description.social_google_oauth_client_secret</source>
+                <target>OAuth client secret paired with the id above.</target>
+            </trans-unit>
+            <trans-unit id="5Phnt3P">
+                <source>description.social_google_oauth_refresh_token</source>
+                <target>Token obtained when connecting to Google; replacing it stops the review import.</target>
             </trans-unit>
             <trans-unit id="Dfr17Uy">
                 <source>label.social_enable_share_buttons</source>
-                <target>Enable Share Buttons</target>
+                <target>Enable share buttons</target>
+            </trans-unit>
+            <trans-unit id="9BLGp.J">
+                <source>label.social_google_business_account_id</source>
+                <target>Google Business Profile account</target>
+            </trans-unit>
+            <trans-unit id="yO2l7Ek">
+                <source>label.social_google_business_location_id</source>
+                <target>Google business listing</target>
+            </trans-unit>
+            <trans-unit id="g3YkJT5">
+                <source>label.social_google_listing_url</source>
+                <target>Google listing link</target>
+            </trans-unit>
+            <trans-unit id="hZffD1Y">
+                <source>label.social_google_oauth_client_id</source>
+                <target>Google OAuth client id</target>
+            </trans-unit>
+            <trans-unit id="iJJMfbS">
+                <source>label.social_google_oauth_client_secret</source>
+                <target>Google OAuth client secret</target>
+            </trans-unit>
+            <trans-unit id="sWcVVas">
+                <source>label.social_google_oauth_refresh_token</source>
+                <target>Google refresh token</target>
             </trans-unit>
         </body>
     </file>
