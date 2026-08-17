@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.3.0
+
+The bundle documents itself for the coding agents installing it
+
+- `skills/c975l-social/SKILL.md` ships in the package, for the coding agents of the sites installing it (17/08/2026)
+- `SkillsTest` checks every path, route, config slug, command, class member, Twig function, block kind and component the skill quotes (17/08/2026)
+- README documents where an agent reads the skill from (17/08/2026)
+- The skill lists the providers the bundle already contributes to the dashboard (17/08/2026)
+- The icon merge order is documented as it works, bundles in alphabetical order, then the app (17/08/2026)
+- Seven brand icons are no longer said to be absent here and shadowed by UiBundle (17/08/2026)
+
 ## v2.2.3
 
 Complete the guided projects and gate them on the editor role

@@ -22,7 +22,7 @@ See it in action at [bundles.975l.com/pages/social-bundle](https://bundles.975l.
 ## Contents
 
 - **Setup** — [requirements](#requirements) · [installation](#installation) · [assets](#install-assets)
-- **Using it** — [social links block](#social-links-block) · [admin management](#admin-management) · [rendering](#rendering-the-block) · [styling](#styling) · [share buttons](#share-buttons) · [site-wide auto-display](#site-wide-auto-display) · [admin help procedures](#admin-help-procedures) · [guided projects](#guided-projects)
+- **Using it** — [social links block](#social-links-block) · [admin management](#admin-management) · [rendering](#rendering-the-block) · [styling](#styling) · [share buttons](#share-buttons) · [site-wide auto-display](#site-wide-auto-display) · [admin help procedures](#admin-help-procedures) · [guided projects](#guided-projects) · [AI agent skills](#ai-agent-skills)
 
 ## Features
 
@@ -39,6 +39,7 @@ See it in action at [bundles.975l.com/pages/social-bundle](https://bundles.975l.
 - **Admin menu entry** registered automatically via `MenuProviderInterface`
 - **Admin help procedures** contributed automatically via `ProcedureProviderInterface`
 - **Guided projects** contributed automatically via `GuidedProjectProviderInterface` — see [Guided projects](#guided-projects)
+- **A skill for coding agents**, shipped in the package and read straight from `vendor/` — see [AI agent skills](#ai-agent-skills)
 
 ---
 
@@ -102,9 +103,9 @@ To insert those same links at a specific spot in a page's block flow (not just t
 
 #### Icons
 
-Ships `public/icons/` with flat, single-color 64×64 SVG glyphs (Font Awesome Free 6.5.1 brand icons, default black fill, no explicit `fill` set) for 37 social/media networks (Instagram, X, YouTube, TikTok, Discord, Threads, Mastodon, GitHub, Twitch, Spotify, SoundCloud, Flickr, Medium, WeChat, Line, Behance, Dribbble, VK, Xing, Messenger, Snapchat, Telegram, Vimeo, plus the ones already covered by UiBundle — see below). Only Font Awesome glyphs are kept here on purpose - no separate, pre-colored "official logo" badge asset: the `colored` icon style above is achieved entirely in CSS (inverting the glyph to white over a solid brand-colored background, see [Styling](#styling)), so every icon only needs to exist once.
+Ships `public/icons/` with flat, single-color 64×64 SVG glyphs (Font Awesome Free 6.5.1 brand icons, default black fill, no explicit `fill` set) for the 37 social/media networks the picker offers (Facebook, Instagram, Bluesky, LinkedIn, YouTube, TikTok, Pinterest, WhatsApp, Reddit, Discord, Threads, Mastodon, GitHub, Twitch, Spotify, SoundCloud, Flickr, Medium, WeChat, Line, Behance, Dribbble, VK, Xing, Messenger, Snapchat, Telegram, Vimeo, Tumblr, Skype…). Only Font Awesome glyphs are kept here on purpose - no separate, pre-colored "official logo" badge asset: the `colored` icon style above is achieved entirely in CSS (inverting the glyph to white over a solid brand-colored background, see [Styling](#styling)), so every icon only needs to exist once.
 
-`facebook`, `linkedin`, `pinterest`, `whatsapp`, `reddit`, `skype` and `tumblr` deliberately have no `{network}.svg` here: c975L/UiBundle already ships one (used by `share_buttons()` below), and `IconServiceInterface::getIcons()` merges every bundle's `icons/` by filename — a same-named file here would just be silently shadowed by UiBundle's, since `c975lui` sorts after `c975lsocial`.
+`IconServiceInterface::getIcons()` merges every bundle's `icons/` by filename, walking `public/bundles/*/icons/` in alphabetical order before the app's own `public/icons/`: dropping a `{network}.svg` in the app overrides the one shipped here, while a same-named file in a package sorting after `c975lsocial` (`c975lui`) would silently shadow it.
 
 Icon glyphs are derived from [Font Awesome Free](https://fontawesome.com/) (CC BY 4.0) — keep attribution if you redistribute this bundle's icons on their own.
 
@@ -239,6 +240,26 @@ The share buttons project is contributed **only while `social-enable-share-butto
 Both projects declare the `site-role-editor` role their screens demand, rather than the dashboard's own: the two are separate roles, neither implying the other, so `GuidedProjectBuilder` drops the parcours for an admin lacking it instead of opening on a 403.
 
 Only the opening step of each carries an `url`: from there the panel walks the screen the user has been sent to, highlighting the button or the field they are meant to use next, in the order the form renders them. The two singleton screens are pointed at with `.action-new, .action-edit` — the index offers "create" until the row exists and "edit" ever after, and whichever is on screen is the one to click. The settings fields reuse the markers their own JS already reads (`[data-share-networks-sortable]`, `[data-share-shape-select]`, `[data-share-fill-select]`, `[data-share-display-intro-checkbox]`, `[data-social-links-icon-style-select]`), rather than ids of their own; the two fields with no marker of their own are pointed at with the `trix-editor` the introduction's textarea is replaced by, and with the anchor field's EasyAdmin id (`#Block_data_anchor`).
+
+---
+
+## AI agent skills
+
+The package ships a skill of its own, `skills/c975l-social/SKILL.md`, written for the coding agent of the site installing this bundle rather than for someone modifying it. Point your agent at it:
+
+```text
+vendor/c975l/social-bundle/skills/
+```
+
+It holds what an agent gets wrong when left to its own habits — that neither feature has an entity or a table of its own, that a layout includes the share band rather than calling its Twig function, that the old `style` argument is gone rather than mapped, that an icon dropped in the app overrides the one shipped here — alongside the block kinds, the Twig functions, the config key and the CSS tokens, each named as it actually is in the sources.
+
+Nothing is installed, nothing is copied into your project: the file sits in `vendor/` like any other part of the package and follows it at each `composer update`. A user of Claude Code wanting it to load by itself symlinks it into their own skills directory:
+
+```bash
+ln -s ../../vendor/c975l/social-bundle/skills/c975l-social .claude/skills/c975l-social
+```
+
+`Tests\SkillsTest` keeps the file honest: every path, route, config slug, command, class member, Twig function, block kind and component it quotes is checked against the sources, so renaming any of them fails the build rather than leaving an agent confidently wrong.
 
 ---
 
