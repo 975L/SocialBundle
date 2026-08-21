@@ -70,7 +70,7 @@ php bin/console assets:install --symlink
 
 This exposes the bundle's compiled stylesheet at `public/bundles/c975lsocial/css/styles.min.css`.
 
-No routes to enable: this bundle only contributes EasyAdmin dashboard entries (auto-registered, see [Admin management](#admin-management)), a Twig component and Twig functions — nothing front-end-routed of its own. Its single configuration key (`social-enable-share-buttons`, see [Site-wide auto-display](#site-wide-auto-display)) is auto-loaded like any other c975L bundle's, via `php bin/console c975l:config:load-all`.
+Two routes to enable, both serving the Google connection (see [Routes](#routes)): the consuming app has to import the bundle's controllers, or the "Connecter Google" dashboard entry breaks every management screen. Everything else the bundle contributes needs no route — EasyAdmin dashboard entries (auto-registered, see [Admin management](#admin-management)), a Twig component and Twig functions. Its configuration keys (`social-enable-share-buttons`, see [Site-wide auto-display](#site-wide-auto-display), and the Google ones listed under [Connecting the site to Google](#connecting-the-site-to-google)) are auto-loaded like any other c975L bundle's, via `php bin/console c975l:config:load-all`.
 
 Share buttons' popup behavior needs its Stimulus controller loaded: as long as your layout renders `{{ importmap(['app']|merge(bundle_scripts())) }}` (see [c975L/UiBundle](https://github.com/975L/UiBundle)'s `bundle_scripts()`), it gets auto-registered — no `assets/bootstrap.js` edit needed.
 
@@ -295,7 +295,7 @@ php bin/console c975l:social:reviews:sync              # every configured source
 php bin/console c975l:social:reviews:sync --source=google
 ```
 
-Meant for cron, never for a page render: platform quotas are counted per call, and a site has to keep serving its reviews while they are down. Each run upserts on `(source, external_id)`, so re-running updates rather than duplicates, and the platform stays authoritative on every field — a reply withdrawn there disappears here too. An unconfigured source is stepped over rather than failing the run.
+Meant for cron, never for a page render: platform quotas are counted per call, and a site has to keep serving its reviews while they are down. Each run upserts on `(source, external_id)`, so re-running updates rather than duplicates, and the platform stays authoritative on every field — a reply withdrawn there disappears here too, and a review deleted there is removed here as well. That removal is skipped when a run brings nothing back at all, an empty answer being what a revoked token or an exhausted quota looks like. An unconfigured source is stepped over rather than failing the run.
 
 `ReviewCacheInvalidationListener` empties the `social_reviews` cache tag whenever a `Review` changes, which is the tag the collection source declares — so a sync leaves no stale block behind, with nothing to call by hand.
 

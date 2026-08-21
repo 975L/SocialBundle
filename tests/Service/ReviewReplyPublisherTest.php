@@ -21,10 +21,10 @@ class ReviewReplyPublisherTest extends TestCase
     /**
      * @param array{0: string, 1: ?string}|null $published
      */
-    private function createReplySource(string $name, ?array &$published): ReviewsReplySourceInterface
+    private function createReplySource(string $name, ?array &$published, bool $configured = true): ReviewsReplySourceInterface
     {
-        return new class ($name, $published) implements ReviewsReplySourceInterface {
-            public function __construct(private readonly string $name, private ?array &$published)
+        return new class ($name, $published, $configured) implements ReviewsReplySourceInterface {
+            public function __construct(private readonly string $name, private ?array &$published, private readonly bool $configured)
             {
             }
 
@@ -35,7 +35,7 @@ class ReviewReplyPublisherTest extends TestCase
 
             public function isConfigured(): bool
             {
-                return true;
+                return $this->configured;
             }
 
             public function fetch(): iterable
@@ -95,6 +95,15 @@ class ReviewReplyPublisherTest extends TestCase
         $publisher = new ReviewReplyPublisher([$this->createReadOnlySource('imported')]);
 
         $this->assertFalse($publisher->supports($this->createReview('imported')));
+    }
+
+    // A revoked token has to close the field too, or saving a reply answers a raw 500 where every other failure gets a flash message
+    public function testSupportsIsFalseForADisconnectedSource(): void
+    {
+        $published = null;
+        $publisher = new ReviewReplyPublisher([$this->createReplySource('google', $published, false)]);
+
+        $this->assertFalse($publisher->supports($this->createReview('google')));
     }
 
     public function testPublishThrowsWhenNoSourceOwnsTheReview(): void

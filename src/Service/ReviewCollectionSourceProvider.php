@@ -40,14 +40,13 @@ class ReviewCollectionSourceProvider implements CollectionSourceProviderInterfac
         ];
     }
 
+    // An array rather than a generator: CollectionSourceRegistry promises one, and UiBundle shuffles it and reads its first and last keys
     /**
-     * @return iterable<CollectionItem>
+     * @return CollectionItem[]
      */
-    private function buildItems(?int $limit): iterable
+    private function buildItems(?int $limit): array
     {
-        foreach ($this->reviewRepository->findForDisplay(null, $limit) as $review) {
-            yield $this->buildItem($review);
-        }
+        return array_map($this->buildItem(...), $this->reviewRepository->findForDisplay(null, $limit));
     }
 
     // The rating, the date and the reply travel in "data": the built-in card knows none of them, and ReviewItem.html.twig - which this source names as its own template - reads them from there

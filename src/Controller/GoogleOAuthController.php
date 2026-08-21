@@ -72,8 +72,16 @@ class GoogleOAuthController extends AbstractController
             return $this->redirectToRoute('management');
         }
 
+        // The exchange on its own, nothing written yet: a network hiccup on a reconnection must leave the working connection exactly as it was
         try {
             $refreshToken = $this->googleOAuthClient->exchangeCode($code, $this->redirectUri());
+        } catch (\Throwable $exception) {
+            $this->addFlash('danger', $exception->getMessage());
+
+            return $this->redirectToRoute('management');
+        }
+
+        try {
             // Written before the listing is resolved: resolving it needs an access token, which is minted from this very refresh token
             $this->configValueWriter->write(['social-google-oauth-refresh-token' => $refreshToken]);
 

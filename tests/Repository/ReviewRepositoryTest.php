@@ -108,4 +108,13 @@ class ReviewRepositoryTest extends TestCase
 
         $this->assertStringContainsString('r.source = :source', $this->dql);
     }
+
+    // What the run did not bring back, and only within the source it ran for: another platform's reviews are none of its business
+    public function testFindMissingExcludesTheIdsTheRunReturnedWithinItsOwnSource(): void
+    {
+        $this->createRepository()->findMissing('google', ['a', 'b']);
+
+        $this->assertStringContainsString('r.source = :source', $this->dql);
+        $this->assertStringContainsString('r.externalId NOT IN (:externalIds)', $this->dql);
+    }
 }

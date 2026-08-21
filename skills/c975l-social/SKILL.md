@@ -143,6 +143,12 @@ Imported from the site's own Google Business Profile listing into the `Review` e
 Sources are auto-tagged by interface (`social.reviews_source`, see `c975LSocialBundle::build()`), so a
 new platform is a class implementing `ReviewsSourceInterface` and nothing else.
 
+A run upserts on `(source, external_id)` and removes the reviews its source no longer returns
+(`ReviewRepository::findMissing()`), so a review deleted on the platform goes here too — unless the run
+brought nothing back at all, an empty answer being what a revoked token or an exhausted quota looks
+like. `ReviewReplyPublisher::supports()` only offers the reply field while the review's source is still
+connected.
+
 **Setup in the consuming app**, on top of the usual `c975l:config:load-all`:
 
 ```yaml

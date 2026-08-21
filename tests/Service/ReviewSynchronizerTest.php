@@ -169,6 +169,44 @@ class ReviewSynchronizerTest extends TestCase
         $this->assertSame(['other' => 1], $synchronizer->synchronize('other'));
     }
 
+    // A review deleted on the platform has to go here too, the CRUD offering no delete action of its own
+    public function testSynchronizeRemovesAReviewTheSourceNoLongerReturns(): void
+    {
+        $orphan = new Review()->setSource('google')->setExternalId('gone');
+
+        $repository = $this->createStub(ReviewRepository::class);
+        $repository->method('findOneFromSource')->willReturn(null);
+        $repository->method('findMissing')->willReturn([$orphan]);
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->once())->method('remove')->with($orphan);
+
+        $synchronizer = new ReviewSynchronizer(
+            [$this->createSource('google', true, $this->createData('a'))],
+            $repository,
+            $entityManager
+        );
+        $synchronizer->synchronize();
+    }
+
+    // A fetch answering empty on a revoked token or an exhausted quota must not wipe every review the site displays
+    public function testSynchronizeRemovesNothingWhenTheSourceReturnsNoReview(): void
+    {
+        $repository = $this->createMock(ReviewRepository::class);
+        $repository->expects($this->never())->method('findMissing');
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->never())->method('remove');
+
+        $synchronizer = new ReviewSynchronizer(
+            [$this->createSource('google', true)],
+            $repository,
+            $entityManager
+        );
+
+        $this->assertSame(['google' => 0], $synchronizer->synchronize());
+    }
+
     // The platform stays authoritative: a reply withdrawn there has to disappear here, or the site keeps showing an answer its author removed
     public function testSynchronizeClearsAReplyTheSourceNoLongerReturns(): void
     {

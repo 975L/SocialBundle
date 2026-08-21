@@ -79,4 +79,22 @@ class ReviewRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['source' => $source, 'externalId' => $externalId]);
     }
+
+    // The rows a run no longer got from its source, so the synchronizer can remove what the platform dropped - entities rather than a bulk delete, the cache tag being emptied by a Doctrine listener that only sees managed removals
+    /**
+     * @param string[] $externalIds
+     *
+     * @return Review[]
+     */
+    public function findMissing(string $source, array $externalIds): array
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.source = :source')
+            ->andWhere('r.externalId NOT IN (:externalIds)')
+            ->setParameter('source', $source)
+            ->setParameter('externalIds', $externalIds)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

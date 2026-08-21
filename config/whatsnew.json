@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-08-21",
+        "description": [
+            {
+                "en": "A review deleted on Google now disappears from your site too, on the next import",
+                "fr": "Un avis supprimé sur Google disparaît maintenant aussi de votre site, au prochain import",
+                "es": "Una opinión eliminada en Google ahora también desaparece de su sitio, en la próxima importación"
+            },
+            {
+                "en": "A connection to Google that fails now leaves the working one in place, instead of cutting off your reviews",
+                "fr": "Une connexion à Google qui échoue laisse maintenant en place celle qui fonctionne, au lieu de couper vos avis",
+                "es": "Una conexión a Google que falla ahora deja en su sitio la que funciona, en lugar de cortar sus opiniones"
+            },
+            {
+                "en": "The reply field is no longer offered while the connection to Google is broken, where saving it could only fail",
+                "fr": "Le champ de réponse n'est plus proposé tant que la connexion à Google est rompue, où l'enregistrer ne pouvait qu'échouer",
+                "es": "El campo de respuesta ya no se ofrece mientras la conexión con Google está rota, donde guardarla solo podía fallar"
+            }
+        ]
+    },
+    {
         "date": "2026-08-17",
         "description": [
             {

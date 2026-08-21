@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.4.1
+
+Drop the reviews their source no longer returns
+
+- `ReviewCollectionSourceProvider` hands back an array, as the registry promises (21/08/2026)
+- A synchronization removes the reviews its source no longer returns, unless it returned none (21/08/2026)
+- Added `ReviewRepository::findMissing()` (21/08/2026)
+- A failed code exchange no longer clears the working Google connection (21/08/2026)
+- `ReviewReplyPublisher::supports()` also requires the source to be connected (21/08/2026)
+- README no longer says the bundle has no route to enable (21/08/2026)
+- README and the shipped skill document the removal of the dropped reviews (21/08/2026)
+- Added tests for `findMissing()` and for a failed code exchange (21/08/2026)
+
 ## v2.4.0
 
 Import and display the Google reviews of the site's listing

@@ -53,7 +53,7 @@ class ReviewSynchronizer
         return $imported;
     }
 
-    // Upserts one source's reviews on its own external ids, so re-running only ever updates what changed
+    // Upserts one source's reviews on its own external ids, so re-running only ever updates what changed, then drops the rows it no longer returns
     private function synchronizeSource(ReviewsSourceInterface $source): int
     {
         $name = $source->getName();
@@ -74,6 +74,13 @@ class ReviewSynchronizer
             $this->fill($review, $data);
             $this->entityManager->persist($review);
             ++$count;
+        }
+
+        // Only when the run brought something back: a fetch answering empty on a revoked token or an exhausted quota would otherwise wipe every review the site displays
+        if ([] !== $seen) {
+            foreach ($this->reviewRepository->findMissing($name, array_keys($seen)) as $removed) {
+                $this->entityManager->remove($removed);
+            }
         }
 
         return $count;

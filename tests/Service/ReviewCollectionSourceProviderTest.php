@@ -56,7 +56,7 @@ class ReviewCollectionSourceProviderTest extends TestCase
     {
         $source = $this->createProvider($this->createReview())->getSources()['social.collection.reviews'];
 
-        $items = iterator_to_array($source['items'](null));
+        $items = $source['items'](null);
         $item = $items[0];
 
         $this->assertInstanceOf(CollectionItem::class, $item);

@@ -202,6 +202,24 @@ class GoogleOAuthControllerTest extends TestCase
         $this->assertSame(['danger' => ['The connected Google account manages no Business Profile account.']], $this->flashes($request));
     }
 
+    // A network hiccup on a reconnection must leave the working connection exactly as it was, nothing having been written yet
+    public function testCallbackLeavesTheConnectionUntouchedWhenTheExchangeFails(): void
+    {
+        $googleOAuthClient = $this->createStub(GoogleOAuthClient::class);
+        $googleOAuthClient->method('exchangeCode')->willThrowException(new \RuntimeException('Google refused the code.'));
+
+        $configValueWriter = $this->createMock(ConfigValueWriter::class);
+        $configValueWriter->expects($this->never())->method('write');
+
+        $request = $this->createRequest(['code' => 'auth-code', 'state' => 'expected-state']);
+        $request->getSession()->set('social_google_oauth_state', 'expected-state');
+
+        $response = $this->createController($request, $googleOAuthClient, $configValueWriter)->callback($request);
+
+        $this->assertSame(['danger' => ['Google refused the code.']], $this->flashes($request));
+        $this->assertSame('/management', $response->getTargetUrl());
+    }
+
     // A fresh token left paired with the previous account's listing would answer 403 on every later synchronization, so the failed connection goes back to "not connected"
     public function testCallbackClearsTheTokenWhenTheListingCannotBeResolved(): void
     {

@@ -24,10 +24,12 @@ class ReviewReplyPublisher
     {
     }
 
-    // Whether this review's own source can be answered at all, which is what tells the admin screen to offer the field
+    // Whether this review's own source can be answered at all and is still connected, which is what tells the admin screen to offer the field
     public function supports(Review $review): bool
     {
-        return null !== $this->sourceOf($review);
+        $source = $this->sourceOf($review);
+
+        return null !== $source && $source->isConfigured();
     }
 
     // Publishes first and lets the exception through: a reply stored here but refused by the platform would show the visitor an answer the author never received
