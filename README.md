@@ -36,10 +36,10 @@ See it in action at [bundles.975l.com/pages/social-bundle](https://bundles.975l.
 - **Icon picker** reusing [c975L/UiBundle](https://github.com/975L/UiBundle)'s searchable `IconPickerType`
 - **Stylesheet auto-registration** via UiBundle's `BundleStylesheetProviderInterface` — no manual `<link>` needed
 - **Script auto-registration** via UiBundle's `BundleScriptProviderInterface` — no manual `<script>` needed
-- **Admin menu entry** registered automatically via `MenuProviderInterface`
+- **Admin menu entries** registered automatically via `MenuProviderInterface`, each open to the `site-role-editor` role their own screen states
 - **Admin help procedures** contributed automatically via `ProcedureProviderInterface`
 - **Guided projects** contributed automatically via `GuidedProjectProviderInterface` — see [Guided projects](#guided-projects)
-- **Customer reviews**: imported from the site's own Google Business Profile listing into a `Review` entity by a cron command, displayed through UiBundle's generic `collection` block — read-only, the public reply being the only thing the back office writes; see [Customer reviews](#customer-reviews)
+- **Customer reviews**: imported from the site's own Google Business Profile listing into a `Review` entity by a cron command, displayed through UiBundle's generic `collection` block — read-only, the public reply being the only thing the back office writes, and the whole feature behind a `social-enable-reviews` config key; see [Customer reviews](#customer-reviews)
 - **Pluggable review sources** via `ReviewsSourceInterface` — auto-discovered by interface, so a site adds its own platform without touching this bundle
 - **A skill for coding agents**, shipped in the package and read straight from `vendor/` — see [AI agent skills](#ai-agent-skills)
 
@@ -70,7 +70,7 @@ php bin/console assets:install --symlink
 
 This exposes the bundle's compiled stylesheet at `public/bundles/c975lsocial/css/styles.min.css`.
 
-Two routes to enable, both serving the Google connection (see [Routes](#routes)): the consuming app has to import the bundle's controllers, or the "Connecter Google" dashboard entry breaks every management screen. Everything else the bundle contributes needs no route — EasyAdmin dashboard entries (auto-registered, see [Admin management](#admin-management)), a Twig component and Twig functions. Its configuration keys (`social-enable-share-buttons`, see [Site-wide auto-display](#site-wide-auto-display), and the Google ones listed under [Connecting the site to Google](#connecting-the-site-to-google)) are auto-loaded like any other c975L bundle's, via `php bin/console c975l:config:load-all`.
+Two routes to enable, both serving the Google connection (see [Routes](#routes)): the consuming app has to import the bundle's controllers, or the "Connecter Google" dashboard entry breaks every management screen. Everything else the bundle contributes needs no route — EasyAdmin dashboard entries (auto-registered, see [Admin management](#admin-management)), a Twig component and Twig functions. Its configuration keys (`social-enable-share-buttons`, see [Site-wide auto-display](#site-wide-auto-display), `social-enable-reviews` and the Google ones listed under [Connecting the site to Google](#connecting-the-site-to-google)) are auto-loaded like any other c975L bundle's, via `php bin/console c975l:config:load-all`.
 
 Share buttons' popup behavior needs its Stimulus controller loaded: as long as your layout renders `{{ importmap(['app']|merge(bundle_scripts())) }}` (see [c975L/UiBundle](https://github.com/975L/UiBundle)'s `bundle_scripts()`), it gets auto-registered — no `assets/bootstrap.js` edit needed.
 
@@ -231,6 +231,8 @@ Its one field is an **anchor** (same as UiBundle's page-section kinds, see that 
 
 The reviews of the site's own Google listing, imported into a `Review` entity by a cron command and displayed through [c975L/UiBundle](https://github.com/975L/UiBundle)'s generic `collection` block. **No block kind of its own**: `ReviewCollectionSourceProvider` implements UiBundle's `CollectionSourceProviderInterface`, so an editor picks **"Avis clients"** as the source of a collection block already on the page, and `templates/collection/ReviewItem.html.twig` draws each card — the built-in one knowing neither a rating nor a link back to the platform.
 
+The whole feature hangs on one key, `social-enable-reviews` (bool, `false` by default): turned off, the management screens, the "Connecter Google" link, the guided project and the collection source all disappear — a site that shows no review has no reason to carry the screens explaining them. The import command keeps running, so reactivating it shows the reviews that came in meanwhile.
+
 ### What the back office may and may not do
 
 A review is its author's statement, so `ReviewCrudController` disables **new**, **delete** and **detail**: creating one would be fabricating it, editing its text would falsify it, and hiding the ones that displease is exactly what the French consumer code (art. L111-7-2) forbids — while the review stays published on Google anyway, leaving the site's average visibly apart from the listing's. An abusive review is reported to the platform, where it also has to disappear.
@@ -325,9 +327,9 @@ Implement `ReviewsSourceInterface` (`getName()`, `isConfigured()`, `fetch()` yie
 
 The reviews parcours is the only one whose first move happens off the site, and it deliberately **doesn't re-document the Google Cloud console**: a step's description is inserted as plain text (`buildElement('p', …)` in ConfigBundle's `guided-project.js`), so it could carry no link anyway, and a walkthrough of screens Google redesigns would rot silently in every site installing the package. Its first step names the wait and sends the reader to the `afficher-avis-google` help procedure, which is markdown and links to Google's own pages. It is also the only one opening on **another bundle's** screen — ConfigBundle's config list, the two OAuth keys being configs — and the only one whose last three steps carry no highlight, consenting leaving the site entirely and coming back through the callback's own redirect.
 
-The share buttons project is contributed **only while `social-enable-share-buttons` is on** — the same condition `MenuProvider` applies to its own entry, since with the feature off that screen isn't in the sidebar either and a parcours walking to an unreachable screen reads as a broken one.
+The share buttons project is contributed **only while `social-enable-share-buttons` is on**, and the reviews one **only while `social-enable-reviews` is on** — the same condition `MenuProvider` applies to its own entries, since with the feature off that screen isn't in the sidebar either and a parcours walking to an unreachable screen reads as a broken one.
 
-Both projects declare the `site-role-editor` role their screens demand, rather than the dashboard's own: the two are separate roles, neither implying the other, so `GuidedProjectBuilder` drops the parcours for an admin lacking it instead of opening on a 403.
+The three projects declare the `site-role-editor` role their screens demand, rather than the dashboard's own: the two are separate roles, neither implying the other, so `GuidedProjectBuilder` drops the parcours for an admin lacking it instead of opening on a 403.
 
 Only the opening step of each carries an `url`: from there the panel walks the screen the user has been sent to, highlighting the button or the field they are meant to use next, in the order the form renders them. The two singleton screens are pointed at with `.action-new, .action-edit` — the index offers "create" until the row exists and "edit" ever after, and whichever is on screen is the one to click. The settings fields reuse the markers their own JS already reads (`[data-share-networks-sortable]`, `[data-share-shape-select]`, `[data-share-fill-select]`, `[data-share-display-intro-checkbox]`, `[data-social-links-icon-style-select]`), rather than ids of their own; the two fields with no marker of their own are pointed at with the `trix-editor` the introduction's textarea is replaced by, and with the anchor field's EasyAdmin id (`#Block_data_anchor`).
 

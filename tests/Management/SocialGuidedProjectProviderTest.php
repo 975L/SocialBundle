@@ -33,11 +33,13 @@ class SocialGuidedProjectProviderTest extends TestCase
     }
 
     // Same stubbing as MenuProviderTest: the ConfigService answers "social-enable-share-buttons" with the given value. "site-role-editor" is answered apart, the projects declaring it as their own role
-    private function createProvider(bool $shareButtonsEnabled, array &$controllers = []): SocialGuidedProjectProvider
+    private function createProvider(bool $shareButtonsEnabled, array &$controllers = [], bool $reviewsEnabled = true): SocialGuidedProjectProvider
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
+        // Each feature switch answered on its own: the two are independent, and a project dropped by the wrong one would still look right
         $configService->method('get')->willReturnCallback(static fn (string $slug): string => match ($slug) {
             'site-role-editor' => 'ROLE_EDITOR',
+            'social-enable-reviews' => $reviewsEnabled ? '1' : '0',
             default => $shareButtonsEnabled ? '1' : '0',
         });
         $configService->method('getBool')->willReturnCallback(static fn ($value) => '1' === $value);
@@ -60,6 +62,15 @@ class SocialGuidedProjectProviderTest extends TestCase
         $projects = $this->createProvider(false)->getGuidedProjects();
 
         $this->assertSame(['social-links', 'social-google-reviews'], array_column($projects, 'slug'));
+    }
+
+    // Reviews have a switch of their own, read exactly like the share buttons'
+    public function testTheGoogleReviewsProjectIsDroppedWhileTheFeatureIsDisabled(): void
+    {
+        $controllers = [];
+        $projects = $this->createProvider(true, $controllers, false)->getGuidedProjects();
+
+        $this->assertSame(['social-links', 'social-share-buttons'], array_column($projects, 'slug'));
     }
 
     public function testEverySlugIsPrefixedWithTheBundleName(): void

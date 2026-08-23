@@ -1,6 +1,6 @@
 ---
 name: c975l-social
-description: "Use this skill when working with social links, share buttons or customer reviews in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, and the Google Business Profile review import with its pluggable sources. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewCollectionSourceProvider, ReviewSynchronizer, c975l:social:reviews:sync, social-google-oauth-client-id, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile."
+description: "Use this skill when working with social links, share buttons or customer reviews in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, and the Google Business Profile review import with its pluggable sources. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, social-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewCollectionSourceProvider, ReviewSynchronizer, c975l:social:reviews:sync, social-google-oauth-client-id, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile."
 ---
 
 # c975L SocialBundle
@@ -79,7 +79,8 @@ Other Twig functions: `social_link_block()` (the singleton block), `social_link_
 
 Two pieces: the **Boutons de partage** screen picks the networks, their order, the shape, the fill, the
 invitation line and an optional anchor; the `social-enable-share-buttons` config key (bool, `false` by
-default) turns the band on for every page.
+default) turns the band on for every page. The reviews have the same kind of switch, `social-enable-reviews`
+(see [Customer reviews](#customer-reviews)).
 
 The band itself is this bundle's `templates/shareButtons/default.html.twig`, and a layout includes it:
 
@@ -131,6 +132,12 @@ Imported from the site's own Google Business Profile listing into the `Review` e
 `CollectionSourceProviderInterface`, exposing the source `social.collection.reviews` with the cache tag
 `social_reviews` and the item template `templates/collection/ReviewItem.html.twig`.
 
+The `social-enable-reviews` config key (bool, `false` by default) gates the whole feature at once: the
+management screens, the "Connecter Google" link, the guided project and the collection source itself.
+Off, `getSources()` returns `[]` and a collection already pointing at the source renders empty rather
+than breaking. The sync command is deliberately left running, so a reactivation shows the reviews
+imported meanwhile.
+
 | Piece | Class |
 | --- | --- |
 | Source contract | `Contract\ReviewsSourceInterface` (`getName()`, `isConfigured()`, `fetch()`) |
@@ -178,8 +185,9 @@ publishes the listing (`social-google-listing-url`, a `maps?cid=…` address) an
 
 ## What the bundle already contributes
 
-Nothing below is declared in the app: `MenuProvider` (the dashboard entries, plus the "Connecter
-Google" link in the "Avancé" tier), `ProcedureProvider`
+Nothing below is declared in the app: `MenuProvider` (the dashboard entries, each declaring
+`site-role-editor` as the bar its own screen states, plus the "Connecter Google" link in the "Avancé"
+tier), `ProcedureProvider`
 (the admin help procedures), `SocialGuidedProjectProvider` (the guided walk-through of each screen,
 offered only to who can open it), `WhatsNewProvider`, `ImportmapProvider`, `Service\ScriptProvider`,
 `Service\StylesheetProvider`, `Service\BlockFixtureProvider`, and an export/import provider per

@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-08-23",
+        "description": [
+            {
+                "en": "Customer reviews now have their own switch in the site config: turned off, they leave both your pages and your menus",
+                "fr": "Les avis clients ont maintenant leur propre interrupteur dans la configuration du site : désactivés, ils quittent vos pages comme vos menus",
+                "es": "Las opiniones de clientes ahora tienen su propio interruptor en la configuración del sitio: desactivadas, salen tanto de sus páginas como de sus menús"
+            },
+            {
+                "en": "The Social screens are now open to your editors, no longer to the administrators alone",
+                "fr": "Les écrans Social sont maintenant ouverts à vos éditeurs, et plus aux seuls administrateurs",
+                "es": "Las pantallas Social ahora están abiertas a sus editores, y ya no solo a los administradores"
+            }
+        ]
+    },
+    {
         "date": "2026-08-21",
         "description": [
             {

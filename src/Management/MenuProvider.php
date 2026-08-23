@@ -41,15 +41,23 @@ class MenuProvider implements MenuProviderInterface
                 'icon' => 'fas fa-share-alt',
                 // Same key as the screen's own explanatory text (see its crud/index and crud/edit overrides) - one text, reused, not a separate onboarding-only string (see MenuProviderInterface::getMenus())
                 'description' => 'label.info_social_links',
+                // The bar SocialLinksCrudController states on its own rows
+                'role' => $this->configService->get('site-role-editor'),
             ],
-            'reviews' => [
+        ];
+
+        // Only displayed if customer reviews are turned on site-wide, exactly like the share buttons below: a screen for a feature the site does not show is one more thing to explain in a sidebar
+        if ($this->configService->getBool($this->configService->get('social-enable-reviews'))) {
+            $menus['reviews'] = [
                 'controller' => ReviewCrudController::class,
                 'label' => 'label.reviews',
                 'translation_domain' => 'social',
                 'icon' => 'fas fa-star',
                 'description' => 'label.info_reviews',
-            ],
-        ];
+                // The bar ReviewCrudController states on its own rows
+                'role' => $this->configService->get('site-role-editor'),
+            ];
+        }
 
         // Only displayed if share buttons are enabled site-wide (see "social-enable-share-buttons" in ShareButtonsExtension)
         if ($this->configService->getBool($this->configService->get('social-enable-share-buttons'))) {
@@ -59,6 +67,8 @@ class MenuProvider implements MenuProviderInterface
                 'translation_domain' => 'social',
                 'icon' => 'fas fa-share-nodes',
                 'description' => 'label.info_share_buttons_settings',
+                // The bar ShareButtonsSettingsCrudController states on its own rows
+                'role' => $this->configService->get('site-role-editor'),
             ];
         }
 
@@ -68,6 +78,11 @@ class MenuProvider implements MenuProviderInterface
     // A route, not a CRUD screen: it redirects straight to Google's consent page. Tiered "advanced" because it is run once, when the site is first connected, and once more the day the token is revoked
     public function getLinks(): array
     {
+        // Connecting Google is what fetches the reviews: with them turned off, this walks to a consent screen for something the site never shows
+        if (!$this->configService->getBool($this->configService->get('social-enable-reviews'))) {
+            return [];
+        }
+
         return [
             'social_google_connect' => [
                 'name' => 'social_google_oauth_connect',

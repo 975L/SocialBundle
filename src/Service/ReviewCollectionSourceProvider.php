@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Service;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Entity\Review;
 use c975L\SocialBundle\Repository\ReviewRepository;
 use c975L\UiBundle\Contract\CollectionSourceProviderInterface;
@@ -22,12 +23,19 @@ class ReviewCollectionSourceProvider implements CollectionSourceProviderInterfac
 
     private const string ITEM_TEMPLATE = '@c975LSocial/collection/ReviewItem.html.twig';
 
-    public function __construct(private readonly ReviewRepository $reviewRepository)
-    {
+    public function __construct(
+        private readonly ReviewRepository $reviewRepository,
+        private readonly ConfigServiceInterface $configService,
+    ) {
     }
 
     public function getSources(): array
     {
+        // Same key as the management screens (see MenuProvider): a site that has turned the reviews off must not keep showing them, and a collection already pointing here renders empty rather than breaking (CollectionSourceRegistry ignores an unknown source)
+        if (!$this->configService->getBool($this->configService->get('social-enable-reviews'))) {
+            return [];
+        }
+
         return [
             'social.collection.reviews' => [
                 // Rendered by UiBundle's CollectionType, whose domain is "ui" - hence the key living in this bundle's own translations/ui.*.xlf rather than in social.*.xlf

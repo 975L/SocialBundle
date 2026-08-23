@@ -1,7 +1,7 @@
 {# The intro and the list show the last saved state, but icon style and display label are live, CSS doing the recoloring #}
 {% block social_links_preview_widget %}
     {# This bundle's stylesheet only, never the app's front-end one #}
-    {# Root-relative: EasyAdmin pages have no <base href>, so a bare path would 404 against the current URL #}
+    {# Root-relative: a bare path would resolve against the current back-office URL and 404 #}
     <link rel="stylesheet" href="/bundles/c975lsocial/css/styles.min.css">
     <div id="sl-links-preview">
         {% if links is not empty %}

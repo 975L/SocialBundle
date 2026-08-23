@@ -1,5 +1,21 @@
 # Changelog
 
+## v2.5.1
+
+Supersedes the v2.5.0 tag, published on the previous commit
+
+## v2.5.0
+
+Gate the customer reviews on a config key and open the screens to the editors
+
+- Added the `social-enable-reviews` config key, off by default (23/08/2026)
+- The reviews screen, the "Connecter Google" link and the reviews guided project are dropped while it is off (23/08/2026)
+- `ReviewCollectionSourceProvider` declares no source while the reviews are disabled (23/08/2026)
+- The three management menus are open to `site-role-editor` (23/08/2026)
+- Requires `c975l/core-bundle` ^1.14 instead of ^1.12.2 (23/08/2026)
+- README, the shipped skill and the `afficher-avis-google` procedure document the new key (23/08/2026)
+- Added tests for the menus, the guided project and the collection source gated on the key (23/08/2026)
+
 ## v2.4.1
 
 Drop the reviews their source no longer returns

@@ -36,7 +36,10 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             $projects[] = $this->shareButtonsProject();
         }
 
-        $projects[] = $this->googleReviewsProject();
+        // Same condition as MenuProvider's own entry, for the same reason as the share buttons above
+        if ($this->configService->getBool($this->configService->get('social-enable-reviews'))) {
+            $projects[] = $this->googleReviewsProject();
+        }
 
         return $projects;
     }

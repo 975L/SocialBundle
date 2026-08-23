@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Tests\Service;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Entity\Review;
 use c975L\SocialBundle\Repository\ReviewRepository;
 use c975L\SocialBundle\Service\ReviewCollectionSourceProvider;
@@ -34,11 +35,24 @@ class ReviewCollectionSourceProviderTest extends TestCase
 
     private function createProvider(Review ...$reviews): ReviewCollectionSourceProvider
     {
+        return $this->createProviderWith(true, ...$reviews);
+    }
+
+    // The feature switch is a parameter of its own: every test but one runs with the reviews turned on, which is the only state where the source exists at all
+    private function createProviderWith(bool $reviewsEnabled, Review ...$reviews): ReviewCollectionSourceProvider
+    {
         $repository = $this->createStub(ReviewRepository::class);
         $repository->method('findForDisplay')->willReturn($reviews);
         $repository->method('getAggregate')->willReturn(['count' => count($reviews), 'average' => 4.0]);
 
-        return new ReviewCollectionSourceProvider($repository);
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnCallback(static fn (string $slug): string => match ($slug) {
+            'social-enable-reviews' => $reviewsEnabled ? '1' : '0',
+            default => '0',
+        });
+        $configService->method('getBool')->willReturnCallback(static fn ($value) => '1' === $value);
+
+        return new ReviewCollectionSourceProvider($repository, $configService);
     }
 
     // The key and the cache tag are read by CollectionSourceRegistry and by ReviewCacheInvalidationListener, so both are part of the contract
@@ -73,5 +87,11 @@ class ReviewCollectionSourceProviderTest extends TestCase
         $source = $this->createProvider($this->createReview(), $this->createReview())->getSources()['social.collection.reviews'];
 
         $this->assertSame(2, $source['count']());
+    }
+
+    // Turning the reviews off site-wide has to remove them from the pages too, not only from the management screens - a collection already pointing at the source renders empty, the registry ignoring an unknown one
+    public function testNoSourceIsDeclaredWhenTheReviewsAreDisabled(): void
+    {
+        $this->assertSame([], $this->createProviderWith(false, $this->createReview())->getSources());
     }
 }

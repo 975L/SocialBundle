@@ -1,5 +1,16 @@
 [
     {
+        "label": "label.social_enable_reviews",
+        "slug": "social-enable-reviews",
+        "sensitive": false,
+        "restricted": false,
+        "value": "false",
+        "kind": "bool",
+        "group": "general",
+        "severity": null,
+        "description": "description.social_enable_reviews"
+    },
+    {
         "label": "label.social_enable_share_buttons",
         "slug": "social-enable-share-buttons",
         "sensitive": false,
