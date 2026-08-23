@@ -1,12 +1,13 @@
 # Upgrade
 
-## To 2.4
+## To 2.6
 
-**The bundle now ships an entity, and its first routes.** Customer reviews are stored in a `Review` entity (table `site_review`), and the Google connection needs two controller routes — neither of which an application declared before, this bundle having had no table and no route of its own until now. Three things to add, all of them optional if you never enable the reviews:
+**The `Review` entity moved to UiBundle, which now maps and migrates it.** This bundle owns no table anymore: it brings the platforms the reviews are imported from, Ui holds the reviews themselves, their moderation screen and their display. Four things to go through, in this order — the first one before `composer update`, or the site does not boot.
 
-- **Map the entity**, in `config/packages/doctrine.yaml`:
+- **Remove the mapping**, in `config/packages/doctrine.yaml`, before updating: the `c975LSocialBundle` block added in 2.4 points at `vendor/c975l/social-bundle/src/Entity`, a directory this release deletes, and Doctrine throws a `MappingException` at warmup on a `dir` that no longer exists. The `Review` now travels with UiBundle's own entities, already mapped.
 
 ```yaml
+# config/packages/doctrine.yaml - delete this block
 doctrine:
     orm:
         mappings:
@@ -15,6 +16,31 @@ doctrine:
                 dir: '%kernel.project_dir%/vendor/c975l/social-bundle/src/Entity'
                 prefix: 'c975L\SocialBundle\Entity'
 ```
+
+- **Migrate, then backfill the new `status` column** [Needs db update]. UiBundle's `Review` carries a status the former entity had no equivalent of, and its `Pending` default is a PHP one, with no SQL default behind it: the generated migration adds a `NOT NULL` column that leaves every already imported review out of `published`, and the pages serving them show none.
+
+```bash
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
+```
+
+```sql
+UPDATE site_review SET status = 'published' WHERE status = '' OR status IS NULL;
+```
+
+- **Turn the reviews back on**, `social-enable-reviews` having become **`ui-enable-reviews`** (bool, `false` by default). A site that had the reviews enabled loses them silently otherwise, the new key starting off:
+
+```bash
+php bin/console c975l:config:load-all
+```
+
+then tick **Activer les avis** in the site Configuration.
+
+- **Re-pick the source of every Collection block displaying the reviews.** The collection source key changed from `social.collection.reviews` to `ui.collection.reviews`, and a block still holding the old one renders zero review without any error — its displayed label ("Avis clients") did not change. Open each such page, reselect the **Avis clients** source in the Collection block, and save.
+
+## To 2.4
+
+**The bundle now ships an entity, and its first routes.** Customer reviews are stored in a `Review` entity (table `site_review`), and the Google connection needs two controller routes — neither of which an application declared before, this bundle having had no table and no route of its own until now. Two things to add, both of them optional if you never enable the reviews (the entity mapping this release also asked for is gone: the `Review` moved to UiBundle in 2.6, see above).
 
 - **Import the controllers**, in `config/routes.yaml`:
 

@@ -2,10 +2,6 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="site_config.en.xlf">
         <body>
-            <trans-unit id="i9IpmCZ">
-                <source>description.social_enable_reviews</source>
-                <target>Shows the customer reviews on the site, and the screen that manages them. Leave at false until reviews are published.</target>
-            </trans-unit>
             <trans-unit id="qi3JaGX">
                 <source>description.social_enable_share_buttons</source>
                 <target>Automatically displays the share buttons on every page (settings under "Share buttons").</target>
@@ -33,10 +29,6 @@
             <trans-unit id="5Phnt3P">
                 <source>description.social_google_oauth_refresh_token</source>
                 <target>Token obtained when connecting to Google; replacing it stops the review import.</target>
-            </trans-unit>
-            <trans-unit id="s7DSdyw">
-                <source>label.social_enable_reviews</source>
-                <target>Enable customer reviews</target>
             </trans-unit>
             <trans-unit id="Dfr17Uy">
                 <source>label.social_enable_share_buttons</source>

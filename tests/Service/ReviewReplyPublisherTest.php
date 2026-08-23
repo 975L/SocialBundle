@@ -12,8 +12,8 @@ namespace c975L\SocialBundle\Tests\Service;
 
 use c975L\SocialBundle\Contract\ReviewsReplySourceInterface;
 use c975L\SocialBundle\Contract\ReviewsSourceInterface;
-use c975L\SocialBundle\Entity\Review;
 use c975L\SocialBundle\Service\ReviewReplyPublisher;
+use c975L\UiBundle\Entity\Review;
 use PHPUnit\Framework\TestCase;
 
 class ReviewReplyPublisherTest extends TestCase
@@ -114,5 +114,25 @@ class ReviewReplyPublisherTest extends TestCase
         $this->expectException(\RuntimeException::class);
 
         $publisher->publish($this->createReview('elsewhere'));
+    }
+
+    // A review written on the site itself carries no source and no external id, so the screen must not offer a field whose save would look for a platform
+    public function testSupportsIsFalseForAReviewWrittenOnTheSite(): void
+    {
+        $published = null;
+        $publisher = new ReviewReplyPublisher([$this->createReplySource('google', $published)]);
+
+        $this->assertFalse($publisher->supports(new Review()->setReplyComment('Merci !')));
+    }
+
+    // Same review reaching publish() anyway: the platform would be asked to answer a review it never published
+    public function testPublishThrowsForAReviewWithoutAnExternalId(): void
+    {
+        $published = null;
+        $publisher = new ReviewReplyPublisher([$this->createReplySource('google', $published)]);
+
+        $this->expectException(\RuntimeException::class);
+
+        $publisher->publish(new Review()->setSource('google')->setReplyComment('Merci !'));
     }
 }

@@ -1,6 +1,6 @@
 # SocialBundle
 
-Symfony bundle for the social side of a c975L site — social links managed in one single place and share buttons for 15 networks, placed anywhere as blocks. Replaces the former ShareButtonsBundle.
+Symfony bundle for the social side of a c975L site — social links managed in one single place and share buttons for 20 networks, placed anywhere as blocks. Replaces the former ShareButtonsBundle.
 
 [![GitHub](https://img.shields.io/github/license/975L/SocialBundle)](https://github.com/975L/SocialBundle/blob/master/LICENSE)
 [![Packagist Version](https://img.shields.io/packagist/v/c975l/social-bundle)](https://packagist.org/packages/c975l/social-bundle)
@@ -37,9 +37,11 @@ See it in action at [bundles.975l.com/pages/social-bundle](https://bundles.975l.
 - **Stylesheet auto-registration** via UiBundle's `BundleStylesheetProviderInterface` — no manual `<link>` needed
 - **Script auto-registration** via UiBundle's `BundleScriptProviderInterface` — no manual `<script>` needed
 - **Admin menu entries** registered automatically via `MenuProviderInterface`, each open to the `site-role-editor` role their own screen states
+- **Health check** on the Google connection via `HealthCheckProviderInterface` — the import is the one thing here that stops without anything looking wrong
+- **Scheduled review import** via `MaintenanceTaskProviderInterface` — a site installing the bundle gets the nightly sync, one removing it stops running it
 - **Admin help procedures** contributed automatically via `ProcedureProviderInterface`
 - **Guided projects** contributed automatically via `GuidedProjectProviderInterface` — see [Guided projects](#guided-projects)
-- **Customer reviews**: imported from the site's own Google Business Profile listing into a `Review` entity by a cron command, displayed through UiBundle's generic `collection` block — read-only, the public reply being the only thing the back office writes, and the whole feature behind a `social-enable-reviews` config key; see [Customer reviews](#customer-reviews)
+- **Customer reviews**: imported from the site's own Google Business Profile listing into [c975L/UiBundle](https://github.com/975L/UiBundle)'s `Review` entity, which holds in the same table what visitors write on the site — this bundle brings the platforms, Ui the moderation screen and the display, and the whole feature sits behind Ui's `ui-enable-reviews` config key; see [Customer reviews](#customer-reviews)
 - **Pluggable review sources** via `ReviewsSourceInterface` — auto-discovered by interface, so a site adds its own platform without touching this bundle
 - **A skill for coding agents**, shipped in the package and read straight from `vendor/` — see [AI agent skills](#ai-agent-skills)
 
@@ -70,7 +72,7 @@ php bin/console assets:install --symlink
 
 This exposes the bundle's compiled stylesheet at `public/bundles/c975lsocial/css/styles.min.css`.
 
-Two routes to enable, both serving the Google connection (see [Routes](#routes)): the consuming app has to import the bundle's controllers, or the "Connecter Google" dashboard entry breaks every management screen. Everything else the bundle contributes needs no route — EasyAdmin dashboard entries (auto-registered, see [Admin management](#admin-management)), a Twig component and Twig functions. Its configuration keys (`social-enable-share-buttons`, see [Site-wide auto-display](#site-wide-auto-display), `social-enable-reviews` and the Google ones listed under [Connecting the site to Google](#connecting-the-site-to-google)) are auto-loaded like any other c975L bundle's, via `php bin/console c975l:config:load-all`.
+Two routes to enable, both serving the Google connection (see [Routes](#routes)): the consuming app has to import the bundle's controllers, or the "Connecter Google" dashboard entry breaks every management screen. Everything else the bundle contributes needs no route — EasyAdmin dashboard entries (auto-registered, see [Admin management](#admin-management)), a Twig component and Twig functions. Its configuration keys (`social-enable-share-buttons`, see [Site-wide auto-display](#site-wide-auto-display), and the Google ones listed under [Connecting the site to Google](#connecting-the-site-to-google)) are auto-loaded like any other c975L bundle's, via `php bin/console c975l:config:load-all`.
 
 Share buttons' popup behavior needs its Stimulus controller loaded: as long as your layout renders `{{ importmap(['app']|merge(bundle_scripts())) }}` (see [c975L/UiBundle](https://github.com/975L/UiBundle)'s `bundle_scripts()`), it gets auto-registered — no `assets/bootstrap.js` edit needed.
 
@@ -229,17 +231,19 @@ Its one field is an **anchor** (same as UiBundle's page-section kinds, see that 
 
 ## Customer reviews
 
-The reviews of the site's own Google listing, imported into a `Review` entity by a cron command and displayed through [c975L/UiBundle](https://github.com/975L/UiBundle)'s generic `collection` block. **No block kind of its own**: `ReviewCollectionSourceProvider` implements UiBundle's `CollectionSourceProviderInterface`, so an editor picks **"Avis clients"** as the source of a collection block already on the page, and `templates/collection/ReviewItem.html.twig` draws each card — the built-in one knowing neither a rating nor a link back to the platform.
+The reviews of the site's own Google listing, imported into the `Review` entity of [c975L/UiBundle](https://github.com/975L/UiBundle) — which holds in the same table what visitors write on the site, the two being the same thing seen from two sides, and only `Review::$source` telling them apart.
 
-The whole feature hangs on one key, `social-enable-reviews` (bool, `false` by default): turned off, the management screens, the "Connecter Google" link, the guided project and the collection source all disappear — a site that shows no review has no reason to carry the screens explaining them. The import command keeps running, so reactivating it shows the reviews that came in meanwhile.
+**This bundle brings the platforms, Ui owns the reviews.** The entity, its repository, the moderation screen, the collection source displaying them and their theme tokens are all Ui's; what lives here is the connection to each platform (`ReviewsSourceInterface`), the import (`ReviewSynchronizer` and its command) and the push-back of a public reply (`ReviewReplyPublisher`, which implements Ui's `ReviewReplyPublisherInterface`). A site bringing no platform at all still gets a moderation screen, one that knows there is nothing to push.
 
-### What the back office may and may not do
+The whole feature hangs on one key, Ui's **`ui-enable-reviews`** (bool, `false` by default). Turned off, this bundle drops its own two halves of it: the "Connecter Google" link and the reviews guided project — a site that shows no review has no reason to carry the screens explaining them. The import command keeps running, so reactivating it shows the reviews that came in meanwhile.
 
-A review is its author's statement, so `ReviewCrudController` disables **new**, **delete** and **detail**: creating one would be fabricating it, editing its text would falsify it, and hiding the ones that displease is exactly what the French consumer code (art. L111-7-2) forbids — while the review stays published on Google anyway, leaving the site's average visibly apart from the listing's. An abusive review is reported to the platform, where it also has to disappear.
+### The public reply, the one thing the site writes back
 
-The **public reply** is the one thing the site writes. Saving it publishes it on the platform first and stores it only then, so a visitor never reads an answer its author never received; emptying the field removes the reply on both sides. Sources able to take a reply implement `ReviewsReplySourceInterface` on top of `ReviewsSourceInterface`, so a read-only platform has no method to stub.
+What the moderation screen may and may not do to an imported review is [c975L/UiBundle](https://github.com/975L/UiBundle)'s business — in short, a review being its author's statement, it can be neither created nor edited nor hidden. What this bundle performs is the **public reply**: Ui's screen saves it through `ReviewReplyPublisherInterface`, `ReviewReplyPublisher` pushes it to the platform the review came from, and it is stored only once the platform took it, so a visitor never reads an answer its author never received. Emptying the field removes the reply on both sides.
 
-The `verified` flag travels with each review and is printed as a badge, L111-7-2 asking a site to say which of its reviews are verified.
+Sources able to take a reply implement `ReviewsReplySourceInterface` on top of `ReviewsSourceInterface`, so a read-only platform has no method to stub — and `supports()` answers `false` for it, which is what tells Ui's screen not to offer the field.
+
+`ReviewSynchronizer` marks every imported review published: the platform moderated it before ever showing it, and holding it for a second moderation here would leave the site's average visibly apart from the listing's.
 
 ### Connecting the site to Google
 
@@ -272,23 +276,7 @@ c975l_social:
 
 ### Doctrine mapping and migration
 
-`Review` is this bundle's first entity, and like every c975L bundle it ships no migration of its own — the consuming app maps it and generates one:
-
-```yaml
-# config/packages/doctrine.yaml
-doctrine:
-    orm:
-        mappings:
-            c975LSocialBundle:
-                type: attribute
-                dir: '%kernel.project_dir%/vendor/c975l/social-bundle/src/Entity'
-                prefix: 'c975L\SocialBundle\Entity'
-```
-
-```bash
-php bin/console make:migration
-php bin/console doctrine:migrations:migrate
-```
+Nothing to declare here: this bundle owns no entity. The `Review` table is mapped and migrated with [c975L/UiBundle](https://github.com/975L/UiBundle)'s own entities, as its readme describes.
 
 ### Importing
 
@@ -299,7 +287,15 @@ php bin/console c975l:social:reviews:sync --source=google
 
 Meant for cron, never for a page render: platform quotas are counted per call, and a site has to keep serving its reviews while they are down. Each run upserts on `(source, external_id)`, so re-running updates rather than duplicates, and the platform stays authoritative on every field — a reply withdrawn there disappears here too, and a review deleted there is removed here as well. That removal is skipped when a run brings nothing back at all, an empty answer being what a revoked token or an exhausted quota looks like. An unconfigured source is stepped over rather than failing the run.
 
-`ReviewCacheInvalidationListener` empties the `social_reviews` cache tag whenever a `Review` changes, which is the tag the collection source declares — so a sync leaves no stale block behind, with nothing to call by hand.
+**Nothing to schedule by hand**: `SocialMaintenanceTaskProvider` declares that run nightly through ConfigBundle's `MaintenanceTaskProviderInterface`, so a site installing the bundle gets it and one removing it stops running it, neither having anything to edit in its own `MaintenanceSchedule`. It is declared whatever the config says — the command steps over a site that configured no source, and one turning the reviews back on gets what came in meanwhile.
+
+Invalidating the cache of the blocks displaying the reviews travels with the entity, in [c975L/UiBundle](https://github.com/975L/UiBundle) — a sync leaves no stale block behind, with nothing to call by hand.
+
+### Watching over the connection
+
+`GoogleReviewsHealthCheckProvider` contributes one row to ConfigBundle's health check page (kind `social-google-reviews`), run by `c975l:health-check:run`. It exists because this is the one place the bundle fails without anything looking wrong: a refresh token is revoked by a password change, by an owner leaving the listing, or on its own every seven days while the Cloud project is unpublished — and the import then stops while the site keeps serving the reviews of the last successful run.
+
+Reading the config cannot tell a live token from a revoked one, both being a plain string, so the check asks Google for an access token. It reports, in order: nothing at all while the reviews are off or no Google application is declared, a **warning** when the keys are stored but the consent screen was never walked through, an **error** carrying Google's own reason when the connection is refused, a **warning** when the connection works but no listing is selected, and **ok** otherwise. Each row links to "Connecter Google", which is what fixes the first three.
 
 ### Tying the site to the listing
 
@@ -317,7 +313,7 @@ Implement `ReviewsSourceInterface` (`getName()`, `isConfigured()`, `fetch()` yie
 
 ## Admin help procedures
 
-`ProcedureProvider` (implements ConfigBundle's `ProcedureProviderInterface`) reads `config/procedures.json` and contributes one entry per documented admin workflow (configuring social links, configuring share buttons) to ConfigBundle's `ProcedureBuilder`, which aggregates every bundle's procedures for the dashboard AI assistant. Each entry ships `fr`/`en`/`es` translations, resolved to the current locale by `ProcedureJsonReader`.
+`ProcedureProvider` (implements ConfigBundle's `ProcedureProviderInterface`) reads `config/procedures.json` and contributes one entry per documented admin workflow (configuring social links, configuring share buttons, displaying the Google reviews) to ConfigBundle's `ProcedureBuilder`, which aggregates every bundle's procedures for the dashboard AI assistant. Each entry ships `fr`/`en`/`es` translations, resolved to the current locale by `ProcedureJsonReader`.
 
 ---
 
@@ -327,7 +323,7 @@ Implement `ReviewsSourceInterface` (`getName()`, `isConfigured()`, `fetch()` yie
 
 The reviews parcours is the only one whose first move happens off the site, and it deliberately **doesn't re-document the Google Cloud console**: a step's description is inserted as plain text (`buildElement('p', …)` in ConfigBundle's `guided-project.js`), so it could carry no link anyway, and a walkthrough of screens Google redesigns would rot silently in every site installing the package. Its first step names the wait and sends the reader to the `afficher-avis-google` help procedure, which is markdown and links to Google's own pages. It is also the only one opening on **another bundle's** screen — ConfigBundle's config list, the two OAuth keys being configs — and the only one whose last three steps carry no highlight, consenting leaving the site entirely and coming back through the callback's own redirect.
 
-The share buttons project is contributed **only while `social-enable-share-buttons` is on**, and the reviews one **only while `social-enable-reviews` is on** — the same condition `MenuProvider` applies to its own entries, since with the feature off that screen isn't in the sidebar either and a parcours walking to an unreachable screen reads as a broken one.
+The share buttons project is contributed **only while `social-enable-share-buttons` is on**, and the reviews one **only while `ui-enable-reviews` is on** — the same condition `MenuProvider` applies to its own "Connecter Google" link, since with the feature off that screen isn't in the sidebar either and a parcours walking to an unreachable screen reads as a broken one.
 
 The three projects declare the `site-role-editor` role their screens demand, rather than the dashboard's own: the two are separate roles, neither implying the other, so `GuidedProjectBuilder` drops the parcours for an admin lacking it instead of opening on a 403.
 

@@ -11,7 +11,6 @@
 namespace c975L\SocialBundle\Tests\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
-use c975L\SocialBundle\Controller\Management\ReviewCrudController;
 use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use c975L\SocialBundle\Management\MenuProvider;
@@ -25,7 +24,7 @@ class MenuProviderTest extends TestCase
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $slug): string => match ($slug) {
             'social-enable-share-buttons' => $shareButtonsEnabled ? '1' : '0',
-            'social-enable-reviews' => $reviewsEnabled ? '1' : '0',
+            'ui-enable-reviews' => $reviewsEnabled ? '1' : '0',
             'site-role-editor' => 'ROLE_EDITOR',
             default => '0',
         });
@@ -34,12 +33,12 @@ class MenuProviderTest extends TestCase
         return new MenuProvider($configService);
     }
 
-    // Its three screens are all the editor's: without the key an entry takes the admin default and goes missing from their sidebar, with the tour step that walks to it (see MenuProviderInterface::getMenus())
+    // Its two screens are both the editor's: without the key an entry takes the admin default and goes missing from their sidebar, with the tour step that walks to it (see MenuProviderInterface::getMenus())
     public function testEveryEntryNamesTheEditorBarItsOwnScreenStates(): void
     {
         $menus = $this->createProvider(true)->getMenus();
 
-        foreach (['social_links', 'reviews', 'share_buttons_settings'] as $slug) {
+        foreach (['social_links', 'share_buttons_settings'] as $slug) {
             $this->assertSame('ROLE_EDITOR', $menus[$slug]['role'], sprintf('The "%s" entry does not name the bar its own crud states', $slug));
         }
     }
@@ -55,16 +54,15 @@ class MenuProviderTest extends TestCase
         );
     }
 
-    // Share buttons settings must stay hidden while the feature is disabled site-wide
-    public function testGetMenusOnlyIncludesSocialLinksAndReviewsWhenShareButtonsDisabled(): void
+    // Share buttons settings must stay hidden while the feature is disabled site-wide. The reviews screen is not here at all any more: the entity and its moderation moved to UiBundle, which declares its own entry
+    public function testGetMenusOnlyIncludesSocialLinksWhenShareButtonsDisabled(): void
     {
         $provider = $this->createProvider(false);
 
         $menus = $provider->getMenus();
 
-        $this->assertSame(['social_links', 'reviews'], array_keys($menus));
+        $this->assertSame(['social_links'], array_keys($menus));
         $this->assertSame(SocialLinksCrudController::class, $menus['social_links']['controller']);
-        $this->assertSame(ReviewCrudController::class, $menus['reviews']['controller']);
     }
 
     // Enabling "social-enable-share-buttons" exposes its own settings entry, after the unconditional ones
@@ -74,16 +72,8 @@ class MenuProviderTest extends TestCase
 
         $menus = $provider->getMenus();
 
-        $this->assertSame(['social_links', 'reviews', 'share_buttons_settings'], array_keys($menus));
+        $this->assertSame(['social_links', 'share_buttons_settings'], array_keys($menus));
         $this->assertSame(ShareButtonsSettingsCrudController::class, $menus['share_buttons_settings']['controller']);
-    }
-
-    // Reviews have a switch of their own, read exactly like the share buttons': a screen for a feature the site does not show is one more thing to explain in a sidebar
-    public function testTheReviewsEntryIsDroppedWhileTheFeatureIsDisabled(): void
-    {
-        $menus = $this->createProvider(false, false)->getMenus();
-
-        $this->assertSame(['social_links'], array_keys($menus));
     }
 
     // Connecting Google is what fetches the reviews, so the link goes with them

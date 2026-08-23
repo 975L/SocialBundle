@@ -60,7 +60,7 @@
             </trans-unit>
             <trans-unit id="pu1hp1o">
                 <source>description.guided_step_social_google_reviews</source>
-                <target>Reviews come in with the "c975l:social:reviews:sync" command, to be scheduled once a day. The list stays empty until it has run.</target>
+                <target>Menu "Management &gt; Customer reviews" to read them. Reviews come in with the "c975l:social:reviews:sync" command, to be scheduled once a day. The list stays empty until it has run.</target>
             </trans-unit>
             <trans-unit id="vgXH0gX">
                 <source>description.guided_step_social_links_display_label</source>
@@ -322,10 +322,6 @@
                 <source>label.info_google_connect</source>
                 <target>Lets the site read the reviews of your Google listing and answer them.</target>
             </trans-unit>
-            <trans-unit id="zkQpL1I">
-                <source>label.info_reviews</source>
-                <target>The reviews imported from your Google listing. They can be neither edited nor deleted: only the public reply is yours.</target>
-            </trans-unit>
             <trans-unit id="AuLTjz5">
                 <source>label.info_share_buttons_settings</source>
                 <target>Default networks/style for share buttons - a singleton, overridable per page via the "share_buttons_display" block. Edit the active networks, their order and the display style.</target>
@@ -357,42 +353,6 @@
             <trans-unit id="Fa3jTj1">
                 <source>label.preview</source>
                 <target>Preview</target>
-            </trans-unit>
-            <trans-unit id="v8wA8im">
-                <source>label.review</source>
-                <target>Review</target>
-            </trans-unit>
-            <trans-unit id="MmMODqe">
-                <source>label.review_author</source>
-                <target>Author</target>
-            </trans-unit>
-            <trans-unit id="1cpgR1E">
-                <source>label.review_comment</source>
-                <target>Review</target>
-            </trans-unit>
-            <trans-unit id="NYV_onC">
-                <source>label.review_published_at</source>
-                <target>Published on</target>
-            </trans-unit>
-            <trans-unit id="8ZUrZE5">
-                <source>label.review_rating</source>
-                <target>Rating</target>
-            </trans-unit>
-            <trans-unit id="1ej3NQp">
-                <source>label.review_reply</source>
-                <target>Public reply</target>
-            </trans-unit>
-            <trans-unit id="B4BXRXE">
-                <source>label.review_reply_help</source>
-                <target>Published on the platform as soon as it is saved; emptying it removes the reply.</target>
-            </trans-unit>
-            <trans-unit id="QeGrNPM">
-                <source>label.review_source</source>
-                <target>Source</target>
-            </trans-unit>
-            <trans-unit id="dMxRFXX">
-                <source>label.reviews</source>
-                <target>Customer reviews</target>
             </trans-unit>
             <trans-unit id="TRS_z2w">
                 <source>label.shape</source>
@@ -450,10 +410,6 @@
                 <source>label.url</source>
                 <target>URL</target>
             </trans-unit>
-            <trans-unit id="WLPk5w2">
-                <source>review.anonymous_author</source>
-                <target>Anonymous</target>
-            </trans-unit>
             <trans-unit id="rau13w0">
                 <source>review.google_authorization_refused</source>
                 <target>The Google authorization was refused.</target>
@@ -469,22 +425,6 @@
             <trans-unit id="Vbjyj2g">
                 <source>review.google_state_mismatch</source>
                 <target>Google connection interrupted: start it again from the dashboard.</target>
-            </trans-unit>
-            <trans-unit id="pyMBi7y">
-                <source>review.rating</source>
-                <target>Rating: %rating% out of 5</target>
-            </trans-unit>
-            <trans-unit id="WzaMA3.">
-                <source>review.reply</source>
-                <target>Owner's reply</target>
-            </trans-unit>
-            <trans-unit id="TrZcNxS">
-                <source>review.see_original</source>
-                <target>See the original review</target>
-            </trans-unit>
-            <trans-unit id="PK5gbBx">
-                <source>review.verified</source>
-                <target>Verified review</target>
             </trans-unit>
         </body>
     </file>

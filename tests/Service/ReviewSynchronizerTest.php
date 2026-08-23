@@ -11,10 +11,11 @@
 namespace c975L\SocialBundle\Tests\Service;
 
 use c975L\SocialBundle\Contract\ReviewsSourceInterface;
-use c975L\SocialBundle\Entity\Review;
 use c975L\SocialBundle\Model\ReviewData;
-use c975L\SocialBundle\Repository\ReviewRepository;
 use c975L\SocialBundle\Service\ReviewSynchronizer;
+use c975L\UiBundle\Entity\Review;
+use c975L\UiBundle\Enum\ReviewStatus;
+use c975L\UiBundle\Repository\ReviewRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -223,5 +224,23 @@ class ReviewSynchronizerTest extends TestCase
         $synchronizer->synchronize();
 
         $this->assertNull($existing->getReplyComment());
+    }
+
+    // UiBundle holds the site's own reviews in the same table, where Pending is the default: an imported one waiting for a second moderation would never reach the page the platform already shows it on
+    public function testSynchronizePublishesEveryImportedReview(): void
+    {
+        $existing = new Review()->setSource('google')->setExternalId('a')->setStatus(ReviewStatus::Pending);
+
+        $repository = $this->createStub(ReviewRepository::class);
+        $repository->method('findOneFromSource')->willReturn($existing);
+
+        $synchronizer = new ReviewSynchronizer(
+            [$this->createSource('google', true, $this->createData('a'))],
+            $repository,
+            $this->createStub(EntityManagerInterface::class)
+        );
+        $synchronizer->synchronize();
+
+        $this->assertSame(ReviewStatus::Published, $existing->getStatus());
     }
 }

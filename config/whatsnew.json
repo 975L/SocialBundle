@@ -8,6 +8,16 @@
                 "es": "Las opiniones de clientes ahora tienen su propio interruptor en la configuración del sitio: desactivadas, salen tanto de sus páginas como de sus menús"
             },
             {
+                "en": "The health check page now says whether your Google connection still works, an expired one stopping the review import without any warning",
+                "fr": "La page Bilan de santé indique maintenant si votre connexion Google fonctionne toujours, une connexion expirée arrêtant l'import des avis sans prévenir",
+                "es": "La página de estado de salud ahora indica si su conexión con Google sigue funcionando, ya que una conexión caducada detiene la importación de opiniones sin avisar"
+            },
+            {
+                "en": "The review import now runs on its own every night, with no cron entry to add",
+                "fr": "L'import des avis s'exécute maintenant tout seul chaque nuit, sans tâche cron à ajouter",
+                "es": "La importación de opiniones ahora se ejecuta sola cada noche, sin tarea cron que añadir"
+            },
+            {
                 "en": "The Social screens are now open to your editors, no longer to the administrators alone",
                 "fr": "Les écrans Social sont maintenant ouverts à vos éditeurs, et plus aux seuls administrateurs",
                 "es": "Las pantallas Social ahora están abiertas a sus editores, y ya no solo a los administradores"

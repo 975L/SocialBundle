@@ -1,5 +1,24 @@
 # Changelog
 
+## v2.6.0
+
+The reviews move to UiBundle; this bundle keeps the platforms that feed them
+
+- `Entity\Review` and `Repository\ReviewRepository` moved to UiBundle (23/08/2026) [BC-Break] [Needs db update]
+- `Controller\Management\ReviewCrudController`, `Service\ReviewCollectionSourceProvider` and `Listener\ReviewCacheInvalidationListener` moved with them (23/08/2026) [BC-Break]
+- `ReviewReplyPublisher` implements UiBundle's `ReviewReplyPublisherInterface` (23/08/2026)
+- `ReviewSynchronizer` marks every imported review published (23/08/2026)
+- `social-enable-reviews` became UiBundle's `ui-enable-reviews` (23/08/2026) [BC-Break]
+- The `--review-*` theme tokens and `sass/_reviews.scss` moved to UiBundle (23/08/2026) [BC-Break]
+- Added `Management\GoogleReviewsHealthCheckProvider`, one health check row on the Google connection (23/08/2026)
+- Added `Scheduler\SocialMaintenanceTaskProvider`, scheduling the nightly review sync (23/08/2026)
+- Added `GoogleOAuthClient::isConnected()` (23/08/2026)
+- The bundle's description says 20 networks instead of 15 (23/08/2026)
+- README, the shipped skill and the `afficher-avis-google` procedure document the move, the health check and the schedule (23/08/2026)
+- Added the `UPGRADE.md` entry for 2.6 (23/08/2026)
+- Added tests for the health check, the schedule, `isConnected()` and the published status (23/08/2026)
+- Requires `c975l/core-bundle` ^1.15 (23/08/2026)
+
 ## v2.5.1
 
 Supersedes the v2.5.0 tag, published on the previous commit

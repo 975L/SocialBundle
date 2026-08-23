@@ -12,10 +12,12 @@ namespace c975L\SocialBundle\Service;
 
 use c975L\SocialBundle\Contract\ReviewsReplySourceInterface;
 use c975L\SocialBundle\Contract\ReviewsSourceInterface;
-use c975L\SocialBundle\Entity\Review;
+use c975L\UiBundle\Contract\ReviewReplyPublisherInterface;
+use c975L\UiBundle\Entity\Review;
 
-// Pushes an answer written in the back office back to the platform it belongs to - the only write a review ever gets, its text and its rating being the author's
-class ReviewReplyPublisher
+// Pushes an answer written in the back office back to the platform it belongs to - the only write an imported review ever gets, its text and its rating being the author's
+// Reached through the contract UiBundle declares (it owns the review and the screen answering it), so a site bringing no platform at all still gets a moderation screen that knows there is nothing to push
+class ReviewReplyPublisher implements ReviewReplyPublisherInterface
 {
     /**
      * @param iterable<ReviewsSourceInterface> $sources
@@ -32,16 +34,18 @@ class ReviewReplyPublisher
         return null !== $source && $source->isConfigured();
     }
 
-    // Publishes first and lets the exception through: a reply stored here but refused by the platform would show the visitor an answer the author never received
+    // Lets the exception through: a reply stored here but refused by the platform would show the visitor an answer the author never received
     public function publish(Review $review): void
     {
         $source = $this->sourceOf($review);
+        $externalId = $review->getExternalId();
 
-        if (null === $source) {
+        // A review with no external id was written on this site and belongs to no platform - supports() already said so, and reaching here means the caller went around it
+        if (null === $source || null === $externalId) {
             throw new \RuntimeException(sprintf('The source "%s" does not accept replies.', $review->getSource()));
         }
 
-        $source->reply($review->getExternalId(), $review->getReplyComment());
+        $source->reply($externalId, $review->getReplyComment());
     }
 
     private function sourceOf(Review $review): ?ReviewsReplySourceInterface

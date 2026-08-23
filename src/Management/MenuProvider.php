@@ -12,7 +12,6 @@ namespace c975L\SocialBundle\Management;
 
 use c975L\ConfigBundle\Management\MenuProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
-use c975L\SocialBundle\Controller\Management\ReviewCrudController;
 use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 
@@ -46,19 +45,6 @@ class MenuProvider implements MenuProviderInterface
             ],
         ];
 
-        // Only displayed if customer reviews are turned on site-wide, exactly like the share buttons below: a screen for a feature the site does not show is one more thing to explain in a sidebar
-        if ($this->configService->getBool($this->configService->get('social-enable-reviews'))) {
-            $menus['reviews'] = [
-                'controller' => ReviewCrudController::class,
-                'label' => 'label.reviews',
-                'translation_domain' => 'social',
-                'icon' => 'fas fa-star',
-                'description' => 'label.info_reviews',
-                // The bar ReviewCrudController states on its own rows
-                'role' => $this->configService->get('site-role-editor'),
-            ];
-        }
-
         // Only displayed if share buttons are enabled site-wide (see "social-enable-share-buttons" in ShareButtonsExtension)
         if ($this->configService->getBool($this->configService->get('social-enable-share-buttons'))) {
             $menus['share_buttons_settings'] = [
@@ -79,7 +65,7 @@ class MenuProvider implements MenuProviderInterface
     public function getLinks(): array
     {
         // Connecting Google is what fetches the reviews: with them turned off, this walks to a consent screen for something the site never shows
-        if (!$this->configService->getBool($this->configService->get('social-enable-reviews'))) {
+        if (!$this->configService->getBool($this->configService->get('ui-enable-reviews'))) {
             return [];
         }
 

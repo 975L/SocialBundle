@@ -39,7 +39,7 @@ class SocialGuidedProjectProviderTest extends TestCase
         // Each feature switch answered on its own: the two are independent, and a project dropped by the wrong one would still look right
         $configService->method('get')->willReturnCallback(static fn (string $slug): string => match ($slug) {
             'site-role-editor' => 'ROLE_EDITOR',
-            'social-enable-reviews' => $reviewsEnabled ? '1' : '0',
+            'ui-enable-reviews' => $reviewsEnabled ? '1' : '0',
             default => $shareButtonsEnabled ? '1' : '0',
         });
         $configService->method('getBool')->willReturnCallback(static fn ($value) => '1' === $value);

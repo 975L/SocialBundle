@@ -41,6 +41,12 @@ class GoogleOAuthClient
         return null !== $this->clientId() && null !== $this->clientSecret();
     }
 
+    // Whether the connection was actually made, the stored refresh token being the whole of it - said here rather than read from the config elsewhere, so the slug holding it stays this class's business
+    public function isConnected(): bool
+    {
+        return null !== $this->refreshToken();
+    }
+
     // Where the owner is sent to consent. "consent" is forced because Google only returns a refresh token on the first authorization otherwise, leaving a re-connection with nothing to store
     public function getAuthorizationUrl(string $redirectUri, string $state): string
     {

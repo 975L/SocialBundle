@@ -1,16 +1,16 @@
 ---
 name: c975l-social
-description: "Use this skill when working with social links, share buttons or customer reviews in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, and the Google Business Profile review import with its pluggable sources. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, social-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewCollectionSourceProvider, ReviewSynchronizer, c975l:social:reviews:sync, social-google-oauth-client-id, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile."
+description: "Use this skill when working with social links, share buttons or customer reviews in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, and the Google Business Profile review import with its pluggable sources. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile."
 ---
 
 # c975L SocialBundle
 
 > The social side of a c975L site — one site-wide list of social links, and share buttons for 20 networks, both placed anywhere as blocks. Replaces the former ShareButtonsBundle.
 
-**Package:** `c975l/social-bundle` · **Namespace:** `c975L\SocialBundle\` · **Twig namespace:** `@c975LSocial` · **Translation domain:** `social`, plus `ui` for what UiBundle renders on this bundle's behalf (`translations/ui.*.xlf`, the collection source's own label)
+**Package:** `c975l/social-bundle` · **Namespace:** `c975L\SocialBundle\` · **Twig namespace:** `@c975LSocial` · **Translation domain:** `social`
 
 **Key source paths** (relative to the package root):
-`src/Service/ShareButtonsService.php`, `src/Twig/`, `src/Form/Block/`, `src/Controller/`, `src/Controller/Management/`, `src/Management/`, `src/Contract/`, `src/Entity/Review.php`, `src/Repository/ReviewRepository.php`, `src/Command/ReviewsSyncCommand.php`, `templates/blocks/`, `templates/collection/ReviewItem.html.twig`, `templates/components/SocialLinks.html.twig`, `templates/shareButtons/`, `config/configs.json`, `config/services.yaml`, `public/icons/`, `sass/_social-brand-colors.scss`, `scaffold/assets/styles/themes/social.css`
+`src/Service/ShareButtonsService.php`, `src/Twig/`, `src/Form/Block/`, `src/Controller/`, `src/Controller/Management/`, `src/Management/`, `src/Contract/`, `src/Command/ReviewsSyncCommand.php`, `templates/blocks/`, `templates/components/SocialLinks.html.twig`, `templates/shareButtons/`, `config/configs.json`, `config/services.yaml`, `public/icons/`, `sass/_social-brand-colors.scss`, `scaffold/assets/styles/themes/social.css`
 
 **Related documentation:** this package's `README.md` is the exhaustive reference. The block system, the icon service and the media library it builds on live in `c975l/core-bundle`.
 
@@ -79,7 +79,7 @@ Other Twig functions: `social_link_block()` (the singleton block), `social_link_
 
 Two pieces: the **Boutons de partage** screen picks the networks, their order, the shape, the fill, the
 invitation line and an optional anchor; the `social-enable-share-buttons` config key (bool, `false` by
-default) turns the band on for every page. The reviews have the same kind of switch, `social-enable-reviews`
+default) turns the band on for every page. The reviews have the same kind of switch, `ui-enable-reviews`
 (see [Customer reviews](#customer-reviews)).
 
 The band itself is this bundle's `templates/shareButtons/default.html.twig`, and a layout includes it:
@@ -126,35 +126,38 @@ site-wide, every line shipped commented out at its default.
 
 ## Customer reviews
 
-Imported from the site's own Google Business Profile listing into the `Review` entity (table
-`site_review`) and displayed through **UiBundle's generic `collection` block** — this feature ships
-**no block kind of its own**. `ReviewCollectionSourceProvider` implements
-`CollectionSourceProviderInterface`, exposing the source `social.collection.reviews` with the cache tag
-`social_reviews` and the item template `templates/collection/ReviewItem.html.twig`.
-
-The `social-enable-reviews` config key (bool, `false` by default) gates the whole feature at once: the
-management screens, the "Connecter Google" link, the guided project and the collection source itself.
-Off, `getSources()` returns `[]` and a collection already pointing at the source renders empty rather
-than breaking. The sync command is deliberately left running, so a reactivation shows the reviews
-imported meanwhile.
+**The reviews themselves live in UiBundle** (`c975L\UiBundle\Entity\Review`, table `site_review`),
+alongside what visitors write on the site: the two are the same thing seen from two sides, and only
+`source` tells them apart. Moderation, display and the `ui-enable-reviews` switch are all UiBundle's —
+see the `c975l-blocks` skill. This bundle owns **the feed alone**: connecting a platform, pulling its
+reviews in, and pushing an answer back out.
 
 | Piece | Class |
 | --- | --- |
 | Source contract | `Contract\ReviewsSourceInterface` (`getName()`, `isConfigured()`, `fetch()`) |
 | Reply capability | `Contract\ReviewsReplySourceInterface` (adds `reply()`) |
+| Normalized payload | `Model\ReviewData` |
 | Google source | `Service\GoogleBusinessProfileSource` |
 | OAuth | `Service\GoogleOAuthClient`, `Controller\GoogleOAuthController` |
 | Import | `Service\ReviewSynchronizer`, `Command\ReviewsSyncCommand` |
-| Back office | `Controller\Management\ReviewCrudController`, `Service\ReviewReplyPublisher` |
+| Reply out | `Service\ReviewReplyPublisher` |
 
 Sources are auto-tagged by interface (`social.reviews_source`, see `c975LSocialBundle::build()`), so a
 new platform is a class implementing `ReviewsSourceInterface` and nothing else.
 
-A run upserts on `(source, external_id)` and removes the reviews its source no longer returns
-(`ReviewRepository::findMissing()`), so a review deleted on the platform goes here too — unless the run
-brought nothing back at all, an empty answer being what a revoked token or an exhausted quota looks
-like. `ReviewReplyPublisher::supports()` only offers the reply field while the review's source is still
-connected.
+A run upserts on `(source, external_id)`, marks every imported row `published` — the platform moderated
+it already — and removes the reviews its source no longer returns (`ReviewRepository::findMissing()`),
+so a review deleted on the platform goes here too. Unless the run brought nothing back at all: an empty
+answer is what a revoked token or an exhausted quota looks like, and wiping the wall on one is worse
+than showing it stale.
+
+`ReviewReplyPublisher` implements **UiBundle's** `ReviewReplyPublisherInterface`, which is how the
+moderation screen reaches it without this bundle owning the screen. Its `supports()` answers false for
+a review written on the site and for a source no longer connected, which is what hides the reply field.
+
+The `ui-enable-reviews` key still gates this bundle's own halves of the feature: the "Connecter Google"
+link and the guided project. The sync command is deliberately left running while it is off, so a
+reactivation shows the reviews imported meanwhile.
 
 **Setup in the consuming app**, on top of the usual `c975l:config:load-all`:
 
@@ -165,8 +168,9 @@ c975l_social:
     type: attribute
 ```
 
-Map `src/Entity` in `doctrine.yaml`, run `make:migration`, then schedule
-`php bin/console c975l:social:reviews:sync` as a cron job. The five config slugs are
+This bundle maps no entity — the `Review` table travels with UiBundle — and the sync needs no cron
+entry of its own: `Scheduler\SocialMaintenanceTaskProvider` declares it nightly, so it is in the
+scaffolded `MaintenanceSchedule` as soon as the bundle is installed. The five config slugs are
 `social-google-oauth-client-id`, `social-google-oauth-client-secret`,
 `social-google-oauth-refresh-token`, `social-google-business-account-id` and
 `social-google-business-location-id` — only the first two are typed, `/social/google/connect` writing
@@ -190,10 +194,11 @@ Nothing below is declared in the app: `MenuProvider` (the dashboard entries, eac
 tier), `ProcedureProvider`
 (the admin help procedures), `SocialGuidedProjectProvider` (the guided walk-through of each screen,
 offered only to who can open it), `WhatsNewProvider`, `ImportmapProvider`, `Service\ScriptProvider`,
-`Service\StylesheetProvider`, `Service\BlockFixtureProvider`, and an export/import provider per
+`Service\StylesheetProvider`, `Service\BlockFixtureProvider`, an export/import provider per
 singleton (`SocialLinksExportProvider`, `ShareButtonsSettingsExportProvider` and their import twins),
-`Service\ReviewCollectionSourceProvider` (the "Avis clients" collection source) and
-`Listener\ReviewCacheInvalidationListener` (empties the `social_reviews` tag on every `Review` change).
+`Management\GoogleReviewsHealthCheckProvider` (one row on the health check page, saying whether the
+Google connection still answers - the import being the one thing here that stops silently) and
+`Scheduler\SocialMaintenanceTaskProvider` (the nightly review sync).
 
 ## Do not
 
@@ -210,11 +215,11 @@ singleton (`SocialLinksExportProvider`, `ShareButtonsSettingsExportProvider` and
 - **Do not give the `*_display` blocks fields of their own.** They are pointers on purpose; storing a
   copy is what makes a page's links drift from the site's.
 - **Do not add a page layout to this bundle.** A satellite never ships one.
-- **Do not create, edit, delete or hide a `Review` from the back office.** A review is its author's
-  statement: rewriting it falsifies it, and dropping the ones that displease is what art. L111-7-2 of
-  the French consumer code forbids — while the review stays published on the platform anyway. Only the
-  public reply is writable, and it goes to the platform before it is stored.
-- **Do not create a `reviews` block kind.** The display goes through UiBundle's `collection` block and
-  `ReviewCollectionSourceProvider`; a kind of its own would duplicate a block that already exists.
+- **Do not map a review entity of your own here.** The rows belong to UiBundle, which holds what
+  visitors write on the site in the same table; a second one would split the wall in two.
+- **Do not edit, delete or hide an imported review anywhere.** A review is its author's statement:
+  rewriting it falsifies it, and dropping the ones that displease is what art. L111-7-2 of the French
+  consumer code forbids — while the review stays published on the platform anyway. Only the public
+  reply is writable, and it goes to the platform before it is stored.
 - **Do not call a review platform from a page render.** Quotas are counted per call and the site must
   keep serving its reviews while the platform is down — `c975l:social:reviews:sync` runs on cron.

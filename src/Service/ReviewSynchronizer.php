@@ -11,12 +11,14 @@
 namespace c975L\SocialBundle\Service;
 
 use c975L\SocialBundle\Contract\ReviewsSourceInterface;
-use c975L\SocialBundle\Entity\Review;
 use c975L\SocialBundle\Model\ReviewData;
-use c975L\SocialBundle\Repository\ReviewRepository;
+use c975L\UiBundle\Entity\Review;
+use c975L\UiBundle\Enum\ReviewStatus;
+use c975L\UiBundle\Repository\ReviewRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-// Pulls every configured source into the Review table - the one place that writes reviews, so a source only ever reads its platform and hands back ReviewData
+// Pulls every configured source into UiBundle's Review table, which also holds what visitors write here - the two are the same thing seen from two sides, and only $source tells them apart
+// The one place that writes imported reviews, so a source only ever reads its platform and hands back ReviewData
 class ReviewSynchronizer
 {
     /**
@@ -90,6 +92,8 @@ class ReviewSynchronizer
     private function fill(Review $review, ReviewData $data): void
     {
         $review
+            // Published on arrival: the platform moderated it already, and holding it back would show a site's own reviews as more recent than the ones it re-publishes
+            ->setStatus(ReviewStatus::Published)
             ->setExternalId($data->externalId)
             ->setAuthorName($data->authorName)
             ->setAuthorAvatarUrl($data->authorAvatarUrl)

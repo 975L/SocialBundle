@@ -56,6 +56,13 @@ class GoogleOAuthClientTest extends TestCase
         $this->assertFalse($client->isConfigured());
     }
 
+    // What isConfigured() deliberately ignores: the health check needs to tell "keys stored, consent never given" from a connection that works
+    public function testIsConnectedNeedsTheRefreshToken(): void
+    {
+        $this->assertTrue($this->createClient(new MockHttpClient())->isConnected());
+        $this->assertFalse($this->createClient(new MockHttpClient(), refreshToken: null)->isConnected());
+    }
+
     // Without "access_type=offline" and "prompt=consent" Google returns a refresh token on the first authorization only, leaving a re-connection with nothing to store
     public function testGetAuthorizationUrlAsksForOfflineAccessAndForcesTheConsentScreen(): void
     {
