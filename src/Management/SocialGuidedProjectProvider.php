@@ -18,7 +18,7 @@ use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 
-// This bundle's guided projects, continuing the order sequence after ConfigBundle (10-40), SiteBundle (50-80) and UiBundle (90-110), running 130-137 to leave GalleryBundle's own 140 clear. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
+// This bundle's guided projects, running the 4000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
 class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -52,7 +52,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_social_google_reviews',
             'description' => 'description.guided_project_social_google_reviews',
             'translation_domain' => 'social',
-            'order' => 137,
+            'order' => 4030,
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [
                 [
@@ -97,7 +97,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_social_links',
             'description' => 'description.guided_project_social_links',
             'translation_domain' => 'social',
-            'order' => 130,
+            'order' => 4010,
             // The role the screen itself demands (see SocialLinksCrudController's setEntityPermission/setPermission), not the dashboard's own: the two are separate roles, neither implying the other, so an admin without it would otherwise be offered a parcours whose very first step answers 403
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [
@@ -154,7 +154,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_social_share_buttons',
             'description' => 'description.guided_project_social_share_buttons',
             'translation_domain' => 'social',
-            'order' => 135,
+            'order' => 4020,
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [
                 [

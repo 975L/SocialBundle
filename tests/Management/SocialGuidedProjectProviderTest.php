@@ -47,13 +47,13 @@ class SocialGuidedProjectProviderTest extends TestCase
         return new SocialGuidedProjectProvider($configService, $this->createAdminUrlGenerator($controllers));
     }
 
-    // Continues the sequence after ConfigBundle (10-40), SiteBundle (50-80) and UiBundle (90-110), staying below GalleryBundle's own 140
+    // The 4000 block GuidedProjectProviderInterface reserves this bundle, at the step of 10 it states
     public function testGetGuidedProjectsContinuesTheOrderSequence(): void
     {
         $projects = $this->createProvider(true)->getGuidedProjects();
 
         $this->assertSame(['social-links', 'social-share-buttons', 'social-google-reviews'], array_column($projects, 'slug'));
-        $this->assertSame([130, 135, 137], array_column($projects, 'order'));
+        $this->assertSame([4010, 4020, 4030], array_column($projects, 'order'));
     }
 
     // The share buttons screen isn't in the sidebar while the feature is off, so no parcours walks to it either

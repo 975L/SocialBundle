@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.6.1
+
+Renumber the guided projects into the 4000 block the interface reserves
+
+- The three guided projects run at 4010, 4020 and 4030 instead of 130-137 (23/08/2026)
+- Their header points at `GuidedProjectProviderInterface` for the range rather than restating it (23/08/2026)
+- README states the new range (23/08/2026)
+
 ## v2.6.0
 
 The reviews move to UiBundle; this bundle keeps the platforms that feed them
