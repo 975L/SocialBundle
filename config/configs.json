@@ -29,7 +29,7 @@
         "value": null,
         "kind": "text",
         "group": "general",
-        "severity": "warning",
+        "severity": "info",
         "description": "description.social_google_oauth_client_secret"
     },
     {
@@ -40,7 +40,7 @@
         "value": null,
         "kind": "text",
         "group": "general",
-        "severity": "warning",
+        "severity": "info",
         "description": "description.social_google_oauth_refresh_token"
     },
     {

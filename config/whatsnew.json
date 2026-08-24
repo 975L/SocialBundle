@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-08-24",
+        "description": [
+            {
+                "en": "The site configuration no longer raises a warning about the Google connection fields when you import no review",
+                "fr": "La configuration du site ne signale plus d'avertissement sur les champs de connexion Google lorsque vous n'importez aucun avis",
+                "es": "La configuración del sitio ya no muestra una advertencia sobre los campos de conexión con Google cuando no importa ninguna opinión"
+            },
+            {
+                "en": "Those fields now say they serve the reviews, so they are no longer mistaken for another Google service",
+                "fr": "Ces champs indiquent maintenant qu'ils servent aux avis, pour ne plus les confondre avec un autre service Google",
+                "es": "Esos campos ahora indican que sirven para las opiniones, para no confundirlos con otro servicio de Google"
+            }
+        ]
+    },
+    {
         "date": "2026-08-23",
         "description": [
             {

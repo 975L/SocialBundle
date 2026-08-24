@@ -48,15 +48,15 @@
             </trans-unit>
             <trans-unit id="hZffD1Y">
                 <source>label.social_google_oauth_client_id</source>
-                <target>Identifiant client OAuth Google</target>
+                <target>Identifiant client OAuth Google (avis)</target>
             </trans-unit>
             <trans-unit id="iJJMfbS">
                 <source>label.social_google_oauth_client_secret</source>
-                <target>Secret client OAuth Google</target>
+                <target>Secret client OAuth Google (avis)</target>
             </trans-unit>
             <trans-unit id="sWcVVas">
                 <source>label.social_google_oauth_refresh_token</source>
-                <target>Jeton de rafraîchissement Google</target>
+                <target>Jeton de rafraîchissement Google (avis)</target>
             </trans-unit>
         </body>
     </file>

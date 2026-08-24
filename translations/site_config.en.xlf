@@ -48,15 +48,15 @@
             </trans-unit>
             <trans-unit id="hZffD1Y">
                 <source>label.social_google_oauth_client_id</source>
-                <target>Google OAuth client id</target>
+                <target>Google OAuth client id (reviews)</target>
             </trans-unit>
             <trans-unit id="iJJMfbS">
                 <source>label.social_google_oauth_client_secret</source>
-                <target>Google OAuth client secret</target>
+                <target>Google OAuth client secret (reviews)</target>
             </trans-unit>
             <trans-unit id="sWcVVas">
                 <source>label.social_google_oauth_refresh_token</source>
-                <target>Google refresh token</target>
+                <target>Google refresh token (reviews)</target>
             </trans-unit>
         </body>
     </file>

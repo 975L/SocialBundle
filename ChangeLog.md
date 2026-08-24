@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.6.2
+
+Downgrade the unset Google keys to info severity
+
+- `social-google-oauth-client-secret` and `social-google-oauth-refresh-token` downgraded from *warning* to *info* (24/08/2026)
+- The three Google OAuth labels marked *(reviews)* in the `site_config` catalogs (24/08/2026)
+
 ## v2.6.1
 
 Renumber the guided projects into the 4000 block the interface reserves
