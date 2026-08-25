@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.6.3
+
+The tooling is CoreBundle's
+
+- `eslint.config.mjs` aligned on CoreBundle's, five browser globals more (25/08/2026)
+- `.codacy.yaml` and `.stylelintrc.json` aligned on CoreBundle's, `**/tests/**` and `**/*.tpl.php` excluded (25/08/2026)
+- The lint ignores match `**/public/**` rather than `public/**` (25/08/2026)
+- Added `.markdownlint.json` (25/08/2026)
+- `.gitattributes` keeps it out of the dist archive (25/08/2026)
+- Rector caches in `.rector.cache` inside the repository, `.gitignore`d (25/08/2026)
+- `composer rector` drops `--clear-cache` (25/08/2026)
+- `bin/ci.sh` aligned on CoreBundle's, excluding `.rector.cache` from the copy (25/08/2026)
+
 ## v2.6.2
 
 Downgrade the unset Google keys to info severity
