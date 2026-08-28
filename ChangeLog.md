@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.6.4
+
+Logo modified
+
 ## v2.6.3
 
 The tooling is CoreBundle's
