@@ -92,33 +92,72 @@ class GoogleBusinessProfileSource implements ReviewsReplySourceInterface
     // A review Google returns without an id or a readable rating is skipped rather than stored half-built: it could neither be updated on the next run nor displayed
     private function toReviewData(mixed $review): ?ReviewData
     {
-        if (!is_array($review) || !isset($review['reviewId']) || !is_string($review['reviewId'])) {
+        $externalId = $this->reviewId($review);
+        $rating = $this->rating($review);
+        if (null === $externalId || null === $rating) {
             return null;
         }
 
-        $rating = self::RATINGS[$review['starRating'] ?? ''] ?? null;
-
-        if (null === $rating) {
-            return null;
-        }
-
-        $reply = $review['reviewReply'] ?? null;
+        [$replyComment, $repliedAt] = $this->toReply($review['reviewReply'] ?? null);
+        [$authorName, $authorAvatarUrl] = $this->toAuthor($review['reviewer'] ?? null);
 
         return new ReviewData(
-            externalId: $review['reviewId'],
-            // Left null when Google hands back no display name: naming the author is the template's call, and a label stored here would be frozen in the locale of the import
-            authorName: $review['reviewer']['displayName'] ?? null,
+            externalId: $externalId,
+            authorName: $authorName,
             rating: $rating,
             publishedAt: new \DateTimeImmutable($review['createTime'] ?? 'now'),
             comment: $review['comment'] ?? null,
-            authorAvatarUrl: $review['reviewer']['profilePhotoUrl'] ?? null,
-            replyComment: is_array($reply) ? ($reply['comment'] ?? null) : null,
-            repliedAt: is_array($reply) && isset($reply['updateTime']) ? new \DateTimeImmutable($reply['updateTime']) : null,
+            authorAvatarUrl: $authorAvatarUrl,
+            replyComment: $replyComment,
+            repliedAt: $repliedAt,
             // Left null on purpose: the v4 API only returns the review's resource name ("accounts/1/locations/2/reviews/3"), never a public permalink a visitor could follow
             sourceUrl: null,
             // Google ties every review to a signed-in account, which is the only verification a listing offers
             verified: true,
         );
+    }
+
+    // The id Google files the review under, and the only thing this source can key on - anything else it hands back is skipped rather than stored under a made-up key
+    private function reviewId(mixed $review): ?string
+    {
+        return is_array($review) && isset($review['reviewId']) && is_string($review['reviewId']) ? $review['reviewId'] : null;
+    }
+
+    // The star count, which Google words rather than numbers - a wording this bundle doesn't know skips the review instead of rating it zero
+    private function rating(mixed $review): ?int
+    {
+        return is_array($review) ? self::RATINGS[$review['starRating'] ?? ''] ?? null : null;
+    }
+
+    /**
+     * Left null when Google hands back no display name: naming the author is the template's call, and a label stored here would be frozen in the locale of the import.
+     *
+     * @return array{0: string|null, 1: string|null}
+     */
+    private function toAuthor(mixed $reviewer): array
+    {
+        if (!is_array($reviewer)) {
+            return [null, null];
+        }
+
+        return [$reviewer['displayName'] ?? null, $reviewer['profilePhotoUrl'] ?? null];
+    }
+
+    /**
+     * What the owner answered, if they answered at all - a review Google hands back without a reply carries neither of the two.
+     *
+     * @return array{0: string|null, 1: \DateTimeImmutable|null}
+     */
+    private function toReply(mixed $reply): array
+    {
+        if (!is_array($reply)) {
+            return [null, null];
+        }
+
+        return [
+            $reply['comment'] ?? null,
+            isset($reply['updateTime']) ? new \DateTimeImmutable($reply['updateTime']) : null,
+        ];
     }
 
     private function reviewsPath(): string

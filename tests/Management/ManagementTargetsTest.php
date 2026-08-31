@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Test\ManagementTargetsTestCase;
 use c975L\SocialBundle\Management\MenuProvider;
 use c975L\SocialBundle\Management\SocialGuidedProjectProvider;
+use Symfony\Bundle\SecurityBundle\Security;
 
 // Every CRUD controller and route this bundle's management providers name, checked against what its controllers actually declare - see ConfigBundle's ManagementTargetsTestCase
 class ManagementTargetsTest extends ManagementTargetsTestCase
@@ -22,7 +23,7 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
     {
         return [
             new MenuProvider($this->configService()),
-            new SocialGuidedProjectProvider($this->configService(), $this->adminUrlGenerator()),
+            new SocialGuidedProjectProvider($this->configService(), $this->adminUrlGenerator(), $this->security()),
         ];
     }
 
@@ -34,6 +35,15 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
         $configService->method('getBool')->willReturn(true);
 
         return $configService;
+    }
+
+    // Every role granted: the Google connection parcours names screens of its own, which would not be checked at all were it dropped here
+    private function security(): Security
+    {
+        $security = $this->createStub(Security::class);
+        $security->method('isGranted')->willReturn(true);
+
+        return $security;
     }
 
     // This bundle's own controllers on top of ConfigBundle's, whose screens its entries point to as well - both directories, the sidebar's "Connecter Google" link naming a route declared outside Management/

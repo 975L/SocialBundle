@@ -141,6 +141,16 @@ class SocialLinksCrudController extends AbstractCrudController
         $data = $this->getContext()?->getEntity()?->getInstance()?->getData() ?? [];
 
         return [
+            ...$this->indexFields(),
+            ...$this->formFields(),
+            ...$this->previewFields($data),
+        ];
+    }
+
+    // The two virtual index columns, summarising the links a Block holds
+    private function indexFields(): array
+    {
+        return [
             // "data" (the Block's JSON column) holds data.links, an array of {label, url, icon} - summarized here as two virtual index columns, since there's no single scalar label/url to show. Their property names are made up (not "data"): giving a real, Doctrine-mapped property to a generic Field makes EasyAdmin silently rebuild it into an ArrayField (same reason HiddenField is used below for the form), which drops formatValue() entirely and renders the raw, unformatted array. A fake property name keeps it "virtual", skipping that rebuild; setValue('') then prevents EasyAdmin from trying (and failing) to read that fake property straight off the entity.
             Field::new('socialLinksLabels', t('label.label', [], 'social'))
                 ->onlyOnIndex()
@@ -150,14 +160,26 @@ class SocialLinksCrudController extends AbstractCrudController
                 ->onlyOnIndex()
                 ->setValue('')
                 ->formatValue(static fn (mixed $value, Block $entity): string => implode(', ', array_column($entity->getData()['links'] ?? [], 'url'))),
+        ];
+    }
 
+    // The editor itself
+    private function formFields(): array
+    {
+        return [
             // HiddenField, not Field/TextField: "data" is a Doctrine JSON column, so a plain Field::new() gets silently rebuilt by EasyAdmin into an ArrayField, which force-injects CollectionType-style "entry_type"/"allow_add"/... options that SocialLinksType doesn't declare, crashing the form. TextField avoids that rebuild but its own configurator then throws instead, because it requires the raw value to be a string/Stringable, and "data" is an array. HiddenField has no dedicated configurator at all, so nothing inspects or reshapes the value or options; setFormType() below fully takes over as intended. HiddenField has no dedicated JS of its own, unlike CollectionField/ArrayField which enqueue "field-collection.js" (the script behind the "add new item"/"delete" buttons). Since the nested CollectionType inside SocialLinksType renders those same buttons through EasyAdmin's generic form theme, the script must be added manually here or clicking "add" does nothing.
             HiddenField::new('data')
                 ->setLabel(t('label.social_links', [], 'social'))
                 ->setFormType(SocialLinksType::class)
                 ->addJsFiles(Asset::fromEasyAdminAssetPackage('field-collection.js')->onlyOnForms())
                 ->onlyOnForms(),
+        ];
+    }
 
+    // Static preview of the links as last saved
+    private function previewFields(array $data): array
+    {
+        return [
             // Static preview of the links as last saved (see SocialLinksPreviewType for why it doesn't live-update as entries are edited above). "mapped" => false: same reason as "data" above would need if it weren't already routed entirely through setFormType() - here it's this field itself that has no matching Block property, so Symfony's form data mapper would otherwise crash trying to read/write it.
             Field::new('socialLinksPreview')
                 ->setLabel(t('label.preview', [], 'social'))

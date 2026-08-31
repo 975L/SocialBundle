@@ -1,5 +1,28 @@
 # Changelog
 
+## v2.6.5
+
+Split the Google guided project in two, on who does the work
+
+- The Google guided project split into `social-google-connect` (4030) and `social-google-reviews` (4040) (31/08/2026)
+- `SocialGuidedProjectProvider` contributes the connection parcours only to a user holding its three roles at once (31/08/2026)
+- Requires `symfony/security-bundle` ^8.0 (31/08/2026)
+- Added `sass/block-thumbs.scss`, the block silhouettes of the back-office picker (31/08/2026)
+- `StylesheetProvider` implements `BundleStylesheetManagementProviderInterface` and serves them (31/08/2026)
+- Added `phpmd.xml.dist` and the `composer mess` script running it, in `qa` (31/08/2026)
+- `GoogleBusinessProfileSource::toReviewData()` and `SocialLinksCrudController::configureFields()` split into named helpers (31/08/2026)
+- `ShareButtonsExtension::defaultAnchor()` extracted (31/08/2026)
+- `.codacy.yaml` excludes the repository root forms of its glob paths (31/08/2026)
+- `phpstan.dist.neon` ignores `phpDoc.parseError`, as CoreBundle's does (31/08/2026)
+- The two preview scripts wrap their `forEach` bodies in a block, as eslint's `no-confusing-arrow` demands (31/08/2026)
+- Added tests for the silhouette sheet, one per pickable kind, and for the guided project roles (31/08/2026)
+- Added tests for the owner reply Google carries back with a review (31/08/2026)
+- README and the shipped skill state the four projects, the split and the role conjunction (31/08/2026)
+- README and the shipped skill document the silhouette sheet and its management-only tag (31/08/2026)
+- The skill's `## Do not` rules out an `extra` section on the status report (31/08/2026)
+- It also rules out a back-office alert on the Google connection (31/08/2026)
+- It also rules out a `FormThemeProviderInterface`, a `BlockEditUrlProviderInterface` and a `BlockCacheTagProviderInterface` here (31/08/2026)
+
 ## v2.6.4
 
 Logo modified

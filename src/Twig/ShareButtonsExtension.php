@@ -75,10 +75,16 @@ class ShareButtonsExtension
             // A singleton saved before shape and fill became two settings only carries the old "style", which is ignored: it renders at these defaults until an admin saves the form again
             $settings['shape'] ?? 'wide',
             $settings['fill'] ?? 'solid',
-            id: null !== $id ? ($id ?: null) : ($settings['anchor'] ?? null),
+            id: $this->defaultAnchor($settings, $id),
             // Shown unless an admin unchecked it - a singleton saved before this setting existed carries no key at all, and the line is what the band is meant to look like
             displayIntro: $settings['displayIntro'] ?? true,
         );
+    }
+
+    // The anchor the caller asked for, an empty string meaning "no anchor at all" rather than "the saved one" - only an omitted argument falls back on what the singleton carries
+    private function defaultAnchor(array $settings, ?string $id): ?string
+    {
+        return null !== $id ? ($id ?: null) : ($settings['anchor'] ?? null);
     }
 
     // Cross-request cache: this singleton Block is read on every page rendering share_buttons_default(), and barely ever changes - invalidated by SingletonBlockCacheInvalidationListener whenever it's saved/removed. Safe to cache the entity directly: only ->getData() is ever read from it (never rendered through render_block() like "social_links" is), so its medias/user are never touched

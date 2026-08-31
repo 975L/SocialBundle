@@ -15,7 +15,7 @@ function syncPreview() {
 
     const styleSelect = document.querySelector('[data-social-links-icon-style-select]');
     if (styleSelect) {
-        ICON_STYLES.forEach(style => list.classList.remove(`social-links--${style}`));
+        ICON_STYLES.forEach(style => { list.classList.remove(`social-links--${style}`); });
         list.classList.add(`social-links--${styleSelect.value}`);
     }
 

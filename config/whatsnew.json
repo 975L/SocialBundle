@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-08-31",
+        "description": [
+            {
+                "en": "The Google guided project is now two: one to connect your listing, one to read your reviews and put them on a page",
+                "fr": "Le projet guidé Google est maintenant en deux : un pour connecter votre fiche, un pour consulter vos avis et les afficher sur une page",
+                "es": "El proyecto guiado de Google ahora son dos: uno para conectar su ficha y otro para consultar sus opiniones y mostrarlas en una página"
+            },
+            {
+                "en": "The connection project is only offered to an account actually holding every role its steps need, instead of stopping on a refusal halfway through",
+                "fr": "Le projet de connexion n'est proposé qu'à un compte disposant réellement de tous les rôles que ses étapes demandent, au lieu de s'arrêter sur un refus en cours de route",
+                "es": "El proyecto de conexión solo se ofrece a una cuenta que tenga realmente todos los roles que sus pasos necesitan, en lugar de detenerse en un rechazo a mitad de camino"
+            },
+            {
+                "en": "The block picker now draws each block of this bundle as a small preview, so you recognise it without reading its name",
+                "fr": "Le sélecteur de blocks dessine maintenant chaque block de ce bundle en aperçu, pour le reconnaître sans lire son nom",
+                "es": "El selector de bloques ahora dibuja cada bloque de este paquete como una vista previa, para reconocerlo sin leer su nombre"
+            }
+        ]
+    },
+    {
         "date": "2026-08-24",
         "description": [
             {

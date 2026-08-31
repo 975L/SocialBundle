@@ -24,7 +24,8 @@
         "doctrine/orm": "^3.6",
         "easycorp/easyadmin-bundle": "^5.1",
         "symfony/form": "^8.0",
-        "symfony/framework-bundle": "^8.0"
+        "symfony/framework-bundle": "^8.0",
+        "symfony/security-bundle": "^8.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^13.2"
@@ -50,6 +51,7 @@
         "fixer": "php-cs-fixer check --diff",
         "stan": "phpstan analyse --no-progress",
         "rector": "rector process --dry-run",
+        "mess": "phpmd src text phpmd.xml.dist --ignore-errors-on-exit --report-file .phpmd-report.log; s=$?; grep \"^/\" .phpmd-report.log; exit $s",
         "test": "phpunit",
         "qa": [
             "@audit-deps",
@@ -57,6 +59,7 @@
             "@fixer",
             "@stan",
             "@rector",
+            "@mess",
             "@test"
         ]
     },
@@ -65,6 +68,7 @@
         "fixer": "Standard Symfony (php-cs-fixer)",
         "stan": "Analyse statique du bundle, level 5",
         "rector": "Modernisation du code, en simulation (rector)",
+        "mess": "Détection des odeurs de code (phpmd)",
         "test": "Suite PHPUnit",
         "qa": "Tous les contrôles de la CI, dans l'ordre - voir bin/ci.sh pour les rejouer sur des dépendances fraîches"
     },

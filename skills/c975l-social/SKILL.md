@@ -1,6 +1,6 @@
 ---
 name: c975l-social
-description: "Use this skill when working with social links, share buttons or customer reviews in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, and the Google Business Profile review import with its pluggable sources. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile."
+description: "Use this skill when working with social links, share buttons or customer reviews in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, and the Google Business Profile review import with its pluggable sources. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile."
 ---
 
 # c975L SocialBundle
@@ -10,7 +10,7 @@ description: "Use this skill when working with social links, share buttons or cu
 **Package:** `c975l/social-bundle` · **Namespace:** `c975L\SocialBundle\` · **Twig namespace:** `@c975LSocial` · **Translation domain:** `social`
 
 **Key source paths** (relative to the package root):
-`src/Service/ShareButtonsService.php`, `src/Twig/`, `src/Form/Block/`, `src/Controller/`, `src/Controller/Management/`, `src/Management/`, `src/Contract/`, `src/Command/ReviewsSyncCommand.php`, `templates/blocks/`, `templates/components/SocialLinks.html.twig`, `templates/shareButtons/`, `config/configs.json`, `config/services.yaml`, `public/icons/`, `sass/_social-brand-colors.scss`, `scaffold/assets/styles/themes/social.css`
+`src/Service/ShareButtonsService.php`, `src/Twig/`, `src/Form/Block/`, `src/Controller/`, `src/Controller/Management/`, `src/Management/`, `src/Contract/`, `src/Command/ReviewsSyncCommand.php`, `templates/blocks/`, `templates/components/SocialLinks.html.twig`, `templates/shareButtons/`, `config/configs.json`, `config/services.yaml`, `public/icons/`, `sass/_social-brand-colors.scss`, `sass/block-thumbs.scss`, `scaffold/assets/styles/themes/social.css`
 
 **Related documentation:** this package's `README.md` is the exhaustive reference. The block system, the icon service and the media library it builds on live in `c975l/core-bundle`.
 
@@ -124,6 +124,12 @@ The four box tokens have a **per-variant default**, one value per shape or fill:
 nothing visible. `scaffold/assets/styles/themes/social.css` is the catalogue of what is meant to be set
 site-wide, every line shipped commented out at its default.
 
+`sass/block-thumbs.scss` is a sheet apart, and no part of the site's look: it draws the two pickable
+kinds at thumbnail size for the back-office's visual block picker, through EasyAdmin's own `--bs-*`
+variables, so a site has nothing to retune there. `StylesheetProvider` serves it through
+`getManagementStylesheets()` (`ui.management_stylesheet`), the management screens only — a site
+wanting the same silhouettes on a public showcase page contributes the file from its own provider.
+
 ## Customer reviews
 
 **The reviews themselves live in UiBundle** (`c975L\UiBundle\Entity\Review`, table `site_review`),
@@ -156,8 +162,11 @@ moderation screen reaches it without this bundle owning the screen. Its `support
 a review written on the site and for a source no longer connected, which is what hides the reply field.
 
 The `ui-enable-reviews` key still gates this bundle's own halves of the feature: the "Connecter Google"
-link and the guided project. The sync command is deliberately left running while it is off, so a
-reactivation shows the reviews imported meanwhile.
+link and the two Google guided projects — connecting the listing being the agency's own job
+(`ROLE_SUPER_ADMIN`, the OAuth keys being `restricted` configs, and `getGuidedProjects()` also
+checking `site-role-admin` and `site-role-editor`, the three screens that parcours walks demanding
+one each), reading and displaying the reviews the site's editor. The sync command is deliberately left running while it is off, so a reactivation
+shows the reviews imported meanwhile.
 
 **Setup in the consuming app**, on top of the usual `c975l:config:load-all`:
 
@@ -194,7 +203,8 @@ Nothing below is declared in the app: `MenuProvider` (the dashboard entries, eac
 tier), `ProcedureProvider`
 (the admin help procedures), `SocialGuidedProjectProvider` (the guided walk-through of each screen,
 offered only to who can open it), `WhatsNewProvider`, `ImportmapProvider`, `Service\ScriptProvider`,
-`Service\StylesheetProvider`, `Service\BlockFixtureProvider`, an export/import provider per
+`Service\StylesheetProvider` (the public sheet and the back-office silhouettes both),
+`Service\BlockFixtureProvider`, an export/import provider per
 singleton (`SocialLinksExportProvider`, `ShareButtonsSettingsExportProvider` and their import twins),
 `Management\GoogleReviewsHealthCheckProvider` (one row on the health check page, saying whether the
 Google connection still answers - the import being the one thing here that stops silently) and
@@ -223,3 +233,13 @@ Google connection still answers - the import being the one thing here that stops
   reply is writable, and it goes to the platform before it is stored.
 - **Do not call a review platform from a page render.** Quotas are counted per call and the site must
   keep serving its reviews while the platform is down — `c975l:social:reviews:sync` runs on cron.
+- **Do not add an `extra` section to the status report.** This bundle holds two back-office
+  singletons and no queue of its own, so it has no figure a maintainer would act on that morning.
+- **Do not raise a back-office alert on the Google connection.** `GoogleReviewsHealthCheckProvider`
+  already states both failing cases, and an alert cannot call Google from a page render.
+- **Do not register a `FormThemeProviderInterface`, a `BlockEditUrlProviderInterface` or a
+  `BlockCacheTagProviderInterface` here.** The two CRUD form themes are local, passed through
+  `Crud::addFormTheme()`; the share band is no `Block` on a page, and its edit url is already served
+  by `share_buttons_edit_url()`; and the pointer blocks render the singleton, itself already cached.
+  Nothing is offered to the sitemap or the linkable routes either: both routes are editor-only
+  redirections.

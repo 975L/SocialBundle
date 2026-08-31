@@ -26,9 +26,13 @@
                 <source>block.social_links_display_description</source>
                 <target>Insère les réseaux sociaux du tableau de bord, liens non redéfinis</target>
             </trans-unit>
+            <trans-unit id="Z4mtym8">
+                <source>description.guided_project_social_google_connect</source>
+                <target>La partie agence : l'accès chez Google, les deux clés, et le consentement. À faire une fois, puis le jour où le jeton est révoqué.</target>
+            </trans-unit>
             <trans-unit id="VNxe2Mo">
                 <source>description.guided_project_social_google_reviews</source>
-                <target>Connecter la fiche Google de l'établissement, puis afficher ses avis sur le site.</target>
+                <target>Modérer ce que Google a rapporté, y répondre, et poser les avis sur une page.</target>
             </trans-unit>
             <trans-unit id="FrDtWdT">
                 <source>description.guided_project_social_links</source>
@@ -44,7 +48,7 @@
             </trans-unit>
             <trans-unit id="XzEU5fT">
                 <source>description.guided_step_social_google_credentials</source>
-                <target>Chercher "social-google-oauth-client-id" et "social-google-oauth-client-secret" dans la liste, et y coller les deux valeurs relevées dans la console Google Cloud. Les trois autres clés Google se remplissent toutes seules à l'étape suivante.</target>
+                <target>Chercher « social-google-oauth-client-id » et « social-google-oauth-client-secret » dans la liste, et y coller les deux valeurs relevées dans la console Google Cloud. Le secret ne s'affiche qu'avec le bouton « Voir données sensibles ». Le jeton, le compte et la fiche se remplissent tout seuls à l'étape suivante.</target>
             </trans-unit>
             <trans-unit id="RJQ_vuA">
                 <source>description.guided_step_social_google_display</source>
@@ -56,11 +60,15 @@
             </trans-unit>
             <trans-unit id="cFM7OuY">
                 <source>description.guided_step_social_google_reply</source>
-                <target>Seule la réponse publique s'écrit ici, et elle part sur Google dès l'enregistrement. Le texte et la note de l'avis appartiennent à son auteur : ils ne sont ni modifiables ni supprimables. Un avis abusif se signale à Google.</target>
+                <target>Le bouton en forme de flèche ouvre la réponse publique, qui part sur Google dès l'enregistrement. Le texte et la note de l'avis appartiennent à son auteur : ils ne sont ni modifiables ni supprimables. Un avis abusif se signale à Google.</target>
             </trans-unit>
             <trans-unit id="pu1hp1o">
                 <source>description.guided_step_social_google_reviews</source>
-                <target>Menu "Gestion &gt; Avis clients" pour les consulter. Les avis arrivent avec la commande "c975l:social:reviews:sync", à planifier une fois par jour. La liste reste vide tant qu'elle n'a pas tourné.</target>
+                <target>Tous les avis du site, quelle que soit la plateforme. Ceux de Google arrivent d'eux-mêmes chaque nuit : la liste reste vide tant que la première synchronisation n'a pas tourné.</target>
+            </trans-unit>
+            <trans-unit id="r_RYin.">
+                <source>description.guided_step_social_google_sync</source>
+                <target>Les avis arrivent d'eux-mêmes chaque nuit, la tâche « c975l:social:reviews:sync » étant planifiée par le bundle. Reste une clé facultative, « social-google-listing-url » : l'adresse publique de la fiche, reprise dans les données structurées du site.</target>
             </trans-unit>
             <trans-unit id="vgXH0gX">
                 <source>description.guided_step_social_links_display_label</source>
@@ -190,9 +198,13 @@
                 <source>label.google_connect</source>
                 <target>Connecter Google</target>
             </trans-unit>
+            <trans-unit id="viNLaDg">
+                <source>label.guided_project_social_google_connect</source>
+                <target>Connecter la fiche Google de l'établissement</target>
+            </trans-unit>
             <trans-unit id="9gMwOTb">
                 <source>label.guided_project_social_google_reviews</source>
-                <target>Afficher les avis Google de votre établissement</target>
+                <target>Consulter et afficher les avis Google</target>
             </trans-unit>
             <trans-unit id="__S_HiT">
                 <source>label.guided_project_social_links</source>
@@ -225,6 +237,10 @@
             <trans-unit id="SupTUqT">
                 <source>label.guided_step_social_google_reviews</source>
                 <target>Consulter les avis importés</target>
+            </trans-unit>
+            <trans-unit id="oqWYK8u">
+                <source>label.guided_step_social_google_sync</source>
+                <target>Laisser la synchronisation faire le reste</target>
             </trans-unit>
             <trans-unit id="xNJPblz">
                 <source>label.guided_step_social_links_display_label</source>

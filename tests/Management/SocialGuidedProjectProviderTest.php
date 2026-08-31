@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Management\SocialGuidedProjectProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class SocialGuidedProjectProviderTest extends TestCase
 {
@@ -32,19 +33,24 @@ class SocialGuidedProjectProviderTest extends TestCase
         return $generator;
     }
 
-    // Same stubbing as MenuProviderTest: the ConfigService answers "social-enable-share-buttons" with the given value. "site-role-editor" is answered apart, the projects declaring it as their own role
-    private function createProvider(bool $shareButtonsEnabled, array &$controllers = [], bool $reviewsEnabled = true): SocialGuidedProjectProvider
+    // Same stubbing as MenuProviderTest: the ConfigService answers "social-enable-share-buttons" with the given value. The two role configs are answered apart, the projects declaring them as their own role
+    private function createProvider(bool $shareButtonsEnabled, array &$controllers = [], bool $reviewsEnabled = true, array $deniedRoles = []): SocialGuidedProjectProvider
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         // Each feature switch answered on its own: the two are independent, and a project dropped by the wrong one would still look right
         $configService->method('get')->willReturnCallback(static fn (string $slug): string => match ($slug) {
+            'site-role-admin' => 'ROLE_ADMIN',
             'site-role-editor' => 'ROLE_EDITOR',
             'ui-enable-reviews' => $reviewsEnabled ? '1' : '0',
             default => $shareButtonsEnabled ? '1' : '0',
         });
         $configService->method('getBool')->willReturnCallback(static fn ($value) => '1' === $value);
 
-        return new SocialGuidedProjectProvider($configService, $this->createAdminUrlGenerator($controllers));
+        // Everything granted but what the case denies, so a parcours dropped for a missing role is dropped for that role alone
+        $security = $this->createStub(Security::class);
+        $security->method('isGranted')->willReturnCallback(static fn ($attribute): bool => !\in_array($attribute, $deniedRoles, true));
+
+        return new SocialGuidedProjectProvider($configService, $this->createAdminUrlGenerator($controllers), $security);
     }
 
     // The 4000 block GuidedProjectProviderInterface reserves this bundle, at the step of 10 it states
@@ -52,8 +58,8 @@ class SocialGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider(true)->getGuidedProjects();
 
-        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-reviews'], array_column($projects, 'slug'));
-        $this->assertSame([4010, 4020, 4030], array_column($projects, 'order'));
+        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-connect', 'social-google-reviews'], array_column($projects, 'slug'));
+        $this->assertSame([4010, 4020, 4030, 4040], array_column($projects, 'order'));
     }
 
     // The share buttons screen isn't in the sidebar while the feature is off, so no parcours walks to it either
@@ -61,7 +67,7 @@ class SocialGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider(false)->getGuidedProjects();
 
-        $this->assertSame(['social-links', 'social-google-reviews'], array_column($projects, 'slug'));
+        $this->assertSame(['social-links', 'social-google-connect', 'social-google-reviews'], array_column($projects, 'slug'));
     }
 
     // Reviews have a switch of their own, read exactly like the share buttons'
@@ -73,6 +79,27 @@ class SocialGuidedProjectProviderTest extends TestCase
         $this->assertSame(['social-links', 'social-share-buttons'], array_column($projects, 'slug'));
     }
 
+    // The connection parcours walks three screens gated on three roles, none of them implying another: missing any one of them, it is not offered - where the reviews parcours, stopping at site-role-editor, still is
+    public function testTheGoogleConnectProjectIsDroppedWhileARoleItWalksIsMissing(): void
+    {
+        $controllers = [];
+
+        foreach (['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR'] as $deniedRole) {
+            $projects = $this->createProvider(true, $controllers, true, [$deniedRole])->getGuidedProjects();
+
+            $this->assertNotContains('social-google-connect', array_column($projects, 'slug'), sprintf('The parcours is offered without "%s"', $deniedRole));
+        }
+    }
+
+    // Denied the two roles its own key does not hold, the reviews parcours is untouched: it stops at site-role-editor
+    public function testTheGoogleReviewsProjectSurvivesTheConnectionRoles(): void
+    {
+        $controllers = [];
+        $projects = $this->createProvider(true, $controllers, true, ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN'])->getGuidedProjects();
+
+        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-reviews'], array_column($projects, 'slug'));
+    }
+
     public function testEverySlugIsPrefixedWithTheBundleName(): void
     {
         foreach ($this->createProvider(true)->getGuidedProjects() as $project) {
@@ -80,12 +107,21 @@ class SocialGuidedProjectProviderTest extends TestCase
         }
     }
 
-    // Both screens gate their own INDEX by site-role-editor, a role the dashboard's own site-role-admin doesn't imply - without this, GuidedProjectBuilder would offer an admin lacking it a parcours ending on a 403
-    public function testEveryProjectDemandsTheRoleItsScreenDoes(): void
+    // Each project states the bar of the screens it walks, a role no other implies - too low, GuidedProjectBuilder offers a parcours ending on a 403. The Google connection is the one going above site-role-editor: its second step edits "restricted" configs, which ConfigCrudController hides below ROLE_SUPER_ADMIN
+    public function testEveryProjectDemandsTheRoleItsScreensDo(): void
     {
+        $roles = [];
+
         foreach ($this->createProvider(true)->getGuidedProjects() as $project) {
-            $this->assertSame('ROLE_EDITOR', $project['role'], sprintf('Project "%s" walks to an editor-only screen', $project['slug']));
+            $roles[$project['slug']] = $project['role'];
         }
+
+        $this->assertSame([
+            'social-links' => 'ROLE_EDITOR',
+            'social-share-buttons' => 'ROLE_EDITOR',
+            'social-google-connect' => 'ROLE_SUPER_ADMIN',
+            'social-google-reviews' => 'ROLE_EDITOR',
+        ], $roles);
     }
 
     public function testEveryProjectCarriesTheSocialTranslationDomainAndSteps(): void
@@ -122,14 +158,14 @@ class SocialGuidedProjectProviderTest extends TestCase
         }
     }
 
-    public function testProjectsOpenOnTheirOwnCrudIndex(): void
+    public function testProjectsOpenOnACrudIndex(): void
     {
         $controllers = [];
         $this->createProvider(true, $controllers)->getGuidedProjects();
 
-        // The reviews parcours is the exception: the two keys its connection needs are configs, so it opens on ConfigBundle's own screen rather than on one of this bundle's
+        // The two Google parcours are the exceptions, each opening on another bundle's screen: the keys the connection needs are configs, and the reviews are UiBundle's entity whatever platform brought them in
         $this->assertSame(
-            ['SocialLinksCrudController', 'ShareButtonsSettingsCrudController', 'ConfigCrudController'],
+            ['SocialLinksCrudController', 'ShareButtonsSettingsCrudController', 'ConfigCrudController', 'ReviewCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
     }

@@ -21,7 +21,7 @@ function syncPreview() {
         if (!select) return;
 
         // Read off the <select>'s own options rather than a list restated here: a value added to ShareButtonsService and left out of that copy would never be removed again, staying stacked under whatever is picked next
-        Array.from(select.options).forEach(option => preview.classList.remove(`${prefix}${option.value}`));
+        Array.from(select.options).forEach(option => { preview.classList.remove(`${prefix}${option.value}`); });
         preview.classList.add(`${prefix}${select.value}`);
     });
 

@@ -80,6 +80,42 @@ class GoogleBusinessProfileSourceTest extends TestCase
         $this->assertNull($reviews[0]->authorName);
     }
 
+    // The owner's answer comes back inside the review, and is what tells the moderation screen a reply is already published
+    public function testFetchCarriesTheOwnerReplyAndItsDate(): void
+    {
+        $httpClient = new MockHttpClient([new MockResponse(json_encode([
+            'reviews' => [[
+                'reviewId' => 'r1',
+                'starRating' => 'FIVE',
+                'createTime' => '2026-08-01T10:00:00Z',
+                'reviewReply' => ['comment' => 'Merci !', 'updateTime' => '2026-08-02T09:00:00Z'],
+            ]],
+        ], \JSON_THROW_ON_ERROR))]);
+
+        $reviews = iterator_to_array($this->createSource($httpClient)->fetch());
+
+        $this->assertSame('Merci !', $reviews[0]->replyComment);
+        $this->assertSame('2026-08-02T09:00:00Z', $reviews[0]->repliedAt?->format('Y-m-d\TH:i:s\Z'));
+    }
+
+    // A review nobody answered carries neither of the two, and an answer Google dates not carries only the text
+    public function testFetchLeavesTheReplyNullWhenThereIsNone(): void
+    {
+        $httpClient = new MockHttpClient([new MockResponse(json_encode([
+            'reviews' => [
+                ['reviewId' => 'r1', 'starRating' => 'FIVE', 'createTime' => '2026-08-01T10:00:00Z'],
+                ['reviewId' => 'r2', 'starRating' => 'FIVE', 'createTime' => '2026-08-01T10:00:00Z', 'reviewReply' => ['comment' => 'Merci !']],
+            ],
+        ], \JSON_THROW_ON_ERROR))]);
+
+        $reviews = iterator_to_array($this->createSource($httpClient)->fetch());
+
+        $this->assertNull($reviews[0]->replyComment);
+        $this->assertNull($reviews[0]->repliedAt);
+        $this->assertSame('Merci !', $reviews[1]->replyComment);
+        $this->assertNull($reviews[1]->repliedAt);
+    }
+
     // A rating with no text is a review too, and must not be dropped on its way in
     public function testFetchKeepsARatingOnlyReview(): void
     {

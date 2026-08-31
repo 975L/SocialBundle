@@ -1,5 +1,6 @@
 *.bak
 .php-cs-fixer.cache
+.phpmd-report.log
 .phpunit.result.cache
 .phpunit.cache
 .rector.cache

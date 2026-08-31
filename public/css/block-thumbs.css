@@ -1,0 +1,53 @@
+/*
+ * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+/* The silhouettes of this bundle's block kinds, shown wherever a kind has to be recognised at a glance: the visual picker an editor chooses a block from (UiBundle's assets/js/block-picker.js) and the public block showcase of a site. Drawn here rather than in UiBundle for the same reason as the kinds' templates and fixtures: a block belongs to the bundle shipping it. The frame, the five parts and the default silhouette come from UiBundle's sass/_block-thumbs.scss - what follows only says how this bundle's kinds arrange them. */
+/* A row of round social icons - the shape is what says "social", the brand behind each one being the editor's own choice */
+.ui-block-thumb--social_links,
+.ui-block-thumb--social_links_display {
+  justify-content: center;
+}
+.ui-block-thumb--social_links .ui-block-thumb__title,
+.ui-block-thumb--social_links_display .ui-block-thumb__title {
+  display: none;
+}
+.ui-block-thumb--social_links .ui-block-thumb__line,
+.ui-block-thumb--social_links_display .ui-block-thumb__line {
+  align-self: center;
+  width: 80%;
+  height: 0.75rem;
+  background-image: radial-gradient(circle at center, currentcolor 0 38%, transparent 40%);
+  background-size: 20% 100%;
+  background-color: transparent;
+}
+.ui-block-thumb--social_links .ui-block-thumb__line + .ui-block-thumb__line,
+.ui-block-thumb--social_links_display .ui-block-thumb__line + .ui-block-thumb__line {
+  display: none;
+}
+
+/* Share buttons are the same row, but they are buttons: squared off and in the accent colour */
+.ui-block-thumb--share_buttons_display {
+  justify-content: center;
+}
+.ui-block-thumb--share_buttons_display .ui-block-thumb__title {
+  display: none;
+}
+.ui-block-thumb--share_buttons_display .ui-block-thumb__line {
+  align-self: center;
+  width: 80%;
+  height: 0.625rem;
+  border-radius: 2px;
+  opacity: 1;
+  background-image: linear-gradient(to right, var(--bs-primary, #0d6efd) 0 70%, transparent 70%);
+  background-size: 20% 100%;
+  background-color: transparent;
+}
+.ui-block-thumb--share_buttons_display .ui-block-thumb__line + .ui-block-thumb__line {
+  display: none;
+}
+
+/*# sourceMappingURL=block-thumbs.css.map */

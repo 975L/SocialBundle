@@ -114,6 +114,11 @@ class ScaffoldThemeTest extends TestCase
                 continue;
             }
 
+            // The silhouettes are not part of the site's look: they draw this bundle's block kinds at thumbnail size, through EasyAdmin's own --bs-* variables where the back-office shows them, and a site has nothing to retune there
+            if ('block-thumbs.scss' === $file->getFilename()) {
+                continue;
+            }
+
             $source = (string) file_get_contents($file->getPathname());
 
             preg_match_all('/var\(\s*(--[a-z0-9-]+)\s*[,)]/', $source, $names);

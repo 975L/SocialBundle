@@ -15,8 +15,10 @@ use c975L\ConfigBundle\Management\GuidedProjectProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
+use c975L\UiBundle\Controller\Management\ReviewCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 
 // This bundle's guided projects, running the 4000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
 class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
@@ -24,6 +26,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
     public function __construct(
         private readonly ConfigServiceInterface $configService,
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
+        private readonly Security $security,
     ) {
     }
 
@@ -36,8 +39,17 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             $projects[] = $this->shareButtonsProject();
         }
 
-        // Same condition as MenuProvider's own entry, for the same reason as the share buttons above
+        // Same condition as MenuProvider's own entry, for the same reason as the share buttons above. Two parcours rather than one: connecting the listing is the agency's own job (the Google keys are restricted configs, see the readme on one Cloud application shared across client sites), where reading the reviews and putting them on a page is the site's editor
         if ($this->configService->getBool($this->configService->get('ui-enable-reviews'))) {
+            // The connection parcours walks screens gated on three roles, none of them implying another: the 'role' key holds one, so the conjunction is checked here, or a super-administrator missing the two others would be offered a parcours answering 403 on its very first step
+            if (
+                $this->security->isGranted('ROLE_SUPER_ADMIN')
+                && $this->security->isGranted($this->configService->get('site-role-admin'))
+                && $this->security->isGranted($this->configService->get('site-role-editor'))
+            ) {
+                $projects[] = $this->googleConnectProject();
+            }
+
             $projects[] = $this->googleReviewsProject();
         }
 
@@ -45,15 +57,16 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
     }
 
     // The only parcours whose first move happens outside the site: the Google side is left to the "afficher-avis-google" help procedure, which is text and can carry links to Google's own pages, where a step's description is inserted as plain text and could not
-    private function googleReviewsProject(): array
+    private function googleConnectProject(): array
     {
         return [
-            'slug' => 'social-google-reviews',
-            'label' => 'label.guided_project_social_google_reviews',
-            'description' => 'description.guided_project_social_google_reviews',
+            'slug' => 'social-google-connect',
+            'label' => 'label.guided_project_social_google_connect',
+            'description' => 'description.guided_project_social_google_connect',
             'translation_domain' => 'social',
             'order' => 4030,
-            'role' => $this->configService->get('site-role-editor'),
+            // The bar its own screens state, and the only project of this bundle not stopping at site-role-editor: the two OAuth keys of step two are "restricted" configs, which ConfigCrudController hides from every user below this role (see its createIndexQueryBuilder()). A literal, exactly as ConfigBundle states it on its own restricted actions - no config holds it. The two other roles the parcours needs, site-role-admin for step one and site-role-editor for step three, do not fit here: GuidedProjectBuilder reads a single role, so getGuidedProjects() checks the conjunction before adding the project
+            'role' => 'ROLE_SUPER_ADMIN',
             'steps' => [
                 [
                     // Opens on ConfigBundle's own screen rather than on one of this bundle's: the two keys the connection needs are configs, and this is where the user will be working once Google has answered
@@ -72,16 +85,41 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'description' => 'description.guided_step_social_google_connect',
                     'highlight' => 'a[href*="/social/google/connect"]',
                 ],
-                // The three steps below carry no highlight: consenting leaves the site entirely and comes back through the callback's own redirect, so there is no screen left for the panel to walk
                 [
+                    // No highlight: consenting leaves the site entirely and comes back through the callback's own redirect, so there is no screen left for the panel to walk - and what follows happens on its own, nightly (see SocialMaintenanceTaskProvider)
+                    'label' => 'label.guided_step_social_google_sync',
+                    'description' => 'description.guided_step_social_google_sync',
+                ],
+            ],
+        ];
+    }
+
+    // What the site's own editor does with the reviews once the listing is connected - the screen is UiBundle's, this bundle only feeding it (see ReviewSynchronizer)
+    private function googleReviewsProject(): array
+    {
+        return [
+            'slug' => 'social-google-reviews',
+            'label' => 'label.guided_project_social_google_reviews',
+            'description' => 'description.guided_project_social_google_reviews',
+            'translation_domain' => 'social',
+            'order' => 4040,
+            // The bar ReviewCrudController states on its own rows, the three screens of this parcours all stopping there
+            'role' => $this->configService->get('site-role-editor'),
+            'steps' => [
+                [
+                    // UiBundle's screen, not one of this bundle's: the reviews are its entity, whatever platform brought them in
                     'label' => 'label.guided_step_social_google_reviews',
                     'description' => 'description.guided_step_social_google_reviews',
+                    'url' => $this->indexUrl(ReviewCrudController::class),
                 ],
                 [
+                    // EasyAdmin's own edit action, renamed after the one thing the page behind it is for (see ReviewCrudController::configureActions()) - it keeps its action-edit class whatever the icon and the label become
                     'label' => 'label.guided_step_social_google_reply',
                     'description' => 'description.guided_step_social_google_reply',
+                    'highlight' => '.action-edit',
                 ],
                 [
+                    // No highlight: the block is added from the page being composed, wherever the editor wants the reviews to show
                     'label' => 'label.guided_step_social_google_display',
                     'description' => 'description.guided_step_social_google_display',
                 ],
