@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.6.6
+
+README shows the blocks the bundle ships
+
+- Added `.github/images/SocialBlocks.png`, the block tiles captured on the showcase (31/08/2026)
+- README opens `## Usage` with that image and its caption (31/08/2026)
+
 ## v2.6.5
 
 Split the Google guided project in two, on who does the work

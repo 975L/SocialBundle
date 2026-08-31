@@ -94,6 +94,10 @@ Symfony's AssetMapper still requires the entrypoint to be declared in your app's
 
 ## Usage
 
+![SocialBundle blocks](.github/images/SocialBlocks.png)
+
+One tile per kind, captured on the showcase at [bundles.975l.com](https://bundles.975l.com/pages/blocks/Social) - a kind with several variants shows only its first one, and a kind with no example there has no tile. Colors are the showcase's own theme, not what a site with its own theme renders.
+
 ### Social links block
 
 Registers a `social_links` `ui.block` kind (see [c975L/UiBundle](https://github.com/975L/UiBundle)'s Block system) with a dedicated form (`c975L\SocialBundle\Form\Block\SocialLinksType`) and template (`templates/blocks/SocialLinks.html.twig`). Each link is a `network` (picked from every icon found under `public/icons/` and `public/bundles/*/icons/`) and a `url`; label and icon are derived from the network at render time, not stored. Pick **"Autre"** to fall back to a free-text label and UiBundle's `IconPickerType` for a network with no icon of its own.
