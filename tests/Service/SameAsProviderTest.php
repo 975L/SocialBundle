@@ -35,12 +35,12 @@ class SameAsProviderTest extends TestCase
     public function testTheListingIsPublishedBeforeTheSocialLinks(): void
     {
         $provider = $this->createProvider(
-            [['network' => 'facebook', 'url' => 'https://facebook.com/autotech']],
+            [['network' => 'facebook', 'url' => 'https://facebook.com/example']],
             'https://www.google.com/maps?cid=1'
         );
 
         $this->assertSame(
-            ['https://www.google.com/maps?cid=1', 'https://facebook.com/autotech'],
+            ['https://www.google.com/maps?cid=1', 'https://facebook.com/example'],
             $provider->getSameAs()
         );
     }
@@ -54,11 +54,11 @@ class SameAsProviderTest extends TestCase
     public function testALinkWithNoUrlIsSkipped(): void
     {
         $provider = $this->createProvider(
-            [['network' => 'facebook', 'url' => '  '], ['network' => 'x', 'url' => 'https://x.com/autotech']],
+            [['network' => 'facebook', 'url' => '  '], ['network' => 'x', 'url' => 'https://x.com/example']],
             null
         );
 
-        $this->assertSame(['https://x.com/autotech'], $provider->getSameAs());
+        $this->assertSame(['https://x.com/example'], $provider->getSameAs());
     }
 
     // A way to reach the business is not a page naming it, which is all "sameAs" is read as
@@ -66,13 +66,13 @@ class SameAsProviderTest extends TestCase
     {
         $provider = $this->createProvider(
             [
-                ['network' => 'email', 'url' => 'mailto:contact@autotech.fr'],
+                ['network' => 'email', 'url' => 'mailto:contact@example.com'],
                 ['network' => 'phone', 'url' => 'tel:+33450000000'],
-                ['network' => 'facebook', 'url' => 'https://facebook.com/autotech'],
+                ['network' => 'facebook', 'url' => 'https://facebook.com/example'],
             ],
             null
         );
 
-        $this->assertSame(['https://facebook.com/autotech'], $provider->getSameAs());
+        $this->assertSame(['https://facebook.com/example'], $provider->getSameAs());
     }
 }

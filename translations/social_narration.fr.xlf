@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="fr" datatype="plaintext" original="social_narration.fr.xlf">
+        <body>
+            <trans-unit id="_JCsjxB">
+                <source>narration.google_connect</source>
+                <target>« Connecter Google » autorise le site à lire les avis de votre fiche Google et à y répondre.</target>
+            </trans-unit>
+            <trans-unit id="5VACpzn">
+                <source>narration.guided_step_social_google_connect</source>
+                <target>Dans la colonne de gauche, ouvrez le menu « Avancé » et cliquez sur « Connecter Google », puis autorisez l'accès avec le compte Google propriétaire de la fiche. Le site enregistre lui-même le jeton, le compte et la fiche.</target>
+            </trans-unit>
+            <trans-unit id="KaaiHLF">
+                <source>narration.guided_step_social_google_credentials</source>
+                <target>Cherchez « social-google-oauth-client-id » et « social-google-oauth-client-secret » dans la liste des réglages, et collez-y les deux valeurs relevées dans la console Google Cloud. Le secret ne s'affiche qu'après un clic sur « Voir données sensibles ». Le jeton, le compte et la fiche, eux, se rempliront tout seuls à l'étape suivante.</target>
+            </trans-unit>
+            <trans-unit id="MTrI4M.">
+                <source>narration.guided_step_social_google_display</source>
+                <target>Pour finir, sur la page de votre choix, ajoutez un block « collection » et choisissez la source « avis clients ». Les avis s'affichent avec leur note, leur date et le lien vers l'avis d'origine.</target>
+            </trans-unit>
+            <trans-unit id="Ies79nd">
+                <source>narration.guided_step_social_google_prerequisites</source>
+                <target>Cette première partie ne se passe pas sur le site mais chez Google, et elle prend sept à dix jours ouvrés : demander l'accès à l'API Business Profile, puis publier l'application OAuth. La procédure d'aide « Afficher les avis Google de votre établissement » donne les liens et l'ordre exact. Revenez ici une fois l'accès accordé.</target>
+            </trans-unit>
+            <trans-unit id="G2cekbS">
+                <source>narration.guided_step_social_google_reply</source>
+                <target>Sur la ligne d'un avis, le bouton en forme de flèche ouvre la réponse publique, qui part sur Google dès l'enregistrement. Le texte et la note appartiennent à leur auteur : ni l'un ni l'autre ne se modifie ni ne se supprime. Un avis abusif se signale à Google.</target>
+            </trans-unit>
+            <trans-unit id="u.jL.h_">
+                <source>narration.guided_step_social_google_reviews</source>
+                <target>Le panneau vous emmène sur l'écran des avis, qui rassemble tous ceux du site quelle que soit la plateforme. Ceux de Google arrivent d'eux-mêmes chaque nuit : la liste reste vide tant que la première synchronisation n'a pas tourné.</target>
+            </trans-unit>
+            <trans-unit id="v_voss_">
+                <source>narration.guided_step_social_google_sync</source>
+                <target>Le reste se fait sans vous : les avis arrivent chaque nuit, la tâche de synchronisation étant planifiée par le bundle. Il ne reste qu'une clé facultative, « social-google-listing-url », l'adresse publique de la fiche, reprise dans les données structurées du site.</target>
+            </trans-unit>
+            <trans-unit id="O5SVDU.">
+                <source>narration.guided_step_social_links_display_label</source>
+                <target>Juste après vient la case qui affiche le nom du réseau. Décochez-la et le nom disparaît de l'écran, mais les lecteurs d'écran continuent de le lire : il quitte l'affichage, jamais l'accessibilité.</target>
+            </trans-unit>
+            <trans-unit id="eGIIzSG">
+                <source>narration.guided_step_social_links_edit</source>
+                <target>Cliquez sur le bouton en haut de l'écran : « Créer » si la liste n'existe pas encore, « Modifier » si elle est déjà là. Il n'y en a qu'une pour tout le site.</target>
+            </trans-unit>
+            <trans-unit id="EGRu2Nm">
+                <source>narration.guided_step_social_links_entries</source>
+                <target>En bas du formulaire, vous trouvez la liste des réseaux. Ajoutez une ligne par réseau : son icône, l'adresse de votre page là-bas, et un libellé si vous voulez remplacer celui du réseau.</target>
+            </trans-unit>
+            <trans-unit id="4B6rMy0">
+                <source>narration.guided_step_social_links_icon_style</source>
+                <target>Descendez jusqu'au style des icônes. Vous avez le choix entre l'icône seule, la pastille aux couleurs du réseau, l'anneau qui se remplit au survol, et le texte seul. L'aperçu juste en dessous montre le résultat sans attendre l'enregistrement.</target>
+            </trans-unit>
+            <trans-unit id="v0iedny">
+                <source>narration.guided_step_social_links_intro</source>
+                <target>Le premier champ est l'introduction, l'éditeur de texte en haut du formulaire. Écrivez-y une ligne qui invite à vous suivre, ou laissez-le vide : dans ce cas rien ne sera rendu du tout.</target>
+            </trans-unit>
+            <trans-unit id="w9gMYLW">
+                <source>narration.guided_step_social_links_open</source>
+                <target>Commençons par les liens vers vos réseaux. Le panneau vous emmène sur l'écran des liens sociaux, dans la colonne de gauche : vos réseaux ne sont pas un contenu de page, vous les saisissez une seule fois ici et le site les reprend partout.</target>
+            </trans-unit>
+            <trans-unit id="lSc52FH">
+                <source>narration.guided_step_social_links_place</source>
+                <target>Il ne reste plus qu'à poser le block « liens sociaux » sur une page ou dans le pied de page : où qu'il soit, c'est cette liste qu'il rend.</target>
+            </trans-unit>
+            <trans-unit id="rhPiWDT">
+                <source>narration.guided_step_social_links_save</source>
+                <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="DrMJai5">
+                <source>narration.guided_step_social_share_buttons_anchor</source>
+                <target>Le champ d'ancre est facultatif. Un identifiant court, « partage » par exemple, permet à une entrée de menu de pointer directement sur le bandeau. Sans ancre, il reste atteignable en faisant défiler la page.</target>
+            </trans-unit>
+            <trans-unit id="oBNn.Ds">
+                <source>narration.guided_step_social_share_buttons_check</source>
+                <target>Ouvrez enfin n'importe quelle page publiée : les boutons y sont, avec l'allure que vous venez de leur donner. Au survol du bandeau, un bouton vous ramène directement sur cet écran.</target>
+            </trans-unit>
+            <trans-unit id="cdex0nO">
+                <source>narration.guided_step_social_share_buttons_display_intro</source>
+                <target>La case suivante affiche ou masque la ligne « partagez cette page » au-dessus des boutons. Son texte est celui du site : seul son affichage se règle ici.</target>
+            </trans-unit>
+            <trans-unit id="zY5y49o">
+                <source>narration.guided_step_social_share_buttons_edit</source>
+                <target>Cliquez sur le bouton en haut de l'écran : « Créer » s'ils n'existent pas encore, « Modifier » sinon. Il n'y a qu'un seul jeu de boutons pour tout le site.</target>
+            </trans-unit>
+            <trans-unit id="03dlo4.">
+                <source>narration.guided_step_social_share_buttons_fill</source>
+                <target>Puis le remplissage. L'aperçu juste en dessous se met à jour à chaque changement, avant même d'enregistrer.</target>
+            </trans-unit>
+            <trans-unit id="jaarRPt">
+                <source>narration.guided_step_social_share_buttons_networks</source>
+                <target>La première liste est celle des réseaux. Cochez ceux que vous voulez proposer, puis faites-les glisser pour les ranger : l'ordre de la liste est celui que verront vos visiteurs.</target>
+            </trans-unit>
+            <trans-unit id="Of.lzyi">
+                <source>narration.guided_step_social_share_buttons_open</source>
+                <target>Les boutons de partage sont déjà sur vos pages. Ce que nous réglons ici, c'est lesquels apparaissent et à quoi ils ressemblent. Le panneau vous emmène sur leur écran.</target>
+            </trans-unit>
+            <trans-unit id="W4zEcwv">
+                <source>narration.guided_step_social_share_buttons_save</source>
+                <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="TTG0riK">
+                <source>narration.guided_step_social_share_buttons_shape</source>
+                <target>En dessous, choisissez la forme : bouton large, carré ou rond. C'est la place que les boutons prendront sous vos pages.</target>
+            </trans-unit>
+            <trans-unit id="._Fe6M5">
+                <source>narration.share_buttons_settings</source>
+                <target>« Boutons de partage » règle les boutons posés sous vos pages : quels réseaux, dans quel ordre et à quoi ils ressemblent.</target>
+            </trans-unit>
+            <trans-unit id="hCyh7lI">
+                <source>narration.social_links</source>
+                <target>« Réseaux sociaux » tient la liste de vos réseaux, une seule pour tout le site, rendue partout où le block de liens sociaux est posé.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-09-02",
+        "description": [
+            {
+                "en": "A demonstration site now comes with two customer reviews already in place, one answered and one still waiting for your reply",
+                "fr": "Un site de démonstration arrive maintenant avec deux avis clients déjà en place, un auquel il a été répondu et un qui attend encore votre réponse",
+                "es": "Un sitio de demostración ahora incluye dos opiniones de clientes ya presentes, una respondida y otra que aún espera su respuesta"
+            }
+        ]
+    },
+    {
         "date": "2026-08-31",
         "description": [
             {

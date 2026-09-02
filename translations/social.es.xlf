@@ -414,6 +414,26 @@
                 <source>label.social_links</source>
                 <target>Redes sociales</target>
             </trans-unit>
+            <trans-unit id="BOri2_L">
+                <source>label.social_sample_review_answered_author</source>
+                <target>Nadia Berthomieu</target>
+            </trans-unit>
+            <trans-unit id="lnVv1gI">
+                <source>label.social_sample_review_answered_comment</source>
+                <target>Los encontramos por casualidad al pasar, y nos alegramos de haber entrado. Se tomaron el tiempo de explicarnos, sin presionarnos para comprar.</target>
+            </trans-unit>
+            <trans-unit id="Bbw1Ga1">
+                <source>label.social_sample_review_answered_reply</source>
+                <target>Gracias Nadia, esperamos volver a verla. Pase cuando quiera, aunque no sea para comprar.</target>
+            </trans-unit>
+            <trans-unit id="gAkADpU">
+                <source>label.social_sample_review_waiting_author</source>
+                <target>Thierry Combaz</target>
+            </trans-unit>
+            <trans-unit id="LlZoHrF">
+                <source>label.social_sample_review_waiting_comment</source>
+                <target>El trabajo es serio, nada que decir. Aparcar delante, en cambio, es complicado los sábados.</target>
+            </trans-unit>
             <trans-unit id="XWMpUxP">
                 <source>label.style</source>
                 <target>Estilo</target>

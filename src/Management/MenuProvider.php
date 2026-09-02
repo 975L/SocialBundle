@@ -36,6 +36,7 @@ class MenuProvider implements MenuProviderInterface
             'social_links' => [
                 'controller' => SocialLinksCrudController::class,
                 'label' => 'label.social_links',
+                'narration' => 'narration.social_links',
                 'translation_domain' => 'social',
                 'icon' => 'fas fa-share-alt',
                 // Same key as the screen's own explanatory text (see its crud/index and crud/edit overrides) - one text, reused, not a separate onboarding-only string (see MenuProviderInterface::getMenus())
@@ -50,6 +51,7 @@ class MenuProvider implements MenuProviderInterface
             $menus['share_buttons_settings'] = [
                 'controller' => ShareButtonsSettingsCrudController::class,
                 'label' => 'label.share_buttons_settings',
+                'narration' => 'narration.share_buttons_settings',
                 'translation_domain' => 'social',
                 'icon' => 'fas fa-share-nodes',
                 'description' => 'label.info_share_buttons_settings',
@@ -73,6 +75,7 @@ class MenuProvider implements MenuProviderInterface
             'social_google_connect' => [
                 'name' => 'social_google_oauth_connect',
                 'label' => 'label.google_connect',
+                'narration' => 'narration.google_connect',
                 'translation_domain' => 'social',
                 'icon' => 'fab fa-google',
                 'role' => $this->configService->get('site-role-editor'),

@@ -414,6 +414,26 @@
                 <source>label.social_links</source>
                 <target>Social links</target>
             </trans-unit>
+            <trans-unit id="BOri2_L">
+                <source>label.social_sample_review_answered_author</source>
+                <target>Nadia Berthomieu</target>
+            </trans-unit>
+            <trans-unit id="lnVv1gI">
+                <source>label.social_sample_review_answered_comment</source>
+                <target>Found them by chance walking past, and glad we stopped. They took the time to explain, without pushing us to buy.</target>
+            </trans-unit>
+            <trans-unit id="Bbw1Ga1">
+                <source>label.social_sample_review_answered_reply</source>
+                <target>Thank you Nadia, we look forward to seeing you again. Drop by any time, even with nothing to buy.</target>
+            </trans-unit>
+            <trans-unit id="gAkADpU">
+                <source>label.social_sample_review_waiting_author</source>
+                <target>Thierry Combaz</target>
+            </trans-unit>
+            <trans-unit id="LlZoHrF">
+                <source>label.social_sample_review_waiting_comment</source>
+                <target>The work is serious, nothing to say about that. Parking out front is another matter on a Saturday.</target>
+            </trans-unit>
             <trans-unit id="XWMpUxP">
                 <source>label.style</source>
                 <target>Style</target>

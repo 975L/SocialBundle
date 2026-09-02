@@ -72,23 +72,27 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     // Opens on ConfigBundle's own screen rather than on one of this bundle's: the two keys the connection needs are configs, and this is where the user will be working once Google has answered
                     'label' => 'label.guided_step_social_google_prerequisites',
                     'description' => 'description.guided_step_social_google_prerequisites',
+                    'narration' => 'narration.guided_step_social_google_prerequisites',
                     'url' => $this->indexUrl(ConfigCrudController::class),
                 ],
                 [
                     // The slugs are named in the description and found with the screen's own search: a selector into another bundle's form would break on its next release
                     'label' => 'label.guided_step_social_google_credentials',
                     'description' => 'description.guided_step_social_google_credentials',
+                    'narration' => 'narration.guided_step_social_google_credentials',
                 ],
                 [
                     // Matched on the href rather than on a marker: the entry is a plain link in the sidebar's "Avancé" submenu (see MenuProvider::getLinks()), not a rendered action of a screen
                     'label' => 'label.guided_step_social_google_connect',
                     'description' => 'description.guided_step_social_google_connect',
+                    'narration' => 'narration.guided_step_social_google_connect',
                     'highlight' => 'a[href*="/social/google/connect"]',
                 ],
                 [
                     // No highlight: consenting leaves the site entirely and comes back through the callback's own redirect, so there is no screen left for the panel to walk - and what follows happens on its own, nightly (see SocialMaintenanceTaskProvider)
                     'label' => 'label.guided_step_social_google_sync',
                     'description' => 'description.guided_step_social_google_sync',
+                    'narration' => 'narration.guided_step_social_google_sync',
                 ],
             ],
         ];
@@ -110,18 +114,21 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     // UiBundle's screen, not one of this bundle's: the reviews are its entity, whatever platform brought them in
                     'label' => 'label.guided_step_social_google_reviews',
                     'description' => 'description.guided_step_social_google_reviews',
+                    'narration' => 'narration.guided_step_social_google_reviews',
                     'url' => $this->indexUrl(ReviewCrudController::class),
                 ],
                 [
                     // EasyAdmin's own edit action, renamed after the one thing the page behind it is for (see ReviewCrudController::configureActions()) - it keeps its action-edit class whatever the icon and the label become
                     'label' => 'label.guided_step_social_google_reply',
                     'description' => 'description.guided_step_social_google_reply',
+                    'narration' => 'narration.guided_step_social_google_reply',
                     'highlight' => '.action-edit',
                 ],
                 [
                     // No highlight: the block is added from the page being composed, wherever the editor wants the reviews to show
                     'label' => 'label.guided_step_social_google_display',
                     'description' => 'description.guided_step_social_google_display',
+                    'narration' => 'narration.guided_step_social_google_display',
                 ],
             ],
         ];
@@ -142,12 +149,14 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                 [
                     'label' => 'label.guided_step_social_links_open',
                     'description' => 'description.guided_step_social_links_open',
+                    'narration' => 'narration.guided_step_social_links_open',
                     'url' => $this->indexUrl(SocialLinksCrudController::class),
                 ],
                 [
                     // Both at once: the list is a singleton, so the index offers "create" until it exists and "edit" ever after - whichever is on screen is the one to click
                     'label' => 'label.guided_step_social_links_edit',
                     'description' => 'description.guided_step_social_links_edit',
+                    'narration' => 'narration.guided_step_social_links_edit',
                     'highlight' => '.action-new, .action-edit',
                 ],
                 // The four steps below follow SocialLinksType's own field order, so the panel walks down the form instead of sending the user back up it - the list of links being the last field rendered, it is also the last one pointed at
@@ -155,30 +164,36 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     // The <trix-editor> the field's own textarea is replaced by, not its id: TrixEditorType renders that textarea "d-none" (see UiBundle's block_theme.html.twig), so #Block_data_intro would point at something nobody sees. It's the form's only rich-text field
                     'label' => 'label.guided_step_social_links_intro',
                     'description' => 'description.guided_step_social_links_intro',
+                    'narration' => 'narration.guided_step_social_links_intro',
                     'highlight' => 'trix-editor',
                 ],
                 [
                     'label' => 'label.guided_step_social_links_icon_style',
                     'description' => 'description.guided_step_social_links_icon_style',
+                    'narration' => 'narration.guided_step_social_links_icon_style',
                     'highlight' => '[data-social-links-icon-style-select]',
                 ],
                 [
                     'label' => 'label.guided_step_social_links_display_label',
                     'description' => 'description.guided_step_social_links_display_label',
+                    'narration' => 'narration.guided_step_social_links_display_label',
                     'highlight' => '[data-social-links-display-label-checkbox]',
                 ],
                 [
                     'label' => 'label.guided_step_social_links_entries',
                     'description' => 'description.guided_step_social_links_entries',
+                    'narration' => 'narration.guided_step_social_links_entries',
                     'highlight' => '[data-ea-collection-field]',
                 ],
                 [
                     'label' => 'label.guided_step_social_links_save',
+                    'narration' => 'narration.guided_step_social_links_save',
                     'highlight' => '.action-saveAndReturn',
                 ],
                 [
                     'label' => 'label.guided_step_social_links_place',
                     'description' => 'description.guided_step_social_links_place',
+                    'narration' => 'narration.guided_step_social_links_place',
                 ],
             ],
         ];
@@ -198,46 +213,55 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                 [
                     'label' => 'label.guided_step_social_share_buttons_open',
                     'description' => 'description.guided_step_social_share_buttons_open',
+                    'narration' => 'narration.guided_step_social_share_buttons_open',
                     'url' => $this->indexUrl(ShareButtonsSettingsCrudController::class),
                 ],
                 [
                     'label' => 'label.guided_step_social_share_buttons_edit',
                     'description' => 'description.guided_step_social_share_buttons_edit',
+                    'narration' => 'narration.guided_step_social_share_buttons_edit',
                     'highlight' => '.action-new, .action-edit',
                 ],
                 [
                     'label' => 'label.guided_step_social_share_buttons_networks',
                     'description' => 'description.guided_step_social_share_buttons_networks',
+                    'narration' => 'narration.guided_step_social_share_buttons_networks',
                     'highlight' => '[data-share-networks-sortable]',
                 ],
                 [
                     'label' => 'label.guided_step_social_share_buttons_shape',
                     'description' => 'description.guided_step_social_share_buttons_shape',
+                    'narration' => 'narration.guided_step_social_share_buttons_shape',
                     'highlight' => '[data-share-shape-select]',
                 ],
                 [
                     'label' => 'label.guided_step_social_share_buttons_fill',
                     'description' => 'description.guided_step_social_share_buttons_fill',
+                    'narration' => 'narration.guided_step_social_share_buttons_fill',
                     'highlight' => '[data-share-fill-select]',
                 ],
                 [
                     'label' => 'label.guided_step_social_share_buttons_display_intro',
                     'description' => 'description.guided_step_social_share_buttons_display_intro',
+                    'narration' => 'narration.guided_step_social_share_buttons_display_intro',
                     'highlight' => '[data-share-display-intro-checkbox]',
                 ],
                 [
                     // The field's own id, no data-* of its own: EasyAdmin names the form after the entity (see EntityDto::getName()), and "anchor" hangs under the "data" HiddenField the settings form is plugged into
                     'label' => 'label.guided_step_social_share_buttons_anchor',
                     'description' => 'description.guided_step_social_share_buttons_anchor',
+                    'narration' => 'narration.guided_step_social_share_buttons_anchor',
                     'highlight' => '#Block_data_anchor',
                 ],
                 [
                     'label' => 'label.guided_step_social_share_buttons_save',
+                    'narration' => 'narration.guided_step_social_share_buttons_save',
                     'highlight' => '.action-saveAndReturn',
                 ],
                 [
                     'label' => 'label.guided_step_social_share_buttons_check',
                     'description' => 'description.guided_step_social_share_buttons_check',
+                    'narration' => 'narration.guided_step_social_share_buttons_check',
                 ],
             ],
         ];

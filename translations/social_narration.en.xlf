@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="en" datatype="plaintext" original="social_narration.en.xlf">
+        <body>
+            <trans-unit id="_JCsjxB">
+                <source>narration.google_connect</source>
+                <target>"Connect Google" lets the site read the reviews of your Google listing and answer them.</target>
+            </trans-unit>
+            <trans-unit id="5VACpzn">
+                <source>narration.guided_step_social_google_connect</source>
+                <target>In the left-hand column, open the "Advanced" submenu and click "Connect Google", then grant access with the Google account owning the listing. The site stores the token, the account and the listing by itself.</target>
+            </trans-unit>
+            <trans-unit id="KaaiHLF">
+                <source>narration.guided_step_social_google_credentials</source>
+                <target>Search for "social-google-oauth-client-id" and "social-google-oauth-client-secret" in the settings list, and paste in the two values taken from the Google Cloud console. The secret only shows after a click on "Show sensitive data". The token, the account and the listing will fill themselves in at the next step.</target>
+            </trans-unit>
+            <trans-unit id="MTrI4M.">
+                <source>narration.guided_step_social_google_display</source>
+                <target>Finally, on the page of your choice, add a collection block and pick the customer reviews source. The reviews are shown with their rating, their date and the link to the original review.</target>
+            </trans-unit>
+            <trans-unit id="Ies79nd">
+                <source>narration.guided_step_social_google_prerequisites</source>
+                <target>This first part does not happen on the site but at Google, and it takes seven to ten business days: request access to the Business Profile API, then publish the OAuth app. The help procedure "Display your listing's Google reviews" gives the links and the exact order. Come back here once access is granted.</target>
+            </trans-unit>
+            <trans-unit id="G2cekbS">
+                <source>narration.guided_step_social_google_reply</source>
+                <target>On a review's row, the arrow button opens the public reply, which goes to Google as soon as it is saved. The text and the rating belong to their author: neither can be edited nor deleted. An abusive review is reported to Google.</target>
+            </trans-unit>
+            <trans-unit id="u.jL.h_">
+                <source>narration.guided_step_social_google_reviews</source>
+                <target>The panel takes you to the reviews screen, which gathers every review the site holds, whatever the platform. Google's come in on their own every night: the list stays empty until the first synchronization has run.</target>
+            </trans-unit>
+            <trans-unit id="v_voss_">
+                <source>narration.guided_step_social_google_sync</source>
+                <target>The rest happens without you: the reviews come in every night, the synchronization task being scheduled by the bundle itself. Only one optional key is left, "social-google-listing-url", the public address of the listing, carried into the site's structured data.</target>
+            </trans-unit>
+            <trans-unit id="O5SVDU.">
+                <source>narration.guided_step_social_links_display_label</source>
+                <target>Right after comes the box showing the network's name. Uncheck it and the name leaves the screen, but screen readers keep reading it: it leaves the display, never the accessibility.</target>
+            </trans-unit>
+            <trans-unit id="eGIIzSG">
+                <source>narration.guided_step_social_links_edit</source>
+                <target>Click the button at the top of the screen: "Create" if the list does not exist yet, "Edit" if it is already there. There is only one for the whole site.</target>
+            </trans-unit>
+            <trans-unit id="EGRu2Nm">
+                <source>narration.guided_step_social_links_entries</source>
+                <target>At the bottom of the form you find the list of networks. Add one row per network: its icon, the address of your page over there, and a label if you want to replace the network's own.</target>
+            </trans-unit>
+            <trans-unit id="4B6rMy0">
+                <source>narration.guided_step_social_links_icon_style</source>
+                <target>Move down to the icon style. You can pick the plain icon, the badge in the network's own colors, the ring filling in on hover, or text only. The preview right below shows the result without waiting for a save.</target>
+            </trans-unit>
+            <trans-unit id="v0iedny">
+                <source>narration.guided_step_social_links_intro</source>
+                <target>The first field is the introduction, the text editor at the top of the form. Write a line inviting visitors to follow you, or leave it empty: nothing at all will then be rendered.</target>
+            </trans-unit>
+            <trans-unit id="w9gMYLW">
+                <source>narration.guided_step_social_links_open</source>
+                <target>Let's start with the links to your networks. The panel takes you to the social links screen, in the left-hand column: your networks are not page content, you enter them once here and the site picks them up everywhere.</target>
+            </trans-unit>
+            <trans-unit id="lSc52FH">
+                <source>narration.guided_step_social_links_place</source>
+                <target>All that is left is to put the social links block on a page or in the footer: wherever it sits, this is the list it renders.</target>
+            </trans-unit>
+            <trans-unit id="rhPiWDT">
+                <source>narration.guided_step_social_links_save</source>
+                <target>Save with the button at the bottom of the form.</target>
+            </trans-unit>
+            <trans-unit id="DrMJai5">
+                <source>narration.guided_step_social_share_buttons_anchor</source>
+                <target>The anchor field is optional. A short id, "share" for instance, lets a menu entry point straight at the band. Without an anchor, it is still reached by scrolling the page.</target>
+            </trans-unit>
+            <trans-unit id="oBNn.Ds">
+                <source>narration.guided_step_social_share_buttons_check</source>
+                <target>Finally open any published page: the buttons are there, with the look you have just given them. Hovering the band raises a button bringing you straight back to this screen.</target>
+            </trans-unit>
+            <trans-unit id="cdex0nO">
+                <source>narration.guided_step_social_share_buttons_display_intro</source>
+                <target>The next box shows or hides the "share this page" line above the buttons. Its wording is the site's own: only its display is set here.</target>
+            </trans-unit>
+            <trans-unit id="zY5y49o">
+                <source>narration.guided_step_social_share_buttons_edit</source>
+                <target>Click the button at the top of the screen: "Create" if they do not exist yet, "Edit" otherwise. There is only one set of buttons for the whole site.</target>
+            </trans-unit>
+            <trans-unit id="03dlo4.">
+                <source>narration.guided_step_social_share_buttons_fill</source>
+                <target>Then the fill. The preview right below updates on every change, before anything is even saved.</target>
+            </trans-unit>
+            <trans-unit id="jaarRPt">
+                <source>narration.guided_step_social_share_buttons_networks</source>
+                <target>The first list is the networks. Tick the ones you want to offer, then drag them into place: the order of the list is the one your visitors will see.</target>
+            </trans-unit>
+            <trans-unit id="Of.lzyi">
+                <source>narration.guided_step_social_share_buttons_open</source>
+                <target>The share buttons are already on your pages. What we set here is which ones show and what they look like. The panel takes you to their screen.</target>
+            </trans-unit>
+            <trans-unit id="W4zEcwv">
+                <source>narration.guided_step_social_share_buttons_save</source>
+                <target>Save with the button at the bottom of the form.</target>
+            </trans-unit>
+            <trans-unit id="TTG0riK">
+                <source>narration.guided_step_social_share_buttons_shape</source>
+                <target>Below, pick the shape: wide, square or round button. That is the room the buttons will take under your pages.</target>
+            </trans-unit>
+            <trans-unit id="._Fe6M5">
+                <source>narration.share_buttons_settings</source>
+                <target>"Share buttons" sets the buttons placed under your pages: which networks, in which order and what they look like.</target>
+            </trans-unit>
+            <trans-unit id="hCyh7lI">
+                <source>narration.social_links</source>
+                <target>"Social networks" holds the list of your networks, one for the whole site, rendered wherever the social links block is put.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

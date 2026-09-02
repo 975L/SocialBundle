@@ -414,6 +414,26 @@
                 <source>label.social_links</source>
                 <target>Réseaux sociaux</target>
             </trans-unit>
+            <trans-unit id="BOri2_L">
+                <source>label.social_sample_review_answered_author</source>
+                <target>Nadia Berthomieu</target>
+            </trans-unit>
+            <trans-unit id="lnVv1gI">
+                <source>label.social_sample_review_answered_comment</source>
+                <target>Trouvés par hasard en passant devant, et bien contents de nous être arrêtés. On a pris le temps de nous expliquer, sans nous pousser à acheter.</target>
+            </trans-unit>
+            <trans-unit id="Bbw1Ga1">
+                <source>label.social_sample_review_answered_reply</source>
+                <target>Merci Nadia, au plaisir de vous revoir. Passez quand vous voulez, même sans rien acheter.</target>
+            </trans-unit>
+            <trans-unit id="gAkADpU">
+                <source>label.social_sample_review_waiting_author</source>
+                <target>Thierry Combaz</target>
+            </trans-unit>
+            <trans-unit id="LlZoHrF">
+                <source>label.social_sample_review_waiting_comment</source>
+                <target>Le travail est sérieux, rien à dire là-dessus. Le stationnement devant est en revanche compliqué le samedi.</target>
+            </trans-unit>
             <trans-unit id="XWMpUxP">
                 <source>label.style</source>
                 <target>Style</target>

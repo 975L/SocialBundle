@@ -1,5 +1,20 @@
 # Changelog
 
+## v2.7.0
+
+A demo site shows the reviews it brought back from Google
+
+- **This bundle's own javascript is now run rather than read**, through `c975L/UiBundle`'s `Testing\JsCase` and `chrome-php/chrome` in `require-dev`: 22 scenarios over its five scripts (02/09/2026)
+- **Every menu entry and every guided step carries what it says aloud**, read from `social_narration.{en,fr}.xlf`, hence the `c975l/core-bundle` floor at `^1.21` (02/09/2026)
+- `NarrationCatalogueTest` fails on a narration key missing from a catalogue, or shipped without being declared (02/09/2026)
+- **The networks list is dragged for real**: the scenarios read the order back off a `FormData` built on the form, the drop being decided by `getBoundingClientRect` (02/09/2026)
+- The two previews are held to what the site will show: no variant class left stacked, a transparent fill given the band a real page paints, the buttons renumbered on a drop (02/09/2026)
+- The `text` style forces the labels on whatever the checkbox says, and gives it its say back on leaving that style (02/09/2026)
+- `share-buttons-popup.js` is held to both its halves: the navigation refused and a window opened in its place (02/09/2026)
+- **New `SocialDemoFixtureProvider`**: two Google reviews on UiBundle's `Review` entity, one answered and one still waiting (01/09/2026)
+- The test data no longer carries a real business's social accounts or a real Bluesky handle, `example` standing in their place (01/09/2026)
+- The shipped skill lists `SocialDemoFixtureProvider` among what the bundle contributes (02/09/2026)
+
 ## v2.6.6
 
 README shows the blocks the bundle ships

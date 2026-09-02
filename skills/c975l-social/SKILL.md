@@ -204,7 +204,8 @@ tier), `ProcedureProvider`
 (the admin help procedures), `SocialGuidedProjectProvider` (the guided walk-through of each screen,
 offered only to who can open it), `WhatsNewProvider`, `ImportmapProvider`, `Service\ScriptProvider`,
 `Service\StylesheetProvider` (the public sheet and the back-office silhouettes both),
-`Service\BlockFixtureProvider`, an export/import provider per
+`Service\BlockFixtureProvider`, `Service\SocialDemoFixtureProvider` (the two Google reviews a demo
+site shows, UiBundle's entity carrying this bundle's rows), an export/import provider per
 singleton (`SocialLinksExportProvider`, `ShareButtonsSettingsExportProvider` and their import twins),
 `Management\GoogleReviewsHealthCheckProvider` (one row on the health check page, saying whether the
 Google connection still answers - the import being the one thing here that stops silently) and
