@@ -1,6 +1,6 @@
 ---
 name: c975l-social
-description: "Use this skill when working with social links, share buttons or customer reviews in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, and the Google Business Profile review import with its pluggable sources. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile."
+description: "Use this skill when working with social links, share buttons or customer reviews in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, and the Google Business Profile review import with its pluggable sources. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile."
 ---
 
 # c975L SocialBundle
@@ -205,7 +205,9 @@ tier), `ProcedureProvider`
 offered only to who can open it), `WhatsNewProvider`, `ImportmapProvider`, `Service\ScriptProvider`,
 `Service\StylesheetProvider` (the public sheet and the back-office silhouettes both),
 `Service\BlockFixtureProvider`, `Service\SocialDemoFixtureProvider` (the two Google reviews a demo
-site shows, UiBundle's entity carrying this bundle's rows), an export/import provider per
+site shows, UiBundle's entity carrying this bundle's rows), `Service\SocialBlockCacheTagProvider` (the
+`singleton_block_social_links` tag the `social_links_display` entry carries on top of its own), an
+export/import provider per
 singleton (`SocialLinksExportProvider`, `ShareButtonsSettingsExportProvider` and their import twins),
 `Management\GoogleReviewsHealthCheckProvider` (one row on the health check page, saying whether the
 Google connection still answers - the import being the one thing here that stops silently) and
@@ -238,9 +240,11 @@ Google connection still answers - the import being the one thing here that stops
   singletons and no queue of its own, so it has no figure a maintainer would act on that morning.
 - **Do not raise a back-office alert on the Google connection.** `GoogleReviewsHealthCheckProvider`
   already states both failing cases, and an alert cannot call Google from a page render.
-- **Do not register a `FormThemeProviderInterface`, a `BlockEditUrlProviderInterface` or a
-  `BlockCacheTagProviderInterface` here.** The two CRUD form themes are local, passed through
-  `Crud::addFormTheme()`; the share band is no `Block` on a page, and its edit url is already served
-  by `share_buttons_edit_url()`; and the pointer blocks render the singleton, itself already cached.
-  Nothing is offered to the sitemap or the linkable routes either: both routes are editor-only
-  redirections.
+- **Do not register a `FormThemeProviderInterface` or a `BlockEditUrlProviderInterface` here.** The two
+  CRUD form themes are local, passed through `Crud::addFormTheme()`; and the share band is no `Block`
+  on a page, its edit url already served by `share_buttons_edit_url()`. Nothing is offered to the
+  sitemap or the linkable routes either: both routes are editor-only redirections.
+- **Do not make `share_buttons_display` cacheable.** Its render carries the current page's url, so the
+  first page's share links would be served on every other page holding that block.
+  `social_links_display` is the opposite case and is cached, the singleton's own tag added on top of
+  its own - see `Service\SocialBlockCacheTagProvider`.

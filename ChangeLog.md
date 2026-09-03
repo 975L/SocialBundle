@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.7.1
+
+The social_links_display block is cached on the singleton's tag
+
+- **The `social_links_display` block is now cached**, the singleton's tag on top of its own (03/09/2026)
+- **New `SocialBlockCacheTagProvider`**, implementing UiBundle's `BlockCacheTagProviderInterface` (03/09/2026)
+- The shipped skill forbids caching `share_buttons_display` instead (03/09/2026)
+
 ## v2.7.0
 
 A demo site shows the reviews it brought back from Google

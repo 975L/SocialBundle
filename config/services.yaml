@@ -54,8 +54,8 @@ services:
               template: '@c975LSocial/blocks/SocialLinksDisplay.html.twig'
               category: 'label.category_navigation'
               pickable: true
-              # Its render depends on the "social_links" singleton's data, not its own - caching it under its own block id would go stale whenever the singleton is edited elsewhere
-              cacheable: false
+              # Its render is the "social_links" singleton's, so its entry carries the singleton's own tag (see SocialBlockCacheTagProvider) on top of its own, dropped whenever that singleton is saved
+              cacheable: true
 
     # Pickable pointer to the "share_buttons_settings" singleton (see ShareButtonsSettingsCrudController) - same pattern as social_links_display above, so editors can drop the share buttons somewhere specific on a page too, on top of the layout's own automatic share_buttons_default() call
     social.block.share_buttons_display:

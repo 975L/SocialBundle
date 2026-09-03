@@ -110,7 +110,7 @@ Three settings apply to the whole block:
 
 Unlike most block kinds, `social_links` is tagged `pickable: false` and therefore absent from a page's own block picker: it's a singleton, meant to be edited once and rendered wherever needed (see [Rendering the block](#rendering-the-block)) rather than re-created with duplicate data on every page that wants it.
 
-To insert those same links at a specific spot in a page's block flow (not just the fixed `<twig:c975LSocial:SocialLinks/>` component placement), pick the **`social_links_display`** kind from the page's block picker instead. It's a thin pointer: its own form has no fields and its template just renders `<twig:c975LSocial:SocialLinks/>` internally, so it always reflects the current site-wide links, edited only from [Admin management](#admin-management) — no separate data, no duplication, no extra table.
+To insert those same links at a specific spot in a page's block flow (not just the fixed `<twig:c975LSocial:SocialLinks/>` component placement), pick the **`social_links_display`** kind from the page's block picker instead. It's a thin pointer: its own form has no fields and its template just renders `<twig:c975LSocial:SocialLinks/>` internally, so it always reflects the current site-wide links, edited only from [Admin management](#admin-management) — no separate data, no duplication, no extra table. Its rendered html is cached like any other block, with the singleton's own tag on top of its own (`SocialBlockCacheTagProvider`, feeding UiBundle's `BlockCacheTagProviderInterface`), so saving the links drops every page showing them.
 
 #### Icons
 
