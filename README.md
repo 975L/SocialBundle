@@ -212,7 +212,7 @@ Note the four before it have a **per-variant** default, one value per shape or f
 To show share buttons on every page without touching a single template, two pieces work together:
 
 - **"Boutons de partage"** in the management menu (`ShareButtonsSettingsCrudController`) — a small dashboard singleton (same `Block`-reuse technique as the [social links block](#social-links-block), no dedicated entity/table) letting you pick which networks, and which button [shape and fill](#share-buttons), are used site-wide. Networks are a drag-sortable checkbox list (see `assets/js/share-buttons-networks-sort.js`) - their order controls the order buttons render in. A live preview (see `assets/js/share-buttons-preview.js`) updates as you check/uncheck/reorder networks, change either select or toggle the invitation line below. That line (**"Afficher le texte d'invitation"**, `displayIntro`, checked by default) is the one shown above the buttons: its wording is the bundle's own, translated in every language it ships (`label.share_intro`), only its display being a setting — a singleton saved before the setting existed shows it too, and only an explicit uncheck turns it off.
-- **`social-enable-share-buttons`** — a boolean [c975L/ConfigBundle](https://github.com/975L/ConfigBundle) config key (`false` by default), auto-loaded from this bundle's `config/configs.json`.
+- **`social-enable-share-buttons`** — a boolean [c975L/ConfigBundle](https://github.com/975L/ConfigBundle) config key (`false` by default), auto-loaded from this bundle's `config/configs.json`, and filed under the **Réseaux sociaux** drawer this bundle names.
 
 This bundle ships the band itself, as `templates/shareButtons/default.html.twig` — an `<aside class="page-share">` wrapping the `share_buttons_default()` Twig function, already guarded by that config key. It reads those dashboard settings, falling back to `share_buttons()`'s own defaults (`'main'` networks, `'wide'` shape, `'solid'` fill) as long as nothing's been saved yet — and to the main networks again if every one of them is unchecked, `social-enable-share-buttons` being what hides the band.
 
@@ -256,7 +256,7 @@ Sources able to take a reply implement `ReviewsReplySourceInterface` on top of `
 
 The reviews endpoints live on the Business Profile API, whose access is **not open by default**: the Google Cloud project has to be allowlisted (a form in the Business Profile help centre, 7-10 business days) before its quota leaves 0 QPM. The OAuth app also has to be **published "in production"**, or the refresh tokens it issues expire every seven days.
 
-Once that is done, five config keys are auto-loaded from `config/configs.json` like any other c975L bundle's, via `php bin/console c975l:config:load-all`:
+Once that is done, five config keys are auto-loaded from `config/configs.json` like any other c975L bundle's, via `php bin/console c975l:config:load-all`, under the same **Réseaux sociaux** drawer:
 
 | Key | Filled by |
 | --- | --- |

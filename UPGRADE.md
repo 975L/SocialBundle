@@ -1,5 +1,12 @@
 # Upgrade
 
+## To 2.7.2
+
+**Update `c975l/core-bundle` to `^1.23` first, then run `c975l:config:load-all`.** The drawer these settings move
+to is named by this bundle, and core-bundle refused an unknown one until 1.23 — moving them under an older core
+would make them unsavable from the back office. Until the command runs, they sit in the drawer they had, values
+untouched: nothing reads a setting by its group, and no page changes.
+
 ## To 2.6
 
 **The `Review` entity moved to UiBundle, which now maps and migrates it.** This bundle owns no table anymore: it brings the platforms the reviews are imported from, Ui holds the reviews themselves, their moderation screen and their display. Four things to go through, in this order — the first one before `composer update`, or the site does not boot.

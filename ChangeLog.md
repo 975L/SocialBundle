@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.7.2
+
+Social settings get a drawer of their own
+
+- **The seven settings leave the *Général* drawer for a *Réseaux sociaux* one** (04/09/2026) [Needs `c975l:config:load-all`]
+- New `translations/config.{en,es,fr}.xlf`, holding `label.group_social` (04/09/2026)
+- `c975l/core-bundle` is now required in `^1.23` instead of `^1.21` (04/09/2026)
+- New `ConfigsJsonTest::testGroupsAreEitherSharedOrLabelledByThisBundle`, failing on a bundle-named drawer left unlabelled (04/09/2026)
+
 ## v2.7.1
 
 The social_links_display block is cached on the singleton's tag

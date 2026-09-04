@@ -1,6 +1,6 @@
 ---
 name: c975l-social
-description: "Use this skill when working with social links, share buttons or customer reviews in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, and the Google Business Profile review import with its pluggable sources. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile."
+description: "Use this skill when working with social links, share buttons or customer reviews in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, and the Google Business Profile review import with its pluggable sources. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile."
 ---
 
 # c975L SocialBundle
@@ -10,7 +10,7 @@ description: "Use this skill when working with social links, share buttons or cu
 **Package:** `c975l/social-bundle` · **Namespace:** `c975L\SocialBundle\` · **Twig namespace:** `@c975LSocial` · **Translation domain:** `social`
 
 **Key source paths** (relative to the package root):
-`src/Service/ShareButtonsService.php`, `src/Twig/`, `src/Form/Block/`, `src/Controller/`, `src/Controller/Management/`, `src/Management/`, `src/Contract/`, `src/Command/ReviewsSyncCommand.php`, `templates/blocks/`, `templates/components/SocialLinks.html.twig`, `templates/shareButtons/`, `config/configs.json`, `config/services.yaml`, `public/icons/`, `sass/_social-brand-colors.scss`, `sass/block-thumbs.scss`, `scaffold/assets/styles/themes/social.css`
+`src/Service/ShareButtonsService.php`, `src/Twig/`, `src/Form/Block/`, `src/Controller/`, `src/Controller/Management/`, `src/Management/`, `src/Contract/`, `src/Command/ReviewsSyncCommand.php`, `templates/blocks/`, `templates/components/SocialLinks.html.twig`, `templates/shareButtons/`, `config/configs.json`, `config/services.yaml`, `translations/config.en.xlf`, `public/icons/`, `sass/_social-brand-colors.scss`, `sass/block-thumbs.scss`, `scaffold/assets/styles/themes/social.css`
 
 **Related documentation:** this package's `README.md` is the exhaustive reference. The block system, the icon service and the media library it builds on live in `c975l/core-bundle`.
 
@@ -185,6 +185,13 @@ scaffolded `MaintenanceSchedule` as soon as the bundle is installed. The five co
 `social-google-business-location-id` — only the first two are typed, `/social/google/connect` writing
 the rest.
 
+**All seven settings of this bundle are filed under a `social` group of its own**, not under ConfigBundle's
+shared `general`. A drawer named by a bundle is labelled by that bundle: `label.group_social` in the `config`
+domain, shipped in `translations/config.{en,es,fr}.xlf`. Unlabelled, the "pick a group" screen shows the raw
+key. `ConfigsJsonTest::testGroupsAreEitherSharedOrLabelledByThisBundle` locks that in. Needs
+`c975l/core-bundle` `^1.23`, which no longer refuses a bundle-named group, and a
+`c975l:config:load-all` for rows already in the database.
+
 Google's reviews endpoints need the Cloud project to be **allowlisted** (7-10 business days) and the
 OAuth app **published in production**, or its refresh tokens expire every seven days.
 
@@ -227,6 +234,9 @@ Google connection still answers - the import being the one thing here that stops
   button alike.
 - **Do not give the `*_display` blocks fields of their own.** They are pointers on purpose; storing a
   copy is what makes a page's links drift from the site's.
+- **Do not file a setting under a drawer without labelling it.** A `group` outside `Config::GROUPS` needs its
+  `label.group_<slug>` in `translations/config.*.xlf`, in each of the three locales, or the back office shows
+  the key.
 - **Do not add a page layout to this bundle.** A satellite never ships one.
 - **Do not map a review entity of your own here.** The rows belong to UiBundle, which holds what
   visitors write on the site in the same table; a second one would split the wall in two.

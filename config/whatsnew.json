@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-09-04",
+        "description": [
+            {
+                "en": "Your social network settings now sit in a Social networks drawer of their own, instead of being mixed in with the site's general settings",
+                "fr": "Vos réglages de réseaux sociaux sont maintenant dans leur propre tiroir Réseaux sociaux, au lieu d'être mélangés aux réglages généraux du site",
+                "es": "Sus ajustes de redes sociales ahora están en un cajón Redes sociales propio, en lugar de estar mezclados con los ajustes generales del sitio"
+            }
+        ]
+    },
+    {
         "date": "2026-09-02",
         "description": [
             {

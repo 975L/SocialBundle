@@ -6,7 +6,7 @@
         "restricted": false,
         "value": "false",
         "kind": "bool",
-        "group": "general",
+        "group": "social",
         "severity": null,
         "description": "description.social_enable_share_buttons"
     },
@@ -17,7 +17,7 @@
         "restricted": true,
         "value": null,
         "kind": "text",
-        "group": "general",
+        "group": "social",
         "severity": null,
         "description": "description.social_google_oauth_client_id"
     },
@@ -28,7 +28,7 @@
         "restricted": true,
         "value": null,
         "kind": "text",
-        "group": "general",
+        "group": "social",
         "severity": "info",
         "description": "description.social_google_oauth_client_secret"
     },
@@ -39,7 +39,7 @@
         "restricted": true,
         "value": null,
         "kind": "text",
-        "group": "general",
+        "group": "social",
         "severity": "info",
         "description": "description.social_google_oauth_refresh_token"
     },
@@ -50,7 +50,7 @@
         "restricted": false,
         "value": null,
         "kind": "text",
-        "group": "general",
+        "group": "social",
         "severity": null,
         "description": "description.social_google_listing_url"
     },
@@ -61,7 +61,7 @@
         "restricted": true,
         "value": null,
         "kind": "text",
-        "group": "general",
+        "group": "social",
         "severity": null,
         "description": "description.social_google_business_account_id"
     },
@@ -72,7 +72,7 @@
         "restricted": true,
         "value": null,
         "kind": "text",
-        "group": "general",
+        "group": "social",
         "severity": null,
         "description": "description.social_google_business_location_id"
     }

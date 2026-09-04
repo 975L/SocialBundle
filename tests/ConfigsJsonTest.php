@@ -102,4 +102,50 @@ class ConfigsJsonTest extends TestCase
             }
         }
     }
+
+    // A drawer is either one of ConfigBundle's shared ones (Config::GROUPS) or named by this bundle, which then labels it in the "config" domain - named and unlabelled, it reads as a raw "label.group_x" on the "pick a group" screen
+    public function testGroupsAreEitherSharedOrLabelledByThisBundle(): void
+    {
+        $groups = array_values(array_unique(array_filter(array_map(
+            static fn (array $config): ?string => $config['group'] ?? null,
+            $this->loadConfigs()
+        ))));
+
+        $own = array_diff($groups, Config::GROUPS);
+        if ([] === $own) {
+            $this->assertSame([], $own);
+
+            return;
+        }
+
+        foreach (self::LOCALES as $locale) {
+            $translations = $this->loadGroupLabels($locale);
+            foreach ($own as $group) {
+                $key = 'label.group_' . $group;
+                $this->assertArrayHasKey($key, $translations, sprintf('"%s" has no %s translation, its drawer would read as that key', $key, $locale));
+                $this->assertNotSame('', $translations[$key], sprintf('"%s" has an empty %s translation', $key, $locale));
+            }
+        }
+    }
+
+    /**
+     * The "config" domain of this bundle, where a drawer of its own is labelled - absent for a bundle naming none.
+     *
+     * @return array<string, string>
+     */
+    private function loadGroupLabels(string $locale): array
+    {
+        $path = __DIR__ . '/../translations/config.' . $locale . '.xlf';
+        if (!file_exists($path)) {
+            return [];
+        }
+
+        $xliff = simplexml_load_file($path);
+        $translations = [];
+        foreach ($xliff->file->body->{'trans-unit'} as $unit) {
+            $translations[(string) $unit->source] = (string) $unit->target;
+        }
+
+        return $translations;
+    }
 }
