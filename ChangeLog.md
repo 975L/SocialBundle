@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.7.3
+
+composer qa runs lizard and the suite fails on a notice
+
+- **`composer qa` now runs `lizard`** after `mess`, at Codacy's thresholds (07/09/2026)
+- `mess` prints the rule under each file it names (07/09/2026)
+- `mess` reports how many files PDepend could not parse (07/09/2026)
+- `phpunit.xml.dist` now fails on a PHP notice (07/09/2026)
+- `audit-deps` and the `lizard` scripts get their `scripts-descriptions` entry (07/09/2026)
+
 ## v2.7.2
 
 Social settings get a drawer of their own
