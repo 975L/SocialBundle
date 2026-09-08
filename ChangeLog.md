@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.7.4
+
+The CI runs mess and lizard like composer qa does
+
+- **The CI now runs `mess` and `lizard`** after `rector` (08/09/2026)
+- `lizard` is pinned to `1.17.31` in the CI and in `bin/ci.sh` (08/09/2026)
+- `bin/ci.sh` installs `phpmd` and prints the two new tools' versions (08/09/2026)
+
 ## v2.7.3
 
 composer qa runs lizard and the suite fails on a notice
