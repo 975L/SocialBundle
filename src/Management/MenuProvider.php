@@ -27,6 +27,7 @@ class MenuProvider implements MenuProviderInterface
         return [
             'label' => 'label.social',
             'translation_domain' => 'social',
+            'icon' => 'fas fa-share-nodes',
         ];
     }
 

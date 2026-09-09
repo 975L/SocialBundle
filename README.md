@@ -122,7 +122,7 @@ Icon glyphs are derived from [Font Awesome Free](https://fontawesome.com/) (CC B
 
 ### Admin management
 
-Because a `Block` can normally only be created by attaching it to a Page (there's no page-independent block library in UiBundle), `SocialLinksCrudController` gives it its own small dashboard entry, scoped to `kind = social_links` — so it can be created/edited without needing a host page. The menu entry ("Réseaux sociaux") is registered automatically through `MenuProvider`, under the "Management" section. Access is controlled by the `site-role-editor` key in ConfigBundle. Each entry also carries a `description` — the very sentence its own screen shows, not a separate onboarding-only string — which the dashboard's onboarding tour picks up.
+Because a `Block` can normally only be created by attaching it to a Page (there's no page-independent block library in UiBundle), `SocialLinksCrudController` gives it its own small dashboard entry, scoped to `kind = social_links` — so it can be created/edited without needing a host page. The menu entry ("Réseaux sociaux") is registered automatically through `MenuProvider`, under the "Social" section, which carries a `fas fa-share-nodes` icon. Access is controlled by the `site-role-editor` key in ConfigBundle. Each entry also carries a `description` — the very sentence its own screen shows, not a separate onboarding-only string — which the dashboard's onboarding tour picks up.
 
 The edit form shows a preview of the rendered links below the list. The introduction text and the links themselves are static (reflects the last saved state, not unsaved edits to the form above), but "icon style" and "display label" update it live (see `assets/js/social-links-preview.js`) as you change them.
 

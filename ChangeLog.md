@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.7.5
+
+The Social menu section declares an icon
+
+- **The *Social* section carries a `fas fa-share-nodes` icon** (09/09/2026)
+- `eslint.config.mjs` declares `sessionStorage` as a browser global (09/09/2026)
+- README files the menu entry under the *Social* section, not *Management* (09/09/2026)
+
 ## v2.7.4
 
 The CI runs mess and lizard like composer qa does
