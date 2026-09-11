@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="es" datatype="plaintext" original="social_narration.es.xlf">
+        <body>
+            <trans-unit id="_JCsjxB">
+                <source>narration.google_connect</source>
+                <target>«Conectar Google» autoriza al sitio a leer las reseñas de su ficha de Google y a responderlas.</target>
+            </trans-unit>
+            <trans-unit id="5VACpzn">
+                <source>narration.guided_step_social_google_connect</source>
+                <target>En la columna de la izquierda, abra el menú «Avanzado» y haga clic en «Conectar Google», luego autorice el acceso con la cuenta de Google propietaria de la ficha. El sitio guarda por sí mismo el token, la cuenta y la ficha.</target>
+            </trans-unit>
+            <trans-unit id="KaaiHLF">
+                <source>narration.guided_step_social_google_credentials</source>
+                <target>Busque «social-google-oauth-client-id» y «social-google-oauth-client-secret» en la lista de ajustes, y pegue allí los dos valores obtenidos en la consola de Google Cloud. El secreto solo aparece tras hacer clic en «Ver datos sensibles». El token, la cuenta y la ficha, en cambio, se rellenarán solos en el paso siguiente.</target>
+            </trans-unit>
+            <trans-unit id="MTrI4M.">
+                <source>narration.guided_step_social_google_display</source>
+                <target>Para terminar, en la página que prefiera, añada un bloque «colección» y elija la fuente «opiniones de clientes». Las opiniones se muestran con su valoración, su fecha y el enlace a la opinión original.</target>
+            </trans-unit>
+            <trans-unit id="Ies79nd">
+                <source>narration.guided_step_social_google_prerequisites</source>
+                <target>Esta primera parte no ocurre en el sitio sino en Google, y tarda de siete a diez días hábiles: pedir el acceso a la API Business Profile y luego publicar la aplicación OAuth. El procedimiento de ayuda «Mostrar las opiniones de Google de su establecimiento» da los enlaces y el orden exacto. Vuelva aquí una vez concedido el acceso.</target>
+            </trans-unit>
+            <trans-unit id="G2cekbS">
+                <source>narration.guided_step_social_google_reply</source>
+                <target>En la fila de una opinión, el botón en forma de flecha abre la respuesta pública, que se envía a Google en cuanto se guarda. El texto y la valoración pertenecen a su autor: ni uno ni otra se modifican ni se suprimen. Una opinión abusiva se denuncia a Google.</target>
+            </trans-unit>
+            <trans-unit id="u.jL.h_">
+                <source>narration.guided_step_social_google_reviews</source>
+                <target>El panel le lleva a la pantalla de las opiniones, que reúne todas las del sitio sea cual sea la plataforma. Las de Google llegan solas cada noche: la lista permanece vacía mientras no se haya ejecutado la primera sincronización.</target>
+            </trans-unit>
+            <trans-unit id="v_voss_">
+                <source>narration.guided_step_social_google_sync</source>
+                <target>El resto se hace sin usted: las opiniones llegan cada noche, ya que el propio bundle programa la tarea de sincronización. Solo queda una clave opcional, «social-google-listing-url», la dirección pública de la ficha, recogida en los datos estructurados del sitio.</target>
+            </trans-unit>
+            <trans-unit id="O5SVDU.">
+                <source>narration.guided_step_social_links_display_label</source>
+                <target>Justo después viene la casilla que muestra el nombre de la red. Desmárquela y el nombre desaparece de la pantalla, pero los lectores de pantalla lo siguen leyendo: abandona la visualización, nunca la accesibilidad.</target>
+            </trans-unit>
+            <trans-unit id="eGIIzSG">
+                <source>narration.guided_step_social_links_edit</source>
+                <target>Haga clic en el botón situado en la parte superior de la pantalla: «Crear» si la lista aún no existe, «Modificar» si ya está ahí. Solo hay una para todo el sitio.</target>
+            </trans-unit>
+            <trans-unit id="EGRu2Nm">
+                <source>narration.guided_step_social_links_entries</source>
+                <target>En la parte inferior del formulario encontrará la lista de las redes. Añada una fila por red: su icono, la dirección de su página allí, y una etiqueta si quiere sustituir la de la red.</target>
+            </trans-unit>
+            <trans-unit id="4B6rMy0">
+                <source>narration.guided_step_social_links_icon_style</source>
+                <target>Baje hasta el estilo de los iconos. Puede elegir entre el icono solo, la pastilla con los colores de la red, el anillo que se rellena al pasar por encima, y el texto solo. La vista previa de abajo muestra el resultado sin esperar a guardar.</target>
+            </trans-unit>
+            <trans-unit id="v0iedny">
+                <source>narration.guided_step_social_links_intro</source>
+                <target>El primer campo es la introducción, el editor de texto en la parte superior del formulario. Escriba ahí una línea que invite a seguirle, o déjelo vacío: en ese caso no se mostrará nada en absoluto.</target>
+            </trans-unit>
+            <trans-unit id="w9gMYLW">
+                <source>narration.guided_step_social_links_open</source>
+                <target>Empecemos por los enlaces a sus redes. El panel le lleva a la pantalla de los enlaces sociales, en la columna de la izquierda: sus redes no son contenido de página, se introducen una sola vez aquí y el sitio las recoge en todas partes.</target>
+            </trans-unit>
+            <trans-unit id="lSc52FH">
+                <source>narration.guided_step_social_links_place</source>
+                <target>Ya solo queda poner el bloque «enlaces sociales» en una página o en el pie de página: esté donde esté, es esta lista la que muestra.</target>
+            </trans-unit>
+            <trans-unit id="rhPiWDT">
+                <source>narration.guided_step_social_links_save</source>
+                <target>Guarde con el botón situado en la parte inferior del formulario.</target>
+            </trans-unit>
+            <trans-unit id="DrMJai5">
+                <source>narration.guided_step_social_share_buttons_anchor</source>
+                <target>El campo de ancla es opcional. Un identificador corto, «compartir» por ejemplo, permite que una entrada de menú apunte directamente a la banda. Sin ancla, se llega igualmente desplazando la página.</target>
+            </trans-unit>
+            <trans-unit id="oBNn.Ds">
+                <source>narration.guided_step_social_share_buttons_check</source>
+                <target>Abra por último cualquier página publicada: los botones están ahí, con el aspecto que acaba de darles. Al pasar por encima de la banda, un botón le trae directamente a esta pantalla.</target>
+            </trans-unit>
+            <trans-unit id="cdex0nO">
+                <source>narration.guided_step_social_share_buttons_display_intro</source>
+                <target>La casilla siguiente muestra u oculta la línea «comparta esta página» encima de los botones. Su texto es el del sitio: aquí solo se ajusta su visualización.</target>
+            </trans-unit>
+            <trans-unit id="zY5y49o">
+                <source>narration.guided_step_social_share_buttons_edit</source>
+                <target>Haga clic en el botón situado en la parte superior de la pantalla: «Crear» si aún no existen, «Modificar» si ya están. Solo hay un juego de botones para todo el sitio.</target>
+            </trans-unit>
+            <trans-unit id="03dlo4.">
+                <source>narration.guided_step_social_share_buttons_fill</source>
+                <target>Luego el relleno. La vista previa de abajo se actualiza con cada cambio, incluso antes de guardar.</target>
+            </trans-unit>
+            <trans-unit id="jaarRPt">
+                <source>narration.guided_step_social_share_buttons_networks</source>
+                <target>La primera lista es la de las redes. Marque las que quiera ofrecer y arrástrelas para ordenarlas: el orden de la lista es el que verán sus visitantes.</target>
+            </trans-unit>
+            <trans-unit id="Of.lzyi">
+                <source>narration.guided_step_social_share_buttons_open</source>
+                <target>Los botones de compartir ya están en sus páginas. Lo que ajustamos aquí es cuáles aparecen y qué aspecto tienen. El panel le lleva a su pantalla.</target>
+            </trans-unit>
+            <trans-unit id="W4zEcwv">
+                <source>narration.guided_step_social_share_buttons_save</source>
+                <target>Guarde con el botón situado en la parte inferior del formulario.</target>
+            </trans-unit>
+            <trans-unit id="TTG0riK">
+                <source>narration.guided_step_social_share_buttons_shape</source>
+                <target>Debajo, elija la forma: botón ancho, cuadrado o redondo. Es el espacio que ocuparán los botones bajo sus páginas.</target>
+            </trans-unit>
+            <trans-unit id="._Fe6M5">
+                <source>narration.share_buttons_settings</source>
+                <target>«Botones de compartir» ajusta los botones colocados bajo sus páginas: qué redes, en qué orden y qué aspecto tienen.</target>
+            </trans-unit>
+            <trans-unit id="hCyh7lI">
+                <source>narration.social_links</source>
+                <target>«Redes sociales» tiene la lista de sus redes, una sola para todo el sitio, mostrada allí donde se coloque el bloque de enlaces sociales.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

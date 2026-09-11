@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.7.6
+
+Narrations ship in Spanish and every catalogue is checked for gaps
+
+- **`CatalogueCompletenessTest` checks every catalogue against the French one** (10/09/2026)
+- Narrations ship in Spanish (11/09/2026)
+- `NarrationCatalogueTest` checks the Spanish narrations too (11/09/2026)
+- Requires `c975l/core-bundle` `^1.28` (11/09/2026)
+
 ## v2.7.5
 
 The Social menu section declares an icon
