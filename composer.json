@@ -19,7 +19,7 @@
     ],
     "require": {
         "php": ">=8.4",
-        "c975l/core-bundle": "^1.28",
+        "c975l/core-bundle": "^1.29",
         "doctrine/doctrine-bundle": "^3.3",
         "doctrine/orm": "^3.6",
         "easycorp/easyadmin-bundle": "^5.1",
@@ -29,6 +29,8 @@
     },
     "require-dev": {
         "chrome-php/chrome": "^1.16",
+        "phpstan/phpstan": "^2.2",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpunit/phpunit": "^13.2"
     },
     "minimum-stability": "dev",

@@ -87,7 +87,7 @@ class ShareButtonsExtension
         return null !== $id ? ($id ?: null) : ($settings['anchor'] ?? null);
     }
 
-    // Cross-request cache: this singleton Block is read on every page rendering share_buttons_default(), and barely ever changes - invalidated by SingletonBlockCacheInvalidationListener whenever it's saved/removed. Safe to cache the entity directly: only ->getData() is ever read from it (never rendered through render_block() like "social_links" is), so its medias/user are never touched
+    // Cross-request cache: this singleton Block is read on every page rendering share_buttons_default(), and barely ever changes - invalidated by SingletonBlockCacheInvalidationListener whenever it's saved/removed. Safe to cache the entity directly: only ->getData() is ever read from it (never rendered through render_block() like "social_links" is), so its medias are never read, and its user is left out of the cache by Block::__serialize()
     private function getSettingsBlock(): ?Block
     {
         return $this->cache->get('singleton_block_' . self::SETTINGS_KIND, function (ItemInterface $item): ?Block {

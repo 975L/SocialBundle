@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.7.7
+
+PHPStan reports calls to deprecated code
+
+- **PHPStan loads `phpstan-deprecation-rules`** (11/09/2026)
+- `phpstan/phpstan` moves to `require-dev` (11/09/2026)
+- The CI and `bin/ci.sh` no longer install `phpstan` themselves (11/09/2026)
+- `phpunit.xml.dist` sets `DOCTRINE_DEPRECATIONS=trigger` (11/09/2026)
+- `ShareButtonsExtension`'s cache comment names `Block::__serialize()` (11/09/2026)
+- Requires `c975l/core-bundle` `^1.29` (11/09/2026)
+
 ## v2.7.6
 
 Narrations ship in Spanish and every catalogue is checked for gaps
