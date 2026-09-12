@@ -10,10 +10,12 @@
 
 namespace c975L\SocialBundle\Tests\Management;
 
+use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use c975L\SocialBundle\Management\MenuProvider;
+use c975L\UiBundle\Service\ConfigEditUrlResolver;
 use PHPUnit\Framework\TestCase;
 
 class MenuProviderTest extends TestCase
@@ -26,11 +28,15 @@ class MenuProviderTest extends TestCase
             'social-enable-share-buttons' => $shareButtonsEnabled ? '1' : '0',
             'ui-enable-reviews' => $reviewsEnabled ? '1' : '0',
             'site-role-editor' => 'ROLE_EDITOR',
+            'site-role-admin' => 'ROLE_ADMIN',
             default => '0',
         });
         $configService->method('getBool')->willReturnCallback(static fn ($value) => '1' === $value);
 
-        return new MenuProvider($configService);
+        $configEditUrlResolver = $this->createStub(ConfigEditUrlResolver::class);
+        $configEditUrlResolver->method('resolve')->willReturn('/management/config/12/edit');
+
+        return new MenuProvider($configService, $this->createStub(ConfigRepository::class), $configEditUrlResolver);
     }
 
     // Its two screens are both the editor's: without the key an entry takes the admin default and goes missing from their sidebar, with the tour step that walks to it (see MenuProviderInterface::getMenus())
@@ -54,7 +60,7 @@ class MenuProviderTest extends TestCase
         );
     }
 
-    // Share buttons settings must stay hidden while the feature is disabled site-wide. The reviews screen is not here at all any more: the entity and its moderation moved to UiBundle, which declares its own entry
+    // Share buttons settings stay out of the section while the feature is disabled site-wide, the link standing in for them saying so instead (see testGetLinksStandsInForTheSettingsScreenWhenShareButtonsAreDisabled). The reviews screen is not here at all any more: the entity and its moderation moved to UiBundle, which declares its own entry
     public function testGetMenusOnlyIncludesSocialLinksWhenShareButtonsDisabled(): void
     {
         $provider = $this->createProvider(false);
@@ -100,6 +106,47 @@ class MenuProviderTest extends TestCase
         foreach ($this->createProvider(true)->getMenus() as $slug => $menu) {
             $this->assertArrayHasKey('description', $menu, sprintf('Menu "%s" says nothing about the screen it opens', $slug));
             $this->assertContains($menu['description'], $translated);
+        }
+    }
+
+    // Off, the section used to say nothing at all about a feature the bundle ships: the entry stays and walks to the switch itself, drawn among this bundle's entries (no target) where the settings screen sits once it reads true
+    public function testGetLinksStandsInForTheSettingsScreenWhenShareButtonsAreDisabled(): void
+    {
+        $links = $this->createProvider(false)->getLinks();
+
+        $this->assertArrayHasKey('social_share_buttons_disabled', $links);
+        $this->assertSame('/management/config/12/edit', $links['social_share_buttons_disabled']['url']);
+        $this->assertArrayNotHasKey('target', $links['social_share_buttons_disabled']);
+    }
+
+    // The switch lives on ConfigCrudController, which denies anything below the admin bar - an editor sent there would only meet a 403, and the tour would walk them to it
+    public function testTheDisabledShareButtonsLinkNamesTheAdminBarItsScreenStates(): void
+    {
+        $links = $this->createProvider(false)->getLinks();
+
+        $this->assertSame('ROLE_ADMIN', $links['social_share_buttons_disabled']['role']);
+    }
+
+    // Flipped on, the settings screen is reachable again and the stand-in has nothing left to say
+    public function testTheDisabledShareButtonsLinkIsDroppedOnceTheyAreEnabled(): void
+    {
+        $this->assertArrayNotHasKey('social_share_buttons_disabled', $this->createProvider(true)->getLinks());
+    }
+
+    // Reviews off no longer empties the whole list: the stand-in belongs to another switch entirely
+    public function testTheGoogleConnectionLeavesTheDisabledShareButtonsLinkBehind(): void
+    {
+        $this->assertSame(['social_share_buttons_disabled'], array_keys($this->createProvider(false, false)->getLinks()));
+    }
+
+    // Every link gets a step in the onboarding tour too, and an untranslated description reads as its own key
+    public function testEveryLinkCarriesATranslatedDescription(): void
+    {
+        $translated = $this->translatedKeys();
+
+        foreach ($this->createProvider(false)->getLinks() as $slug => $link) {
+            $this->assertArrayHasKey('description', $link, sprintf('Link "%s" says nothing about where it goes', $slug));
+            $this->assertContains($link['description'], $translated);
         }
     }
 

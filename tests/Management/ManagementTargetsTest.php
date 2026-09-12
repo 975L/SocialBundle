@@ -10,10 +10,12 @@
 
 namespace c975L\SocialBundle\Tests\Management;
 
+use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Test\ManagementTargetsTestCase;
 use c975L\SocialBundle\Management\MenuProvider;
 use c975L\SocialBundle\Management\SocialGuidedProjectProvider;
+use c975L\UiBundle\Service\ConfigEditUrlResolver;
 use Symfony\Bundle\SecurityBundle\Security;
 
 // Every CRUD controller and route this bundle's management providers name, checked against what its controllers actually declare - see ConfigBundle's ManagementTargetsTestCase
@@ -21,18 +23,22 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
 {
     protected function managementProviders(): iterable
     {
+        $configEditUrlResolver = new ConfigEditUrlResolver($this->adminUrlGenerator());
+
         return [
-            new MenuProvider($this->configService()),
+            new MenuProvider($this->configService(), $this->createStub(ConfigRepository::class), $configEditUrlResolver),
+            // Switched off, the settings entry gives way to a link whose url is generated for ConfigCrudController, checked through the recorder
+            new MenuProvider($this->configService(false), $this->createStub(ConfigRepository::class), $configEditUrlResolver),
             new SocialGuidedProjectProvider($this->configService(), $this->adminUrlGenerator(), $this->security()),
         ];
     }
 
-    // Share buttons on: both providers hide their share buttons entry when they are off site-wide, and the screen it names would then never be checked
-    private function configService(): ConfigServiceInterface
+    // Share buttons on by default: both providers hide their share buttons entry when they are off site-wide, and the screen it names would then never be checked
+    private function configService(bool $enabled = true): ConfigServiceInterface
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturn('true');
-        $configService->method('getBool')->willReturn(true);
+        $configService->method('get')->willReturn($enabled ? 'true' : 'false');
+        $configService->method('getBool')->willReturn($enabled);
 
         return $configService;
     }

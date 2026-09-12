@@ -338,6 +338,10 @@
                 <source>label.info_google_connect</source>
                 <target>Autorise le site à lire les avis de votre fiche Google et à y répondre.</target>
             </trans-unit>
+            <trans-unit id="lZ1hyGi">
+                <source>label.info_share_buttons_disabled</source>
+                <target>Les boutons de partage sont désactivés pour tout le site : aucune page n'en affiche. Ouvre le réglage « social-enable-share-buttons » à passer à true pour les activer et retrouver leur écran de configuration.</target>
+            </trans-unit>
             <trans-unit id="AuLTjz5">
                 <source>label.info_share_buttons_settings</source>
                 <target>Réseaux/style par défaut des boutons de partage - singleton, surchargeable par page via le bloc "share_buttons_display". Modifiez les réseaux actifs, leur ordre et le style d'affichage.</target>
@@ -393,6 +397,10 @@
             <trans-unit id=".NVRNIf">
                 <source>label.shape_wide</source>
                 <target>Large</target>
+            </trans-unit>
+            <trans-unit id="HgBfL.n">
+                <source>label.share_buttons_disabled</source>
+                <target>Boutons de partage (désactivés)</target>
             </trans-unit>
             <trans-unit id="QGQ5OoP">
                 <source>label.share_buttons_settings</source>

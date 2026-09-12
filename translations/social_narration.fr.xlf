@@ -102,6 +102,10 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>En dessous, choisissez la forme : bouton large, carré ou rond. C'est la place que les boutons prendront sous vos pages.</target>
             </trans-unit>
+            <trans-unit id="eIkRyvF">
+                <source>narration.share_buttons_disabled</source>
+                <target>« Boutons de partage (désactivés) » vous emmène au réglage qui les commande : passez-le à true et les boutons reviennent, avec l'écran qui règle leurs réseaux et leur style.</target>
+            </trans-unit>
             <trans-unit id="._Fe6M5">
                 <source>narration.share_buttons_settings</source>
                 <target>« Boutons de partage » règle les boutons posés sous vos pages : quels réseaux, dans quel ordre et à quoi ils ressemblent.</target>

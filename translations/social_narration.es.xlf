@@ -102,6 +102,10 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>Debajo, elija la forma: botón ancho, cuadrado o redondo. Es el espacio que ocuparán los botones bajo sus páginas.</target>
             </trans-unit>
+            <trans-unit id="eIkRyvF">
+                <source>narration.share_buttons_disabled</source>
+                <target>«Botones para compartir (desactivados)» le lleva al ajuste que los gobierna: póngalo en true y los botones vuelven, junto con la pantalla que ajusta sus redes y su estilo.</target>
+            </trans-unit>
             <trans-unit id="._Fe6M5">
                 <source>narration.share_buttons_settings</source>
                 <target>«Botones de compartir» ajusta los botones colocados bajo sus páginas: qué redes, en qué orden y qué aspecto tienen.</target>

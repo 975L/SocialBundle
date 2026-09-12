@@ -82,6 +82,11 @@ invitation line and an optional anchor; the `social-enable-share-buttons` config
 default) turns the band on for every page. The reviews have the same kind of switch, `ui-enable-reviews`
 (see [Customer reviews](#customer-reviews)).
 
+Off, `MenuProvider` drops the settings screen but keeps a **Boutons de partage (désactivés)** entry in
+its place — a link (no `target`, so it stays in the Social section) opening that config's own edit form
+through UiBundle's `ConfigEditUrlResolver`, gated on `site-role-admin`, the bar `ConfigCrudController`
+states. Never hide a feature switch's screen without leaving something saying where it is turned on.
+
 The band itself is this bundle's `templates/shareButtons/default.html.twig`, and a layout includes it:
 
 ```twig

@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.7.10
+
+The Social section says the share buttons are off, instead of saying nothing
+
+- **The sidebar keeps a share buttons entry when `social-enable-share-buttons` is false, linking to the switch itself** (12/09/2026)
+- `MenuProvider` reads the switch through one `shareButtonsEnabled()` (12/09/2026)
+- `MenuProvider::getLinks()` no longer drops every link when the reviews are off (12/09/2026)
+- `label.share_buttons_disabled`, `label.info_share_buttons_disabled` and `narration.share_buttons_disabled` in the three locales (12/09/2026)
+- `MenuProvider` resolves the switch url once per request (12/09/2026)
+- `ManagementTargetsTest` checks the disabled link's `ConfigCrudController` target (12/09/2026)
+
 ## v2.7.9
 
 The Stimulus barrel test ignores the barrels' comments

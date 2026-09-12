@@ -3,6 +3,16 @@
         "date": "2026-09-12",
         "description": [
             {
+                "en": "The Social menu now shows a Share buttons entry even when they are turned off, taking you straight to the setting that turns them on",
+                "fr": "Le menu Social affiche maintenant une entrée Boutons de partage même lorsqu'ils sont désactivés, qui vous emmène directement au réglage qui les active",
+                "es": "El menú Social ahora muestra una entrada Botones para compartir incluso cuando están desactivados, que le lleva directamente al ajuste que los activa"
+            }
+        ]
+    },
+    {
+        "date": "2026-09-12",
+        "description": [
+            {
                 "en": "Back-office pages loading several c975L bundles no longer run their scripts once per bundle",
                 "fr": "Les pages du back-office chargeant plusieurs bundles c975L n'exécutent plus leurs scripts une fois par bundle",
                 "es": "Las páginas del back-office que cargan varios paquetes c975L ya no ejecutan sus scripts una vez por paquete"

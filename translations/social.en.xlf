@@ -338,6 +338,10 @@
                 <source>label.info_google_connect</source>
                 <target>Lets the site read the reviews of your Google listing and answer them.</target>
             </trans-unit>
+            <trans-unit id="lZ1hyGi">
+                <source>label.info_share_buttons_disabled</source>
+                <target>Share buttons are turned off site-wide: no page shows any. Opens the "social-enable-share-buttons" setting, to be set to true to turn them on and get their settings screen back.</target>
+            </trans-unit>
             <trans-unit id="AuLTjz5">
                 <source>label.info_share_buttons_settings</source>
                 <target>Default networks/style for share buttons - a singleton, overridable per page via the "share_buttons_display" block. Edit the active networks, their order and the display style.</target>
@@ -393,6 +397,10 @@
             <trans-unit id=".NVRNIf">
                 <source>label.shape_wide</source>
                 <target>Wide</target>
+            </trans-unit>
+            <trans-unit id="HgBfL.n">
+                <source>label.share_buttons_disabled</source>
+                <target>Share buttons (disabled)</target>
             </trans-unit>
             <trans-unit id="QGQ5OoP">
                 <source>label.share_buttons_settings</source>

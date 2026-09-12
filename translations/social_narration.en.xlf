@@ -102,6 +102,10 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>Below, pick the shape: wide, square or round button. That is the room the buttons will take under your pages.</target>
             </trans-unit>
+            <trans-unit id="eIkRyvF">
+                <source>narration.share_buttons_disabled</source>
+                <target>"Share buttons (disabled)" takes you to the setting that governs them: set it to true and the buttons come back, along with the screen setting their networks and style.</target>
+            </trans-unit>
             <trans-unit id="._Fe6M5">
                 <source>narration.share_buttons_settings</source>
                 <target>"Share buttons" sets the buttons placed under your pages: which networks, in which order and what they look like.</target>
