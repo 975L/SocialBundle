@@ -20,22 +20,30 @@ class StimulusAppSharingTest extends TestCase
         $barrels = $this->barrels();
 
         foreach ($barrels as $barrel) {
-            $source = (string) file_get_contents($barrel);
             $name = basename($barrel);
+
+            // Both checks read the source stripped of its comments, a commented-out guard line satisfying them otherwise
+            $code = $this->code($barrel);
 
             $this->assertStringContainsString(
                 'globalThis.c975lStimulusApp ??= startStimulusApp()',
-                $source,
+                $code,
                 sprintf('"%s" starts an application of its own instead of joining the page\'s.', $name)
             );
 
-            // The guarded line may be there and a bare call added below it, which would start a second application anyway. The import statement carries no parentheses, so the count is exact
+            // The guarded line may be there and a bare call added below it, which would start a second application anyway; the import statement carries no parentheses, so the count is exact
             $this->assertSame(
                 1,
-                substr_count($source, 'startStimulusApp()'),
+                substr_count($code, 'startStimulusApp()'),
                 sprintf('"%s" calls startStimulusApp() more than once.', $name)
             );
         }
+    }
+
+    // Line comments are dropped so that neither a commented-out call nor a comment naming the function is counted
+    private function code(string $barrel): string
+    {
+        return (string) preg_replace('#^\s*//.*$#m', '', (string) file_get_contents($barrel));
     }
 
     // Swept rather than listed, so a barrel added later is checked without anyone having to remember this test

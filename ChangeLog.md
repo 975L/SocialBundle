@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.7.9
+
+The Stimulus barrel test ignores the barrels' comments
+
+- `StimulusAppSharingTest` reads the barrels stripped of their `//` comments (12/09/2026)
+
 ## v2.7.8
 
 phpmd leaves the toolchain, and the Stimulus barrels share one application
