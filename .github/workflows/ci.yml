@@ -30,7 +30,7 @@ jobs:
               with:
                   php-version: '8.4'
                   coverage: pcov
-                  tools: phpcs, php-cs-fixer, rector, phpmd
+                  tools: phpcs, php-cs-fixer, rector
 
             # Composer decides where it keeps the downloaded archives; asking it beats hard-coding a path that depends on the runner image
             - name: Répertoire de cache de Composer
@@ -67,8 +67,6 @@ jobs:
             - name: Modernisation
               run: composer rector
 
-            - name: Code douteux
-              run: composer mess
 
             # Lizard is a Python tool, and it is pinned where the PHP ones take their latest release: its counting changed between versions and this is the one Codacy runs, which the thresholds composer.json hands it are read against
             - uses: actions/setup-python@v5

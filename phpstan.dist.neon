@@ -22,5 +22,3 @@ parameters:
         # EasyAdmin declares its fluent setters on the concrete fields, not on FieldInterface
         - '#Call to an undefined method EasyCorp\\Bundle\\EasyAdminBundle\\Contracts\\Field\\FieldInterface::#'
 
-        # PHP Mess Detector's own marker, which PHPStan reads as a typed tag and cannot parse - see the phpmd.xml.dist beside this file
-        - identifier: phpDoc.parseError

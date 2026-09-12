@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.7.8
+
+phpmd leaves the toolchain, and the Stimulus barrels share one application
+
+- **`phpmd` leaves `composer qa`, the CI and `bin/ci.sh`** (12/09/2026)
+- `phpcs` forbids the debug calls and `eval()` phpmd used to report (12/09/2026)
+- `controllers.js` and `controllers-admin.js` share one Stimulus application instead of starting their own (12/09/2026)
+- `StimulusAppSharingTest` checks every barrel calls `startStimulusApp()` once (12/09/2026)
+- `phpstan.dist.neon` drops the `phpDoc.parseError` ignore (12/09/2026)
+- `c975l-social` forbids a bare `startStimulusApp()` in a barrel (12/09/2026)
+- Requires `c975l/core-bundle` `^1.30.1` (12/09/2026)
+
 ## v2.7.7
 
 PHPStan reports calls to deprecated code

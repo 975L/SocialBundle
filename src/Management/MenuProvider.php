@@ -81,6 +81,7 @@ class MenuProvider implements MenuProviderInterface
                 'icon' => 'fab fa-google',
                 'role' => $this->configService->get('site-role-editor'),
                 'tier' => 'advanced',
+                // Written for the tour alone, where the other descriptions quote their screen: a redirection has no screen whose text to reuse
                 'description' => 'label.info_google_connect',
             ],
         ];

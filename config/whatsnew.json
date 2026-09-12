@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-09-12",
+        "description": [
+            {
+                "en": "Back-office pages loading several c975L bundles no longer run their scripts once per bundle",
+                "fr": "Les pages du back-office chargeant plusieurs bundles c975L n'exécutent plus leurs scripts une fois par bundle",
+                "es": "Las páginas del back-office que cargan varios paquetes c975L ya no ejecutan sus scripts una vez por paquete"
+            }
+        ]
+    },
+    {
         "date": "2026-09-04",
         "description": [
             {
