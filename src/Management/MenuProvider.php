@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
+use c975L\SocialBundle\Controller\Management\SocialPostCrudController;
 use c975L\UiBundle\Service\ConfigEditUrlResolver;
 
 class MenuProvider implements MenuProviderInterface
@@ -71,6 +72,20 @@ class MenuProvider implements MenuProviderInterface
             ];
         }
 
+        // The posts prepared for the networks, only while the publication is on: turned off, nothing is prepared and the screen would stay empty
+        if ($this->configService->getBool($this->configService->get('social-publish-enabled'))) {
+            $menus['social_posts'] = [
+                'controller' => SocialPostCrudController::class,
+                'label' => 'label.social_posts',
+                'narration' => 'narration.social_posts',
+                'translation_domain' => 'social',
+                'icon' => 'fas fa-paper-plane',
+                'description' => 'label.info_social_posts',
+                // The bar SocialPostCrudController states on its own rows
+                'role' => $this->configService->get('site-role-editor'),
+            ];
+        }
+
         return $menus;
     }
 
@@ -104,6 +119,20 @@ class MenuProvider implements MenuProviderInterface
                 'tier' => 'advanced',
                 // Written for the tour alone, where the other descriptions quote their screen: a redirection has no screen whose text to reuse
                 'description' => 'label.info_google_connect',
+            ];
+        }
+
+        // Consenting once gives the site the Page token its posts on Facebook and Instagram are made with - tiered "advanced" like the Google one, run at first and again the day the token is revoked
+        if ($this->configService->getBool($this->configService->get('social-publish-enabled'))) {
+            $links['social_meta_connect'] = [
+                'name' => 'social_meta_oauth_connect',
+                'label' => 'label.meta_connect',
+                'narration' => 'narration.meta_connect',
+                'translation_domain' => 'social',
+                'icon' => 'fab fa-meta',
+                'role' => $this->configService->get('site-role-editor'),
+                'tier' => 'advanced',
+                'description' => 'label.info_meta_connect',
             ];
         }
 

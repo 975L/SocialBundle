@@ -66,6 +66,42 @@
                 <source>narration.guided_step_social_links_save</source>
                 <target>Guarde con el botón situado en la parte inferior del formulario.</target>
             </trans-unit>
+            <trans-unit id="Nhfo2ra">
+                <source>narration.guided_step_social_meta_connect</source>
+                <target>En la columna de la izquierda, abra el menú «Avanzado» y haga clic en «Conectar Meta», luego autorice el acceso con la cuenta de Facebook que gestiona la Página. El sitio guarda por sí mismo la Página, su token y la cuenta de Instagram.</target>
+            </trans-unit>
+            <trans-unit id="ek3eUUp">
+                <source>narration.guided_step_social_meta_credentials</source>
+                <target>Busque «social-meta-app-id» y «social-meta-app-secret» en la lista de ajustes, y pegue allí los dos valores de la aplicación. Si la cuenta gestiona varias Páginas, rellene también «social-meta-page-id», o se tomará la primera.</target>
+            </trans-unit>
+            <trans-unit id="7XOUZrd">
+                <source>narration.guided_step_social_meta_mode</source>
+                <target>Queda elegir, red por red, si una publicación espera su revisión o sale sola: son los ajustes «social-facebook-publish-mode» y «social-instagram-publish-mode».</target>
+            </trans-unit>
+            <trans-unit id="NauQ5Sa">
+                <source>narration.guided_step_social_meta_prerequisites</source>
+                <target>Esta primera parte se hace en Meta, en developers.facebook.com: cree una aplicación, añádale el inicio de sesión con Facebook con la dirección de retorno del sitio, y déjela en modo de desarrollo. Compruebe también que la Página está vinculada a la cuenta profesional de Instagram. Vuelva aquí con el identificador y la clave secreta.</target>
+            </trans-unit>
+            <trans-unit id="4cJ._fk">
+                <source>narration.guided_step_social_posts_edit</source>
+                <target>El botón de edición abre la publicación: un texto por red, cada uno con la longitud que acepta esa red, bajo la imagen que saldrá con ella. Corrija lo que haga falta.</target>
+            </trans-unit>
+            <trans-unit id="EhIZhRa">
+                <source>narration.guided_step_social_posts_open</source>
+                <target>El panel le lleva a la pantalla de publicaciones. Se preparan solas, al ritmo que fija el ajuste del intervalo; los borradores esperan aquí su revisión.</target>
+            </trans-unit>
+            <trans-unit id="kE9wnJX">
+                <source>narration.guided_step_social_posts_prepare</source>
+                <target>Para no esperar, «Preparar ahora» toma el siguiente contenido, y «Desde una dirección» prepara cualquier página, de este sitio o de otro.</target>
+            </trans-unit>
+            <trans-unit id="nuTQi3q">
+                <source>narration.guided_step_social_posts_publish</source>
+                <target>De vuelta en la lista, el botón con forma de avión de papel envía la publicación a cada red que aún no la ha recibido. Una red que la rechaza conserva su mensaje, y un nuevo clic vuelve a intentarlo.</target>
+            </trans-unit>
+            <trans-unit id="TYtSWhL">
+                <source>narration.guided_step_social_posts_save</source>
+                <target>Guarde con el botón situado en la parte inferior del formulario.</target>
+            </trans-unit>
             <trans-unit id="DrMJai5">
                 <source>narration.guided_step_social_share_buttons_anchor</source>
                 <target>El campo de ancla es opcional. Un identificador corto, «compartir» por ejemplo, permite que una entrada de menú apunte directamente a la banda. Sin ancla, se llega igualmente desplazando la página.</target>
@@ -102,6 +138,10 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>Debajo, elija la forma: botón ancho, cuadrado o redondo. Es el espacio que ocuparán los botones bajo sus páginas.</target>
             </trans-unit>
+            <trans-unit id="SsICxhs">
+                <source>narration.meta_connect</source>
+                <target>«Conectar Meta» vincula el sitio con su Página de Facebook y su cuenta de Instagram: una vez, y de nuevo si se retira el acceso.</target>
+            </trans-unit>
             <trans-unit id="eIkRyvF">
                 <source>narration.share_buttons_disabled</source>
                 <target>«Botones para compartir (desactivados)» le lleva al ajuste que los gobierna: póngalo en true y los botones vuelven, junto con la pantalla que ajusta sus redes y su estilo.</target>
@@ -113,6 +153,10 @@
             <trans-unit id="hCyh7lI">
                 <source>narration.social_links</source>
                 <target>«Redes sociales» tiene la lista de sus redes, una sola para todo el sitio, mostrada allí donde se coloque el bloque de enlaces sociales.</target>
+            </trans-unit>
+            <trans-unit id="m6sfKEB">
+                <source>narration.social_posts</source>
+                <target>«Publicaciones» reúne lo que se prepara para sus redes: revisa cada texto y luego publica.</target>
             </trans-unit>
         </body>
     </file>

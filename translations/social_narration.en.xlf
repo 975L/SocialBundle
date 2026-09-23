@@ -66,6 +66,42 @@
                 <source>narration.guided_step_social_links_save</source>
                 <target>Save with the button at the bottom of the form.</target>
             </trans-unit>
+            <trans-unit id="Nhfo2ra">
+                <source>narration.guided_step_social_meta_connect</source>
+                <target>In the left-hand column, open the "Advanced" submenu and click "Connect Meta", then grant access with the Facebook account managing the Page. The site stores the Page, its token and the Instagram account by itself.</target>
+            </trans-unit>
+            <trans-unit id="ek3eUUp">
+                <source>narration.guided_step_social_meta_credentials</source>
+                <target>Search for "social-meta-app-id" and "social-meta-app-secret" in the settings list, and paste in the app's two values. If the account manages several Pages, fill in "social-meta-page-id" too, or the first one will be taken.</target>
+            </trans-unit>
+            <trans-unit id="7XOUZrd">
+                <source>narration.guided_step_social_meta_mode</source>
+                <target>What is left is choosing, network by network, whether a post waits for your review or goes out by itself: those are the "social-facebook-publish-mode" and "social-instagram-publish-mode" settings.</target>
+            </trans-unit>
+            <trans-unit id="NauQ5Sa">
+                <source>narration.guided_step_social_meta_prerequisites</source>
+                <target>This first part happens at Meta, on developers.facebook.com: create an app, add Facebook Login to it with the site's return address, and leave it in development mode. Check too that the Page is linked to the Instagram professional account. Come back here with the ID and the secret.</target>
+            </trans-unit>
+            <trans-unit id="4cJ._fk">
+                <source>narration.guided_step_social_posts_edit</source>
+                <target>The edit button opens the post: one text per network, each at the length that network accepts, under the image going out with it. Correct what needs to be.</target>
+            </trans-unit>
+            <trans-unit id="EhIZhRa">
+                <source>narration.guided_step_social_posts_open</source>
+                <target>The panel takes you to the posts screen. They are prepared by themselves, at the pace the interval setting sets; the drafts wait here for your review.</target>
+            </trans-unit>
+            <trans-unit id="kE9wnJX">
+                <source>narration.guided_step_social_posts_prepare</source>
+                <target>Not to wait, "Prepare now" takes the next content, and "From an address" prepares any page, of this site or another one.</target>
+            </trans-unit>
+            <trans-unit id="nuTQi3q">
+                <source>narration.guided_step_social_posts_publish</source>
+                <target>Back on the list, the paper-plane button sends the post to every network that has not taken it yet. A network refusing keeps its message, and another click tries it again.</target>
+            </trans-unit>
+            <trans-unit id="TYtSWhL">
+                <source>narration.guided_step_social_posts_save</source>
+                <target>Save with the button at the bottom of the form.</target>
+            </trans-unit>
             <trans-unit id="DrMJai5">
                 <source>narration.guided_step_social_share_buttons_anchor</source>
                 <target>The anchor field is optional. A short id, "share" for instance, lets a menu entry point straight at the band. Without an anchor, it is still reached by scrolling the page.</target>
@@ -102,6 +138,10 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>Below, pick the shape: wide, square or round button. That is the room the buttons will take under your pages.</target>
             </trans-unit>
+            <trans-unit id="SsICxhs">
+                <source>narration.meta_connect</source>
+                <target>"Connect Meta" links the site to your Facebook Page and Instagram account: once, then again if the access is withdrawn.</target>
+            </trans-unit>
             <trans-unit id="eIkRyvF">
                 <source>narration.share_buttons_disabled</source>
                 <target>"Share buttons (disabled)" takes you to the setting that governs them: set it to true and the buttons come back, along with the screen setting their networks and style.</target>
@@ -113,6 +153,10 @@
             <trans-unit id="hCyh7lI">
                 <source>narration.social_links</source>
                 <target>"Social networks" holds the list of your networks, one for the whole site, rendered wherever the social links block is put.</target>
+            </trans-unit>
+            <trans-unit id="m6sfKEB">
+                <source>narration.social_posts</source>
+                <target>"Posts" gathers what is prepared for your networks: you read each text, then you publish.</target>
             </trans-unit>
         </body>
     </file>

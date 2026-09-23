@@ -38,6 +38,14 @@
                 <source>description.guided_project_social_links</source>
                 <target>Une seule liste pour tout le site, rendue partout où le block « liens sociaux » est posé</target>
             </trans-unit>
+            <trans-unit id="WjNRnbT">
+                <source>description.guided_project_social_meta_connect</source>
+                <target>La partie agence : l'application Meta, ses deux clés, et le consentement. À faire une fois, puis à nouveau si l'accès est retiré.</target>
+            </trans-unit>
+            <trans-unit id="osYKEjU">
+                <source>description.guided_project_social_posts</source>
+                <target>Les publications préparées pour vos réseaux : en préparer une, relire son texte réseau par réseau, puis l'envoyer.</target>
+            </trans-unit>
             <trans-unit id="GjyFwm5">
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Choisir les réseaux proposés à vos visiteurs, leur ordre et leur allure</target>
@@ -98,6 +106,38 @@
                 <source>description.guided_step_social_links_place</source>
                 <target>Ajoutez le block « liens sociaux » à une page ou au pied de page : il rend cette liste, où qu'il soit.</target>
             </trans-unit>
+            <trans-unit id="a4QkcYj">
+                <source>description.guided_step_social_meta_connect</source>
+                <target>Dans le menu "Avancé" de la barre latérale, cliquer sur "Connecter Meta", puis autoriser l'accès avec le compte Facebook qui gère la Page. Le site enregistre lui-même la Page, son jeton et le compte Instagram.</target>
+            </trans-unit>
+            <trans-unit id="0xEpiaR">
+                <source>description.guided_step_social_meta_credentials</source>
+                <target>Chercher « social-meta-app-id » et « social-meta-app-secret » dans la liste, et y coller les deux valeurs de l'application. Le secret ne s'affiche qu'avec le bouton « Voir données sensibles ». Pour un compte gérant plusieurs Pages, renseigner aussi « social-meta-page-id », sinon la première est prise. Le jeton et le compte Instagram se remplissent tout seuls à l'étape suivante.</target>
+            </trans-unit>
+            <trans-unit id="s_VRZkJ">
+                <source>description.guided_step_social_meta_mode</source>
+                <target>« social-facebook-publish-mode » et « social-instagram-publish-mode » valent « review » : chaque publication attend la relecture sur l'écran Publications. « auto » l'envoie dès qu'elle est préparée.</target>
+            </trans-unit>
+            <trans-unit id="JCFGCmV">
+                <source>description.guided_step_social_meta_prerequisites</source>
+                <target>Cette partie se passe sur developers.facebook.com : créer une application, y ajouter la connexion Facebook avec pour adresse de redirection celle du site suivie de « /social/meta/callback », et la laisser en mode développement. La Page doit être reliée au compte Instagram professionnel. Revenir ici avec l'identifiant et la clé secrète de l'application.</target>
+            </trans-unit>
+            <trans-unit id="hq1t6co">
+                <source>description.guided_step_social_posts_edit</source>
+                <target>Le bouton de modification ouvre la publication : un texte par réseau, chacun limité à la longueur que ce réseau accepte, sous l'image qui partira avec.</target>
+            </trans-unit>
+            <trans-unit id="xXIWC.O">
+                <source>description.guided_step_social_posts_open</source>
+                <target>Les publications se préparent d'elles-mêmes, au rythme réglé par « social-publish-interval-hours ». Celles en brouillon attendent ici votre relecture.</target>
+            </trans-unit>
+            <trans-unit id="hc6ecvb">
+                <source>description.guided_step_social_posts_prepare</source>
+                <target>« Préparer maintenant » prend le prochain contenu sans attendre ; « Depuis une adresse » prépare n'importe quelle page, de ce site ou d'un autre, à partir de ses balises Open Graph.</target>
+            </trans-unit>
+            <trans-unit id="SvQRq5R">
+                <source>description.guided_step_social_posts_publish</source>
+                <target>De retour sur la liste, le bouton en forme d'avion en papier envoie la publication sur chaque réseau qui ne l'a pas encore reçue. Un réseau qui refuse garde son message d'erreur, et « Publier » le retente.</target>
+            </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
                 <target>Facultatif : un identifiant court (« partage ») pour qu'une entrée de menu puisse pointer directement sur le bandeau. Sans ancre, il reste atteignable en faisant défiler la page.</target>
@@ -129,6 +169,42 @@
             <trans-unit id="bRoisnG">
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Bouton large, carré ou rond : c'est la place que les boutons prennent sous vos pages.</target>
+            </trans-unit>
+            <trans-unit id="iOFL8AK">
+                <source>flash.meta_connected</source>
+                <target>Page Facebook et compte Instagram connectés.</target>
+            </trans-unit>
+            <trans-unit id="YHOn7V4">
+                <source>flash.meta_connected_without_instagram</source>
+                <target>Page Facebook connectée. Aucun compte Instagram professionnel n'est relié à cette Page.</target>
+            </trans-unit>
+            <trans-unit id="im1osly">
+                <source>flash.meta_not_configured</source>
+                <target>Renseignez d'abord l'identifiant et la clé secrète de votre app Meta dans la configuration.</target>
+            </trans-unit>
+            <trans-unit id="XAjNZmW">
+                <source>flash.meta_refused</source>
+                <target>La connexion à Meta a été refusée ou interrompue.</target>
+            </trans-unit>
+            <trans-unit id="87Pcbcr">
+                <source>flash.social_post_draft</source>
+                <target>Préparée pour %network%, en attente de votre relecture.</target>
+            </trans-unit>
+            <trans-unit id="k5cHJcN">
+                <source>flash.social_post_failed</source>
+                <target>%network% a refusé la publication : %error%</target>
+            </trans-unit>
+            <trans-unit id="14WGC.k">
+                <source>flash.social_post_nothing</source>
+                <target>Rien à préparer : aucun réseau configuré, ou plus aucun contenu à publier.</target>
+            </trans-unit>
+            <trans-unit id="WiyMFq7">
+                <source>flash.social_post_published</source>
+                <target>Publiée sur %network%.</target>
+            </trans-unit>
+            <trans-unit id="CfxlZSK">
+                <source>flash.social_post_publishing</source>
+                <target>Cette publication est déjà en cours d'envoi : attendez qu'elle se termine.</target>
             </trans-unit>
             <trans-unit id="PmT6SQr">
                 <source>label.anchor</source>
@@ -210,6 +286,14 @@
                 <source>label.guided_project_social_links</source>
                 <target>Mettre les liens vers vos réseaux</target>
             </trans-unit>
+            <trans-unit id="vmn9fNr">
+                <source>label.guided_project_social_meta_connect</source>
+                <target>Connecter la Page Facebook et Instagram</target>
+            </trans-unit>
+            <trans-unit id="Wh.sgxE">
+                <source>label.guided_project_social_posts</source>
+                <target>Relire et publier sur vos réseaux</target>
+            </trans-unit>
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Régler les boutons de partage</target>
@@ -272,6 +356,42 @@
             </trans-unit>
             <trans-unit id="VwEvHxL">
                 <source>label.guided_step_social_links_save</source>
+                <target>Enregistrer</target>
+            </trans-unit>
+            <trans-unit id="hkmOdgD">
+                <source>label.guided_step_social_meta_connect</source>
+                <target>Lancer la connexion</target>
+            </trans-unit>
+            <trans-unit id="Ahhq3XF">
+                <source>label.guided_step_social_meta_credentials</source>
+                <target>Renseigner les deux clés de l'application</target>
+            </trans-unit>
+            <trans-unit id="DrOhv0h">
+                <source>label.guided_step_social_meta_mode</source>
+                <target>Choisir ce qui part sans relecture</target>
+            </trans-unit>
+            <trans-unit id="BzznW61">
+                <source>label.guided_step_social_meta_prerequisites</source>
+                <target>Créer l'application Meta</target>
+            </trans-unit>
+            <trans-unit id="9zRMIWa">
+                <source>label.guided_step_social_posts_edit</source>
+                <target>Relire les textes</target>
+            </trans-unit>
+            <trans-unit id="WTphy6s">
+                <source>label.guided_step_social_posts_open</source>
+                <target>Ouvrir les publications</target>
+            </trans-unit>
+            <trans-unit id="2IN5mPN">
+                <source>label.guided_step_social_posts_prepare</source>
+                <target>En préparer une maintenant</target>
+            </trans-unit>
+            <trans-unit id="SPmUXau">
+                <source>label.guided_step_social_posts_publish</source>
+                <target>Publier</target>
+            </trans-unit>
+            <trans-unit id="M9j6s0Y">
+                <source>label.guided_step_social_posts_save</source>
                 <target>Enregistrer</target>
             </trans-unit>
             <trans-unit id="GHatm_S">
@@ -338,6 +458,10 @@
                 <source>label.info_google_connect</source>
                 <target>Autorise le site à lire les avis de votre fiche Google et à y répondre.</target>
             </trans-unit>
+            <trans-unit id="QtqwtAv">
+                <source>label.info_meta_connect</source>
+                <target>Relie le site à votre Page Facebook et au compte Instagram professionnel qui lui est associé : à faire une fois, puis à refaire si l'accès est retiré.</target>
+            </trans-unit>
             <trans-unit id="lZ1hyGi">
                 <source>label.info_share_buttons_disabled</source>
                 <target>Les boutons de partage sont désactivés pour tout le site : aucune page n'en affiche. Ouvre le réglage « social-enable-share-buttons » à passer à true pour les activer et retrouver leur écran de configuration.</target>
@@ -350,6 +474,14 @@
                 <source>label.info_social_links</source>
                 <target>Liens sociaux affichés en pied de page - singleton, un seul jeu de liens. Modifiez la liste pour ajouter, retirer ou réordonner un réseau social.</target>
             </trans-unit>
+            <trans-unit id="td4VA3T">
+                <source>label.info_social_post_prepare_url</source>
+                <target>L'adresse d'une page, de ce site ou d'un autre : son titre, son résumé et son image de partage deviennent une publication, à relire avant de publier.</target>
+            </trans-unit>
+            <trans-unit id="ehHeI2l">
+                <source>label.info_social_posts</source>
+                <target>Les publications préparées pour vos réseaux, un texte par réseau. Celles en brouillon attendent votre relecture : corrigez les textes, enregistrez, puis cliquez sur « Publier ». Supprimer une publication l'annule.</target>
+            </trans-unit>
             <trans-unit id="YtqDGiK">
                 <source>label.intro</source>
                 <target>Texte d'introduction</target>
@@ -361,6 +493,10 @@
             <trans-unit id="y.9x3G.">
                 <source>label.label</source>
                 <target>Libellé</target>
+            </trans-unit>
+            <trans-unit id="igt5GrM">
+                <source>label.meta_connect</source>
+                <target>Connecter Meta</target>
             </trans-unit>
             <trans-unit id="qW0z.EV">
                 <source>label.network</source>
@@ -421,6 +557,66 @@
             <trans-unit id="Eyn1gXP">
                 <source>label.social_links</source>
                 <target>Réseaux sociaux</target>
+            </trans-unit>
+            <trans-unit id="tiqhi.Y">
+                <source>label.social_post</source>
+                <target>Publication</target>
+            </trans-unit>
+            <trans-unit id="BDnUgUx">
+                <source>label.social_post_created_at</source>
+                <target>Préparée le</target>
+            </trans-unit>
+            <trans-unit id="SKEd7Fa">
+                <source>label.social_post_failed_help</source>
+                <target>Refusée par le réseau : %error%</target>
+            </trans-unit>
+            <trans-unit id="6O9YNYV">
+                <source>label.social_post_networks</source>
+                <target>Réseaux</target>
+            </trans-unit>
+            <trans-unit id="1wEVf6X">
+                <source>label.social_post_prepare</source>
+                <target>Préparer</target>
+            </trans-unit>
+            <trans-unit id="l_6rzpX">
+                <source>label.social_post_prepare_next</source>
+                <target>Préparer maintenant</target>
+            </trans-unit>
+            <trans-unit id="Ajfb2GE">
+                <source>label.social_post_prepare_url</source>
+                <target>Depuis une adresse</target>
+            </trans-unit>
+            <trans-unit id="0b4w2zz">
+                <source>label.social_post_publish</source>
+                <target>Publier</target>
+            </trans-unit>
+            <trans-unit id="NEMzvnD">
+                <source>label.social_post_status_draft</source>
+                <target>Brouillon</target>
+            </trans-unit>
+            <trans-unit id="tucv7yH">
+                <source>label.social_post_status_failed</source>
+                <target>Échec</target>
+            </trans-unit>
+            <trans-unit id="1TUVASP">
+                <source>label.social_post_status_published</source>
+                <target>Publiée</target>
+            </trans-unit>
+            <trans-unit id="HcZTdf9">
+                <source>label.social_post_text_help</source>
+                <target>%max% caractères au plus.</target>
+            </trans-unit>
+            <trans-unit id="bn7.hzs">
+                <source>label.social_post_title</source>
+                <target>Contenu</target>
+            </trans-unit>
+            <trans-unit id="L40zOCk">
+                <source>label.social_post_url</source>
+                <target>Adresse</target>
+            </trans-unit>
+            <trans-unit id="ie73Hib">
+                <source>label.social_posts</source>
+                <target>Publications</target>
             </trans-unit>
             <trans-unit id="BOri2_L">
                 <source>label.social_sample_review_answered_author</source>

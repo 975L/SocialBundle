@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
+use c975L\SocialBundle\Controller\Management\SocialPostCrudController;
 use c975L\SocialBundle\Management\MenuProvider;
 use c975L\UiBundle\Service\ConfigEditUrlResolver;
 use PHPUnit\Framework\TestCase;
@@ -21,12 +22,13 @@ use PHPUnit\Framework\TestCase;
 class MenuProviderTest extends TestCase
 {
     // Builds a provider whose ConfigService answers each feature switch on its own: the two are independent, and a test setting both at once could not tell which entry follows which
-    private function createProvider(bool $shareButtonsEnabled, bool $reviewsEnabled = true): MenuProvider
+    private function createProvider(bool $shareButtonsEnabled, bool $reviewsEnabled = true, bool $publishEnabled = false): MenuProvider
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $slug): string => match ($slug) {
             'social-enable-share-buttons' => $shareButtonsEnabled ? '1' : '0',
             'ui-enable-reviews' => $reviewsEnabled ? '1' : '0',
+            'social-publish-enabled' => $publishEnabled ? '1' : '0',
             'site-role-editor' => 'ROLE_EDITOR',
             'site-role-admin' => 'ROLE_ADMIN',
             default => '0',
@@ -80,6 +82,26 @@ class MenuProviderTest extends TestCase
 
         $this->assertSame(['social_links', 'share_buttons_settings'], array_keys($menus));
         $this->assertSame(ShareButtonsSettingsCrudController::class, $menus['share_buttons_settings']['controller']);
+    }
+
+    // Turned off, nothing is prepared, and a screen listing the posts would stay empty
+    public function testThePostsEntryFollowsThePublicationSwitch(): void
+    {
+        $this->assertArrayNotHasKey('social_posts', $this->createProvider(false)->getMenus());
+
+        $menus = $this->createProvider(false, publishEnabled: true)->getMenus();
+        $this->assertSame(SocialPostCrudController::class, $menus['social_posts']['controller']);
+        $this->assertSame('ROLE_EDITOR', $menus['social_posts']['role']);
+    }
+
+    // The Meta connection only serves the publication, so it goes with it
+    public function testTheMetaConnectionFollowsThePublicationSwitch(): void
+    {
+        $this->assertArrayNotHasKey('social_meta_connect', $this->createProvider(false)->getLinks());
+
+        $link = $this->createProvider(false, publishEnabled: true)->getLinks()['social_meta_connect'];
+        $this->assertSame('social_meta_oauth_connect', $link['name']);
+        $this->assertSame('advanced', $link['tier']);
     }
 
     // Connecting Google is what fetches the reviews, so the link goes with them

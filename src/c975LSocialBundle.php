@@ -11,7 +11,9 @@
 namespace c975L\SocialBundle;
 
 use c975L\ConfigBundle\DependencyInjection\Compiler\TaggedInterfacePass;
+use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\SocialBundle\Contract\ReviewsSourceInterface;
+use c975L\UiBundle\Contract\SocialContentSourceInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
@@ -21,6 +23,8 @@ class c975LSocialBundle extends AbstractBundle
     public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new TaggedInterfacePass(ReviewsSourceInterface::class, 'social.reviews_source'));
+        $container->addCompilerPass(new TaggedInterfacePass(NetworkPublisherInterface::class, 'social.network_publisher'));
+        $container->addCompilerPass(new TaggedInterfacePass(SocialContentSourceInterface::class, 'social.content_source'));
     }
 
     public function loadExtension(array $config, ContainerConfigurator $containerConfigurator, ContainerBuilder $containerBuilder): void

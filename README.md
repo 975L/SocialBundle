@@ -22,7 +22,7 @@ See it in action at [bundles.975l.com/pages/social-bundle](https://bundles.975l.
 ## Contents
 
 - **Setup** — [requirements](#requirements) · [installation](#installation) · [assets](#install-assets)
-- **Using it** — [social links block](#social-links-block) · [admin management](#admin-management) · [rendering](#rendering-the-block) · [styling](#styling) · [share buttons](#share-buttons) · [site-wide auto-display](#site-wide-auto-display) · [customer reviews](#customer-reviews) · [admin help procedures](#admin-help-procedures) · [guided projects](#guided-projects) · [AI agent skills](#ai-agent-skills)
+- **Using it** — [social links block](#social-links-block) · [admin management](#admin-management) · [rendering](#rendering-the-block) · [styling](#styling) · [share buttons](#share-buttons) · [site-wide auto-display](#site-wide-auto-display) · [customer reviews](#customer-reviews) · [publishing on the networks](#publishing-on-the-networks) · [admin help procedures](#admin-help-procedures) · [guided projects](#guided-projects) · [AI agent skills](#ai-agent-skills)
 
 ## Features
 
@@ -44,6 +44,8 @@ See it in action at [bundles.975l.com/pages/social-bundle](https://bundles.975l.
 - **Guided projects** contributed automatically via `GuidedProjectProviderInterface` — see [Guided projects](#guided-projects)
 - **Customer reviews**: imported from the site's own Google Business Profile listing into [c975L/UiBundle](https://github.com/975L/UiBundle)'s `Review` entity, which holds in the same table what visitors write on the site — this bundle brings the platforms, Ui the moderation screen and the display, and the whole feature sits behind Ui's `ui-enable-reviews` config key; see [Customer reviews](#customer-reviews)
 - **Pluggable review sources** via `ReviewsSourceInterface` — auto-discovered by interface, so a site adds its own platform without touching this bundle
+- **Publishing on the networks**: the site's contents posted on Bluesky, Facebook and Instagram at the interval it sets, each network's text reviewed on a "Publications" screen or sent at once; see [Publishing on the networks](#publishing-on-the-networks)
+- **Pluggable networks and contents** via `NetworkPublisherInterface` and UiBundle's `SocialContentSourceInterface` — both auto-discovered by interface
 - **A skill for coding agents**, shipped in the package and read straight from `vendor/` — see [AI agent skills](#ai-agent-skills)
 
 ---
@@ -274,7 +276,7 @@ An agency running several client sites fills the same client id and secret on ea
 
 ### Routes
 
-This bundle's **only** routes, and the reason a consuming app now has to import its controllers:
+This bundle's **only** routes — the Google connection's and the Meta one's (`/social/meta/connect`, `/social/meta/callback`) — and the reason a consuming app now has to import its controllers:
 
 ```yaml
 # config/routes.yaml
@@ -285,7 +287,12 @@ c975l_social:
 
 ### Doctrine mapping and migration
 
-Nothing to declare here: this bundle owns no entity. The `Review` table is mapped and migrated with [c975L/UiBundle](https://github.com/975L/UiBundle)'s own entities, as its readme describes.
+The `Review` table is mapped and migrated with [c975L/UiBundle](https://github.com/975L/UiBundle)'s own entities, as its readme describes. This bundle owns two entities, `SocialPost` and its `SocialPostTarget`s (what the publication prepared, one target per network), mapped automatically - their tables are created by the site's own migration:
+
+```bash
+php bin/console doctrine:migrations:diff
+php bin/console doctrine:migrations:migrate
+```
 
 ### Importing
 
@@ -320,6 +327,41 @@ Implement `ReviewsSourceInterface` (`getName()`, `isConfigured()`, `fetch()` yie
 
 ---
 
+## Publishing on the networks
+
+The site's own contents — a photograph, a story, a product — posted on its **Bluesky** account and its **Facebook** Page, and on the **Instagram** professional account linked to that Page. The whole feature hangs on **`social-publish-enabled`** (bool, `false` by default): turned off, nothing is prepared, and the "Publications" entry and the "Connecter Meta" link leave the sidebar.
+
+**This bundle publishes, the bundles owning the contents hand them over.** A bundle with something to post implements UiBundle's `SocialContentSourceInterface` (declared there so it needs no dependency on this bundle), auto-tagged by interface: `getNextContent()` picks among the contents not posted yet, `getContent()` reads one again, and `getRepeatAfterDays()` says when a posted one may come back. The sources take turns, the one that had a post least recently being asked first.
+
+### How a post goes out
+
+`c975l:social:publish` runs hourly, declared by `SocialMaintenanceTaskProvider` like the review import, and prepares a post once **`social-publish-interval-hours`** (24 by default) has passed since the last one: a `SocialPost`, with one `SocialPostTarget` per configured network, each carrying its own text written from **`social-publish-template`** (`{title}\n\n{url}` by default, any `{name}` the content has a value for) and cut to the network's own length. Each network has its `social-*-publish-mode`: **`review`** (the default) leaves the target as a draft, **`auto`** sends it at once.
+
+The **"Publications"** screen (`SocialPostCrudController`, `site-role-editor`) lists the posts with each network's status. A draft is opened, its texts corrected and saved, then sent from the list with **"Publier"**, which sends every target not out yet — a network refusing keeps its reason, and the same button tries it again. Two global actions prepare a post on demand: **"Préparer maintenant"** (the next content, whatever the interval) and **"Depuis une adresse"** (any page, of this site or another, read from its Open Graph tags). Deleting a post cancels it; a content posted once is not offered again, whatever its targets became.
+
+```bash
+php bin/console c975l:social:publish                 # what the schedule runs
+php bin/console c975l:social:publish --force         # now, whatever the interval and the switch
+php bin/console c975l:social:publish --url=https://example.org/page
+php bin/console c975l:social:publish --dry-run       # what each network would receive, sent nowhere
+```
+
+`--dry-run` shows every network, configured or not, so the texts can be read before any credential is plugged in. It still writes the JPEG copy Meta would download (see below), being the one the post will use.
+
+### Connecting the networks
+
+**Bluesky** needs `social-bluesky-handle` and `social-bluesky-app-password` — an app password created in Bluesky's settings, never the account's own. An image above 2 MB is left out rather than failing the post.
+
+**Meta** needs an app of the site owner's own, created on developers.facebook.com and left in development mode (used by its admin alone, it needs neither App Review nor Business Verification), with `<site>/social/meta/callback` as its redirect URI. Its two keys, `social-meta-app-id` and `social-meta-app-secret`, are `restricted`, like Google's. **"Connecter Meta"**, in the sidebar's "Avancé" submenu, then fills the three others: `social-meta-page-id`, the Page token (`sensitive`, and non-expiring) and `social-meta-instagram-id`. An account managing several Pages gets its first one, unless `social-meta-page-id` was filled beforehand — that Page is then kept.
+
+Meta downloads the image itself and refuses WebP, Instagram taking a JPEG within a range of ratios only: `SocialImageExporter` writes a framed JPEG copy under `public/medias/social/`, and Instagram takes no post without an image.
+
+### Adding another network
+
+Implement `NetworkPublisherInterface` (`getName()`, `isConfigured()`, `isAutomatic()`, `getMaxLength()`, `publish()`, `preview()`) anywhere in the app: it is auto-tagged by interface, nothing to declare in `services.yaml`. `publish()` throws rather than reporting a failure, so the target keeps the network's own reason.
+
+---
+
 ## Admin help procedures
 
 `ProcedureProvider` (implements ConfigBundle's `ProcedureProviderInterface`) reads `config/procedures.json` and contributes one entry per documented admin workflow (configuring social links, configuring share buttons, displaying the Google reviews) to ConfigBundle's `ProcedureBuilder`, which aggregates every bundle's procedures for the dashboard AI assistant. Each entry ships `fr`/`en`/`es` translations, resolved to the current locale by `ProcedureJsonReader`.
@@ -328,7 +370,7 @@ Implement `ReviewsSourceInterface` (`getName()`, `isConfigured()`, `fetch()` yie
 
 ## Guided projects
 
-`SocialGuidedProjectProvider` (implements ConfigBundle's `GuidedProjectProviderInterface`, auto-tagged like `MenuProviderInterface`) contributes four replayable exercises to the `/management` dashboard's "Guided projects" panel: **"Mettre les liens vers vos réseaux"** (one list for the whole site, rendered wherever the block is put), **"Régler les boutons de partage"** (which networks, in which order, and what they look like), **"Connecter la fiche Google de l'établissement"** and **"Consulter et afficher les avis Google"**. They run at 4010, 4020, 4030 and 4040, inside the 4000 block `GuidedProjectProviderInterface` reserves this bundle — that docblock states every bundle's, so the range is read there rather than recopied.
+`SocialGuidedProjectProvider` (implements ConfigBundle's `GuidedProjectProviderInterface`, auto-tagged like `MenuProviderInterface`) contributes six replayable exercises to the `/management` dashboard's "Guided projects" panel: **"Mettre les liens vers vos réseaux"** (one list for the whole site, rendered wherever the block is put), **"Régler les boutons de partage"** (which networks, in which order, and what they look like), **"Connecter la fiche Google de l'établissement"**, **"Consulter et afficher les avis Google"**, **"Relire et publier sur vos réseaux"** and **"Connecter la Page Facebook et Instagram"**. They run at 4010 to 4060, inside the 4000 block `GuidedProjectProviderInterface` reserves this bundle — that docblock states every bundle's, so the range is read there rather than recopied.
 
 The Google side is **two parcours rather than one**, split on who actually does the work. Connecting the listing is the agency's own job: the two OAuth keys are `restricted` configs, so a single Cloud application is filled on every client site (see [Customer reviews](#customer-reviews)) and each client consents with their own Google account. Reading the reviews, answering them and putting them on a page is the site's own editor. Kept as one parcours, it declared the lowest of the three bars it crossed and opened on a 403 for the very role it named.
 
@@ -336,11 +378,11 @@ The connection parcours deliberately **doesn't re-document the Google Cloud cons
 
 Both Google parcours open on **another bundle's** screen: ConfigBundle's config list for the connection, the two OAuth keys being configs, and UiBundle's `ReviewCrudController` for the reviews, which are its entity whatever platform brought them in.
 
-The share buttons project is contributed **only while `social-enable-share-buttons` is on**, and the two Google ones **only while `ui-enable-reviews` is on** — the same condition `MenuProvider` applies to the "Boutons de partage" entry and to its own "Connecter Google" link, since with the feature off that screen isn't in the sidebar either and a parcours walking to an unreachable screen reads as a broken one. A parcours is dropped outright where the menu instead keeps a stand-in entry pointing at the switch (see [Site-wide auto-display](#site-wide-auto-display)): a sidebar caption saying a feature is off fits in a line, a whole walkthrough of a screen that isn't there does not.
+The share buttons project is contributed **only while `social-enable-share-buttons` is on**, the two Google ones **only while `ui-enable-reviews` is on**, and the two publication ones **only while `social-publish-enabled` is on** — the same condition `MenuProvider` applies to the "Boutons de partage" entry and to its own "Connecter Google" link, since with the feature off that screen isn't in the sidebar either and a parcours walking to an unreachable screen reads as a broken one. A parcours is dropped outright where the menu instead keeps a stand-in entry pointing at the switch (see [Site-wide auto-display](#site-wide-auto-display)): a sidebar caption saying a feature is off fits in a line, a whole walkthrough of a screen that isn't there does not.
 
-Each project declares the role its own screens demand rather than the dashboard's, no role implying another: `site-role-editor` for three of them, and **`ROLE_SUPER_ADMIN`** for the connection — a literal, exactly as ConfigBundle states it on its own restricted actions, since `ConfigCrudController` hides a `restricted` config from every user below it. Too low a bar and `GuidedProjectBuilder` offers a parcours opening on a 403 instead of dropping it. The connection walks three screens gated on three of these roles at once, where the `role` key holds a single one: `getGuidedProjects()` checks the conjunction itself and contributes the parcours only to a user holding `ROLE_SUPER_ADMIN`, `site-role-admin` and `site-role-editor` together.
+Each project declares the role its own screens demand rather than the dashboard's, no role implying another: `site-role-editor` for four of them, and **`ROLE_SUPER_ADMIN`** for the two connections — a literal, exactly as ConfigBundle states it on its own restricted actions, since `ConfigCrudController` hides a `restricted` config from every user below it. Too low a bar and `GuidedProjectBuilder` offers a parcours opening on a 403 instead of dropping it. Each connection walks three screens gated on three of these roles at once, where the `role` key holds a single one: `getGuidedProjects()` checks the conjunction itself and contributes the parcours only to a user holding `ROLE_SUPER_ADMIN`, `site-role-admin` and `site-role-editor` together.
 
-Only the opening step of each carries an `url`: from there the panel walks the screen the user has been sent to, highlighting the button or the field they are meant to use next, in the order the form renders them. The two singleton screens are pointed at with `.action-new, .action-edit` — the index offers "create" until the row exists and "edit" ever after, and whichever is on screen is the one to click. The settings fields reuse the markers their own JS already reads (`[data-share-networks-sortable]`, `[data-share-shape-select]`, `[data-share-fill-select]`, `[data-share-display-intro-checkbox]`, `[data-social-links-icon-style-select]`), rather than ids of their own; the two fields with no marker of their own are pointed at with the `trix-editor` the introduction's textarea is replaced by, and with the anchor field's EasyAdmin id (`#Block_data_anchor`). The reply step points at `.action-edit`, the class EasyAdmin's own edit action keeps whatever the icon and the label `ReviewCrudController` renames it with.
+Only the opening step of each carries an `url`: from there the panel walks the screen the user has been sent to, highlighting the button or the field they are meant to use next, in the order the form renders them. The two singleton screens are pointed at with `.action-new, .action-edit` — the index offers "create" until the row exists and "edit" ever after, and whichever is on screen is the one to click. The settings fields reuse the markers their own JS already reads (`[data-share-networks-sortable]`, `[data-share-shape-select]`, `[data-share-fill-select]`, `[data-share-display-intro-checkbox]`, `[data-social-links-icon-style-select]`), rather than ids of their own; the two fields with no marker of their own are pointed at with the `trix-editor` the introduction's textarea is replaced by, and with the anchor field's EasyAdmin id (`#Block_data_anchor`). The reply step points at `.action-edit`, the class EasyAdmin's own edit action keeps whatever the icon and the label `ReviewCrudController` renames it with. The publication parcours points at the actions' own classes (`.action-prepareNextPost, .action-prepareUrlPost`, then `.action-publishPost` back on the list, "Publier" being offered there only).
 
 ---
 
@@ -352,7 +394,7 @@ The package ships a skill of its own, `skills/c975l-social/SKILL.md`, written fo
 vendor/c975l/social-bundle/skills/
 ```
 
-It holds what an agent gets wrong when left to its own habits — that neither feature has an entity or a table of its own, that a layout includes the share band rather than calling its Twig function, that the old `style` argument is gone rather than mapped, that an icon dropped in the app overrides the one shipped here — alongside the block kinds, the Twig functions, the config key and the CSS tokens, each named as it actually is in the sources.
+It holds what an agent gets wrong when left to its own habits — that the links and the share buttons have no entity or table of their own, that a layout includes the share band rather than calling its Twig function, that the old `style` argument is gone rather than mapped, that an icon dropped in the app overrides the one shipped here — alongside the block kinds, the Twig functions, the config keys, the publication's extension points and the CSS tokens, each named as it actually is in the sources.
 
 Nothing is installed, nothing is copied into your project: the file sits in `vendor/` like any other part of the package and follows it at each `composer update`. A user of Claude Code wanting it to load by itself symlinks it into their own skills directory:
 

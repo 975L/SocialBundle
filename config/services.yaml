@@ -6,7 +6,7 @@ services:
 
     c975L\SocialBundle\:
         resource: '../src/'
-        exclude: '../src/{Contract,DependencyInjection,Entity,Model}'
+        exclude: '../src/{Contract,DependencyInjection,Entity,Enum,Model}'
 
     c975L\SocialBundle\Service\StylesheetProvider:
         tags:
@@ -26,6 +26,17 @@ services:
     c975L\SocialBundle\Service\ReviewReplyPublisher:
         arguments:
             $sources: !tagged_iterator social.reviews_source
+
+    # Networks and sources are auto-tagged from their interfaces (see c975LSocialBundle::build()): a bundle owning content implements UiBundle's SocialContentSourceInterface, a site adding a network implements NetworkPublisherInterface - nothing to declare here
+    c975L\SocialBundle\Service\SocialPublisher:
+        arguments:
+            $sources: !tagged_iterator social.content_source
+            $networks: !tagged_iterator social.network_publisher
+
+    # The JPEG copies Meta downloads are written under the site's public/ folder
+    c975L\SocialBundle\Service\SocialImageExporter:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
 
     social.block.social_links:
         class: stdClass

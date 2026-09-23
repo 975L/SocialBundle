@@ -38,6 +38,14 @@
                 <source>description.guided_project_social_links</source>
                 <target>One single list for the whole site, rendered wherever the social links block is put</target>
             </trans-unit>
+            <trans-unit id="WjNRnbT">
+                <source>description.guided_project_social_meta_connect</source>
+                <target>The agency's part: the Meta app, its two keys, and the consent. Done once, then again if the access is withdrawn.</target>
+            </trans-unit>
+            <trans-unit id="osYKEjU">
+                <source>description.guided_project_social_posts</source>
+                <target>The posts prepared for your networks: prepare one, proofread its text network by network, then send it.</target>
+            </trans-unit>
             <trans-unit id="GjyFwm5">
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Pick the networks offered to your visitors, their order and their look</target>
@@ -98,6 +106,38 @@
                 <source>description.guided_step_social_links_place</source>
                 <target>Add the social links block to a page or to the footer: it renders this list, wherever it sits.</target>
             </trans-unit>
+            <trans-unit id="a4QkcYj">
+                <source>description.guided_step_social_meta_connect</source>
+                <target>In the sidebar's "Advanced" submenu, click "Connect Meta", then grant access with the Facebook account managing the Page. The site stores the Page, its token and the Instagram account by itself.</target>
+            </trans-unit>
+            <trans-unit id="0xEpiaR">
+                <source>description.guided_step_social_meta_credentials</source>
+                <target>Search for "social-meta-app-id" and "social-meta-app-secret" in the list, and paste in the app's two values. The secret only shows with the "Show sensitive data" button. For an account managing several Pages, fill in "social-meta-page-id" too, or the first one is taken. The token and the Instagram account fill themselves in at the next step.</target>
+            </trans-unit>
+            <trans-unit id="s_VRZkJ">
+                <source>description.guided_step_social_meta_mode</source>
+                <target>"social-facebook-publish-mode" and "social-instagram-publish-mode" are set to "review": each post waits for review on the Posts screen. "auto" sends it as soon as it is prepared.</target>
+            </trans-unit>
+            <trans-unit id="JCFGCmV">
+                <source>description.guided_step_social_meta_prerequisites</source>
+                <target>This part happens on developers.facebook.com: create an app, add Facebook Login to it with the site's address followed by "/social/meta/callback" as redirect URI, and leave it in development mode. The Page must be linked to the Instagram professional account. Come back here with the app's ID and secret.</target>
+            </trans-unit>
+            <trans-unit id="hq1t6co">
+                <source>description.guided_step_social_posts_edit</source>
+                <target>The edit button opens the post: one text per network, each limited to the length that network accepts, under the image going out with it.</target>
+            </trans-unit>
+            <trans-unit id="xXIWC.O">
+                <source>description.guided_step_social_posts_open</source>
+                <target>The posts are prepared by themselves, at the pace set by "social-publish-interval-hours". The drafts wait here for your review.</target>
+            </trans-unit>
+            <trans-unit id="hc6ecvb">
+                <source>description.guided_step_social_posts_prepare</source>
+                <target>"Prepare now" takes the next content without waiting; "From an address" prepares any page, of this site or another one, from its Open Graph tags.</target>
+            </trans-unit>
+            <trans-unit id="SvQRq5R">
+                <source>description.guided_step_social_posts_publish</source>
+                <target>Back on the list, the paper-plane button sends the post to every network that has not taken it yet. A network refusing keeps its error message, and "Publish" tries it again.</target>
+            </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
                 <target>Optional: a short id ("share") so a menu entry can point straight at the band. Without an anchor, it is still reached by scrolling the page.</target>
@@ -129,6 +169,42 @@
             <trans-unit id="bRoisnG">
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Wide, square or round button: that is the room the buttons take under your pages.</target>
+            </trans-unit>
+            <trans-unit id="iOFL8AK">
+                <source>flash.meta_connected</source>
+                <target>Facebook Page and Instagram account connected.</target>
+            </trans-unit>
+            <trans-unit id="YHOn7V4">
+                <source>flash.meta_connected_without_instagram</source>
+                <target>Facebook Page connected. No Instagram professional account is linked to this Page.</target>
+            </trans-unit>
+            <trans-unit id="im1osly">
+                <source>flash.meta_not_configured</source>
+                <target>Fill in your Meta app's id and secret in the configuration first.</target>
+            </trans-unit>
+            <trans-unit id="XAjNZmW">
+                <source>flash.meta_refused</source>
+                <target>The connection to Meta was refused or interrupted.</target>
+            </trans-unit>
+            <trans-unit id="87Pcbcr">
+                <source>flash.social_post_draft</source>
+                <target>Prepared for %network%, waiting for your review.</target>
+            </trans-unit>
+            <trans-unit id="k5cHJcN">
+                <source>flash.social_post_failed</source>
+                <target>%network% refused the post: %error%</target>
+            </trans-unit>
+            <trans-unit id="14WGC.k">
+                <source>flash.social_post_nothing</source>
+                <target>Nothing to prepare: no network configured, or no content left to post.</target>
+            </trans-unit>
+            <trans-unit id="WiyMFq7">
+                <source>flash.social_post_published</source>
+                <target>Published on %network%.</target>
+            </trans-unit>
+            <trans-unit id="CfxlZSK">
+                <source>flash.social_post_publishing</source>
+                <target>This post is already being sent: wait for it to finish.</target>
             </trans-unit>
             <trans-unit id="PmT6SQr">
                 <source>label.anchor</source>
@@ -210,6 +286,14 @@
                 <source>label.guided_project_social_links</source>
                 <target>Put up the links to your networks</target>
             </trans-unit>
+            <trans-unit id="vmn9fNr">
+                <source>label.guided_project_social_meta_connect</source>
+                <target>Connect the Facebook Page and Instagram</target>
+            </trans-unit>
+            <trans-unit id="Wh.sgxE">
+                <source>label.guided_project_social_posts</source>
+                <target>Review and publish on your networks</target>
+            </trans-unit>
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Set the share buttons</target>
@@ -272,6 +356,42 @@
             </trans-unit>
             <trans-unit id="VwEvHxL">
                 <source>label.guided_step_social_links_save</source>
+                <target>Save</target>
+            </trans-unit>
+            <trans-unit id="hkmOdgD">
+                <source>label.guided_step_social_meta_connect</source>
+                <target>Start the connection</target>
+            </trans-unit>
+            <trans-unit id="Ahhq3XF">
+                <source>label.guided_step_social_meta_credentials</source>
+                <target>Fill in the app's two keys</target>
+            </trans-unit>
+            <trans-unit id="DrOhv0h">
+                <source>label.guided_step_social_meta_mode</source>
+                <target>Choose what goes out unreviewed</target>
+            </trans-unit>
+            <trans-unit id="BzznW61">
+                <source>label.guided_step_social_meta_prerequisites</source>
+                <target>Create the Meta app</target>
+            </trans-unit>
+            <trans-unit id="9zRMIWa">
+                <source>label.guided_step_social_posts_edit</source>
+                <target>Proofread the texts</target>
+            </trans-unit>
+            <trans-unit id="WTphy6s">
+                <source>label.guided_step_social_posts_open</source>
+                <target>Open the posts</target>
+            </trans-unit>
+            <trans-unit id="2IN5mPN">
+                <source>label.guided_step_social_posts_prepare</source>
+                <target>Prepare one now</target>
+            </trans-unit>
+            <trans-unit id="SPmUXau">
+                <source>label.guided_step_social_posts_publish</source>
+                <target>Publish</target>
+            </trans-unit>
+            <trans-unit id="M9j6s0Y">
+                <source>label.guided_step_social_posts_save</source>
                 <target>Save</target>
             </trans-unit>
             <trans-unit id="GHatm_S">
@@ -338,6 +458,10 @@
                 <source>label.info_google_connect</source>
                 <target>Lets the site read the reviews of your Google listing and answer them.</target>
             </trans-unit>
+            <trans-unit id="QtqwtAv">
+                <source>label.info_meta_connect</source>
+                <target>Links the site to your Facebook Page and the Instagram professional account attached to it: done once, then again if the access is withdrawn.</target>
+            </trans-unit>
             <trans-unit id="lZ1hyGi">
                 <source>label.info_share_buttons_disabled</source>
                 <target>Share buttons are turned off site-wide: no page shows any. Opens the "social-enable-share-buttons" setting, to be set to true to turn them on and get their settings screen back.</target>
@@ -350,6 +474,14 @@
                 <source>label.info_social_links</source>
                 <target>Site-wide social links shown in the footer - a singleton, one set of links. Edit the list to add, remove or reorder a social network.</target>
             </trans-unit>
+            <trans-unit id="td4VA3T">
+                <source>label.info_social_post_prepare_url</source>
+                <target>The address of a page, of this site or another one: its title, summary and sharing image become a post, to review before publishing.</target>
+            </trans-unit>
+            <trans-unit id="ehHeI2l">
+                <source>label.info_social_posts</source>
+                <target>The posts prepared for your networks, one text per network. Drafts wait for your review: correct the texts, save, then click "Publish". Deleting a post cancels it.</target>
+            </trans-unit>
             <trans-unit id="YtqDGiK">
                 <source>label.intro</source>
                 <target>Introduction text</target>
@@ -361,6 +493,10 @@
             <trans-unit id="y.9x3G.">
                 <source>label.label</source>
                 <target>Label</target>
+            </trans-unit>
+            <trans-unit id="igt5GrM">
+                <source>label.meta_connect</source>
+                <target>Connect Meta</target>
             </trans-unit>
             <trans-unit id="qW0z.EV">
                 <source>label.network</source>
@@ -421,6 +557,66 @@
             <trans-unit id="Eyn1gXP">
                 <source>label.social_links</source>
                 <target>Social links</target>
+            </trans-unit>
+            <trans-unit id="tiqhi.Y">
+                <source>label.social_post</source>
+                <target>Post</target>
+            </trans-unit>
+            <trans-unit id="BDnUgUx">
+                <source>label.social_post_created_at</source>
+                <target>Prepared on</target>
+            </trans-unit>
+            <trans-unit id="SKEd7Fa">
+                <source>label.social_post_failed_help</source>
+                <target>Refused by the network: %error%</target>
+            </trans-unit>
+            <trans-unit id="6O9YNYV">
+                <source>label.social_post_networks</source>
+                <target>Networks</target>
+            </trans-unit>
+            <trans-unit id="1wEVf6X">
+                <source>label.social_post_prepare</source>
+                <target>Prepare</target>
+            </trans-unit>
+            <trans-unit id="l_6rzpX">
+                <source>label.social_post_prepare_next</source>
+                <target>Prepare now</target>
+            </trans-unit>
+            <trans-unit id="Ajfb2GE">
+                <source>label.social_post_prepare_url</source>
+                <target>From an address</target>
+            </trans-unit>
+            <trans-unit id="0b4w2zz">
+                <source>label.social_post_publish</source>
+                <target>Publish</target>
+            </trans-unit>
+            <trans-unit id="NEMzvnD">
+                <source>label.social_post_status_draft</source>
+                <target>Draft</target>
+            </trans-unit>
+            <trans-unit id="tucv7yH">
+                <source>label.social_post_status_failed</source>
+                <target>Failed</target>
+            </trans-unit>
+            <trans-unit id="1TUVASP">
+                <source>label.social_post_status_published</source>
+                <target>Published</target>
+            </trans-unit>
+            <trans-unit id="HcZTdf9">
+                <source>label.social_post_text_help</source>
+                <target>%max% characters at most.</target>
+            </trans-unit>
+            <trans-unit id="bn7.hzs">
+                <source>label.social_post_title</source>
+                <target>Content</target>
+            </trans-unit>
+            <trans-unit id="L40zOCk">
+                <source>label.social_post_url</source>
+                <target>Address</target>
+            </trans-unit>
+            <trans-unit id="ie73Hib">
+                <source>label.social_posts</source>
+                <target>Posts</target>
             </trans-unit>
             <trans-unit id="BOri2_L">
                 <source>label.social_sample_review_answered_author</source>

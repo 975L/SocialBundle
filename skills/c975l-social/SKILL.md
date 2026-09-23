@@ -1,16 +1,16 @@
 ---
 name: c975l-social
-description: "Use this skill when working with social links, share buttons or customer reviews in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, and the Google Business Profile review import with its pluggable sources. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, startStimulusApp, c975lStimulusApp, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile."
+description: "Use this skill when working with social links, share buttons, customer reviews or the publication on the social networks in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, the Google Business Profile review import with its pluggable sources, and the scheduled posts on Bluesky, Facebook and Instagram. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, startStimulusApp, c975lStimulusApp, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile, c975l:social:publish, SocialPublisher, SocialPost, SocialPostTarget, SocialPostCrudController, NetworkPublisherInterface, SocialContentSourceInterface, SocialContent, social-publish-enabled, social-publish-template, social-meta-app-id, social-bluesky-app-password, Connecter Meta, MetaGraphClient, SocialImageExporter, post on Bluesky, post on Facebook, post on Instagram, social publishing."
 ---
 
 # c975L SocialBundle
 
-> The social side of a c975L site — one site-wide list of social links, and share buttons for 20 networks, both placed anywhere as blocks. Replaces the former ShareButtonsBundle.
+> The social side of a c975L site — one site-wide list of social links, and share buttons for 20 networks, both placed anywhere as blocks, the Google reviews feed, and the site's contents posted on its networks. Replaces the former ShareButtonsBundle.
 
 **Package:** `c975l/social-bundle` · **Namespace:** `c975L\SocialBundle\` · **Twig namespace:** `@c975LSocial` · **Translation domain:** `social`
 
 **Key source paths** (relative to the package root):
-`src/Service/ShareButtonsService.php`, `src/Twig/`, `src/Form/Block/`, `src/Controller/`, `src/Controller/Management/`, `src/Management/`, `src/Contract/`, `src/Command/ReviewsSyncCommand.php`, `templates/blocks/`, `templates/components/SocialLinks.html.twig`, `templates/shareButtons/`, `config/configs.json`, `config/services.yaml`, `translations/config.en.xlf`, `public/icons/`, `sass/_social-brand-colors.scss`, `sass/block-thumbs.scss`, `scaffold/assets/styles/themes/social.css`
+`src/Service/ShareButtonsService.php`, `src/Twig/`, `src/Form/Block/`, `src/Controller/`, `src/Controller/Management/`, `src/Management/`, `src/Contract/`, `src/Command/ReviewsSyncCommand.php`, `src/Command/PublishCommand.php`, `src/Service/SocialPublisher.php`, `src/Entity/`, `templates/blocks/`, `templates/components/SocialLinks.html.twig`, `templates/shareButtons/`, `config/configs.json`, `config/services.yaml`, `translations/config.en.xlf`, `public/icons/`, `sass/_social-brand-colors.scss`, `sass/block-thumbs.scss`, `scaffold/assets/styles/themes/social.css`
 
 **Related documentation:** this package's `README.md` is the exhaustive reference. The block system, the icon service and the media library it builds on live in `c975l/core-bundle`.
 
@@ -26,8 +26,8 @@ php bin/console c975l:scaffold:install     # copies assets/styles/themes/social.
 Social links and share buttons need **no route, no entity and no migration**: both are stored as a
 singleton UiBundle `Block`, edited from their own dashboard screens.
 
-Customer reviews do need all three — see [Customer reviews](#customer-reviews) for the routes to import,
-the Doctrine mapping to declare and the migration to generate.
+Customer reviews need the routes — see [Customer reviews](#customer-reviews). The publication needs
+the routes and a migration too — see [Publishing on the networks](#publishing-on-the-networks).
 
 ## The two singleton features, and where their data lives
 
@@ -182,7 +182,7 @@ c975l_social:
     type: attribute
 ```
 
-This bundle maps no entity — the `Review` table travels with UiBundle — and the sync needs no cron
+The `Review` table travels with UiBundle — this bundle's own entities are the publication's — and the sync needs no cron
 entry of its own: `Scheduler\SocialMaintenanceTaskProvider` declares it nightly, so it is in the
 scaffolded `MaintenanceSchedule` as soon as the bundle is installed. The five config slugs are
 `social-google-oauth-client-id`, `social-google-oauth-client-secret`,
@@ -190,7 +190,7 @@ scaffolded `MaintenanceSchedule` as soon as the bundle is installed. The five co
 `social-google-business-location-id` — only the first two are typed, `/social/google/connect` writing
 the rest.
 
-**All seven settings of this bundle are filed under a `social` group of its own**, not under ConfigBundle's
+**All the settings of this bundle are filed under a `social` group of its own**, not under ConfigBundle's
 shared `general`. A drawer named by a bundle is labelled by that bundle: `label.group_social` in the `config`
 domain, shipped in `translations/config.{en,es,fr}.xlf`. Unlabelled, the "pick a group" screen shows the raw
 key. `ConfigsJsonTest::testGroupsAreEitherSharedOrLabelledByThisBundle` locks that in. Needs
@@ -208,6 +208,32 @@ publishes the listing (`social-google-listing-url`, a `maps?cid=…` address) an
 `sameAs` — the property stating the site and those profiles are one business, where the block's own
 `mapUrl` publishes `hasMap` and only says a map exists. Nothing is retyped into the contact form.
 
+## Publishing on the networks
+
+The site's contents posted on **Bluesky**, its **Facebook** Page and the **Instagram** professional
+account linked to that Page, behind **`social-publish-enabled`** (bool, `false` by default).
+
+| Piece | Class |
+| --- | --- |
+| Content contract | `c975L\UiBundle\Contract\SocialContentSourceInterface`, handing out `c975L\UiBundle\Model\SocialContent` |
+| Network contract | `Contract\NetworkPublisherInterface` (`getName()`, `isConfigured()`, `isAutomatic()`, `getMaxLength()`, `publish()`, `preview()`) |
+| Networks | `Service\BlueskyPublisher`, `Service\FacebookPublisher`, `Service\InstagramPublisher` |
+| Meta connection | `Service\MetaGraphClient`, `Controller\MetaOAuthController` (`/social/meta/connect`, `/social/meta/callback`) |
+| Orchestration | `Service\SocialPublisher`, `Command\PublishCommand` (`c975l:social:publish`) |
+| Stored posts | `Entity\SocialPost`, one `Entity\SocialPostTarget` per network, `Enum\SocialPostStatus` |
+| Review screen | `Controller\Management\SocialPostCrudController` ("Publications", `site-role-editor`) |
+
+A bundle owning contents implements `SocialContentSourceInterface`, declared in UiBundle so it needs no
+dependency on this one; both contracts are auto-tagged by interface (`social.content_source`,
+`social.network_publisher`). The hourly run prepares a post once `social-publish-interval-hours` has
+passed, one text per network written from `social-publish-template` (`{name}` placeholders) and cut to
+`getMaxLength()`. `social-*-publish-mode` = `review` leaves a draft for the screen, `auto` sends it at once.
+"Publier" sends every target not out yet, under a per-post lock, and is offered on the list only.
+
+The Meta keys `social-meta-app-id` and `social-meta-app-secret` are `restricted`; "Connecter Meta" fills
+the Page, its token and the Instagram id, keeping a `social-meta-page-id` filled beforehand. Meta gets a
+JPEG copy written by `SocialImageExporter` under `public/medias/social/`, never the site's WebP.
+
 ## What the bundle already contributes
 
 Nothing below is declared in the app: `MenuProvider` (the dashboard entries, each declaring
@@ -223,7 +249,7 @@ export/import provider per
 singleton (`SocialLinksExportProvider`, `ShareButtonsSettingsExportProvider` and their import twins),
 `Management\GoogleReviewsHealthCheckProvider` (one row on the health check page, saying whether the
 Google connection still answers - the import being the one thing here that stops silently) and
-`Scheduler\SocialMaintenanceTaskProvider` (the nightly review sync).
+`Scheduler\SocialMaintenanceTaskProvider` (the nightly review sync and the hourly publication run).
 
 ## Do not
 
@@ -262,7 +288,14 @@ Google connection still answers - the import being the one thing here that stops
 - **Do not register a `FormThemeProviderInterface` or a `BlockEditUrlProviderInterface` here.** The two
   CRUD form themes are local, passed through `Crud::addFormTheme()`; and the share band is no `Block`
   on a page, its edit url already served by `share_buttons_edit_url()`. Nothing is offered to the
-  sitemap or the linkable routes either: both routes are editor-only redirections.
+  sitemap or the linkable routes either: every route is an editor-only redirection.
+- **Do not make a content bundle require this one to be posted.** Implement UiBundle's
+  `SocialContentSourceInterface`; the ids already posted are this bundle's to track, not the source's.
+- **Do not call a network from a page render or a listener.** Posts go out from `c975l:social:publish`
+  or the screen's "Publier", which keep the network's refusal on the target.
+- **Do not offer "Publier" on the post's edit page.** A link does not submit the form: the text sent
+  would be the saved one, not the one just corrected.
+- **Do not hand Meta the site's WebP url.** Go through `SocialImageExporter::jpegUrl()`.
 - **Do not make `share_buttons_display` cacheable.** Its render carries the current page's url, so the
   first page's share links would be served on every other page holding that block.
   `social_links_display` is the opposite case and is cached, the singleton's own tag added on top of

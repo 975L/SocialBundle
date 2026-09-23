@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Management\GuidedProjectProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
+use c975L\SocialBundle\Controller\Management\SocialPostCrudController;
 use c975L\UiBundle\Controller\Management\ReviewCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
@@ -41,19 +42,31 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
 
         // Same condition as MenuProvider's own entry, for the same reason as the share buttons above. Two parcours rather than one: connecting the listing is the agency's own job (the Google keys are restricted configs, see the readme on one Cloud application shared across client sites), where reading the reviews and putting them on a page is the site's editor
         if ($this->configService->getBool($this->configService->get('ui-enable-reviews'))) {
-            // The connection parcours walks screens gated on three roles, none of them implying another: the 'role' key holds one, so the conjunction is checked here, or a super-administrator missing the two others would be offered a parcours answering 403 on its very first step
-            if (
-                $this->security->isGranted('ROLE_SUPER_ADMIN')
-                && $this->security->isGranted($this->configService->get('site-role-admin'))
-                && $this->security->isGranted($this->configService->get('site-role-editor'))
-            ) {
+            if ($this->mayWalkRestrictedConfigs()) {
                 $projects[] = $this->googleConnectProject();
             }
 
             $projects[] = $this->googleReviewsProject();
         }
 
+        // Same condition as MenuProvider's own entries, the posts screen and the "Connecter Meta" link. Two parcours again, split like Google's: the Meta keys are the agency's, reviewing and publishing the posts is the editor's
+        if ($this->configService->getBool($this->configService->get('social-publish-enabled'))) {
+            $projects[] = $this->socialPostsProject();
+
+            if ($this->mayWalkRestrictedConfigs()) {
+                $projects[] = $this->metaConnectProject();
+            }
+        }
+
         return $projects;
+    }
+
+    // A connection parcours walks screens gated on three roles, none of them implying another: the 'role' key holds one, so the conjunction is checked here, or a super-administrator missing the two others would be offered a parcours answering 403 on its very first step
+    private function mayWalkRestrictedConfigs(): bool
+    {
+        return $this->security->isGranted('ROLE_SUPER_ADMIN')
+            && $this->security->isGranted($this->configService->get('site-role-admin'))
+            && $this->security->isGranted($this->configService->get('site-role-editor'));
     }
 
     // The only parcours whose first move happens outside the site: the Google side is left to the "afficher-avis-google" help procedure, which is text and can carry links to Google's own pages, where a step's description is inserted as plain text and could not
@@ -129,6 +142,93 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_social_google_display',
                     'description' => 'description.guided_step_social_google_display',
                     'narration' => 'narration.guided_step_social_google_display',
+                ],
+            ],
+        ];
+    }
+
+    // What the editor does with the posts the hourly run prepares: read them, correct them, send them - saving before sending, "Publish" being offered on the list alone
+    private function socialPostsProject(): array
+    {
+        return [
+            'slug' => 'social-posts',
+            'label' => 'label.guided_project_social_posts',
+            'description' => 'description.guided_project_social_posts',
+            'translation_domain' => 'social',
+            'order' => 4050,
+            // The bar SocialPostCrudController states on its own rows
+            'role' => $this->configService->get('site-role-editor'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_social_posts_open',
+                    'description' => 'description.guided_step_social_posts_open',
+                    'narration' => 'narration.guided_step_social_posts_open',
+                    'url' => $this->indexUrl(SocialPostCrudController::class),
+                ],
+                [
+                    // Both at once, the two global actions preparing a post: the next content, or any page by its address
+                    'label' => 'label.guided_step_social_posts_prepare',
+                    'description' => 'description.guided_step_social_posts_prepare',
+                    'narration' => 'narration.guided_step_social_posts_prepare',
+                    'highlight' => '.action-prepareNextPost, .action-prepareUrlPost',
+                ],
+                [
+                    'label' => 'label.guided_step_social_posts_edit',
+                    'description' => 'description.guided_step_social_posts_edit',
+                    'narration' => 'narration.guided_step_social_posts_edit',
+                    'highlight' => '.action-edit',
+                ],
+                [
+                    'label' => 'label.guided_step_social_posts_save',
+                    'narration' => 'narration.guided_step_social_posts_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    // Rendered as an icon, it keeps its action-publishPost class - and matches nothing on a post every network already took
+                    'label' => 'label.guided_step_social_posts_publish',
+                    'description' => 'description.guided_step_social_posts_publish',
+                    'narration' => 'narration.guided_step_social_posts_publish',
+                    'highlight' => '.action-publishPost',
+                ],
+            ],
+        ];
+    }
+
+    // Google's connection parcours again, for Meta: the app is created on developers.facebook.com, its two keys are restricted configs, then consenting fills the Page, its token and the Instagram account
+    private function metaConnectProject(): array
+    {
+        return [
+            'slug' => 'social-meta-connect',
+            'label' => 'label.guided_project_social_meta_connect',
+            'description' => 'description.guided_project_social_meta_connect',
+            'translation_domain' => 'social',
+            'order' => 4060,
+            // The two keys are restricted configs, as Google's are (see googleConnectProject())
+            'role' => 'ROLE_SUPER_ADMIN',
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_social_meta_prerequisites',
+                    'description' => 'description.guided_step_social_meta_prerequisites',
+                    'narration' => 'narration.guided_step_social_meta_prerequisites',
+                    'url' => $this->indexUrl(ConfigCrudController::class),
+                ],
+                [
+                    'label' => 'label.guided_step_social_meta_credentials',
+                    'description' => 'description.guided_step_social_meta_credentials',
+                    'narration' => 'narration.guided_step_social_meta_credentials',
+                ],
+                [
+                    // A plain link in the sidebar's "Avancé" submenu, as Google's is
+                    'label' => 'label.guided_step_social_meta_connect',
+                    'description' => 'description.guided_step_social_meta_connect',
+                    'narration' => 'narration.guided_step_social_meta_connect',
+                    'highlight' => 'a[href*="/social/meta/connect"]',
+                ],
+                [
+                    // No highlight: consenting leaves the site, and the two modes are configs found with the screen's own search
+                    'label' => 'label.guided_step_social_meta_mode',
+                    'description' => 'description.guided_step_social_meta_mode',
+                    'narration' => 'narration.guided_step_social_meta_mode',
                 ],
             ],
         ];

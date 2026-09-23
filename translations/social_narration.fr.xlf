@@ -66,6 +66,42 @@
                 <source>narration.guided_step_social_links_save</source>
                 <target>Enregistrez avec le bouton en bas du formulaire.</target>
             </trans-unit>
+            <trans-unit id="Nhfo2ra">
+                <source>narration.guided_step_social_meta_connect</source>
+                <target>Dans la colonne de gauche, ouvrez le menu « Avancé » et cliquez sur « Connecter Meta », puis autorisez l'accès avec le compte Facebook qui gère la Page. Le site enregistre lui-même la Page, son jeton et le compte Instagram.</target>
+            </trans-unit>
+            <trans-unit id="ek3eUUp">
+                <source>narration.guided_step_social_meta_credentials</source>
+                <target>Cherchez « social-meta-app-id » et « social-meta-app-secret » dans la liste des réglages, et collez-y les deux valeurs de l'application. Si le compte gère plusieurs Pages, renseignez aussi « social-meta-page-id », sinon la première sera prise.</target>
+            </trans-unit>
+            <trans-unit id="7XOUZrd">
+                <source>narration.guided_step_social_meta_mode</source>
+                <target>Reste à choisir, réseau par réseau, si une publication attend votre relecture ou part d'elle-même : ce sont les réglages « social-facebook-publish-mode » et « social-instagram-publish-mode ».</target>
+            </trans-unit>
+            <trans-unit id="NauQ5Sa">
+                <source>narration.guided_step_social_meta_prerequisites</source>
+                <target>Cette première partie se passe chez Meta, sur developers.facebook.com : créez une application, ajoutez-lui la connexion Facebook avec l'adresse de retour du site, et laissez-la en mode développement. Vérifiez aussi que la Page est reliée au compte Instagram professionnel. Revenez ici avec l'identifiant et la clé secrète.</target>
+            </trans-unit>
+            <trans-unit id="4cJ._fk">
+                <source>narration.guided_step_social_posts_edit</source>
+                <target>Le bouton de modification ouvre la publication : un texte par réseau, chacun à la longueur que ce réseau accepte, sous l'image qui partira avec. Corrigez ce qui doit l'être.</target>
+            </trans-unit>
+            <trans-unit id="EhIZhRa">
+                <source>narration.guided_step_social_posts_open</source>
+                <target>Le panneau vous emmène sur l'écran des publications. Elles se préparent d'elles-mêmes, au rythme que fixe le réglage de l'intervalle ; celles en brouillon attendent ici votre relecture.</target>
+            </trans-unit>
+            <trans-unit id="kE9wnJX">
+                <source>narration.guided_step_social_posts_prepare</source>
+                <target>Pour ne pas attendre, « Préparer maintenant » prend le prochain contenu, et « Depuis une adresse » prépare n'importe quelle page, de ce site ou d'un autre.</target>
+            </trans-unit>
+            <trans-unit id="nuTQi3q">
+                <source>narration.guided_step_social_posts_publish</source>
+                <target>De retour sur la liste, le bouton en forme d'avion en papier envoie la publication sur chaque réseau qui ne l'a pas encore reçue. Un réseau qui refuse garde son message, et un nouveau clic le retente.</target>
+            </trans-unit>
+            <trans-unit id="TYtSWhL">
+                <source>narration.guided_step_social_posts_save</source>
+                <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
             <trans-unit id="DrMJai5">
                 <source>narration.guided_step_social_share_buttons_anchor</source>
                 <target>Le champ d'ancre est facultatif. Un identifiant court, « partage » par exemple, permet à une entrée de menu de pointer directement sur le bandeau. Sans ancre, il reste atteignable en faisant défiler la page.</target>
@@ -102,6 +138,10 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>En dessous, choisissez la forme : bouton large, carré ou rond. C'est la place que les boutons prendront sous vos pages.</target>
             </trans-unit>
+            <trans-unit id="SsICxhs">
+                <source>narration.meta_connect</source>
+                <target>« Connecter Meta » relie le site à votre Page Facebook et à votre compte Instagram : une fois, puis à nouveau si l'accès est retiré.</target>
+            </trans-unit>
             <trans-unit id="eIkRyvF">
                 <source>narration.share_buttons_disabled</source>
                 <target>« Boutons de partage (désactivés) » vous emmène au réglage qui les commande : passez-le à true et les boutons reviennent, avec l'écran qui règle leurs réseaux et leur style.</target>
@@ -113,6 +153,10 @@
             <trans-unit id="hCyh7lI">
                 <source>narration.social_links</source>
                 <target>« Réseaux sociaux » tient la liste de vos réseaux, une seule pour tout le site, rendue partout où le block de liens sociaux est posé.</target>
+            </trans-unit>
+            <trans-unit id="m6sfKEB">
+                <source>narration.social_posts</source>
+                <target>« Publications » rassemble ce qui est préparé pour vos réseaux : vous relisez chaque texte, puis vous publiez.</target>
             </trans-unit>
         </body>
     </file>

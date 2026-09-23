@@ -19,8 +19,17 @@ class SocialMaintenanceTaskProviderTest extends TestCase
     {
         $tasks = new SocialMaintenanceTaskProvider()->getMaintenanceTasks();
 
-        $this->assertCount(1, $tasks);
         $this->assertSame('c975l:social:reviews:sync', $tasks[0]->command);
         $this->assertSame('# #(2-5) * * *', $tasks[0]->expression);
+    }
+
+    // Hourly, the interval being the command's to check: a site changing it needs no new schedule
+    public function testThePublicationIsCheckedHourly(): void
+    {
+        $tasks = new SocialMaintenanceTaskProvider()->getMaintenanceTasks();
+
+        $this->assertCount(2, $tasks);
+        $this->assertSame('c975l:social:publish', $tasks[1]->command);
+        $this->assertSame('# * * * *', $tasks[1]->expression);
     }
 }

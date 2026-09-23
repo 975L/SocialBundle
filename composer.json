@@ -19,12 +19,14 @@
     ],
     "require": {
         "php": ">=8.4",
-        "c975l/core-bundle": "^1.30.1",
+        "ext-gd": "*",
+        "c975l/core-bundle": "^1.33.0",
         "doctrine/doctrine-bundle": "^3.3",
         "doctrine/orm": "^3.6",
         "easycorp/easyadmin-bundle": "^5.1",
         "symfony/form": "^8.0",
         "symfony/framework-bundle": "^8.0",
+        "symfony/lock": "^8.0",
         "symfony/security-bundle": "^8.0"
     },
     "require-dev": {

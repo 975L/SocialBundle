@@ -75,5 +75,160 @@
         "group": "social",
         "severity": null,
         "description": "description.social_google_business_location_id"
+    },
+    {
+        "label": "label.social_publish_enabled",
+        "slug": "social-publish-enabled",
+        "sensitive": false,
+        "restricted": false,
+        "value": "false",
+        "kind": "bool",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_publish_enabled"
+    },
+    {
+        "label": "label.social_publish_interval_hours",
+        "slug": "social-publish-interval-hours",
+        "sensitive": false,
+        "restricted": false,
+        "value": "24",
+        "kind": "int",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_publish_interval_hours"
+    },
+    {
+        "label": "label.social_publish_template",
+        "slug": "social-publish-template",
+        "sensitive": false,
+        "restricted": false,
+        "value": "{title}\n\n{url}",
+        "kind": "textarea",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_publish_template"
+    },
+    {
+        "label": "label.social_bluesky_handle",
+        "slug": "social-bluesky-handle",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_bluesky_handle"
+    },
+    {
+        "label": "label.social_bluesky_app_password",
+        "slug": "social-bluesky-app-password",
+        "sensitive": true,
+        "restricted": false,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_bluesky_app_password"
+    },
+    {
+        "label": "label.social_bluesky_publish_mode",
+        "slug": "social-bluesky-publish-mode",
+        "sensitive": false,
+        "restricted": false,
+        "value": "review",
+        "kind": "choice",
+        "choices": [
+            "review",
+            "auto"
+        ],
+        "group": "social",
+        "severity": null,
+        "description": "description.social_bluesky_publish_mode"
+    },
+    {
+        "label": "label.social_meta_app_id",
+        "slug": "social-meta-app-id",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_meta_app_id"
+    },
+    {
+        "label": "label.social_meta_app_secret",
+        "slug": "social-meta-app-secret",
+        "sensitive": true,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_meta_app_secret"
+    },
+    {
+        "label": "label.social_meta_page_id",
+        "slug": "social-meta-page-id",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_meta_page_id"
+    },
+    {
+        "label": "label.social_meta_page_token",
+        "slug": "social-meta-page-token",
+        "sensitive": true,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_meta_page_token"
+    },
+    {
+        "label": "label.social_meta_instagram_id",
+        "slug": "social-meta-instagram-id",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_meta_instagram_id"
+    },
+    {
+        "label": "label.social_facebook_publish_mode",
+        "slug": "social-facebook-publish-mode",
+        "sensitive": false,
+        "restricted": false,
+        "value": "review",
+        "kind": "choice",
+        "choices": [
+            "review",
+            "auto"
+        ],
+        "group": "social",
+        "severity": null,
+        "description": "description.social_facebook_publish_mode"
+    },
+    {
+        "label": "label.social_instagram_publish_mode",
+        "slug": "social-instagram-publish-mode",
+        "sensitive": false,
+        "restricted": false,
+        "value": "review",
+        "kind": "choice",
+        "choices": [
+            "review",
+            "auto"
+        ],
+        "group": "social",
+        "severity": null,
+        "description": "description.social_instagram_publish_mode"
     }
 ]

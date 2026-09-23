@@ -2,9 +2,25 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="fr" datatype="plaintext" original="site_config.fr.xlf">
         <body>
+            <trans-unit id="iS6Wrju">
+                <source>description.social_bluesky_app_password</source>
+                <target>À créer dans Bluesky, Paramètres &gt; Confidentialité et sécurité &gt; Mots de passe d'application. Jamais le mot de passe du compte.</target>
+            </trans-unit>
+            <trans-unit id="kmlwOk1">
+                <source>description.social_bluesky_handle</source>
+                <target>Identifiant du compte sur lequel publier, par exemple exemple.bsky.social.</target>
+            </trans-unit>
+            <trans-unit id="mgDQlK8">
+                <source>description.social_bluesky_publish_mode</source>
+                <target>review : chaque publication attend votre relecture dans « Publications ». auto : elle part dès qu'elle est préparée.</target>
+            </trans-unit>
             <trans-unit id="qi3JaGX">
                 <source>description.social_enable_share_buttons</source>
                 <target>Affiche automatiquement les boutons de partage sur chaque page (réglages dans "Boutons de partage").</target>
+            </trans-unit>
+            <trans-unit id="UHhe1S3">
+                <source>description.social_facebook_publish_mode</source>
+                <target>review : chaque publication attend votre relecture dans « Publications ». auto : elle part dès qu'elle est préparée.</target>
             </trans-unit>
             <trans-unit id="TELuAM2">
                 <source>description.social_google_business_account_id</source>
@@ -30,9 +46,61 @@
                 <source>description.social_google_oauth_refresh_token</source>
                 <target>Jeton obtenu lors de la connexion à Google ; le remplacer coupe l'import des avis.</target>
             </trans-unit>
+            <trans-unit id="61_ZokG">
+                <source>description.social_instagram_publish_mode</source>
+                <target>review : chaque publication attend votre relecture dans « Publications ». auto : elle part dès qu'elle est préparée.</target>
+            </trans-unit>
+            <trans-unit id="vdijy68">
+                <source>description.social_meta_app_id</source>
+                <target>App créée sur developers.facebook.com, en mode développement : elle n'a besoin ni de revue ni de vérification tant que vous seul l'utilisez.</target>
+            </trans-unit>
+            <trans-unit id="yUDu_eU">
+                <source>description.social_meta_app_secret</source>
+                <target>Paramètres &gt; Général de l'app, sur developers.facebook.com.</target>
+            </trans-unit>
+            <trans-unit id="L9TwCh5">
+                <source>description.social_meta_instagram_id</source>
+                <target>Renseigné par « Connecter Meta » : le compte professionnel Instagram relié à la Page.</target>
+            </trans-unit>
+            <trans-unit id="u6Xslj2">
+                <source>description.social_meta_page_id</source>
+                <target>Renseignée par « Connecter Meta » : la Page sur laquelle les publications partent. Saisie avant, elle est conservée : utile quand le compte gère plusieurs Pages.</target>
+            </trans-unit>
+            <trans-unit id="_0D94rb">
+                <source>description.social_meta_page_token</source>
+                <target>Renseigné par « Connecter Meta ». Il n'expire pas, sauf changement de mot de passe ou retrait de l'app.</target>
+            </trans-unit>
+            <trans-unit id="5.iDFNb">
+                <source>description.social_publish_enabled</source>
+                <target>Publie un contenu (une photo de la galerie par exemple) sur chaque réseau configuré, à l'intervalle ci-dessous. Un contenu n'est jamais publié deux fois.</target>
+            </trans-unit>
+            <trans-unit id="93yR.lo">
+                <source>description.social_publish_interval_hours</source>
+                <target>Temps minimum entre deux publications automatiques : 24 pour une par jour, 168 pour une par semaine.</target>
+            </trans-unit>
+            <trans-unit id="KPbdz0r">
+                <source>description.social_publish_template</source>
+                <target>Modèle du texte publié. Variables : {title}, {url}, et celles du contenu ({category}, {description}...). Une variable sans valeur est retirée.</target>
+            </trans-unit>
+            <trans-unit id="ZuIuKpS">
+                <source>label.social_bluesky_app_password</source>
+                <target>Mot de passe d'application Bluesky</target>
+            </trans-unit>
+            <trans-unit id="EXIzXnl">
+                <source>label.social_bluesky_handle</source>
+                <target>Identifiant Bluesky</target>
+            </trans-unit>
+            <trans-unit id="mOorxO_">
+                <source>label.social_bluesky_publish_mode</source>
+                <target>Publication sur Bluesky</target>
+            </trans-unit>
             <trans-unit id="Dfr17Uy">
                 <source>label.social_enable_share_buttons</source>
                 <target>Activer les boutons de partage</target>
+            </trans-unit>
+            <trans-unit id="jAU48bY">
+                <source>label.social_facebook_publish_mode</source>
+                <target>Publication sur Facebook</target>
             </trans-unit>
             <trans-unit id="9BLGp.J">
                 <source>label.social_google_business_account_id</source>
@@ -57,6 +125,42 @@
             <trans-unit id="sWcVVas">
                 <source>label.social_google_oauth_refresh_token</source>
                 <target>Jeton de rafraîchissement Google (avis)</target>
+            </trans-unit>
+            <trans-unit id="vS8bljm">
+                <source>label.social_instagram_publish_mode</source>
+                <target>Publication sur Instagram</target>
+            </trans-unit>
+            <trans-unit id="5EmIqzw">
+                <source>label.social_meta_app_id</source>
+                <target>Identifiant de l'app Meta</target>
+            </trans-unit>
+            <trans-unit id="tU2YyQe">
+                <source>label.social_meta_app_secret</source>
+                <target>Clé secrète de l'app Meta</target>
+            </trans-unit>
+            <trans-unit id="88Fds2N">
+                <source>label.social_meta_instagram_id</source>
+                <target>Compte Instagram</target>
+            </trans-unit>
+            <trans-unit id="mfEfNnJ">
+                <source>label.social_meta_page_id</source>
+                <target>Page Facebook</target>
+            </trans-unit>
+            <trans-unit id="q7doyNI">
+                <source>label.social_meta_page_token</source>
+                <target>Jeton de la Page Facebook</target>
+            </trans-unit>
+            <trans-unit id="23L_2ku">
+                <source>label.social_publish_enabled</source>
+                <target>Publication automatique sur les réseaux</target>
+            </trans-unit>
+            <trans-unit id="VFQrmGE">
+                <source>label.social_publish_interval_hours</source>
+                <target>Intervalle entre deux publications (heures)</target>
+            </trans-unit>
+            <trans-unit id="XYTOV4b">
+                <source>label.social_publish_template</source>
+                <target>Texte des publications</target>
             </trans-unit>
         </body>
     </file>

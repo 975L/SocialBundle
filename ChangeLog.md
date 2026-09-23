@@ -1,5 +1,27 @@
 # Changelog
 
+## v2.8.0
+
+Posts the site's contents on Bluesky, Facebook and Instagram
+
+- **The site's contents are posted on Bluesky, Facebook and Instagram at the interval it sets** (23/09/2026) [Needs db update] [Needs `c975l:config:load-all`]
+- `social-publish-enabled`, `social-publish-interval-hours` and `social-publish-template` settings (23/09/2026)
+- Bluesky, Meta and per-network publish mode settings (23/09/2026)
+- `NetworkPublisherInterface`, auto-tagged, for a network of the site's own (23/09/2026)
+- Contents come from UiBundle's `SocialContentSourceInterface`, auto-tagged (23/09/2026)
+- `SocialPost` and `SocialPostTarget` entities (23/09/2026)
+- `c975l:social:publish` command, scheduled hourly (23/09/2026)
+- "Publications" screen to review, prepare and publish posts (23/09/2026)
+- "Publier" is offered on the list only (23/09/2026)
+- A per-post lock keeps a double click from posting twice (23/09/2026)
+- "Connecter Meta" link and its OAuth routes (23/09/2026)
+- "Connecter Meta" keeps a `social-meta-page-id` filled beforehand (23/09/2026)
+- `SocialImageExporter` writes the JPEG copies Meta downloads (23/09/2026)
+- `social-posts` and `social-meta-connect` guided projects (23/09/2026)
+- `c975l-social` skill covers the publication (23/09/2026)
+- Requires `symfony/lock` and `ext-gd` (23/09/2026)
+- Requires `c975l/core-bundle` `^1.33.0` (23/09/2026)
+
 ## v2.7.10
 
 The Social section says the share buttons are off, instead of saying nothing

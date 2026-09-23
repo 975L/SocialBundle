@@ -21,6 +21,8 @@ class SocialMaintenanceTaskProvider implements MaintenanceTaskProviderInterface
         return [
             // The reviews, nightly: a platform's answer changes slowly, and the daily pass is what makes a new review, an edited one and a deleted one all show up on their own. Declared whatever the config says - a site with no source configured is stepped over by the command itself, and one that turns the reviews back on gets what came in meanwhile without having to schedule anything
             new MaintenanceTask('# #(2-5) * * *', 'c975l:social:reviews:sync'),
+            // The scheduled posts, checked hourly: the command itself waits for the interval the site set, so changing it needs no new schedule
+            new MaintenanceTask('# * * * *', 'c975l:social:publish'),
         ];
     }
 }

@@ -34,7 +34,7 @@ class SocialGuidedProjectProviderTest extends TestCase
     }
 
     // Same stubbing as MenuProviderTest: the ConfigService answers "social-enable-share-buttons" with the given value. The two role configs are answered apart, the projects declaring them as their own role
-    private function createProvider(bool $shareButtonsEnabled, array &$controllers = [], bool $reviewsEnabled = true, array $deniedRoles = []): SocialGuidedProjectProvider
+    private function createProvider(bool $shareButtonsEnabled, array &$controllers = [], bool $reviewsEnabled = true, array $deniedRoles = [], bool $publishEnabled = true): SocialGuidedProjectProvider
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         // Each feature switch answered on its own: the two are independent, and a project dropped by the wrong one would still look right
@@ -42,6 +42,7 @@ class SocialGuidedProjectProviderTest extends TestCase
             'site-role-admin' => 'ROLE_ADMIN',
             'site-role-editor' => 'ROLE_EDITOR',
             'ui-enable-reviews' => $reviewsEnabled ? '1' : '0',
+            'social-publish-enabled' => $publishEnabled ? '1' : '0',
             default => $shareButtonsEnabled ? '1' : '0',
         });
         $configService->method('getBool')->willReturnCallback(static fn ($value) => '1' === $value);
@@ -58,8 +59,8 @@ class SocialGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider(true)->getGuidedProjects();
 
-        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-connect', 'social-google-reviews'], array_column($projects, 'slug'));
-        $this->assertSame([4010, 4020, 4030, 4040], array_column($projects, 'order'));
+        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-connect', 'social-google-reviews', 'social-posts', 'social-meta-connect'], array_column($projects, 'slug'));
+        $this->assertSame([4010, 4020, 4030, 4040, 4050, 4060], array_column($projects, 'order'));
     }
 
     // The share buttons screen isn't in the sidebar while the feature is off, so no parcours walks to it either
@@ -67,7 +68,7 @@ class SocialGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider(false)->getGuidedProjects();
 
-        $this->assertSame(['social-links', 'social-google-connect', 'social-google-reviews'], array_column($projects, 'slug'));
+        $this->assertSame(['social-links', 'social-google-connect', 'social-google-reviews', 'social-posts', 'social-meta-connect'], array_column($projects, 'slug'));
     }
 
     // Reviews have a switch of their own, read exactly like the share buttons'
@@ -76,18 +77,28 @@ class SocialGuidedProjectProviderTest extends TestCase
         $controllers = [];
         $projects = $this->createProvider(true, $controllers, false)->getGuidedProjects();
 
-        $this->assertSame(['social-links', 'social-share-buttons'], array_column($projects, 'slug'));
+        $this->assertSame(['social-links', 'social-share-buttons', 'social-posts', 'social-meta-connect'], array_column($projects, 'slug'));
     }
 
-    // The connection parcours walks three screens gated on three roles, none of them implying another: missing any one of them, it is not offered - where the reviews parcours, stopping at site-role-editor, still is
-    public function testTheGoogleConnectProjectIsDroppedWhileARoleItWalksIsMissing(): void
+    // The publication has its switch too: off, neither the posts screen nor the "Connecter Meta" link is in the sidebar
+    public function testThePublicationProjectsAreDroppedWhileTheFeatureIsDisabled(): void
+    {
+        $controllers = [];
+        $projects = $this->createProvider(true, $controllers, true, [], false)->getGuidedProjects();
+
+        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-connect', 'social-google-reviews'], array_column($projects, 'slug'));
+    }
+
+    // Each connection parcours walks three screens gated on three roles, none of them implying another: missing any one of them, it is not offered - where the reviews and posts parcours, stopping at site-role-editor, still are
+    public function testTheConnectProjectsAreDroppedWhileARoleTheyWalkIsMissing(): void
     {
         $controllers = [];
 
         foreach (['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR'] as $deniedRole) {
-            $projects = $this->createProvider(true, $controllers, true, [$deniedRole])->getGuidedProjects();
+            $slugs = array_column($this->createProvider(true, $controllers, true, [$deniedRole])->getGuidedProjects(), 'slug');
 
-            $this->assertNotContains('social-google-connect', array_column($projects, 'slug'), sprintf('The parcours is offered without "%s"', $deniedRole));
+            $this->assertNotContains('social-google-connect', $slugs, sprintf('The Google parcours is offered without "%s"', $deniedRole));
+            $this->assertNotContains('social-meta-connect', $slugs, sprintf('The Meta parcours is offered without "%s"', $deniedRole));
         }
     }
 
@@ -97,7 +108,7 @@ class SocialGuidedProjectProviderTest extends TestCase
         $controllers = [];
         $projects = $this->createProvider(true, $controllers, true, ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN'])->getGuidedProjects();
 
-        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-reviews'], array_column($projects, 'slug'));
+        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-reviews', 'social-posts'], array_column($projects, 'slug'));
     }
 
     public function testEverySlugIsPrefixedWithTheBundleName(): void
@@ -107,7 +118,7 @@ class SocialGuidedProjectProviderTest extends TestCase
         }
     }
 
-    // Each project states the bar of the screens it walks, a role no other implies - too low, GuidedProjectBuilder offers a parcours ending on a 403. The Google connection is the one going above site-role-editor: its second step edits "restricted" configs, which ConfigCrudController hides below ROLE_SUPER_ADMIN
+    // Each project states the bar of the screens it walks, a role no other implies - too low, GuidedProjectBuilder offers a parcours ending on a 403. The two connections are the ones going above site-role-editor: their second step edits "restricted" configs, which ConfigCrudController hides below ROLE_SUPER_ADMIN
     public function testEveryProjectDemandsTheRoleItsScreensDo(): void
     {
         $roles = [];
@@ -121,6 +132,8 @@ class SocialGuidedProjectProviderTest extends TestCase
             'social-share-buttons' => 'ROLE_EDITOR',
             'social-google-connect' => 'ROLE_SUPER_ADMIN',
             'social-google-reviews' => 'ROLE_EDITOR',
+            'social-posts' => 'ROLE_EDITOR',
+            'social-meta-connect' => 'ROLE_SUPER_ADMIN',
         ], $roles);
     }
 
@@ -163,9 +176,9 @@ class SocialGuidedProjectProviderTest extends TestCase
         $controllers = [];
         $this->createProvider(true, $controllers)->getGuidedProjects();
 
-        // The two Google parcours are the exceptions, each opening on another bundle's screen: the keys the connection needs are configs, and the reviews are UiBundle's entity whatever platform brought them in
+        // The two connection parcours and the reviews one are the exceptions, each opening on another bundle's screen: the keys a connection needs are configs, and the reviews are UiBundle's entity whatever platform brought them in
         $this->assertSame(
-            ['SocialLinksCrudController', 'ShareButtonsSettingsCrudController', 'ConfigCrudController', 'ReviewCrudController'],
+            ['SocialLinksCrudController', 'ShareButtonsSettingsCrudController', 'ConfigCrudController', 'ReviewCrudController', 'SocialPostCrudController', 'ConfigCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
     }
@@ -183,7 +196,7 @@ class SocialGuidedProjectProviderTest extends TestCase
             }
         }
 
-        $this->assertCount(2, $saveSteps, 'Each project walks the user to the save button once');
+        $this->assertCount(3, $saveSteps, 'Each project walks the user to the save button once');
 
         foreach ($saveSteps as $step) {
             $this->assertSame('.action-saveAndReturn', $step['highlight']);

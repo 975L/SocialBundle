@@ -1,0 +1,13 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{# Asks for the address of a page to post, read from its Open Graph tags (see SocialPostCrudController::prepareUrlPost()) #}
+{% block main %}
+    <h1>{{ ('label.social_post_prepare_url'|trans({}, 'social')) }}</h1>
+
+    <p>{{ ('label.info_social_post_prepare_url'|trans({}, 'social')) }}</p>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-primary">{{ ('label.social_post_prepare'|trans({}, 'social')) }}</button>
+    {{ form_end(form) }}
+{% endblock main %}
