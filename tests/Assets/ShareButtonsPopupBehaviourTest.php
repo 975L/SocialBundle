@@ -28,6 +28,20 @@ class ShareButtonsPopupBehaviourTest extends JsCase
         $this->assertSame('Share', $shared['opened']['name'], 'The window has no name, so a second share opens a second window rather than reusing the one already up.');
     }
 
+    // A page script moving the address on (a calculator writing its choices into it) is shared as it stands, not as the server rendered it
+    public function testTheAddressIsSharedAsItStandsNow(): void
+    {
+        $shared = $this->button('const rendered = window.location.href;
+            link().href = "https://example.org/partager?url=" + encodeURIComponent(rendered);
+            window.history.replaceState(null, "", window.location.pathname + "?choix=1");
+            link().click();
+            const now = window.location.href;
+            window.history.replaceState(null, "", rendered);
+            return { opened: window.__opened.url, expected: "https://example.org/partager?url=" + encodeURIComponent(now) };');
+
+        $this->assertSame($shared['expected'], $shared['opened'], 'The share still carries the address the page was rendered with, so a shared estimate opens without its choices.');
+    }
+
     // Centred on the screen it opens over, and half of it: a window put at the top left of a wide screen is one the reader has to go looking for
     public function testTheWindowIsAskedForAtHalfTheScreenAndCentredOnIt(): void
     {

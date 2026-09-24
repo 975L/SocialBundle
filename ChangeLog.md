@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.8.1
+
+Share buttons share the page's current address
+
+- Share buttons share the page's current address, not the rendered one (24/09/2026)
+
 ## v2.8.0
 
 Posts the site's contents on Bluesky, Facebook and Instagram
