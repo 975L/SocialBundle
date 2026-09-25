@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.8.2
+
+CI runs on setup-python v6
+
+- CI runs on `actions/setup-python` v6 (25/09/2026)
+
 ## v2.8.1
 
 Share buttons share the page's current address
