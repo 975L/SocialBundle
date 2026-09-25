@@ -168,9 +168,9 @@ a review written on the site and for a source no longer connected, which is what
 
 The `ui-enable-reviews` key still gates this bundle's own halves of the feature: the "Connecter Google"
 link and the two Google guided projects — connecting the listing being the agency's own job
-(`ROLE_SUPER_ADMIN`, the OAuth keys being `restricted` configs, and `getGuidedProjects()` also
-checking `site-role-admin` and `site-role-editor`, the three screens that parcours walks demanding
-one each), reading and displaying the reviews the site's editor. The sync command is deliberately left running while it is off, so a reactivation
+(`ROLE_SUPER_ADMIN`, the OAuth keys being `restricted` configs, its `role` key also listing
+`site-role-admin` and `site-role-editor`, the three screens that parcours walks demanding one each,
+all required by `GuidedProjectBuilder`), reading and displaying the reviews the site's editor. The sync command is deliberately left running while it is off, so a reactivation
 shows the reviews imported meanwhile.
 
 **Setup in the consuming app**, on top of the usual `c975l:config:load-all`:

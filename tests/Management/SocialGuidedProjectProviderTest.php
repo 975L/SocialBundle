@@ -14,7 +14,6 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Management\SocialGuidedProjectProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
-use Symfony\Bundle\SecurityBundle\Security;
 
 class SocialGuidedProjectProviderTest extends TestCase
 {
@@ -34,7 +33,7 @@ class SocialGuidedProjectProviderTest extends TestCase
     }
 
     // Same stubbing as MenuProviderTest: the ConfigService answers "social-enable-share-buttons" with the given value. The two role configs are answered apart, the projects declaring them as their own role
-    private function createProvider(bool $shareButtonsEnabled, array &$controllers = [], bool $reviewsEnabled = true, array $deniedRoles = [], bool $publishEnabled = true): SocialGuidedProjectProvider
+    private function createProvider(bool $shareButtonsEnabled, array &$controllers = [], bool $reviewsEnabled = true, bool $publishEnabled = true): SocialGuidedProjectProvider
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         // Each feature switch answered on its own: the two are independent, and a project dropped by the wrong one would still look right
@@ -47,11 +46,7 @@ class SocialGuidedProjectProviderTest extends TestCase
         });
         $configService->method('getBool')->willReturnCallback(static fn ($value) => '1' === $value);
 
-        // Everything granted but what the case denies, so a parcours dropped for a missing role is dropped for that role alone
-        $security = $this->createStub(Security::class);
-        $security->method('isGranted')->willReturnCallback(static fn ($attribute): bool => !\in_array($attribute, $deniedRoles, true));
-
-        return new SocialGuidedProjectProvider($configService, $this->createAdminUrlGenerator($controllers), $security);
+        return new SocialGuidedProjectProvider($configService, $this->createAdminUrlGenerator($controllers));
     }
 
     // The 4000 block GuidedProjectProviderInterface reserves this bundle, at the step of 10 it states
@@ -84,31 +79,9 @@ class SocialGuidedProjectProviderTest extends TestCase
     public function testThePublicationProjectsAreDroppedWhileTheFeatureIsDisabled(): void
     {
         $controllers = [];
-        $projects = $this->createProvider(true, $controllers, true, [], false)->getGuidedProjects();
+        $projects = $this->createProvider(true, $controllers, true, false)->getGuidedProjects();
 
         $this->assertSame(['social-links', 'social-share-buttons', 'social-google-connect', 'social-google-reviews'], array_column($projects, 'slug'));
-    }
-
-    // Each connection parcours walks three screens gated on three roles, none of them implying another: missing any one of them, it is not offered - where the reviews and posts parcours, stopping at site-role-editor, still are
-    public function testTheConnectProjectsAreDroppedWhileARoleTheyWalkIsMissing(): void
-    {
-        $controllers = [];
-
-        foreach (['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR'] as $deniedRole) {
-            $slugs = array_column($this->createProvider(true, $controllers, true, [$deniedRole])->getGuidedProjects(), 'slug');
-
-            $this->assertNotContains('social-google-connect', $slugs, sprintf('The Google parcours is offered without "%s"', $deniedRole));
-            $this->assertNotContains('social-meta-connect', $slugs, sprintf('The Meta parcours is offered without "%s"', $deniedRole));
-        }
-    }
-
-    // Denied the two roles its own key does not hold, the reviews parcours is untouched: it stops at site-role-editor
-    public function testTheGoogleReviewsProjectSurvivesTheConnectionRoles(): void
-    {
-        $controllers = [];
-        $projects = $this->createProvider(true, $controllers, true, ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN'])->getGuidedProjects();
-
-        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-reviews', 'social-posts'], array_column($projects, 'slug'));
     }
 
     public function testEverySlugIsPrefixedWithTheBundleName(): void
@@ -118,7 +91,7 @@ class SocialGuidedProjectProviderTest extends TestCase
         }
     }
 
-    // Each project states the bar of the screens it walks, a role no other implies - too low, GuidedProjectBuilder offers a parcours ending on a 403. The two connections are the ones going above site-role-editor: their second step edits "restricted" configs, which ConfigCrudController hides below ROLE_SUPER_ADMIN
+    // Each project states the bar of the screens it walks - too low, GuidedProjectBuilder offers a parcours ending on a 403. The two connections list three roles, none implying another, all required by GuidedProjectBuilder
     public function testEveryProjectDemandsTheRoleItsScreensDo(): void
     {
         $roles = [];
@@ -130,10 +103,10 @@ class SocialGuidedProjectProviderTest extends TestCase
         $this->assertSame([
             'social-links' => 'ROLE_EDITOR',
             'social-share-buttons' => 'ROLE_EDITOR',
-            'social-google-connect' => 'ROLE_SUPER_ADMIN',
+            'social-google-connect' => ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR'],
             'social-google-reviews' => 'ROLE_EDITOR',
             'social-posts' => 'ROLE_EDITOR',
-            'social-meta-connect' => 'ROLE_SUPER_ADMIN',
+            'social-meta-connect' => ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR'],
         ], $roles);
     }
 

@@ -2,18 +2,18 @@
 
 Symfony bundle for the social side of a c975L site — social links managed in one single place and share buttons for 20 networks, placed anywhere as blocks. Replaces the former ShareButtonsBundle.
 
-[![GitHub](https://img.shields.io/github/license/975L/SocialBundle)](https://github.com/975L/SocialBundle/blob/master/LICENSE)
+[![GitHub](https://img.shields.io/github/license/975L/SocialBundle)](https://github.com/975L/SocialBundle/blob/main/LICENSE)
 [![Packagist Version](https://img.shields.io/packagist/v/c975l/social-bundle)](https://packagist.org/packages/c975l/social-bundle)
 [![PHP Version](https://img.shields.io/packagist/php-v/c975l/social-bundle)](https://packagist.org/packages/c975l/social-bundle)
 [![Codacy Grade](https://app.codacy.com/project/badge/Grade/025dc54614d64d80a0ee456262e98b1c)](https://app.codacy.com/gh/975L/SocialBundle/dashboard)
+
+**[Bundle page](https://bundles.975l.com/en/pages/social-bundle) · [Tutorials](https://bundles.975l.com/en/tutoriels/social-bundle) · [Block kinds](https://bundles.975l.com/en/pages/blocks/Social) · [Live demo](https://bundles.975l.com/demo/) · [Demo back-office](https://bundles.975l.com/demo/login)**
 
 ## Why SocialBundle
 
 ![SocialBundle](.github/images/SocialBundle.svg)
 
 Add SocialBundle on top of the shared [UiBundle](https://github.com/975L/UiBundle) + [ConfigBundle](https://github.com/975L/ConfigBundle) foundation to get social links and sharing — no dependency on SiteBundle, ShopBundle or any other satellite bundle, so it drops into any c975L site that needs one. Its `social_links` block reuses UiBundle's generic `Block` entity rather than a dedicated table, following the "singleton CRUD" pattern shared across the ecosystem.
-
-See it in action at [bundles.975l.com/pages/social-bundle](https://bundles.975l.com/pages/social-bundle), and browse every block kind live in the [block gallery](https://bundles.975l.com/pages/blocks).
 
 ---
 
@@ -380,7 +380,7 @@ Both Google parcours open on **another bundle's** screen: ConfigBundle's config 
 
 The share buttons project is contributed **only while `social-enable-share-buttons` is on**, the two Google ones **only while `ui-enable-reviews` is on**, and the two publication ones **only while `social-publish-enabled` is on** — the same condition `MenuProvider` applies to the "Boutons de partage" entry and to its own "Connecter Google" link, since with the feature off that screen isn't in the sidebar either and a parcours walking to an unreachable screen reads as a broken one. A parcours is dropped outright where the menu instead keeps a stand-in entry pointing at the switch (see [Site-wide auto-display](#site-wide-auto-display)): a sidebar caption saying a feature is off fits in a line, a whole walkthrough of a screen that isn't there does not.
 
-Each project declares the role its own screens demand rather than the dashboard's, no role implying another: `site-role-editor` for four of them, and **`ROLE_SUPER_ADMIN`** for the two connections — a literal, exactly as ConfigBundle states it on its own restricted actions, since `ConfigCrudController` hides a `restricted` config from every user below it. Too low a bar and `GuidedProjectBuilder` offers a parcours opening on a 403 instead of dropping it. Each connection walks three screens gated on three of these roles at once, where the `role` key holds a single one: `getGuidedProjects()` checks the conjunction itself and contributes the parcours only to a user holding `ROLE_SUPER_ADMIN`, `site-role-admin` and `site-role-editor` together.
+Each project declares the role its own screens demand rather than the dashboard's, no role implying another: `site-role-editor` for four of them, and **`ROLE_SUPER_ADMIN`** for the two connections — a literal, exactly as ConfigBundle states it on its own restricted actions, since `ConfigCrudController` hides a `restricted` config from every user below it. Too low a bar and `GuidedProjectBuilder` offers a parcours opening on a 403 instead of dropping it. Each connection walks three screens gated on three of these roles at once, so its `role` key lists all three — `ROLE_SUPER_ADMIN`, `site-role-admin` and `site-role-editor` — and `GuidedProjectBuilder` offers the parcours only to a user holding them together.
 
 Only the opening step of each carries an `url`: from there the panel walks the screen the user has been sent to, highlighting the button or the field they are meant to use next, in the order the form renders them. The two singleton screens are pointed at with `.action-new, .action-edit` — the index offers "create" until the row exists and "edit" ever after, and whichever is on screen is the one to click. The settings fields reuse the markers their own JS already reads (`[data-share-networks-sortable]`, `[data-share-shape-select]`, `[data-share-fill-select]`, `[data-share-display-intro-checkbox]`, `[data-social-links-icon-style-select]`), rather than ids of their own; the two fields with no marker of their own are pointed at with the `trix-editor` the introduction's textarea is replaced by, and with the anchor field's EasyAdmin id (`#Block_data_anchor`). The reply step points at `.action-edit`, the class EasyAdmin's own edit action keeps whatever the icon and the label `ReviewCrudController` renames it with. The publication parcours points at the actions' own classes (`.action-prepareNextPost, .action-prepareUrlPost`, then `.action-publishPost` back on the list, "Publier" being offered there only).
 

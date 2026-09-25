@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.8.4
+
+Connection guided projects list their three roles
+
+- The README opens on its bundle page, tutorials, block kinds and live demo with its back-office (25/09/2026)
+- The license badge links to `main`, the branch `master` became (25/09/2026)
+- The Google and Meta connection guided projects list their three roles, checked by `GuidedProjectBuilder` (25/09/2026)
+- Rector turns Symfony, Doctrine and Sensio annotations into attributes (25/09/2026)
+
 ## v2.8.3
 
 Network credentials count as features, publications aren't creatable
