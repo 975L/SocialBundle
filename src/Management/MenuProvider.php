@@ -76,6 +76,8 @@ class MenuProvider implements MenuProviderInterface
         if ($this->configService->getBool($this->configService->get('social-publish-enabled'))) {
             $menus['social_posts'] = [
                 'controller' => SocialPostCrudController::class,
+                // Lists what happened rather than what an admin makes: empty, it is no feature left unused (see UnusedFeatureBuilder)
+                'creatable' => false,
                 'label' => 'label.social_posts',
                 'narration' => 'narration.social_posts',
                 'translation_domain' => 'social',

@@ -13,6 +13,7 @@
     {
         "label": "label.social_google_oauth_client_id",
         "slug": "social-google-oauth-client-id",
+        "feature": true,
         "sensitive": false,
         "restricted": true,
         "value": null,
@@ -68,6 +69,7 @@
     {
         "label": "label.social_google_business_location_id",
         "slug": "social-google-business-location-id",
+        "feature": true,
         "sensitive": false,
         "restricted": true,
         "value": null,
@@ -123,6 +125,7 @@
     {
         "label": "label.social_bluesky_app_password",
         "slug": "social-bluesky-app-password",
+        "feature": true,
         "sensitive": true,
         "restricted": false,
         "value": null,
@@ -182,6 +185,7 @@
     {
         "label": "label.social_meta_page_token",
         "slug": "social-meta-page-token",
+        "feature": true,
         "sensitive": true,
         "restricted": true,
         "value": null,
@@ -193,6 +197,7 @@
     {
         "label": "label.social_meta_instagram_id",
         "slug": "social-meta-instagram-id",
+        "feature": true,
         "sensitive": false,
         "restricted": true,
         "value": null,

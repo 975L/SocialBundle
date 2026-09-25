@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.8.3
+
+Network credentials count as features, publications aren't creatable
+
+- Google, Bluesky and Meta credential settings are flagged as features (25/09/2026)
+- The "Publications" screen is no longer creatable (25/09/2026)
+
 ## v2.8.2
 
 CI runs on setup-python v6
