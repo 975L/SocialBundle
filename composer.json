@@ -22,7 +22,7 @@
         "ext-gd": "*",
         "c975l/core-bundle": "^1.33.0",
         "doctrine/doctrine-bundle": "^3.3",
-        "doctrine/orm": "^3.6",
+        "doctrine/orm": "^3.7",
         "easycorp/easyadmin-bundle": "^5.1",
         "symfony/form": "^8.0",
         "symfony/framework-bundle": "^8.0",

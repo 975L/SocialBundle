@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.8.5
+
+Requires Doctrine ORM 3.7 for its SortDirection enum
+
+- Requires `doctrine/orm` ^3.7 (25/09/2026)
+- `SocialPost` targets are ordered with `SortDirection::Ascending` (25/09/2026)
+
 ## v2.8.4
 
 Connection guided projects list their three roles

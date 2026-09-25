@@ -39,7 +39,7 @@ class SocialPost implements \Stringable
 
     /** @var Collection<int, SocialPostTarget> */
     #[ORM\OneToMany(targetEntity: SocialPostTarget::class, mappedBy: 'post', cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[ORM\OrderBy(['network' => 'ASC'])]
+    #[ORM\OrderBy(['network' => \SortDirection::Ascending])]
     private Collection $targets;
 
     public function __construct(
