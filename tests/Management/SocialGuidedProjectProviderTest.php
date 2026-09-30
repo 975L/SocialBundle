@@ -54,8 +54,8 @@ class SocialGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider(true)->getGuidedProjects();
 
-        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-connect', 'social-google-reviews', 'social-posts', 'social-meta-connect'], array_column($projects, 'slug'));
-        $this->assertSame([4010, 4020, 4030, 4040, 4050, 4060], array_column($projects, 'order'));
+        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-connect', 'social-google-reviews', 'social-posts', 'social-meta-connect', 'social-schedules', 'social-bluesky-connect'], array_column($projects, 'slug'));
+        $this->assertSame([4010, 4020, 4030, 4040, 4050, 4060, 4070, 4080], array_column($projects, 'order'));
     }
 
     // The share buttons screen isn't in the sidebar while the feature is off, so no parcours walks to it either
@@ -63,7 +63,7 @@ class SocialGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider(false)->getGuidedProjects();
 
-        $this->assertSame(['social-links', 'social-google-connect', 'social-google-reviews', 'social-posts', 'social-meta-connect'], array_column($projects, 'slug'));
+        $this->assertSame(['social-links', 'social-google-connect', 'social-google-reviews', 'social-posts', 'social-meta-connect', 'social-schedules', 'social-bluesky-connect'], array_column($projects, 'slug'));
     }
 
     // Reviews have a switch of their own, read exactly like the share buttons'
@@ -72,7 +72,7 @@ class SocialGuidedProjectProviderTest extends TestCase
         $controllers = [];
         $projects = $this->createProvider(true, $controllers, false)->getGuidedProjects();
 
-        $this->assertSame(['social-links', 'social-share-buttons', 'social-posts', 'social-meta-connect'], array_column($projects, 'slug'));
+        $this->assertSame(['social-links', 'social-share-buttons', 'social-posts', 'social-meta-connect', 'social-schedules', 'social-bluesky-connect'], array_column($projects, 'slug'));
     }
 
     // The publication has its switch too: off, neither the posts screen nor the "Connecter Meta" link is in the sidebar
@@ -107,6 +107,8 @@ class SocialGuidedProjectProviderTest extends TestCase
             'social-google-reviews' => 'ROLE_EDITOR',
             'social-posts' => 'ROLE_EDITOR',
             'social-meta-connect' => ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR'],
+            'social-schedules' => 'ROLE_EDITOR',
+            'social-bluesky-connect' => ['ROLE_ADMIN', 'ROLE_EDITOR'],
         ], $roles);
     }
 
@@ -149,9 +151,9 @@ class SocialGuidedProjectProviderTest extends TestCase
         $controllers = [];
         $this->createProvider(true, $controllers)->getGuidedProjects();
 
-        // The two connection parcours and the reviews one are the exceptions, each opening on another bundle's screen: the keys a connection needs are configs, and the reviews are UiBundle's entity whatever platform brought them in
+        // The three connection parcours and the reviews one are the exceptions, each opening on another bundle's screen: the keys a connection needs are configs, and the reviews are UiBundle's entity whatever platform brought them in
         $this->assertSame(
-            ['SocialLinksCrudController', 'ShareButtonsSettingsCrudController', 'ConfigCrudController', 'ReviewCrudController', 'SocialPostCrudController', 'ConfigCrudController'],
+            ['SocialLinksCrudController', 'ShareButtonsSettingsCrudController', 'ConfigCrudController', 'ReviewCrudController', 'SocialPostCrudController', 'ConfigCrudController', 'SocialScheduleCrudController', 'ConfigCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
     }
@@ -169,7 +171,7 @@ class SocialGuidedProjectProviderTest extends TestCase
             }
         }
 
-        $this->assertCount(3, $saveSteps, 'Each project walks the user to the save button once');
+        $this->assertCount(4, $saveSteps, 'Each project walks the user to the save button once');
 
         foreach ($saveSteps as $step) {
             $this->assertSame('.action-saveAndReturn', $step['highlight']);

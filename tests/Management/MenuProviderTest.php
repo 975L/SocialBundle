@@ -104,6 +104,15 @@ class MenuProviderTest extends TestCase
         $this->assertSame('advanced', $link['tier']);
     }
 
+    public function testTheBlueskyConnectionFollowsThePublicationSwitch(): void
+    {
+        $this->assertArrayNotHasKey('social_bluesky_connect', $this->createProvider(false)->getLinks());
+
+        $link = $this->createProvider(false, publishEnabled: true)->getLinks()['social_bluesky_connect'];
+        $this->assertSame('social_bluesky_oauth_connect', $link['name']);
+        $this->assertSame('advanced', $link['tier']);
+    }
+
     // Connecting Google is what fetches the reviews, so the link goes with them
     public function testTheGoogleConnectionIsDroppedWithTheReviews(): void
     {

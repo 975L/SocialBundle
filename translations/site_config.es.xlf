@@ -10,6 +10,14 @@
                 <source>description.social_bluesky_handle</source>
                 <target>Identificador de la cuenta en la que publicar, por ejemplo ejemplo.bsky.social.</target>
             </trans-unit>
+            <trans-unit id="LYr0t5Y">
+                <source>description.social_bluesky_oauth_key</source>
+                <target>Generada por el sitio en la primera conexión. Cambiarla obliga a volver a conectar Bluesky.</target>
+            </trans-unit>
+            <trans-unit id="4Q5pl6G">
+                <source>description.social_bluesky_oauth_session</source>
+                <target>Rellenada por «Conectar Bluesky», nunca a mano. Vaciarla desconecta la cuenta.</target>
+            </trans-unit>
             <trans-unit id="mgDQlK8">
                 <source>description.social_bluesky_publish_mode</source>
                 <target>review: cada publicación espera su revisión en «Publicaciones». auto: sale en cuanto se prepara.</target>
@@ -89,6 +97,14 @@
             <trans-unit id="EXIzXnl">
                 <source>label.social_bluesky_handle</source>
                 <target>Identificador de Bluesky</target>
+            </trans-unit>
+            <trans-unit id="lyX1njK">
+                <source>label.social_bluesky_oauth_key</source>
+                <target>Clave del cliente Bluesky</target>
+            </trans-unit>
+            <trans-unit id="2MtcXuy">
+                <source>label.social_bluesky_oauth_session</source>
+                <target>Sesión de Bluesky</target>
             </trans-unit>
             <trans-unit id="mOorxO_">
                 <source>label.social_bluesky_publish_mode</source>

@@ -13,7 +13,7 @@ namespace c975L\SocialBundle\Service;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Model\SocialContent;
 
-// Writes a post's text from the site's own template ("social-publish-template"), each "{name}" taking the content's value of that name
+// Writes a post's text from the site's own template ("social-publish-template"), each "{name}" taking the content's value of that name, "{slot}" the text of the publication slot it goes out in
 class SocialPostTextBuilder
 {
     // What a site that wrote no template posts: the title, and the link that brings the reader back
@@ -24,8 +24,9 @@ class SocialPostTextBuilder
     ) {
     }
 
-    // The text to post on a network taking at most $maxLength characters; a placeholder the content has no value for is dropped rather than posted as "{name}"
-    public function build(SocialContent $content, int $maxLength): string
+    // The text to post on a network taking at most $maxLength characters, $variables adding values of the run's own ("{slot}"); a placeholder with no value is dropped rather than posted as "{name}"
+    /** @param array<string, string> $variables */
+    public function build(SocialContent $content, int $maxLength, array $variables = []): string
     {
         $template = trim((string) $this->configService->get('social-publish-template'));
         if ('' === $template) {
@@ -33,7 +34,7 @@ class SocialPostTextBuilder
         }
 
         $replacements = [];
-        foreach ([...$content->variables, 'title' => $content->title, 'url' => $content->url] as $name => $value) {
+        foreach ([...$content->variables, ...$variables, 'title' => $content->title, 'url' => $content->url] as $name => $value) {
             $replacements['{' . $name . '}'] = $value;
         }
 

@@ -287,7 +287,7 @@ c975l_social:
 
 ### Doctrine mapping and migration
 
-The `Review` table is mapped and migrated with [c975L/UiBundle](https://github.com/975L/UiBundle)'s own entities, as its readme describes. This bundle owns two entities, `SocialPost` and its `SocialPostTarget`s (what the publication prepared, one target per network), mapped automatically - their tables are created by the site's own migration:
+The `Review` table is mapped and migrated with [c975L/UiBundle](https://github.com/975L/UiBundle)'s own entities, as its readme describes. This bundle owns three entities, `SocialPost` and its `SocialPostTarget`s (what the publication prepared, one target per network) and `SocialSchedule` (the publication slots), mapped automatically - their tables are created by the site's own migration:
 
 ```bash
 php bin/console doctrine:migrations:diff
@@ -331,7 +331,7 @@ Implement `ReviewsSourceInterface` (`getName()`, `isConfigured()`, `fetch()` yie
 
 The site's own contents — a photograph, a story, a product — posted on its **Bluesky** account and its **Facebook** Page, and on the **Instagram** professional account linked to that Page. The whole feature hangs on **`social-publish-enabled`** (bool, `false` by default): turned off, nothing is prepared, and the "Publications" entry and the "Connecter Meta" link leave the sidebar.
 
-**This bundle publishes, the bundles owning the contents hand them over.** A bundle with something to post implements UiBundle's `SocialContentSourceInterface` (declared there so it needs no dependency on this bundle), auto-tagged by interface: `getNextContent()` picks among the contents not posted yet, `getContent()` reads one again, and `getRepeatAfterDays()` says when a posted one may come back. The sources take turns, the one that had a post least recently being asked first.
+**This bundle publishes, the bundles owning the contents hand them over.** A bundle with something to post implements UiBundle's `SocialContentSourceInterface` (declared there so it needs no dependency on this bundle), auto-tagged by interface: `getNextContent()` picks among the contents not posted yet, `getContent()` reads one again, and `getRepeatAfterDays()` says when a posted one may come back. The sources take turns, the one that had a post least recently being asked first. A source whose contents fall into groups — a gallery's categories — implements `ScopedSocialContentSourceInterface` instead, so a slot may pick some of those groups.
 
 ### How a post goes out
 
@@ -344,13 +344,50 @@ php bin/console c975l:social:publish                 # what the schedule runs
 php bin/console c975l:social:publish --force         # now, whatever the interval and the switch
 php bin/console c975l:social:publish --url=https://example.org/page
 php bin/console c975l:social:publish --dry-run       # what each network would receive, sent nowhere
+php bin/console c975l:social:publish --slot=3        # what the schedule runs for the slot of id 3
 ```
 
 `--dry-run` shows every network, configured or not, so the texts can be read before any credential is plugged in. It still writes the JPEG copy Meta would download (see below), being the one the post will use.
 
+### Publication slots
+
+The **"Créneaux de publication"** screen (`SocialScheduleCrudController`, `site-role-editor`) replaces the interval by fixed times: each `SocialSchedule` is a time of day, the contents it draws from, the networks it posts on and a text of its own. While one slot is enabled, the hourly run on `social-publish-interval-hours` stands aside.
+
+- **Time**: every enabled slot is a scheduled task of its own (`c975l:social:publish --slot=<id>` at `m h * * *`), declared by `SocialMaintenanceTaskProvider`. The schedule is read when the worker starts, so a slot saved now is taken into account at its next start - within the hour with `messenger:consume --time-limit=3600`. Two slots may share the same time.
+- **Contents**: a whole source (`gallery_media`), or some of its groups (`gallery_media:3`, a gallery); none takes every source in turn.
+- **Networks**: among the configured ones, none meaning all of them. A content is left out once posted on one of the slot's networks only, so a photograph posted on Instagram in the morning may still go on Bluesky in the evening. Each network keeps its own `social-*-publish-mode`.
+- **Text**: put where `social-publish-template`, the text common to every post, writes `{slot}` — hashtags for the evening slot, a greeting for the morning one.
+
 ### Connecting the networks
 
-**Bluesky** needs `social-bluesky-handle` and `social-bluesky-app-password` — an app password created in Bluesky's settings, never the account's own. An image above 2 MB is left out rather than failing the post.
+Before connecting anything: `site-url` holds the site's public https address, and `social-publish-enabled` is on — the "Connecter Bluesky" and "Connecter Meta" links only show in the sidebar's "Avancé" submenu while it is. Connect from the production site: both networks call it back on its public address.
+
+#### Bluesky, step by step
+
+1. Optionally fill `social-bluesky-handle` with the account to post as (`name.bsky.social`, or a custom domain handle). Left empty, you pick the account on Bluesky's page.
+2. Click **"Connecter Bluesky"**, sign in on Bluesky if asked, and allow access.
+3. Back on the dashboard, a success message confirms it; `social-bluesky-oauth-session` and `social-bluesky-handle` are filled.
+
+Nothing to create on Bluesky's side. If the connection is revoked in Bluesky's settings, click the link again.
+
+#### Facebook Page and Instagram, step by step
+
+Meta needs an app, created once by whoever manages the Pages. Kept in development mode, it works for its own administrators on the Pages they manage, with no App Review and no Business Verification. One app can serve several sites.
+
+1. On [developers.facebook.com/apps](https://developers.facebook.com/apps), click **Create app**, give it a name and a contact email. No business portfolio is needed.
+2. Pick the use cases **"Manage everything on your Page"** and **"Manage messaging & content on Instagram"**, choosing its **"API setup with Facebook login"** variant — together they bring `pages_show_list`, `pages_read_engagement`, `pages_manage_posts`, `instagram_basic` and `instagram_content_publish`.
+3. In **Facebook Login for Business > Settings**, add to **Valid OAuth Redirect URIs** one line per site: `https://<your-site>/social/meta/callback`. Keep Strict mode and Enforce HTTPS on.
+4. In **App settings > Basic**, fill the privacy policy URL (and the terms of service and data deletion URLs) with the site's own pages, then copy the **App ID** and, after clicking **Show**, the **App secret**.
+5. Set them on the site as `social-meta-app-id` and `social-meta-app-secret`. If your account manages several Pages, also set `social-meta-page-id` to the site's Page ID (shown in the Page's About section, or in Meta Business Suite settings); left empty, the first Page is taken.
+6. Click **"Connecter Meta"** and allow access with the Facebook account managing the Page. The Page token and `social-meta-instagram-id` are filled; without an Instagram professional account linked to the Page, only Facebook is connected, which the success message says.
+
+Leave the app **unpublished**: publishing it triggers Meta's App Review, only needed if other people's Pages were to be connected. Instagram posting also needs the Instagram account to be a professional one (Business or Creator), linked to the Page in Meta Business Suite.
+
+#### What happens behind
+
+**Bluesky** is connected with **"Connecter Bluesky"**, in the sidebar's "Avancé" submenu: no app to create anywhere and no password to type. The site is a confidential client of the AT Protocol's OAuth on its own, publishing its client metadata at `/social/bluesky/client-metadata.json` and its public key at `/social/bluesky/jwks.json` (both anonymous, built on `site-url`, so it has to be the public https address). The owner consents on Bluesky's page — for the account `social-bluesky-handle` names, or the one picked there when it is empty — and the site keeps the session in `social-bluesky-oauth-session` and fills the handle. It asks only `repo:app.bsky.feed.post?action=create blob:image/*`: posting, and uploading the post's image. Every call is DPoP-bound; the access token lasts under 30 minutes and is refreshed before a post, under a lock and from a fresh read of the session so two processes never spend the same refresh token, the refresh token lasting 180 days and renewed at every use, so a site posting at least every few months never has to connect again. The client key, `social-bluesky-oauth-key`, is generated on the first request and kept: changing it means connecting again. `BlueskyOAuthClient` does all of it with `openssl` alone (`Es256Signer`), no JWT library. Emptying the session disconnects the account.
+
+Without the connection, `social-bluesky-handle` and `social-bluesky-app-password` still work — an app password created in Bluesky's [Settings > Privacy and security > App passwords](https://bsky.app/settings/app-passwords), never the account's own. An image above 2 MB is left out rather than failing the post.
 
 **Meta** needs an app of the site owner's own, created on developers.facebook.com and left in development mode (used by its admin alone, it needs neither App Review nor Business Verification), with `<site>/social/meta/callback` as its redirect URI. Its two keys, `social-meta-app-id` and `social-meta-app-secret`, are `restricted`, like Google's. **"Connecter Meta"**, in the sidebar's "Avancé" submenu, then fills the three others: `social-meta-page-id`, the Page token (`sensitive`, and non-expiring) and `social-meta-instagram-id`. An account managing several Pages gets its first one, unless `social-meta-page-id` was filled beforehand — that Page is then kept.
 
@@ -370,7 +407,7 @@ Implement `NetworkPublisherInterface` (`getName()`, `isConfigured()`, `isAutomat
 
 ## Guided projects
 
-`SocialGuidedProjectProvider` (implements ConfigBundle's `GuidedProjectProviderInterface`, auto-tagged like `MenuProviderInterface`) contributes six replayable exercises to the `/management` dashboard's "Guided projects" panel: **"Mettre les liens vers vos réseaux"** (one list for the whole site, rendered wherever the block is put), **"Régler les boutons de partage"** (which networks, in which order, and what they look like), **"Connecter la fiche Google de l'établissement"**, **"Consulter et afficher les avis Google"**, **"Relire et publier sur vos réseaux"** and **"Connecter la Page Facebook et Instagram"**. They run at 4010 to 4060, inside the 4000 block `GuidedProjectProviderInterface` reserves this bundle — that docblock states every bundle's, so the range is read there rather than recopied.
+`SocialGuidedProjectProvider` (implements ConfigBundle's `GuidedProjectProviderInterface`, auto-tagged like `MenuProviderInterface`) contributes eight replayable exercises to the `/management` dashboard's "Guided projects" panel: **"Mettre les liens vers vos réseaux"** (one list for the whole site, rendered wherever the block is put), **"Régler les boutons de partage"** (which networks, in which order, and what they look like), **"Connecter la fiche Google de l'établissement"**, **"Consulter et afficher les avis Google"**, **"Relire et publier sur vos réseaux"**, **"Connecter la Page Facebook et Instagram"**, **"Régler les créneaux de publication"** and **"Connecter le compte Bluesky"**. They run at 4010 to 4080, inside the 4000 block `GuidedProjectProviderInterface` reserves this bundle — that docblock states every bundle's, so the range is read there rather than recopied.
 
 The Google side is **two parcours rather than one**, split on who actually does the work. Connecting the listing is the agency's own job: the two OAuth keys are `restricted` configs, so a single Cloud application is filled on every client site (see [Customer reviews](#customer-reviews)) and each client consents with their own Google account. Reading the reviews, answering them and putting them on a page is the site's own editor. Kept as one parcours, it declared the lowest of the three bars it crossed and opened on a 403 for the very role it named.
 
@@ -378,11 +415,11 @@ The connection parcours deliberately **doesn't re-document the Google Cloud cons
 
 Both Google parcours open on **another bundle's** screen: ConfigBundle's config list for the connection, the two OAuth keys being configs, and UiBundle's `ReviewCrudController` for the reviews, which are its entity whatever platform brought them in.
 
-The share buttons project is contributed **only while `social-enable-share-buttons` is on**, the two Google ones **only while `ui-enable-reviews` is on**, and the two publication ones **only while `social-publish-enabled` is on** — the same condition `MenuProvider` applies to the "Boutons de partage" entry and to its own "Connecter Google" link, since with the feature off that screen isn't in the sidebar either and a parcours walking to an unreachable screen reads as a broken one. A parcours is dropped outright where the menu instead keeps a stand-in entry pointing at the switch (see [Site-wide auto-display](#site-wide-auto-display)): a sidebar caption saying a feature is off fits in a line, a whole walkthrough of a screen that isn't there does not.
+The share buttons project is contributed **only while `social-enable-share-buttons` is on**, the two Google ones **only while `ui-enable-reviews` is on**, and the four publication ones **only while `social-publish-enabled` is on** — the same condition `MenuProvider` applies to the "Boutons de partage" entry and to its own "Connecter Google" link, since with the feature off that screen isn't in the sidebar either and a parcours walking to an unreachable screen reads as a broken one. A parcours is dropped outright where the menu instead keeps a stand-in entry pointing at the switch (see [Site-wide auto-display](#site-wide-auto-display)): a sidebar caption saying a feature is off fits in a line, a whole walkthrough of a screen that isn't there does not.
 
-Each project declares the role its own screens demand rather than the dashboard's, no role implying another: `site-role-editor` for four of them, and **`ROLE_SUPER_ADMIN`** for the two connections — a literal, exactly as ConfigBundle states it on its own restricted actions, since `ConfigCrudController` hides a `restricted` config from every user below it. Too low a bar and `GuidedProjectBuilder` offers a parcours opening on a 403 instead of dropping it. Each connection walks three screens gated on three of these roles at once, so its `role` key lists all three — `ROLE_SUPER_ADMIN`, `site-role-admin` and `site-role-editor` — and `GuidedProjectBuilder` offers the parcours only to a user holding them together.
+Each project declares the role its own screens demand rather than the dashboard's, no role implying another: `site-role-editor` for five of them, and **`ROLE_SUPER_ADMIN`** for the Google and Meta connections — a literal, exactly as ConfigBundle states it on its own restricted actions, since `ConfigCrudController` hides a `restricted` config from every user below it. Too low a bar and `GuidedProjectBuilder` offers a parcours opening on a 403 instead of dropping it. Each connection walks three screens gated on three of these roles at once, so its `role` key lists all three — `ROLE_SUPER_ADMIN`, `site-role-admin` and `site-role-editor` — and `GuidedProjectBuilder` offers the parcours only to a user holding them together. The Bluesky connection has no restricted config to fill, so it lists `site-role-admin` and `site-role-editor` alone.
 
-Only the opening step of each carries an `url`: from there the panel walks the screen the user has been sent to, highlighting the button or the field they are meant to use next, in the order the form renders them. The two singleton screens are pointed at with `.action-new, .action-edit` — the index offers "create" until the row exists and "edit" ever after, and whichever is on screen is the one to click. The settings fields reuse the markers their own JS already reads (`[data-share-networks-sortable]`, `[data-share-shape-select]`, `[data-share-fill-select]`, `[data-share-display-intro-checkbox]`, `[data-social-links-icon-style-select]`), rather than ids of their own; the two fields with no marker of their own are pointed at with the `trix-editor` the introduction's textarea is replaced by, and with the anchor field's EasyAdmin id (`#Block_data_anchor`). The reply step points at `.action-edit`, the class EasyAdmin's own edit action keeps whatever the icon and the label `ReviewCrudController` renames it with. The publication parcours points at the actions' own classes (`.action-prepareNextPost, .action-prepareUrlPost`, then `.action-publishPost` back on the list, "Publier" being offered there only).
+Only the opening step of each carries an `url`: from there the panel walks the screen the user has been sent to, highlighting the button or the field they are meant to use next, in the order the form renders them. The two singleton screens are pointed at with `.action-new, .action-edit` — the index offers "create" until the row exists and "edit" ever after, and whichever is on screen is the one to click. The settings fields reuse the markers their own JS already reads (`[data-share-networks-sortable]`, `[data-share-shape-select]`, `[data-share-fill-select]`, `[data-share-display-intro-checkbox]`, `[data-social-links-icon-style-select]`), rather than ids of their own; the two fields with no marker of their own are pointed at with the `trix-editor` the introduction's textarea is replaced by, and with the anchor field's EasyAdmin id (`#Block_data_anchor`). The reply step points at `.action-edit`, the class EasyAdmin's own edit action keeps whatever the icon and the label `ReviewCrudController` renames it with. The publication parcours points at the actions' own classes (`.action-prepareNextPost, .action-prepareUrlPost`, then `.action-publishPost` back on the list, "Publier" being offered there only). The slots parcours points at the fields' EasyAdmin ids (`#SocialSchedule_time`, `#SocialSchedule_networks`, `#SocialSchedule_text`), and at the TomSelect box following the contents select (`#SocialSchedule_sources + .ts-wrapper`), which autocompletion hides.
 
 ---
 

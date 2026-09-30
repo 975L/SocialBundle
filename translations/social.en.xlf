@@ -26,6 +26,10 @@
                 <source>block.social_links_display_description</source>
                 <target>Inserts the dashboard's social links, without redefining them</target>
             </trans-unit>
+            <trans-unit id="hc2yGuH">
+                <source>description.guided_project_social_bluesky_connect</source>
+                <target>Link the site to your Bluesky account, with no app to create and no password to type. Done once, then again if the access is withdrawn.</target>
+            </trans-unit>
             <trans-unit id="Z4mtym8">
                 <source>description.guided_project_social_google_connect</source>
                 <target>The agency's own part: the access at Google, the two keys, and the consent. Done once, then again the day the token is revoked.</target>
@@ -46,9 +50,25 @@
                 <source>description.guided_project_social_posts</source>
                 <target>The posts prepared for your networks: prepare one, proofread its text network by network, then send it.</target>
             </trans-unit>
+            <trans-unit id="4BPt5dm">
+                <source>description.guided_project_social_schedules</source>
+                <target>Choose each day at what time to post, what, and on which networks, instead of the interval.</target>
+            </trans-unit>
             <trans-unit id="GjyFwm5">
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Pick the networks offered to your visitors, their order and their look</target>
+            </trans-unit>
+            <trans-unit id="0CvXFm7">
+                <source>description.guided_step_social_bluesky_connect</source>
+                <target>In the sidebar's "Advanced" submenu, click "Connect Bluesky", then grant access on Bluesky. The site stores the session by itself.</target>
+            </trans-unit>
+            <trans-unit id="opsSET4">
+                <source>description.guided_step_social_bluesky_handle</source>
+                <target>Optional: search for "social-bluesky-handle" in the list and put the account's handle in it, for instance example.bsky.social. Left empty, the account is picked on Bluesky's page.</target>
+            </trans-unit>
+            <trans-unit id="82P_F59">
+                <source>description.guided_step_social_bluesky_mode</source>
+                <target>"social-bluesky-publish-mode" is set to "review": each post waits for review on the Posts screen. "auto" sends it as soon as it is prepared.</target>
             </trans-unit>
             <trans-unit id="Q2.88W1">
                 <source>description.guided_step_social_google_connect</source>
@@ -128,7 +148,7 @@
             </trans-unit>
             <trans-unit id="xXIWC.O">
                 <source>description.guided_step_social_posts_open</source>
-                <target>The posts are prepared by themselves, at the pace set by "social-publish-interval-hours". The drafts wait here for your review.</target>
+                <target>The posts are prepared by themselves, at the times of the publication slots, or failing any, at the pace set by "social-publish-interval-hours". The drafts wait here for your review.</target>
             </trans-unit>
             <trans-unit id="hc6ecvb">
                 <source>description.guided_step_social_posts_prepare</source>
@@ -137,6 +157,30 @@
             <trans-unit id="SvQRq5R">
                 <source>description.guided_step_social_posts_publish</source>
                 <target>Back on the list, the paper-plane button sends the post to every network that has not taken it yet. A network refusing keeps its error message, and "Publish" tries it again.</target>
+            </trans-unit>
+            <trans-unit id="lw9Mjxv">
+                <source>description.guided_step_social_schedules_edit</source>
+                <target>Add a slot, or take up an existing one.</target>
+            </trans-unit>
+            <trans-unit id="N0uYKyC">
+                <source>description.guided_step_social_schedules_networks</source>
+                <target>The networks this slot posts on. None ticked, every configured one.</target>
+            </trans-unit>
+            <trans-unit id="YvE_dVx">
+                <source>description.guided_step_social_schedules_open</source>
+                <target>Each slot prepares one post a day, at its time. As soon as a slot is enabled, "social-publish-interval-hours" is no longer used.</target>
+            </trans-unit>
+            <trans-unit id="QMpKFbt">
+                <source>description.guided_step_social_schedules_sources</source>
+                <target>A whole content, or only some of its galleries. Left empty, every content in turn.</target>
+            </trans-unit>
+            <trans-unit id="kNO7LNL">
+                <source>description.guided_step_social_schedules_text</source>
+                <target>Optional: put where the common template "social-publish-template" holds {slot}.</target>
+            </trans-unit>
+            <trans-unit id="5365y9u">
+                <source>description.guided_step_social_schedules_time</source>
+                <target>The time the post is prepared at, every day. A change is taken into account within the hour.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -169,6 +213,14 @@
             <trans-unit id="bRoisnG">
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Wide, square or round button: that is the room the buttons take under your pages.</target>
+            </trans-unit>
+            <trans-unit id="0h0NDdA">
+                <source>flash.bluesky_connected</source>
+                <target>Bluesky account connected.</target>
+            </trans-unit>
+            <trans-unit id="10Bz8lS">
+                <source>flash.bluesky_refused</source>
+                <target>Bluesky connection interrupted: start it again from the dashboard.</target>
             </trans-unit>
             <trans-unit id="iOFL8AK">
                 <source>flash.meta_connected</source>
@@ -213,6 +265,10 @@
             <trans-unit id="ufovuez">
                 <source>label.anchor_help</source>
                 <target>Short id to link a menu entry to this band (e.g. "share"). Without an anchor, it can't be targeted from a menu.</target>
+            </trans-unit>
+            <trans-unit id="_oMMwKM">
+                <source>label.bluesky_connect</source>
+                <target>Connect Bluesky</target>
             </trans-unit>
             <trans-unit id="tKFuD86">
                 <source>label.category_navigation</source>
@@ -274,6 +330,10 @@
                 <source>label.google_connect</source>
                 <target>Connect Google</target>
             </trans-unit>
+            <trans-unit id="tf7xOaW">
+                <source>label.guided_project_social_bluesky_connect</source>
+                <target>Connect the Bluesky account</target>
+            </trans-unit>
             <trans-unit id="viNLaDg">
                 <source>label.guided_project_social_google_connect</source>
                 <target>Connect the establishment's Google listing</target>
@@ -294,9 +354,25 @@
                 <source>label.guided_project_social_posts</source>
                 <target>Review and publish on your networks</target>
             </trans-unit>
+            <trans-unit id="vcYJZKP">
+                <source>label.guided_project_social_schedules</source>
+                <target>Set the publication slots</target>
+            </trans-unit>
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Set the share buttons</target>
+            </trans-unit>
+            <trans-unit id="FCqhtF4">
+                <source>label.guided_step_social_bluesky_connect</source>
+                <target>Start the connection</target>
+            </trans-unit>
+            <trans-unit id="WAKi3s4">
+                <source>label.guided_step_social_bluesky_handle</source>
+                <target>Name the account</target>
+            </trans-unit>
+            <trans-unit id="WZJUH3w">
+                <source>label.guided_step_social_bluesky_mode</source>
+                <target>Choose what goes out unreviewed</target>
             </trans-unit>
             <trans-unit id="WWlxIlv">
                 <source>label.guided_step_social_google_connect</source>
@@ -394,6 +470,34 @@
                 <source>label.guided_step_social_posts_save</source>
                 <target>Save</target>
             </trans-unit>
+            <trans-unit id="OB5pxdE">
+                <source>label.guided_step_social_schedules_edit</source>
+                <target>Create or edit a slot</target>
+            </trans-unit>
+            <trans-unit id="W8GFw1R">
+                <source>label.guided_step_social_schedules_networks</source>
+                <target>Tick the networks</target>
+            </trans-unit>
+            <trans-unit id="jlfPArt">
+                <source>label.guided_step_social_schedules_open</source>
+                <target>Open the slots</target>
+            </trans-unit>
+            <trans-unit id="Dd5k9GT">
+                <source>label.guided_step_social_schedules_save</source>
+                <target>Save the slot</target>
+            </trans-unit>
+            <trans-unit id="IDN.aXf">
+                <source>label.guided_step_social_schedules_sources</source>
+                <target>Choose the contents</target>
+            </trans-unit>
+            <trans-unit id="sdaB.QU">
+                <source>label.guided_step_social_schedules_text</source>
+                <target>Write the slot text</target>
+            </trans-unit>
+            <trans-unit id="QzrhwtQ">
+                <source>label.guided_step_social_schedules_time</source>
+                <target>Choose the time</target>
+            </trans-unit>
             <trans-unit id="GHatm_S">
                 <source>label.guided_step_social_share_buttons_anchor</source>
                 <target>Name the band</target>
@@ -454,6 +558,10 @@
                 <source>label.icon_style_text</source>
                 <target>Text only</target>
             </trans-unit>
+            <trans-unit id="KowqnWD">
+                <source>label.info_bluesky_connect</source>
+                <target>Links the site to your Bluesky account: you allow access on Bluesky, with no app to create and no password to type. Done once, then again if the access is revoked.</target>
+            </trans-unit>
             <trans-unit id="stDBjT.">
                 <source>label.info_google_connect</source>
                 <target>Lets the site read the reviews of your Google listing and answer them.</target>
@@ -481,6 +589,10 @@
             <trans-unit id="ehHeI2l">
                 <source>label.info_social_posts</source>
                 <target>The posts prepared for your networks, one text per network. Drafts wait for your review: correct the texts, save, then click "Publish". Deleting a post cancels it.</target>
+            </trans-unit>
+            <trans-unit id="w4NSFiG">
+                <source>label.info_social_schedules</source>
+                <target>Each slot posts once a day, at its time, on its networks, drawing from its contents. While a slot is enabled, the publication interval of the configuration is no longer used.</target>
             </trans-unit>
             <trans-unit id="YtqDGiK">
                 <source>label.intro</source>
@@ -637,6 +749,54 @@
             <trans-unit id="LlZoHrF">
                 <source>label.social_sample_review_waiting_comment</source>
                 <target>The work is serious, nothing to say about that. Parking out front is another matter on a Saturday.</target>
+            </trans-unit>
+            <trans-unit id="rlK4OIJ">
+                <source>label.social_schedule</source>
+                <target>Publication slot</target>
+            </trans-unit>
+            <trans-unit id="BzuSan4">
+                <source>label.social_schedule_enabled</source>
+                <target>Enabled</target>
+            </trans-unit>
+            <trans-unit id="FNyzeCo">
+                <source>label.social_schedule_name</source>
+                <target>Name</target>
+            </trans-unit>
+            <trans-unit id="5Q3tqnL">
+                <source>label.social_schedule_networks</source>
+                <target>Networks</target>
+            </trans-unit>
+            <trans-unit id="M77AEJr">
+                <source>label.social_schedule_networks_help</source>
+                <target>The networks this slot posts on, among the configured ones. None ticked, all of them. A content already posted on a network does not go there again, but may go on another one.</target>
+            </trans-unit>
+            <trans-unit id="K.tSG3K">
+                <source>label.social_schedule_sources</source>
+                <target>Contents</target>
+            </trans-unit>
+            <trans-unit id="B5_UFAm">
+                <source>label.social_schedule_sources_help</source>
+                <target>Where to take what is posted from: a whole content, or only some of its galleries. Empty, every content in turn.</target>
+            </trans-unit>
+            <trans-unit id="Xr8Qgzn">
+                <source>label.social_schedule_text</source>
+                <target>Slot text</target>
+            </trans-unit>
+            <trans-unit id="xbXmd_x">
+                <source>label.social_schedule_text_help</source>
+                <target>Put where the common post template holds {slot}. The common template is set in the configuration (social-publish-template).</target>
+            </trans-unit>
+            <trans-unit id="L9x10.g">
+                <source>label.social_schedule_time</source>
+                <target>Time</target>
+            </trans-unit>
+            <trans-unit id="axzipJt">
+                <source>label.social_schedule_time_help</source>
+                <target>Every day at this time, one post is prepared. A slot added or changed is taken into account within the hour.</target>
+            </trans-unit>
+            <trans-unit id="gQdm7IR">
+                <source>label.social_schedules</source>
+                <target>Publication slots</target>
             </trans-unit>
             <trans-unit id="XWMpUxP">
                 <source>label.style</source>

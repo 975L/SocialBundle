@@ -16,6 +16,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use c975L\SocialBundle\Controller\Management\SocialPostCrudController;
+use c975L\SocialBundle\Controller\Management\SocialScheduleCrudController;
 use c975L\UiBundle\Service\ConfigEditUrlResolver;
 
 class MenuProvider implements MenuProviderInterface
@@ -86,6 +87,17 @@ class MenuProvider implements MenuProviderInterface
                 // The bar SocialPostCrudController states on its own rows
                 'role' => $this->configService->get('site-role-editor'),
             ];
+            // The slots pacing those posts, under the same switch: without it, nothing they schedule would be prepared
+            $menus['social_schedules'] = [
+                'controller' => SocialScheduleCrudController::class,
+                'label' => 'label.social_schedules',
+                'narration' => 'narration.social_schedules',
+                'translation_domain' => 'social',
+                'icon' => 'fas fa-clock',
+                'description' => 'label.info_social_schedules',
+                // The bar SocialScheduleCrudController states on its own rows
+                'role' => $this->configService->get('site-role-editor'),
+            ];
         }
 
         return $menus;
@@ -135,6 +147,17 @@ class MenuProvider implements MenuProviderInterface
                 'role' => $this->configService->get('site-role-editor'),
                 'tier' => 'advanced',
                 'description' => 'label.info_meta_connect',
+            ];
+            // Consenting once gives the site the Bluesky session its posts are made with, with no app to create and no password to type
+            $links['social_bluesky_connect'] = [
+                'name' => 'social_bluesky_oauth_connect',
+                'label' => 'label.bluesky_connect',
+                'narration' => 'narration.bluesky_connect',
+                'translation_domain' => 'social',
+                'icon' => 'fab fa-bluesky',
+                'role' => $this->configService->get('site-role-editor'),
+                'tier' => 'advanced',
+                'description' => 'label.info_bluesky_connect',
             ];
         }
 

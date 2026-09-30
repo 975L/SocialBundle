@@ -16,6 +16,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use c975L\SocialBundle\Controller\Management\SocialPostCrudController;
+use c975L\SocialBundle\Controller\Management\SocialScheduleCrudController;
 use c975L\UiBundle\Controller\Management\ReviewCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
@@ -50,6 +51,10 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             $projects[] = $this->socialPostsProject();
 
             $projects[] = $this->metaConnectProject();
+
+            $projects[] = $this->socialSchedulesProject();
+
+            $projects[] = $this->blueskyConnectProject();
         }
 
         return $projects;
@@ -221,6 +226,100 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_social_meta_mode',
                     'description' => 'description.guided_step_social_meta_mode',
                     'narration' => 'narration.guided_step_social_meta_mode',
+                ],
+            ],
+        ];
+    }
+
+    // The slots pacing the posts: a time of day, what it draws from, where it posts - the interval standing aside as soon as one is on
+    private function socialSchedulesProject(): array
+    {
+        return [
+            'slug' => 'social-schedules',
+            'label' => 'label.guided_project_social_schedules',
+            'description' => 'description.guided_project_social_schedules',
+            'translation_domain' => 'social',
+            'order' => 4070,
+            // The bar SocialScheduleCrudController states on its own rows
+            'role' => $this->configService->get('site-role-editor'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_social_schedules_open',
+                    'description' => 'description.guided_step_social_schedules_open',
+                    'narration' => 'narration.guided_step_social_schedules_open',
+                    'url' => $this->indexUrl(SocialScheduleCrudController::class),
+                ],
+                [
+                    'label' => 'label.guided_step_social_schedules_edit',
+                    'description' => 'description.guided_step_social_schedules_edit',
+                    'narration' => 'narration.guided_step_social_schedules_edit',
+                    'highlight' => '.action-new, .action-edit',
+                ],
+                // The fields' own ids, EasyAdmin naming the form after the entity - in the order the form renders them
+                [
+                    'label' => 'label.guided_step_social_schedules_time',
+                    'description' => 'description.guided_step_social_schedules_time',
+                    'narration' => 'narration.guided_step_social_schedules_time',
+                    'highlight' => '#SocialSchedule_time',
+                ],
+                [
+                    // The TomSelect box following the select, which autocomplete() hides
+                    'label' => 'label.guided_step_social_schedules_sources',
+                    'description' => 'description.guided_step_social_schedules_sources',
+                    'narration' => 'narration.guided_step_social_schedules_sources',
+                    'highlight' => '#SocialSchedule_sources + .ts-wrapper',
+                ],
+                [
+                    'label' => 'label.guided_step_social_schedules_networks',
+                    'description' => 'description.guided_step_social_schedules_networks',
+                    'narration' => 'narration.guided_step_social_schedules_networks',
+                    'highlight' => '#SocialSchedule_networks',
+                ],
+                [
+                    'label' => 'label.guided_step_social_schedules_text',
+                    'description' => 'description.guided_step_social_schedules_text',
+                    'narration' => 'narration.guided_step_social_schedules_text',
+                    'highlight' => '#SocialSchedule_text',
+                ],
+                [
+                    'label' => 'label.guided_step_social_schedules_save',
+                    'narration' => 'narration.guided_step_social_schedules_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+            ],
+        ];
+    }
+
+    // Meta's parcours without its first half: no app to create nor key to paste, the site being its own OAuth client (see BlueskyOAuthClient)
+    private function blueskyConnectProject(): array
+    {
+        return [
+            'slug' => 'social-bluesky-connect',
+            'label' => 'label.guided_project_social_bluesky_connect',
+            'description' => 'description.guided_project_social_bluesky_connect',
+            'translation_domain' => 'social',
+            'order' => 4080,
+            // site-role-admin for the configs screen, site-role-editor for the link - neither implying the other, both required
+            'role' => [$this->configService->get('site-role-admin'), $this->configService->get('site-role-editor')],
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_social_bluesky_handle',
+                    'description' => 'description.guided_step_social_bluesky_handle',
+                    'narration' => 'narration.guided_step_social_bluesky_handle',
+                    'url' => $this->indexUrl(ConfigCrudController::class),
+                ],
+                [
+                    // A plain link in the sidebar's "Avancé" submenu, as Meta's is
+                    'label' => 'label.guided_step_social_bluesky_connect',
+                    'description' => 'description.guided_step_social_bluesky_connect',
+                    'narration' => 'narration.guided_step_social_bluesky_connect',
+                    'highlight' => 'a[href*="/social/bluesky/connect"]',
+                ],
+                [
+                    // No highlight: consenting leaves the site, and the mode is a config found with the screen's own search
+                    'label' => 'label.guided_step_social_bluesky_mode',
+                    'description' => 'description.guided_step_social_bluesky_mode',
+                    'narration' => 'narration.guided_step_social_bluesky_mode',
                 ],
             ],
         ];

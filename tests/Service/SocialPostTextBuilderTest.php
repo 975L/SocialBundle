@@ -17,12 +17,13 @@ use PHPUnit\Framework\TestCase;
 
 class SocialPostTextBuilderTest extends TestCase
 {
-    private function build(?string $template, SocialContent $content, int $maxLength = 300): string
+    /** @param array<string, string> $variables */
+    private function build(?string $template, SocialContent $content, int $maxLength = 300, array $variables = []): string
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnMap([['social-publish-template', $template]]);
 
-        return new SocialPostTextBuilder($configService)->build($content, $maxLength);
+        return new SocialPostTextBuilder($configService)->build($content, $maxLength, $variables);
     }
 
     public function testASiteWithNoTemplatePostsTheTitleAndTheUrl(): void
@@ -37,6 +38,15 @@ class SocialPostTextBuilderTest extends TestCase
         $content = new SocialContent('1', 'Lac', 'https://example.org/photo', variables: ['category' => 'Montagne']);
 
         $this->assertSame('Lac (Montagne) https://example.org/photo', $this->build('{title} ({category}) {url}', $content));
+    }
+
+    // A slot's text goes where the template writes {slot}, and a run without one drops the placeholder
+    public function testTheSlotTextFillsItsPlaceholder(): void
+    {
+        $content = new SocialContent('1', 'Lac', 'https://example.org/photo');
+
+        $this->assertSame("Lac\n\n#soir\n\nhttps://example.org/photo", $this->build("{title}\n\n{slot}\n\n{url}", $content, variables: ['slot' => '#soir']));
+        $this->assertSame("Lac\n\nhttps://example.org/photo", $this->build("{title}\n\n{slot}\n\n{url}", $content));
     }
 
     // A photo with no description must not post "{description}" nor leave a hole of blank lines where it would have been

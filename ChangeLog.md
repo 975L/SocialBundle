@@ -1,5 +1,28 @@
 # Changelog
 
+## v2.9.0
+
+Publication slots, and Bluesky connected without a password
+
+- New `SocialSchedule` entity and "Créneaux de publication" screen (`SocialScheduleCrudController`): a time, contents, networks and a text per slot (30/09/2026)
+- `SocialMaintenanceTaskProvider` declares one task per enabled slot, `c975l:social:publish --slot=<id>` (30/09/2026)
+- `SocialPublisher::prepareSlot()`, `getSourceChoices()` and `getNetworkNames()` (30/09/2026)
+- The interval run stands aside while a slot is enabled (30/09/2026)
+- `SocialPostRepository::findSourceIds()` takes the networks (30/09/2026)
+- `{slot}` placeholder in `social-publish-template` (30/09/2026)
+- Sources implementing `ScopedSocialContentSourceInterface` may be narrowed to some of their groups (30/09/2026)
+- `SocialPublisher`, `PublishCommand` and `SocialMaintenanceTaskProvider` take `SocialScheduleRepository` (30/09/2026) [BC-Break]
+- Requires `c975l/core-bundle` ^1.50 (30/09/2026)
+- Needs a migration for the `social_schedule` table (30/09/2026)
+- "Connecter Bluesky" through the AT Protocol's OAuth (`BlueskyOAuthClient`, `BlueskyOAuthController`) (30/09/2026)
+- New `Es256Signer`, ES256 signing with openssl alone (30/09/2026)
+- New configs `social-bluesky-oauth-session` and `social-bluesky-oauth-key` (30/09/2026)
+- Readme: connecting Bluesky and a Facebook Page with its Instagram account, step by step (30/09/2026)
+- `BlueskyPublisher` posts through the OAuth session, the app password as fallback (30/09/2026)
+- `BlueskyPublisher` takes `BlueskyOAuthClient` (30/09/2026) [BC-Break]
+- Guided projects "Régler les créneaux de publication" and "Connecter le compte Bluesky" (30/09/2026)
+- Guided step "Ouvrir les publications" names the publication slots (30/09/2026)
+
 ## v2.8.5
 
 Requires Doctrine ORM 3.7 for its SortDirection enum

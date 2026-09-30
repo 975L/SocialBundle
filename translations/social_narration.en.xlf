@@ -2,9 +2,25 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="social_narration.en.xlf">
         <body>
+            <trans-unit id="8.eMazc">
+                <source>narration.bluesky_connect</source>
+                <target>"Connect Bluesky" links the site to your Bluesky account: once, then again if the access is revoked.</target>
+            </trans-unit>
             <trans-unit id="_JCsjxB">
                 <source>narration.google_connect</source>
                 <target>"Connect Google" lets the site read the reviews of your Google listing and answer them.</target>
+            </trans-unit>
+            <trans-unit id="6v0WkQM">
+                <source>narration.guided_step_social_bluesky_connect</source>
+                <target>In the left-hand column, open the "Advanced" submenu and click "Connect Bluesky", then grant access on Bluesky. The site stores the session by itself.</target>
+            </trans-unit>
+            <trans-unit id="SiT0_lg">
+                <source>narration.guided_step_social_bluesky_handle</source>
+                <target>If you wish, search for "social-bluesky-handle" in the settings list and name the account to link; left empty, you will pick it on Bluesky's page.</target>
+            </trans-unit>
+            <trans-unit id=".hfIUWY">
+                <source>narration.guided_step_social_bluesky_mode</source>
+                <target>What is left is choosing whether a post waits for your review or goes out by itself: that is the "social-bluesky-publish-mode" setting.</target>
             </trans-unit>
             <trans-unit id="5VACpzn">
                 <source>narration.guided_step_social_google_connect</source>
@@ -88,7 +104,7 @@
             </trans-unit>
             <trans-unit id="EhIZhRa">
                 <source>narration.guided_step_social_posts_open</source>
-                <target>The panel takes you to the posts screen. They are prepared by themselves, at the pace the interval setting sets; the drafts wait here for your review.</target>
+                <target>The panel takes you to the posts screen. They are prepared by themselves, at the times of the publication slots, or failing any, at the pace the interval setting sets; the drafts wait here for your review.</target>
             </trans-unit>
             <trans-unit id="kE9wnJX">
                 <source>narration.guided_step_social_posts_prepare</source>
@@ -101,6 +117,34 @@
             <trans-unit id="TYtSWhL">
                 <source>narration.guided_step_social_posts_save</source>
                 <target>Save with the button at the bottom of the form.</target>
+            </trans-unit>
+            <trans-unit id="6Dywe6l">
+                <source>narration.guided_step_social_schedules_edit</source>
+                <target>Click the button to add a slot, or on the row of an existing slot to edit it.</target>
+            </trans-unit>
+            <trans-unit id="w7ckofR">
+                <source>narration.guided_step_social_schedules_networks</source>
+                <target>Tick the networks this slot posts on; with nothing ticked, it posts on every configured one.</target>
+            </trans-unit>
+            <trans-unit id="FrNIZFb">
+                <source>narration.guided_step_social_schedules_open</source>
+                <target>The panel takes you to the publication slots screen. Each one prepares one post a day, at its time; as soon as a slot is enabled, the interval is no longer used.</target>
+            </trans-unit>
+            <trans-unit id="FKs.IOq">
+                <source>narration.guided_step_social_schedules_save</source>
+                <target>Save with the button at the bottom of the form.</target>
+            </trans-unit>
+            <trans-unit id="1VpRy8b">
+                <source>narration.guided_step_social_schedules_sources</source>
+                <target>Choose the contents to draw from: a whole content, or only some of its galleries. Left empty, every content takes its turn.</target>
+            </trans-unit>
+            <trans-unit id="LMuUJQ_">
+                <source>narration.guided_step_social_schedules_text</source>
+                <target>If you wish, write a text of this slot's own: it takes the place of the "slot" tag in the common post template.</target>
+            </trans-unit>
+            <trans-unit id="0uawAGt">
+                <source>narration.guided_step_social_schedules_time</source>
+                <target>Choose the time the post will be prepared at, every day.</target>
             </trans-unit>
             <trans-unit id="DrMJai5">
                 <source>narration.guided_step_social_share_buttons_anchor</source>
@@ -157,6 +201,10 @@
             <trans-unit id="m6sfKEB">
                 <source>narration.social_posts</source>
                 <target>"Posts" gathers what is prepared for your networks: you read each text, then you publish.</target>
+            </trans-unit>
+            <trans-unit id="16Jj3bI">
+                <source>narration.social_schedules</source>
+                <target>"Publication slots" sets the times your networks get a post, and what each slot posts.</target>
             </trans-unit>
         </body>
     </file>

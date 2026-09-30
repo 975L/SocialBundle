@@ -14,11 +14,14 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
+use c975L\SocialBundle\Entity\SocialSchedule;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Repository\SocialPostRepository;
+use c975L\SocialBundle\Repository\SocialScheduleRepository;
 use c975L\SocialBundle\Service\SocialPageReader;
 use c975L\SocialBundle\Service\SocialPostTextBuilder;
 use c975L\SocialBundle\Service\SocialPublisher;
+use c975L\UiBundle\Contract\ScopedSocialContentSourceInterface;
 use c975L\UiBundle\Contract\SocialContentSourceInterface;
 use c975L\UiBundle\Model\SocialContent;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,7 +37,7 @@ class SocialPublisherTest extends TestCase
     /** @var list<object> */
     private array $persisted = [];
 
-    /** @var array<string, array{excluded: list<string>, since: ?\DateTimeImmutable}> */
+    /** @var array<string, array{excluded?: list<string>, since?: ?\DateTimeImmutable, networks?: list<string>, scopes?: list<string>}> */
     private array $asked = [];
 
     /** @var list<string> */
@@ -53,6 +56,27 @@ class SocialPublisherTest extends TestCase
             return null === $nextId ? null : new SocialContent($nextId, 'Title ' . $nextId, 'https://example.org/' . $nextId);
         });
         $source->method('getContent')->willReturnCallback(static fn (string $id): ?SocialContent => $gone ? null : new SocialContent($id, 'Fresh', 'https://example.org/' . $id, imagePath: '/moved.webp'));
+
+        return $source;
+    }
+
+    // A source whose contents fall into groups, the groups it was asked for being recorded
+    /** @param array<string, string> $scopes */
+    private function createScopedSource(string $type, string $nextId, array $scopes = ['3' => 'Mountain']): ScopedSocialContentSourceInterface
+    {
+        $source = $this->createStub(ScopedSocialContentSourceInterface::class);
+        $source->method('getSourceType')->willReturn($type);
+        $source->method('getScopes')->willReturn($scopes);
+        $source->method('getNextContent')->willReturnCallback(function () use ($type, $nextId): SocialContent {
+            $this->asked[$type]['scopes'] = [];
+
+            return new SocialContent($nextId, 'Title ' . $nextId, 'https://example.org/' . $nextId);
+        });
+        $source->method('getNextScopedContent')->willReturnCallback(function (array $excludedIds, array $scopeIds) use ($type, $nextId): SocialContent {
+            $this->asked[$type]['scopes'] = $scopeIds;
+
+            return new SocialContent($nextId, 'Title ' . $nextId, 'https://example.org/' . $nextId);
+        });
 
         return $source;
     }
@@ -82,24 +106,28 @@ class SocialPublisherTest extends TestCase
      * @param list<NetworkPublisherInterface>    $networks
      * @param array<string, string>              $lastBySourceType
      */
-    private function createPublisher(array $sources, array $networks, bool $enabled = true, ?\DateTimeImmutable $last = null, array $lastBySourceType = [], string $page = ''): SocialPublisher
+    private function createPublisher(array $sources, array $networks, bool $enabled = true, ?\DateTimeImmutable $last = null, array $lastBySourceType = [], string $page = '', bool $slotEnabled = false, ?string $template = null): SocialPublisher
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnMap([
             ['social-publish-enabled', $enabled ? 'true' : 'false'],
             ['social-publish-interval-hours', '24'],
-            ['social-publish-template', null],
+            ['social-publish-template', $template],
         ]);
         $configService->method('getBool')->willReturnCallback(static fn ($value): bool => 'true' === $value);
 
         $repository = $this->createStub(SocialPostRepository::class);
         $repository->method('findLastCreatedAt')->willReturn($last);
         $repository->method('findLastCreatedAtBySourceType')->willReturn($lastBySourceType);
-        $repository->method('findSourceIds')->willReturnCallback(function (string $type, ?\DateTimeImmutable $since): array {
+        $repository->method('findSourceIds')->willReturnCallback(function (string $type, ?\DateTimeImmutable $since, array $networks = []): array {
             $this->asked[$type]['since'] = $since;
+            $this->asked[$type]['networks'] = $networks;
 
             return ['7'];
         });
+
+        $scheduleRepository = $this->createStub(SocialScheduleRepository::class);
+        $scheduleRepository->method('hasEnabled')->willReturn($slotEnabled);
 
         $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('persist')->willReturnCallback(function (object $entity): void {
@@ -116,6 +144,7 @@ class SocialPublisherTest extends TestCase
             $configService,
             new NullLogger(),
             $this->lockFactory ??= new LockFactory(new InMemoryStore()),
+            $scheduleRepository,
         );
     }
 
@@ -330,5 +359,84 @@ class SocialPublisherTest extends TestCase
 
         $this->assertSame(300, $publisher->getMaxLength('bluesky'));
         $this->assertNull($publisher->getMaxLength('unknown'));
+    }
+
+    // While a slot is on, the slots are the pace: the hourly run on the interval would post in between
+    public function testTheIntervalRunStandsAsideWhileASlotIsEnabled(): void
+    {
+        $this->assertSame([], $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky')], slotEnabled: true)->prepareNext());
+        $this->assertNotSame([], $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky')], slotEnabled: true)->prepareNext(true));
+    }
+
+    // Its own networks only, its own text where the common template says "{slot}", and what went out on those networks alone left out
+    public function testASlotPostsOnItsNetworksWithItsText(): void
+    {
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky'), $this->createNetwork('instagram')], template: "{title}\n\n{slot}");
+        $slot = new SocialSchedule()->setNetworks(['instagram'])->setText('#photo');
+
+        $report = $publisher->prepareSlot($slot);
+
+        $this->assertSame(['instagram'], array_keys($report));
+        $this->assertSame(['instagram'], $this->asked['gallery_media']['networks']);
+        $target = $this->preparedPost()->getTargets()->first();
+        $this->assertSame("Title 42\n\n#photo", $target ? $target->getText() : null);
+    }
+
+    public function testASlotWithoutNetworksPostsOnEveryConfiguredOne(): void
+    {
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky'), $this->createNetwork('instagram', configured: false)]);
+
+        $this->assertSame(['bluesky'], array_keys($publisher->prepareSlot(new SocialSchedule())));
+    }
+
+    // A slot naming a network this site has not configured has nowhere to post
+    public function testASlotWithNoConfiguredNetworkPreparesNothing(): void
+    {
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky'), $this->createNetwork('instagram', configured: false)]);
+
+        $this->assertSame([], $publisher->prepareSlot(new SocialSchedule()->setNetworks(['instagram'])));
+        $this->assertSame([], $this->persisted);
+    }
+
+    public function testASlotPreparesNothingWhileThePublicationIsOff(): void
+    {
+        $this->assertSame([], $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky')], false)->prepareSlot(new SocialSchedule()));
+    }
+
+    // Its sources only, and within a source only the groups it picked
+    public function testASlotDrawsFromItsSourcesAndTheirGroups(): void
+    {
+        $publisher = $this->createPublisher([$this->createSource('story', '1'), $this->createScopedSource('gallery_media', '42')], [$this->createNetwork('bluesky')], lastBySourceType: ['gallery_media' => '2026-01-01']);
+
+        $publisher->prepareSlot(new SocialSchedule()->setSources(['gallery_media:3', 'gallery_media:5']));
+
+        $this->assertSame('42', $this->preparedPost()->getSourceId());
+        $this->assertArrayNotHasKey('story', $this->asked);
+        $this->assertSame(['3', '5'], $this->asked['gallery_media']['scopes']);
+    }
+
+    // A whole source picked beside some of its groups takes it whole
+    public function testASlotTakingAWholeSourceIgnoresItsGroups(): void
+    {
+        $publisher = $this->createPublisher([$this->createScopedSource('gallery_media', '42')], [$this->createNetwork('bluesky')]);
+
+        $publisher->prepareSlot(new SocialSchedule()->setSources(['gallery_media', 'gallery_media:3']));
+
+        $this->assertSame([], $this->asked['gallery_media']['scopes']);
+    }
+
+    public function testTheSourceChoicesListEachSourceThenItsGroups(): void
+    {
+        $publisher = $this->createPublisher([$this->createSource('story', '1'), $this->createScopedSource('gallery_media', '42')], []);
+
+        $this->assertSame(['story' => 'Story', 'gallery_media' => 'Gallery media', 'gallery_media:3' => 'Gallery media - Mountain'], $publisher->getSourceChoices());
+    }
+
+    // Two groups of the same name stay two choices, the second told apart by its id
+    public function testTwoGroupsOfTheSameNameKeepTwoLabels(): void
+    {
+        $publisher = $this->createPublisher([$this->createScopedSource('gallery_media', '42', ['3' => '2024', '7' => '2024'])], []);
+
+        $this->assertSame(['gallery_media' => 'Gallery media', 'gallery_media:3' => 'Gallery media - 2024', 'gallery_media:7' => 'Gallery media - 2024 (#7)'], $publisher->getSourceChoices());
     }
 }

@@ -12,6 +12,7 @@ namespace c975L\SocialBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
+use c975L\SocialBundle\Service\BlueskyOAuthClient;
 use c975L\SocialBundle\Service\BlueskyPublisher;
 use c975L\SocialBundle\Service\SocialImageExporter;
 use c975L\UiBundle\Model\SocialContent;
@@ -24,7 +25,7 @@ class BlueskyPublisherTest extends TestCase
     /** @var list<array{url: string, body: string}> */
     private array $requests = [];
 
-    private function createPublisher(?string $handle = '@example.bsky.social', ?string $password = 'app-password', int $recordStatus = 200, ?string $mode = null, string $remoteImage = ''): BlueskyPublisher
+    private function createPublisher(?string $handle = '@example.bsky.social', ?string $password = 'app-password', int $recordStatus = 200, ?string $mode = null, string $remoteImage = '', ?BlueskyOAuthClient $oauthClient = null): BlueskyPublisher
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnMap([
@@ -46,7 +47,7 @@ class BlueskyPublisherTest extends TestCase
             return str_contains($url, '/xrpc/') ? $responses[substr((string) strrchr($url, '.'), 1)] : new MockResponse($remoteImage);
         });
 
-        return new BlueskyPublisher($httpClient, $configService, new SocialImageExporter($httpClient, $this->createStub(SiteUrlResolver::class), sys_get_temp_dir()));
+        return new BlueskyPublisher($httpClient, $configService, new SocialImageExporter($httpClient, $this->createStub(SiteUrlResolver::class), sys_get_temp_dir()), $oauthClient ?? $this->createStub(BlueskyOAuthClient::class));
     }
 
     /**
@@ -171,5 +172,25 @@ class BlueskyPublisherTest extends TestCase
         imagepng(imagecreatetruecolor(4, 2));
 
         return (string) ob_get_clean();
+    }
+
+    // Connected, the account's own server is called through the OAuth session: no session opened with a password, the account being the connected one
+    public function testTheOAuthConnectionIsUsedWhenThereIsOne(): void
+    {
+        $calls = [];
+        $oauthClient = $this->createStub(BlueskyOAuthClient::class);
+        $oauthClient->method('isConnected')->willReturn(true);
+        $oauthClient->method('getDid')->willReturn('did:plc:oauth');
+        $oauthClient->method('call')->willReturnCallback(static function (string $method, array $options) use (&$calls): array {
+            $calls[$method] = $options;
+
+            return ['uri' => 'at://did:plc:oauth/app.bsky.feed.post/3k'];
+        });
+        $publisher = $this->createPublisher(null, null, oauthClient: $oauthClient);
+
+        $this->assertTrue($publisher->isConfigured());
+        $this->assertSame('at://did:plc:oauth/app.bsky.feed.post/3k', $publisher->publish('Hello', new SocialContent('1', 'Title', 'https://example.org/1')));
+        $this->assertSame([], $this->requests);
+        $this->assertSame('did:plc:oauth', $calls['com.atproto.repo.createRecord']['json']['repo']);
     }
 }

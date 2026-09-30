@@ -15,7 +15,7 @@ use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\UiBundle\Model\SocialContent;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-// Posts on Bluesky through the AT Protocol, signed in with an app password - one the account owner creates in Bluesky's settings and revokes there, never the account's own password. A session per post: a few a day at most, not worth storing a refresh token for
+// Posts on Bluesky through the AT Protocol, through the OAuth connection when there is one (see BlueskyOAuthClient), otherwise signed in with an app password - one the account owner creates in Bluesky's settings and revokes there, never the account's own password. With the app password, a session per post: a few a day at most, not worth storing a refresh token for
 class BlueskyPublisher implements NetworkPublisherInterface
 {
     public const string SERVICE = 'https://bsky.social';
@@ -30,6 +30,7 @@ class BlueskyPublisher implements NetworkPublisherInterface
         private readonly HttpClientInterface $httpClient,
         private readonly ConfigServiceInterface $configService,
         private readonly SocialImageExporter $imageExporter,
+        private readonly BlueskyOAuthClient $oauthClient,
     ) {
     }
 
@@ -40,7 +41,7 @@ class BlueskyPublisher implements NetworkPublisherInterface
 
     public function isConfigured(): bool
     {
-        return null !== $this->handle() && null !== $this->appPassword();
+        return $this->oauthClient->isConnected() || (null !== $this->handle() && null !== $this->appPassword());
     }
 
     // Review unless the site said otherwise: a post nobody read going out under the site's name is the one mistake not to make by default
@@ -56,24 +57,20 @@ class BlueskyPublisher implements NetworkPublisherInterface
 
     public function publish(string $text, SocialContent $content): string
     {
-        $session = $this->call('com.atproto.server.createSession', ['json' => [
-            'identifier' => $this->handle(),
-            'password' => $this->appPassword(),
-        ]]);
-        $headers = ['Authorization' => 'Bearer ' . $session['accessJwt']];
+        [$did, $call] = $this->session();
 
         $record = $this->record($text);
         $image = $this->image($content);
         if (null !== $image) {
-            $uploaded = $this->call('com.atproto.repo.uploadBlob', [
-                'headers' => [...$headers, 'Content-Type' => $image['mime']],
+            $uploaded = $call('com.atproto.repo.uploadBlob', [
+                'headers' => ['Content-Type' => $image['mime']],
                 'body' => $image['bytes'],
             ]);
             $record['embed'] = $this->embed($uploaded['blob'], $image, $content);
         }
 
-        $created = $this->call('com.atproto.repo.createRecord', ['headers' => $headers, 'json' => [
-            'repo' => $session['did'],
+        $created = $call('com.atproto.repo.createRecord', ['json' => [
+            'repo' => $did,
             'collection' => 'app.bsky.feed.post',
             'record' => $record,
         ]]);
@@ -168,6 +165,23 @@ class BlueskyPublisher implements NetworkPublisherInterface
         }
 
         return ['mime' => $size['mime'], 'bytes' => (string) $bytes, 'width' => $size[0], 'height' => $size[1]];
+    }
+
+    // The account posted as and how to call its server: the OAuth connection, or a session opened with the app password whose token every call carries
+    /** @return array{0: string, 1: \Closure(string, array<string, mixed>): array<string, mixed>} */
+    private function session(): array
+    {
+        if ($this->oauthClient->isConnected()) {
+            return [(string) $this->oauthClient->getDid(), $this->oauthClient->call(...)];
+        }
+
+        $session = $this->call('com.atproto.server.createSession', ['json' => [
+            'identifier' => $this->handle(),
+            'password' => $this->appPassword(),
+        ]]);
+        $authorization = 'Bearer ' . $session['accessJwt'];
+
+        return [(string) $session['did'], fn (string $method, array $options): array => $this->call($method, [...$options, 'headers' => [...$options['headers'] ?? [], 'Authorization' => $authorization]])];
     }
 
     /**

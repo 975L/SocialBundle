@@ -2,9 +2,25 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="fr" datatype="plaintext" original="social_narration.fr.xlf">
         <body>
+            <trans-unit id="8.eMazc">
+                <source>narration.bluesky_connect</source>
+                <target>« Connecter Bluesky » relie le site à votre compte Bluesky : une fois, puis à nouveau si l'accès est retiré.</target>
+            </trans-unit>
             <trans-unit id="_JCsjxB">
                 <source>narration.google_connect</source>
                 <target>« Connecter Google » autorise le site à lire les avis de votre fiche Google et à y répondre.</target>
+            </trans-unit>
+            <trans-unit id="6v0WkQM">
+                <source>narration.guided_step_social_bluesky_connect</source>
+                <target>Dans la colonne de gauche, ouvrez le menu « Avancé » et cliquez sur « Connecter Bluesky », puis autorisez l'accès sur Bluesky. Le site enregistre lui-même la session.</target>
+            </trans-unit>
+            <trans-unit id="SiT0_lg">
+                <source>narration.guided_step_social_bluesky_handle</source>
+                <target>Si vous le souhaitez, cherchez « social-bluesky-handle » dans la liste des réglages et indiquez le compte à relier ; laissé vide, vous le choisirez sur la page de Bluesky.</target>
+            </trans-unit>
+            <trans-unit id=".hfIUWY">
+                <source>narration.guided_step_social_bluesky_mode</source>
+                <target>Reste à choisir si une publication attend votre relecture ou part d'elle-même : c'est le réglage « social-bluesky-publish-mode ».</target>
             </trans-unit>
             <trans-unit id="5VACpzn">
                 <source>narration.guided_step_social_google_connect</source>
@@ -88,7 +104,7 @@
             </trans-unit>
             <trans-unit id="EhIZhRa">
                 <source>narration.guided_step_social_posts_open</source>
-                <target>Le panneau vous emmène sur l'écran des publications. Elles se préparent d'elles-mêmes, au rythme que fixe le réglage de l'intervalle ; celles en brouillon attendent ici votre relecture.</target>
+                <target>Le panneau vous emmène sur l'écran des publications. Elles se préparent d'elles-mêmes, aux heures des créneaux de publication, ou à défaut au rythme que fixe le réglage de l'intervalle ; celles en brouillon attendent ici votre relecture.</target>
             </trans-unit>
             <trans-unit id="kE9wnJX">
                 <source>narration.guided_step_social_posts_prepare</source>
@@ -101,6 +117,34 @@
             <trans-unit id="TYtSWhL">
                 <source>narration.guided_step_social_posts_save</source>
                 <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="6Dywe6l">
+                <source>narration.guided_step_social_schedules_edit</source>
+                <target>Cliquez sur le bouton pour ajouter un créneau, ou sur la ligne d'un créneau existant pour le modifier.</target>
+            </trans-unit>
+            <trans-unit id="w7ckofR">
+                <source>narration.guided_step_social_schedules_networks</source>
+                <target>Cochez les réseaux sur lesquels ce créneau publie ; sans rien cocher, il publie sur tous ceux qui sont configurés.</target>
+            </trans-unit>
+            <trans-unit id="FrNIZFb">
+                <source>narration.guided_step_social_schedules_open</source>
+                <target>Le panneau vous emmène sur l'écran des créneaux de publication. Chacun prépare une publication par jour, à son heure ; dès qu'un créneau est actif, l'intervalle n'est plus utilisé.</target>
+            </trans-unit>
+            <trans-unit id="FKs.IOq">
+                <source>narration.guided_step_social_schedules_save</source>
+                <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="1VpRy8b">
+                <source>narration.guided_step_social_schedules_sources</source>
+                <target>Choisissez les contenus où puiser : un contenu entier, ou seulement certaines de ses galeries. Laissé vide, tous les contenus passent à tour de rôle.</target>
+            </trans-unit>
+            <trans-unit id="LMuUJQ_">
+                <source>narration.guided_step_social_schedules_text</source>
+                <target>Si vous le souhaitez, écrivez un texte propre à ce créneau : il prend la place de l'étiquette « slot » du modèle de publication commun.</target>
+            </trans-unit>
+            <trans-unit id="0uawAGt">
+                <source>narration.guided_step_social_schedules_time</source>
+                <target>Choisissez l'heure à laquelle la publication sera préparée, chaque jour.</target>
             </trans-unit>
             <trans-unit id="DrMJai5">
                 <source>narration.guided_step_social_share_buttons_anchor</source>
@@ -157,6 +201,10 @@
             <trans-unit id="m6sfKEB">
                 <source>narration.social_posts</source>
                 <target>« Publications » rassemble ce qui est préparé pour vos réseaux : vous relisez chaque texte, puis vous publiez.</target>
+            </trans-unit>
+            <trans-unit id="16Jj3bI">
+                <source>narration.social_schedules</source>
+                <target>« Créneaux de publication » fixe les heures auxquelles vos réseaux reçoivent une publication, et ce que chaque créneau publie.</target>
             </trans-unit>
         </body>
     </file>

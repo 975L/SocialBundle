@@ -26,6 +26,10 @@
                 <source>block.social_links_display_description</source>
                 <target>Inserta las redes sociales del panel, sin redefinir los enlaces</target>
             </trans-unit>
+            <trans-unit id="hc2yGuH">
+                <source>description.guided_project_social_bluesky_connect</source>
+                <target>Vincular el sitio a su cuenta de Bluesky, sin aplicación que crear ni contraseña que escribir. Se hace una vez, y de nuevo si se retira el acceso.</target>
+            </trans-unit>
             <trans-unit id="Z4mtym8">
                 <source>description.guided_project_social_google_connect</source>
                 <target>La parte de la agencia: el acceso en Google, las dos claves y el consentimiento. Se hace una vez, y de nuevo el día en que se revoca el token.</target>
@@ -46,9 +50,25 @@
                 <source>description.guided_project_social_posts</source>
                 <target>Las publicaciones preparadas para sus redes: preparar una, revisar su texto red por red y enviarla.</target>
             </trans-unit>
+            <trans-unit id="4BPt5dm">
+                <source>description.guided_project_social_schedules</source>
+                <target>Elegir cada día a qué hora publicar, qué y en qué redes, en lugar del intervalo.</target>
+            </trans-unit>
             <trans-unit id="GjyFwm5">
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Elegir las redes que se ofrecen a sus visitantes, su orden y su aspecto</target>
+            </trans-unit>
+            <trans-unit id="0CvXFm7">
+                <source>description.guided_step_social_bluesky_connect</source>
+                <target>En el submenú "Avanzado" de la barra lateral, hacer clic en "Conectar Bluesky" y autorizar el acceso en Bluesky. El sitio guarda la sesión por sí mismo.</target>
+            </trans-unit>
+            <trans-unit id="opsSET4">
+                <source>description.guided_step_social_bluesky_handle</source>
+                <target>Opcional: buscar «social-bluesky-handle» en la lista y poner el identificador de la cuenta, por ejemplo ejemplo.bsky.social. Vacío, la cuenta se elige en la página de Bluesky.</target>
+            </trans-unit>
+            <trans-unit id="82P_F59">
+                <source>description.guided_step_social_bluesky_mode</source>
+                <target>«social-bluesky-publish-mode» vale «review»: cada publicación espera la revisión en la pantalla Publicaciones. «auto» la envía en cuanto está preparada.</target>
             </trans-unit>
             <trans-unit id="Q2.88W1">
                 <source>description.guided_step_social_google_connect</source>
@@ -128,7 +148,7 @@
             </trans-unit>
             <trans-unit id="xXIWC.O">
                 <source>description.guided_step_social_posts_open</source>
-                <target>Las publicaciones se preparan solas, al ritmo fijado por «social-publish-interval-hours». Los borradores esperan aquí su revisión.</target>
+                <target>Las publicaciones se preparan solas, a las horas de las franjas de publicación o, en su defecto, al ritmo fijado por «social-publish-interval-hours». Los borradores esperan aquí su revisión.</target>
             </trans-unit>
             <trans-unit id="hc6ecvb">
                 <source>description.guided_step_social_posts_prepare</source>
@@ -137,6 +157,30 @@
             <trans-unit id="SvQRq5R">
                 <source>description.guided_step_social_posts_publish</source>
                 <target>De vuelta en la lista, el botón con forma de avión de papel envía la publicación a cada red que aún no la ha recibido. Una red que la rechaza conserva su mensaje de error, y «Publicar» vuelve a intentarlo.</target>
+            </trans-unit>
+            <trans-unit id="lw9Mjxv">
+                <source>description.guided_step_social_schedules_edit</source>
+                <target>Añadir una franja, o retomar una existente.</target>
+            </trans-unit>
+            <trans-unit id="N0uYKyC">
+                <source>description.guided_step_social_schedules_networks</source>
+                <target>Las redes en las que publica esta franja. Ninguna marcada, todas las configuradas.</target>
+            </trans-unit>
+            <trans-unit id="YvE_dVx">
+                <source>description.guided_step_social_schedules_open</source>
+                <target>Cada franja prepara una publicación al día, a su hora. En cuanto una franja está activa, ya no se usa «social-publish-interval-hours».</target>
+            </trans-unit>
+            <trans-unit id="QMpKFbt">
+                <source>description.guided_step_social_schedules_sources</source>
+                <target>Un contenido entero, o solo algunas de sus galerías. Vacío, todos los contenidos por turnos.</target>
+            </trans-unit>
+            <trans-unit id="kNO7LNL">
+                <source>description.guided_step_social_schedules_text</source>
+                <target>Opcional: se inserta donde la plantilla común «social-publish-template» contiene {slot}.</target>
+            </trans-unit>
+            <trans-unit id="5365y9u">
+                <source>description.guided_step_social_schedules_time</source>
+                <target>La hora a la que se prepara la publicación, cada día. Un cambio se tiene en cuenta en menos de una hora.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -169,6 +213,14 @@
             <trans-unit id="bRoisnG">
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Botón ancho, cuadrado o redondo: es el espacio que ocupan los botones bajo sus páginas.</target>
+            </trans-unit>
+            <trans-unit id="0h0NDdA">
+                <source>flash.bluesky_connected</source>
+                <target>Cuenta de Bluesky conectada.</target>
+            </trans-unit>
+            <trans-unit id="10Bz8lS">
+                <source>flash.bluesky_refused</source>
+                <target>Conexión con Bluesky interrumpida: vuelva a iniciarla desde el panel.</target>
             </trans-unit>
             <trans-unit id="iOFL8AK">
                 <source>flash.meta_connected</source>
@@ -213,6 +265,10 @@
             <trans-unit id="ufovuez">
                 <source>label.anchor_help</source>
                 <target>Identificador corto para enlazar una entrada de menú a esta banda (ej. «compartir»). Sin ancla, no se puede enlazar desde un menú.</target>
+            </trans-unit>
+            <trans-unit id="_oMMwKM">
+                <source>label.bluesky_connect</source>
+                <target>Conectar Bluesky</target>
             </trans-unit>
             <trans-unit id="tKFuD86">
                 <source>label.category_navigation</source>
@@ -274,6 +330,10 @@
                 <source>label.google_connect</source>
                 <target>Conectar Google</target>
             </trans-unit>
+            <trans-unit id="tf7xOaW">
+                <source>label.guided_project_social_bluesky_connect</source>
+                <target>Conectar la cuenta de Bluesky</target>
+            </trans-unit>
             <trans-unit id="viNLaDg">
                 <source>label.guided_project_social_google_connect</source>
                 <target>Conectar la ficha de Google del establecimiento</target>
@@ -294,9 +354,25 @@
                 <source>label.guided_project_social_posts</source>
                 <target>Revisar y publicar en sus redes</target>
             </trans-unit>
+            <trans-unit id="vcYJZKP">
+                <source>label.guided_project_social_schedules</source>
+                <target>Ajustar las franjas de publicación</target>
+            </trans-unit>
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Ajustar los botones de compartir</target>
+            </trans-unit>
+            <trans-unit id="FCqhtF4">
+                <source>label.guided_step_social_bluesky_connect</source>
+                <target>Iniciar la conexión</target>
+            </trans-unit>
+            <trans-unit id="WAKi3s4">
+                <source>label.guided_step_social_bluesky_handle</source>
+                <target>Indicar la cuenta</target>
+            </trans-unit>
+            <trans-unit id="WZJUH3w">
+                <source>label.guided_step_social_bluesky_mode</source>
+                <target>Elegir lo que sale sin revisión</target>
             </trans-unit>
             <trans-unit id="WWlxIlv">
                 <source>label.guided_step_social_google_connect</source>
@@ -394,6 +470,34 @@
                 <source>label.guided_step_social_posts_save</source>
                 <target>Guardar</target>
             </trans-unit>
+            <trans-unit id="OB5pxdE">
+                <source>label.guided_step_social_schedules_edit</source>
+                <target>Crear o modificar una franja</target>
+            </trans-unit>
+            <trans-unit id="W8GFw1R">
+                <source>label.guided_step_social_schedules_networks</source>
+                <target>Marcar las redes</target>
+            </trans-unit>
+            <trans-unit id="jlfPArt">
+                <source>label.guided_step_social_schedules_open</source>
+                <target>Abrir las franjas</target>
+            </trans-unit>
+            <trans-unit id="Dd5k9GT">
+                <source>label.guided_step_social_schedules_save</source>
+                <target>Guardar la franja</target>
+            </trans-unit>
+            <trans-unit id="IDN.aXf">
+                <source>label.guided_step_social_schedules_sources</source>
+                <target>Elegir los contenidos</target>
+            </trans-unit>
+            <trans-unit id="sdaB.QU">
+                <source>label.guided_step_social_schedules_text</source>
+                <target>Escribir el texto de la franja</target>
+            </trans-unit>
+            <trans-unit id="QzrhwtQ">
+                <source>label.guided_step_social_schedules_time</source>
+                <target>Elegir la hora</target>
+            </trans-unit>
             <trans-unit id="GHatm_S">
                 <source>label.guided_step_social_share_buttons_anchor</source>
                 <target>Nombrar la banda</target>
@@ -454,6 +558,10 @@
                 <source>label.icon_style_text</source>
                 <target>Solo texto</target>
             </trans-unit>
+            <trans-unit id="KowqnWD">
+                <source>label.info_bluesky_connect</source>
+                <target>Vincula el sitio a su cuenta de Bluesky: usted autoriza el acceso en Bluesky, sin aplicación que crear ni contraseña que escribir. Se hace una vez, y de nuevo si se retira el acceso.</target>
+            </trans-unit>
             <trans-unit id="stDBjT.">
                 <source>label.info_google_connect</source>
                 <target>Permite al sitio leer las opiniones de su ficha de Google y responderlas.</target>
@@ -481,6 +589,10 @@
             <trans-unit id="ehHeI2l">
                 <source>label.info_social_posts</source>
                 <target>Las publicaciones preparadas para sus redes, un texto por red. Los borradores esperan su revisión: corrija los textos, guarde y haga clic en «Publicar». Eliminar una publicación la cancela.</target>
+            </trans-unit>
+            <trans-unit id="w4NSFiG">
+                <source>label.info_social_schedules</source>
+                <target>Cada franja publica una vez al día, a su hora, en sus redes, tomando de sus contenidos. Mientras una franja esté activa, ya no se usa el intervalo de publicación de la configuración.</target>
             </trans-unit>
             <trans-unit id="YtqDGiK">
                 <source>label.intro</source>
@@ -637,6 +749,54 @@
             <trans-unit id="LlZoHrF">
                 <source>label.social_sample_review_waiting_comment</source>
                 <target>El trabajo es serio, nada que decir. Aparcar delante, en cambio, es complicado los sábados.</target>
+            </trans-unit>
+            <trans-unit id="rlK4OIJ">
+                <source>label.social_schedule</source>
+                <target>Franja de publicación</target>
+            </trans-unit>
+            <trans-unit id="BzuSan4">
+                <source>label.social_schedule_enabled</source>
+                <target>Activa</target>
+            </trans-unit>
+            <trans-unit id="FNyzeCo">
+                <source>label.social_schedule_name</source>
+                <target>Nombre</target>
+            </trans-unit>
+            <trans-unit id="5Q3tqnL">
+                <source>label.social_schedule_networks</source>
+                <target>Redes</target>
+            </trans-unit>
+            <trans-unit id="M77AEJr">
+                <source>label.social_schedule_networks_help</source>
+                <target>Las redes en las que publica esta franja, entre las configuradas. Ninguna marcada, todas. Un contenido ya publicado en una red no vuelve a salir en ella, pero puede salir en otra.</target>
+            </trans-unit>
+            <trans-unit id="K.tSG3K">
+                <source>label.social_schedule_sources</source>
+                <target>Contenidos</target>
+            </trans-unit>
+            <trans-unit id="B5_UFAm">
+                <source>label.social_schedule_sources_help</source>
+                <target>De dónde tomar lo que se publica: un contenido entero, o solo algunas de sus galerías. Vacío, todos los contenidos por turnos.</target>
+            </trans-unit>
+            <trans-unit id="Xr8Qgzn">
+                <source>label.social_schedule_text</source>
+                <target>Texto de la franja</target>
+            </trans-unit>
+            <trans-unit id="xbXmd_x">
+                <source>label.social_schedule_text_help</source>
+                <target>Se inserta donde la plantilla común de publicación contiene {slot}. La plantilla común se ajusta en la configuración (social-publish-template).</target>
+            </trans-unit>
+            <trans-unit id="L9x10.g">
+                <source>label.social_schedule_time</source>
+                <target>Hora</target>
+            </trans-unit>
+            <trans-unit id="axzipJt">
+                <source>label.social_schedule_time_help</source>
+                <target>Cada día a esta hora se prepara una publicación. Una franja añadida o modificada se tiene en cuenta en menos de una hora.</target>
+            </trans-unit>
+            <trans-unit id="gQdm7IR">
+                <source>label.social_schedules</source>
+                <target>Franjas de publicación</target>
             </trans-unit>
             <trans-unit id="XWMpUxP">
                 <source>label.style</source>

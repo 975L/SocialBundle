@@ -11,6 +11,8 @@
 namespace c975L\SocialBundle\Tests\Command;
 
 use c975L\SocialBundle\Command\PublishCommand;
+use c975L\SocialBundle\Entity\SocialSchedule;
+use c975L\SocialBundle\Repository\SocialScheduleRepository;
 use c975L\SocialBundle\Service\SocialPublisher;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
@@ -24,7 +26,7 @@ class PublishCommandTest extends TestCase
     /**
      * @param array<string, array<string, mixed>> $report
      */
-    private function createTester(array $report, ?\Throwable $failure = null): CommandTester
+    private function createTester(array $report, ?\Throwable $failure = null, ?SocialSchedule $slot = null): CommandTester
     {
         $socialPublisher = $this->createStub(SocialPublisher::class);
         $socialPublisher->method('prepareNext')->willReturnCallback(function (bool $force, bool $dryRun) use ($report): array {
@@ -41,7 +43,16 @@ class PublishCommandTest extends TestCase
             return $report;
         });
 
-        return new CommandTester(new PublishCommand($socialPublisher));
+        $socialPublisher->method('prepareSlot')->willReturnCallback(function (SocialSchedule $slot, bool $dryRun) use ($report): array {
+            $this->called = ['method' => 'prepareSlot', 'slot' => $slot->getName(), 'dryRun' => $dryRun];
+
+            return $report;
+        });
+
+        $scheduleRepository = $this->createStub(SocialScheduleRepository::class);
+        $scheduleRepository->method('find')->willReturn($slot);
+
+        return new CommandTester(new PublishCommand($socialPublisher, $scheduleRepository));
     }
 
     // Most hourly runs have nothing due, which a cron must not read as a failure
@@ -94,5 +105,23 @@ class PublishCommandTest extends TestCase
 
         $this->assertSame(Command::FAILURE, $tester->execute(['--url' => 'https://example.org/page']));
         $this->assertStringContainsString('answered 404', $tester->getDisplay());
+    }
+
+    public function testASlotIsRunByItsId(): void
+    {
+        $tester = $this->createTester([], slot: new SocialSchedule()->setName('Morning'));
+        $tester->execute(['--slot' => '3']);
+
+        $this->assertSame(['method' => 'prepareSlot', 'slot' => 'Morning', 'dryRun' => false], $this->called);
+    }
+
+    // Its task only goes away when the worker starts again: meanwhile, a slot turned off prepares nothing
+    public function testADisabledOrDeletedSlotPreparesNothing(): void
+    {
+        $this->assertSame(Command::SUCCESS, $this->createTester([], slot: new SocialSchedule()->setName('Morning')->setEnabled(false))->execute(['--slot' => '3']));
+        $this->assertSame([], $this->called);
+
+        $this->assertSame(Command::SUCCESS, $this->createTester([])->execute(['--slot' => '3']));
+        $this->assertSame([], $this->called);
     }
 }

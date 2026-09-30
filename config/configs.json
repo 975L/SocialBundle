@@ -135,6 +135,29 @@
         "description": "description.social_bluesky_app_password"
     },
     {
+        "label": "label.social_bluesky_oauth_session",
+        "slug": "social-bluesky-oauth-session",
+        "feature": true,
+        "sensitive": true,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_bluesky_oauth_session"
+    },
+    {
+        "label": "label.social_bluesky_oauth_key",
+        "slug": "social-bluesky-oauth-key",
+        "sensitive": true,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_bluesky_oauth_key"
+    },
+    {
         "label": "label.social_bluesky_publish_mode",
         "slug": "social-bluesky-publish-mode",
         "sensitive": false,

@@ -24,14 +24,23 @@ class SocialPostRepository extends ServiceEntityRepository
         parent::__construct($registry, SocialPost::class);
     }
 
-    // The ids of a source already taken for a post, since a date or ever - a post prepared counts whatever its networks made of it, a draft nobody published included
-    /** @return list<string> */
-    public function findSourceIds(string $sourceType, ?\DateTimeImmutable $since): array
+    // The ids of a source already taken for a post, since a date or ever, on any of the given networks or on any at all - a post prepared counts whatever its networks made of it, a draft nobody published included
+    /**
+     * @param list<string> $networks
+     *
+     * @return list<string>
+     */
+    public function findSourceIds(string $sourceType, ?\DateTimeImmutable $since, array $networks = []): array
     {
         $qb = $this->createQueryBuilder('p')
             ->select('DISTINCT p.sourceId')
             ->where('p.sourceType = :sourceType')
             ->setParameter('sourceType', $sourceType);
+
+        // A slot posting on its own networks may take what another slot sent elsewhere
+        if ([] !== $networks) {
+            $qb->innerJoin('p.targets', 't')->andWhere('t.network IN (:networks)')->setParameter('networks', $networks);
+        }
 
         if (null !== $since) {
             $qb->andWhere('p.createdAt >= :since')->setParameter('since', $since);

@@ -1,6 +1,6 @@
 ---
 name: c975l-social
-description: "Use this skill when working with social links, share buttons, customer reviews or the publication on the social networks in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, the Google Business Profile review import with its pluggable sources, and the scheduled posts on Bluesky, Facebook and Instagram. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, startStimulusApp, c975lStimulusApp, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile, c975l:social:publish, SocialPublisher, SocialPost, SocialPostTarget, SocialPostCrudController, NetworkPublisherInterface, SocialContentSourceInterface, SocialContent, social-publish-enabled, social-publish-template, social-meta-app-id, social-bluesky-app-password, Connecter Meta, MetaGraphClient, SocialImageExporter, post on Bluesky, post on Facebook, post on Instagram, social publishing."
+description: "Use this skill when working with social links, share buttons, customer reviews or the publication on the social networks in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, the Google Business Profile review import with its pluggable sources, and the scheduled posts on Bluesky, Facebook and Instagram. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, startStimulusApp, c975lStimulusApp, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile, c975l:social:publish, SocialPublisher, SocialPost, SocialPostTarget, SocialPostCrudController, NetworkPublisherInterface, SocialContentSourceInterface, SocialContent, social-publish-enabled, social-publish-template, social-meta-app-id, social-bluesky-app-password, social-bluesky-oauth-session, Connecter Bluesky, BlueskyOAuthClient, Es256Signer, DPoP, SocialSchedule, SocialScheduleCrudController, publication slots, Connecter Meta, MetaGraphClient, SocialImageExporter, post on Bluesky, post on Facebook, post on Instagram, social publishing."
 ---
 
 # c975L SocialBundle
@@ -219,9 +219,11 @@ account linked to that Page, behind **`social-publish-enabled`** (bool, `false` 
 | Network contract | `Contract\NetworkPublisherInterface` (`getName()`, `isConfigured()`, `isAutomatic()`, `getMaxLength()`, `publish()`, `preview()`) |
 | Networks | `Service\BlueskyPublisher`, `Service\FacebookPublisher`, `Service\InstagramPublisher` |
 | Meta connection | `Service\MetaGraphClient`, `Controller\MetaOAuthController` (`/social/meta/connect`, `/social/meta/callback`) |
+| Bluesky connection | `Service\BlueskyOAuthClient`, `Service\Es256Signer`, `Controller\BlueskyOAuthController` (`/social/bluesky/connect`, `/social/bluesky/callback`) |
 | Orchestration | `Service\SocialPublisher`, `Command\PublishCommand` (`c975l:social:publish`) |
 | Stored posts | `Entity\SocialPost`, one `Entity\SocialPostTarget` per network, `Enum\SocialPostStatus` |
 | Review screen | `Controller\Management\SocialPostCrudController` ("Publications", `site-role-editor`) |
+| Publication slots | `Entity\SocialSchedule`, `Controller\Management\SocialScheduleCrudController` ("Créneaux de publication", `site-role-editor`) |
 
 A bundle owning contents implements `SocialContentSourceInterface`, declared in UiBundle so it needs no
 dependency on this one; both contracts are auto-tagged by interface (`social.content_source`,
@@ -230,6 +232,16 @@ passed, one text per network written from `social-publish-template` (`{name}` pl
 `getMaxLength()`. `social-*-publish-mode` = `review` leaves a draft for the screen, `auto` sends it at once.
 "Publier" sends every target not out yet, under a per-post lock, and is offered on the list only.
 
+A `SocialSchedule` slot is a time, sources (`gallery_media` or a group `gallery_media:3`, from
+`ScopedSocialContentSourceInterface`), networks and a text put where the template writes `{slot}`. Each
+enabled slot is a task of its own (`c975l:social:publish --slot=<id>`); while one is enabled, the interval
+run stands aside. A missing `social_schedule` table reads as no slot, the interval run going on.
+
+"Connecter Bluesky" is the AT Protocol's OAuth with the site as its own confidential client: no app, no
+password. The session sits in `social-bluesky-oauth-session`, the client key in `social-bluesky-oauth-key`;
+the single-use refresh token is renewed under a lock, from a fresh read of the session.
+`social-bluesky-app-password` stays as a fallback.
+
 The Meta keys `social-meta-app-id` and `social-meta-app-secret` are `restricted`; "Connecter Meta" fills
 the Page, its token and the Instagram id, keeping a `social-meta-page-id` filled beforehand. Meta gets a
 JPEG copy written by `SocialImageExporter` under `public/medias/social/`, never the site's WebP.
@@ -237,7 +249,7 @@ JPEG copy written by `SocialImageExporter` under `public/medias/social/`, never 
 ## What the bundle already contributes
 
 Nothing below is declared in the app: `MenuProvider` (the dashboard entries, each declaring
-`site-role-editor` as the bar its own screen states, plus the "Connecter Google" link in the "Avancé"
+`site-role-editor` as the bar its own screen states, plus the "Connecter Google", "Connecter Meta" and "Connecter Bluesky" links in the "Avancé"
 tier), `ProcedureProvider`
 (the admin help procedures), `SocialGuidedProjectProvider` (the guided walk-through of each screen,
 offered only to who can open it), `WhatsNewProvider`, `ImportmapProvider`, `Service\ScriptProvider`,
@@ -249,7 +261,7 @@ export/import provider per
 singleton (`SocialLinksExportProvider`, `ShareButtonsSettingsExportProvider` and their import twins),
 `Management\GoogleReviewsHealthCheckProvider` (one row on the health check page, saying whether the
 Google connection still answers - the import being the one thing here that stops silently) and
-`Scheduler\SocialMaintenanceTaskProvider` (the nightly review sync and the hourly publication run).
+`Scheduler\SocialMaintenanceTaskProvider` (the nightly review sync, the hourly publication run and one task per enabled slot).
 
 ## Do not
 

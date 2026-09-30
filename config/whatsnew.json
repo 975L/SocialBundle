@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-09-30",
+        "description": [
+            {
+                "en": "A new Publication slots screen posts at the times you choose, morning and evening for instance, each slot with its own galleries, networks and text",
+                "fr": "Un nouvel écran Créneaux de publication publie aux heures que vous choisissez, le matin et le soir par exemple, chaque créneau avec ses galeries, ses réseaux et son texte",
+                "es": "Una nueva pantalla Franjas de publicación publica a las horas que usted elija, por la mañana y por la tarde por ejemplo, cada franja con sus galerías, sus redes y su texto"
+            },
+            {
+                "en": "Bluesky is now connected with a single click on Connect Bluesky, with no app password to create",
+                "fr": "Bluesky se connecte maintenant d'un clic sur Connecter Bluesky, sans mot de passe d'application à créer",
+                "es": "Bluesky ahora se conecta con un clic en Conectar Bluesky, sin contraseña de aplicación que crear"
+            },
+            {
+                "en": "Two new guided projects walk you through setting your publication slots and connecting your Bluesky account",
+                "fr": "Deux nouveaux projets guidés vous accompagnent pour régler vos créneaux de publication et connecter votre compte Bluesky",
+                "es": "Dos nuevos proyectos guiados le acompañan para ajustar sus franjas de publicación y conectar su cuenta de Bluesky"
+            }
+        ]
+    },
+    {
         "date": "2026-09-23",
         "description": [
             {

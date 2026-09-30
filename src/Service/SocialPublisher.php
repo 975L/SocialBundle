@@ -14,7 +14,10 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
+use c975L\SocialBundle\Entity\SocialSchedule;
 use c975L\SocialBundle\Repository\SocialPostRepository;
+use c975L\SocialBundle\Repository\SocialScheduleRepository;
+use c975L\UiBundle\Contract\ScopedSocialContentSourceInterface;
 use c975L\UiBundle\Contract\SocialContentSourceInterface;
 use c975L\UiBundle\Model\SocialContent;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,20 +46,68 @@ class SocialPublisher
         private readonly ConfigServiceInterface $configService,
         private readonly LoggerInterface $logger,
         private readonly LockFactory $lockFactory,
+        private readonly SocialScheduleRepository $scheduleRepository,
     ) {
     }
 
-    // The scheduled run: once the interval has passed, prepares the next content no post took yet - [] when nothing was due, configured or left to post
+    // The scheduled run: once the interval has passed, prepares the next content no post took yet - [] when nothing was due, configured or left to post. Standing aside while a publication slot is enabled, the slots then being the pace
     /** @return array<string, array<string, mixed>> */
     public function prepareNext(bool $force = false, bool $dryRun = false): array
     {
-        if (!$force && !$this->isDue()) {
+        if (!$force && ($this->scheduleRepository->hasEnabled() || !$this->isDue())) {
             return [];
         }
 
         [$sourceType, $content] = $this->nextContent();
 
         return null === $content ? [] : $this->prepare($sourceType, $content, $dryRun);
+    }
+
+    // A publication slot's run: the next content of its sources not posted yet on its networks, sent on those alone - [] when the publication is off or nothing is left
+    /** @return array<string, array<string, mixed>> */
+    public function prepareSlot(SocialSchedule $slot, bool $dryRun = false): array
+    {
+        if (!$dryRun && !$this->isEnabled()) {
+            return [];
+        }
+
+        $available = array_keys($dryRun ? $this->allNetworks() : $this->networksByName());
+        $networks = [] === $slot->getNetworks() ? $available : array_values(array_intersect($slot->getNetworks(), $available));
+        if ([] === $networks) {
+            return [];
+        }
+
+        [$sourceType, $content] = $this->nextContent($slot->getScopesBySourceType(), $networks);
+
+        return null === $content ? [] : $this->prepare($sourceType, $content, $dryRun, $networks, ['slot' => (string) $slot->getText()]);
+    }
+
+    // What a slot may pick among: each source whole, then each of its groups, labels keyed by the value SocialSchedule::$sources stores
+    /** @return array<string, string> */
+    public function getSourceChoices(): array
+    {
+        $choices = [];
+        foreach ($this->sources as $source) {
+            $type = $source->getSourceType();
+            $label = ucfirst(str_replace('_', ' ', $type));
+            $choices[$type] = $label;
+            if ($source instanceof ScopedSocialContentSourceInterface) {
+                // Two groups of the same name would otherwise share one label, the first then lost to array_flip()
+                foreach ($source->getScopes() as $id => $scope) {
+                    $scopeLabel = $label . ' - ' . $scope;
+                    $choices[$type . ':' . $id] = \in_array($scopeLabel, $choices, true) ? $scopeLabel . ' (#' . $id . ')' : $scopeLabel;
+                }
+            }
+        }
+
+        return $choices;
+    }
+
+    // Every network a slot may post on, configured or not yet
+    /** @return list<string> */
+    public function getNetworkNames(): array
+    {
+        return array_keys($this->allNetworks());
     }
 
     // Prepares a post of any page, read from its Open Graph tags, whatever the interval
@@ -111,17 +162,25 @@ class SocialPublisher
         return ($this->networksByName()[$network] ?? null)?->getMaxLength();
     }
 
+    // $networks narrows the post to a slot's networks, $variables adds the slot's own placeholders to the text
     /**
+     * @param list<string>|null     $networks
+     * @param array<string, string> $variables
+     *
      * @return array<string, array<string, mixed>>
      */
-    private function prepare(string $sourceType, SocialContent $content, bool $dryRun): array
+    private function prepare(string $sourceType, SocialContent $content, bool $dryRun, ?array $networks = null, array $variables = []): array
     {
         $post = new SocialPost($sourceType, $content->sourceId, $content->title, $content->url, $content->imageUrl);
 
         $report = [];
         // Every network on a dry run, the configured ones only otherwise: the dry run is what is read before any credential is plugged in
         foreach ($dryRun ? $this->allNetworks() : $this->networksByName() as $name => $network) {
-            $text = $this->textBuilder->build($content, $network->getMaxLength());
+            if (null !== $networks && !\in_array($name, $networks, true)) {
+                continue;
+            }
+
+            $text = $this->textBuilder->build($content, $network->getMaxLength(), $variables);
             if ($dryRun) {
                 $report[$name] = $this->preview($network, $text, $content);
                 continue;
@@ -156,18 +215,31 @@ class SocialPublisher
         return null === $last || time() - $last->getTimestamp() >= $interval;
     }
 
-    // The next content, asked of the source that had a post least recently first, so a site with photos and stories alternates between them
-    /** @return array{0: string, 1: ?SocialContent} */
-    private function nextContent(): array
+    // The next content, asked of the source that had a post least recently first, so a site with photos and stories alternates between them. $scopes narrows it to a slot's sources (see SocialSchedule::getScopesBySourceType()), $networks to what was not posted yet on those
+    /**
+     * @param array<string, list<string>> $scopes
+     * @param list<string>                $networks
+     *
+     * @return array{0: string, 1: ?SocialContent}
+     */
+    private function nextContent(array $scopes = [], array $networks = []): array
     {
         $lastCreated = $this->postRepository->findLastCreatedAtBySourceType();
         $sources = iterator_to_array($this->sources, false);
         usort($sources, static fn (SocialContentSourceInterface $a, SocialContentSourceInterface $b): int => ($lastCreated[$a->getSourceType()] ?? '') <=> ($lastCreated[$b->getSourceType()] ?? ''));
 
         foreach ($sources as $source) {
+            $type = $source->getSourceType();
+            if ([] !== $scopes && !isset($scopes[$type])) {
+                continue;
+            }
+
             $repeatAfterDays = $source->getRepeatAfterDays();
             $since = null === $repeatAfterDays ? null : new \DateTimeImmutable(sprintf('-%d days', $repeatAfterDays));
-            $content = $source->getNextContent($this->postRepository->findSourceIds($source->getSourceType(), $since));
+            $excludedIds = $this->postRepository->findSourceIds($type, $since, $networks);
+            $content = $source instanceof ScopedSocialContentSourceInterface && [] !== ($scopes[$type] ?? [])
+                ? $source->getNextScopedContent($excludedIds, $scopes[$type])
+                : $source->getNextContent($excludedIds);
             if (null !== $content) {
                 return [$source->getSourceType(), $content];
             }

@@ -2,9 +2,25 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="es" datatype="plaintext" original="social_narration.es.xlf">
         <body>
+            <trans-unit id="8.eMazc">
+                <source>narration.bluesky_connect</source>
+                <target>«Conectar Bluesky» vincula el sitio a su cuenta de Bluesky: una vez, y de nuevo si se retira el acceso.</target>
+            </trans-unit>
             <trans-unit id="_JCsjxB">
                 <source>narration.google_connect</source>
                 <target>«Conectar Google» autoriza al sitio a leer las reseñas de su ficha de Google y a responderlas.</target>
+            </trans-unit>
+            <trans-unit id="6v0WkQM">
+                <source>narration.guided_step_social_bluesky_connect</source>
+                <target>En la columna de la izquierda, abra el menú «Avanzado» y haga clic en «Conectar Bluesky», luego autorice el acceso en Bluesky. El sitio guarda la sesión por sí mismo.</target>
+            </trans-unit>
+            <trans-unit id="SiT0_lg">
+                <source>narration.guided_step_social_bluesky_handle</source>
+                <target>Si lo desea, busque «social-bluesky-handle» en la lista de ajustes e indique la cuenta que vincular; vacío, la elegirá en la página de Bluesky.</target>
+            </trans-unit>
+            <trans-unit id=".hfIUWY">
+                <source>narration.guided_step_social_bluesky_mode</source>
+                <target>Queda elegir si una publicación espera su revisión o sale sola: es el ajuste «social-bluesky-publish-mode».</target>
             </trans-unit>
             <trans-unit id="5VACpzn">
                 <source>narration.guided_step_social_google_connect</source>
@@ -88,7 +104,7 @@
             </trans-unit>
             <trans-unit id="EhIZhRa">
                 <source>narration.guided_step_social_posts_open</source>
-                <target>El panel le lleva a la pantalla de publicaciones. Se preparan solas, al ritmo que fija el ajuste del intervalo; los borradores esperan aquí su revisión.</target>
+                <target>El panel le lleva a la pantalla de publicaciones. Se preparan solas, a las horas de las franjas de publicación o, en su defecto, al ritmo que fija el ajuste del intervalo; los borradores esperan aquí su revisión.</target>
             </trans-unit>
             <trans-unit id="kE9wnJX">
                 <source>narration.guided_step_social_posts_prepare</source>
@@ -101,6 +117,34 @@
             <trans-unit id="TYtSWhL">
                 <source>narration.guided_step_social_posts_save</source>
                 <target>Guarde con el botón situado en la parte inferior del formulario.</target>
+            </trans-unit>
+            <trans-unit id="6Dywe6l">
+                <source>narration.guided_step_social_schedules_edit</source>
+                <target>Haga clic en el botón para añadir una franja, o en la fila de una franja existente para modificarla.</target>
+            </trans-unit>
+            <trans-unit id="w7ckofR">
+                <source>narration.guided_step_social_schedules_networks</source>
+                <target>Marque las redes en las que publica esta franja; sin marcar ninguna, publica en todas las configuradas.</target>
+            </trans-unit>
+            <trans-unit id="FrNIZFb">
+                <source>narration.guided_step_social_schedules_open</source>
+                <target>El panel le lleva a la pantalla de las franjas de publicación. Cada una prepara una publicación al día, a su hora; en cuanto una franja está activa, ya no se usa el intervalo.</target>
+            </trans-unit>
+            <trans-unit id="FKs.IOq">
+                <source>narration.guided_step_social_schedules_save</source>
+                <target>Guarde con el botón situado en la parte inferior del formulario.</target>
+            </trans-unit>
+            <trans-unit id="1VpRy8b">
+                <source>narration.guided_step_social_schedules_sources</source>
+                <target>Elija los contenidos de los que tomar: un contenido entero, o solo algunas de sus galerías. Vacío, todos los contenidos pasan por turnos.</target>
+            </trans-unit>
+            <trans-unit id="LMuUJQ_">
+                <source>narration.guided_step_social_schedules_text</source>
+                <target>Si lo desea, escriba un texto propio de esta franja: ocupa el lugar de la etiqueta «slot» de la plantilla común de publicación.</target>
+            </trans-unit>
+            <trans-unit id="0uawAGt">
+                <source>narration.guided_step_social_schedules_time</source>
+                <target>Elija la hora a la que se preparará la publicación, cada día.</target>
             </trans-unit>
             <trans-unit id="DrMJai5">
                 <source>narration.guided_step_social_share_buttons_anchor</source>
@@ -157,6 +201,10 @@
             <trans-unit id="m6sfKEB">
                 <source>narration.social_posts</source>
                 <target>«Publicaciones» reúne lo que se prepara para sus redes: revisa cada texto y luego publica.</target>
+            </trans-unit>
+            <trans-unit id="16Jj3bI">
+                <source>narration.social_schedules</source>
+                <target>«Franjas de publicación» fija las horas a las que sus redes reciben una publicación, y lo que publica cada franja.</target>
             </trans-unit>
         </body>
     </file>

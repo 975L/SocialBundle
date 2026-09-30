@@ -26,6 +26,10 @@
                 <source>block.social_links_display_description</source>
                 <target>Insère les réseaux sociaux du tableau de bord, liens non redéfinis</target>
             </trans-unit>
+            <trans-unit id="hc2yGuH">
+                <source>description.guided_project_social_bluesky_connect</source>
+                <target>Relier le site à votre compte Bluesky, sans application à créer ni mot de passe à saisir. À faire une fois, puis à nouveau si l'accès est retiré.</target>
+            </trans-unit>
             <trans-unit id="Z4mtym8">
                 <source>description.guided_project_social_google_connect</source>
                 <target>La partie agence : l'accès chez Google, les deux clés, et le consentement. À faire une fois, puis le jour où le jeton est révoqué.</target>
@@ -46,9 +50,25 @@
                 <source>description.guided_project_social_posts</source>
                 <target>Les publications préparées pour vos réseaux : en préparer une, relire son texte réseau par réseau, puis l'envoyer.</target>
             </trans-unit>
+            <trans-unit id="4BPt5dm">
+                <source>description.guided_project_social_schedules</source>
+                <target>Choisir chaque jour à quelle heure publier, quoi et sur quels réseaux, à la place de l'intervalle.</target>
+            </trans-unit>
             <trans-unit id="GjyFwm5">
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Choisir les réseaux proposés à vos visiteurs, leur ordre et leur allure</target>
+            </trans-unit>
+            <trans-unit id="0CvXFm7">
+                <source>description.guided_step_social_bluesky_connect</source>
+                <target>Dans le menu "Avancé" de la barre latérale, cliquer sur "Connecter Bluesky", puis autoriser l'accès sur Bluesky. Le site enregistre lui-même la session.</target>
+            </trans-unit>
+            <trans-unit id="opsSET4">
+                <source>description.guided_step_social_bluesky_handle</source>
+                <target>Facultatif : chercher « social-bluesky-handle » dans la liste et y mettre l'identifiant du compte, par exemple exemple.bsky.social. Laissé vide, le compte se choisit sur la page de Bluesky.</target>
+            </trans-unit>
+            <trans-unit id="82P_F59">
+                <source>description.guided_step_social_bluesky_mode</source>
+                <target>« social-bluesky-publish-mode » vaut « review » : chaque publication attend la relecture sur l'écran Publications. « auto » l'envoie dès qu'elle est préparée.</target>
             </trans-unit>
             <trans-unit id="Q2.88W1">
                 <source>description.guided_step_social_google_connect</source>
@@ -128,7 +148,7 @@
             </trans-unit>
             <trans-unit id="xXIWC.O">
                 <source>description.guided_step_social_posts_open</source>
-                <target>Les publications se préparent d'elles-mêmes, au rythme réglé par « social-publish-interval-hours ». Celles en brouillon attendent ici votre relecture.</target>
+                <target>Les publications se préparent d'elles-mêmes, aux heures des créneaux de publication, ou à défaut au rythme réglé par « social-publish-interval-hours ». Celles en brouillon attendent ici votre relecture.</target>
             </trans-unit>
             <trans-unit id="hc6ecvb">
                 <source>description.guided_step_social_posts_prepare</source>
@@ -137,6 +157,30 @@
             <trans-unit id="SvQRq5R">
                 <source>description.guided_step_social_posts_publish</source>
                 <target>De retour sur la liste, le bouton en forme d'avion en papier envoie la publication sur chaque réseau qui ne l'a pas encore reçue. Un réseau qui refuse garde son message d'erreur, et « Publier » le retente.</target>
+            </trans-unit>
+            <trans-unit id="lw9Mjxv">
+                <source>description.guided_step_social_schedules_edit</source>
+                <target>Ajouter un créneau, ou reprendre un créneau existant.</target>
+            </trans-unit>
+            <trans-unit id="N0uYKyC">
+                <source>description.guided_step_social_schedules_networks</source>
+                <target>Les réseaux sur lesquels ce créneau publie. Aucun coché, tous ceux configurés.</target>
+            </trans-unit>
+            <trans-unit id="YvE_dVx">
+                <source>description.guided_step_social_schedules_open</source>
+                <target>Chaque créneau prépare une publication par jour, à son heure. Dès qu'un créneau est actif, « social-publish-interval-hours » n'est plus utilisé.</target>
+            </trans-unit>
+            <trans-unit id="QMpKFbt">
+                <source>description.guided_step_social_schedules_sources</source>
+                <target>Un contenu entier, ou seulement certaines de ses galeries. Laissé vide, tous les contenus à tour de rôle.</target>
+            </trans-unit>
+            <trans-unit id="kNO7LNL">
+                <source>description.guided_step_social_schedules_text</source>
+                <target>Facultatif : inséré là où le modèle commun « social-publish-template » contient {slot}.</target>
+            </trans-unit>
+            <trans-unit id="5365y9u">
+                <source>description.guided_step_social_schedules_time</source>
+                <target>L'heure à laquelle la publication est préparée, chaque jour. Un changement est pris en compte dans l'heure.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -169,6 +213,14 @@
             <trans-unit id="bRoisnG">
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Bouton large, carré ou rond : c'est la place que les boutons prennent sous vos pages.</target>
+            </trans-unit>
+            <trans-unit id="0h0NDdA">
+                <source>flash.bluesky_connected</source>
+                <target>Compte Bluesky connecté.</target>
+            </trans-unit>
+            <trans-unit id="10Bz8lS">
+                <source>flash.bluesky_refused</source>
+                <target>Connexion Bluesky interrompue : relance-la depuis le tableau de bord.</target>
             </trans-unit>
             <trans-unit id="iOFL8AK">
                 <source>flash.meta_connected</source>
@@ -213,6 +265,10 @@
             <trans-unit id="ufovuez">
                 <source>label.anchor_help</source>
                 <target>Identifiant court pour lier une entrée de menu à ce bandeau (ex. « partage »). Sans ancre, il n'est pas atteignable depuis un menu.</target>
+            </trans-unit>
+            <trans-unit id="_oMMwKM">
+                <source>label.bluesky_connect</source>
+                <target>Connecter Bluesky</target>
             </trans-unit>
             <trans-unit id="tKFuD86">
                 <source>label.category_navigation</source>
@@ -274,6 +330,10 @@
                 <source>label.google_connect</source>
                 <target>Connecter Google</target>
             </trans-unit>
+            <trans-unit id="tf7xOaW">
+                <source>label.guided_project_social_bluesky_connect</source>
+                <target>Connecter le compte Bluesky</target>
+            </trans-unit>
             <trans-unit id="viNLaDg">
                 <source>label.guided_project_social_google_connect</source>
                 <target>Connecter la fiche Google de l'établissement</target>
@@ -294,9 +354,25 @@
                 <source>label.guided_project_social_posts</source>
                 <target>Relire et publier sur vos réseaux</target>
             </trans-unit>
+            <trans-unit id="vcYJZKP">
+                <source>label.guided_project_social_schedules</source>
+                <target>Régler les créneaux de publication</target>
+            </trans-unit>
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Régler les boutons de partage</target>
+            </trans-unit>
+            <trans-unit id="FCqhtF4">
+                <source>label.guided_step_social_bluesky_connect</source>
+                <target>Lancer la connexion</target>
+            </trans-unit>
+            <trans-unit id="WAKi3s4">
+                <source>label.guided_step_social_bluesky_handle</source>
+                <target>Indiquer le compte</target>
+            </trans-unit>
+            <trans-unit id="WZJUH3w">
+                <source>label.guided_step_social_bluesky_mode</source>
+                <target>Choisir ce qui part sans relecture</target>
             </trans-unit>
             <trans-unit id="WWlxIlv">
                 <source>label.guided_step_social_google_connect</source>
@@ -394,6 +470,34 @@
                 <source>label.guided_step_social_posts_save</source>
                 <target>Enregistrer</target>
             </trans-unit>
+            <trans-unit id="OB5pxdE">
+                <source>label.guided_step_social_schedules_edit</source>
+                <target>Créer ou modifier un créneau</target>
+            </trans-unit>
+            <trans-unit id="W8GFw1R">
+                <source>label.guided_step_social_schedules_networks</source>
+                <target>Cocher les réseaux</target>
+            </trans-unit>
+            <trans-unit id="jlfPArt">
+                <source>label.guided_step_social_schedules_open</source>
+                <target>Ouvrir les créneaux</target>
+            </trans-unit>
+            <trans-unit id="Dd5k9GT">
+                <source>label.guided_step_social_schedules_save</source>
+                <target>Enregistrer le créneau</target>
+            </trans-unit>
+            <trans-unit id="IDN.aXf">
+                <source>label.guided_step_social_schedules_sources</source>
+                <target>Choisir les contenus</target>
+            </trans-unit>
+            <trans-unit id="sdaB.QU">
+                <source>label.guided_step_social_schedules_text</source>
+                <target>Écrire le texte du créneau</target>
+            </trans-unit>
+            <trans-unit id="QzrhwtQ">
+                <source>label.guided_step_social_schedules_time</source>
+                <target>Choisir l'heure</target>
+            </trans-unit>
             <trans-unit id="GHatm_S">
                 <source>label.guided_step_social_share_buttons_anchor</source>
                 <target>Nommer le bandeau</target>
@@ -454,6 +558,10 @@
                 <source>label.icon_style_text</source>
                 <target>Texte seul</target>
             </trans-unit>
+            <trans-unit id="KowqnWD">
+                <source>label.info_bluesky_connect</source>
+                <target>Relie le site à votre compte Bluesky : vous autorisez l'accès sur Bluesky, sans application à créer ni mot de passe à saisir. À faire une fois, puis à refaire si l'accès est retiré.</target>
+            </trans-unit>
             <trans-unit id="stDBjT.">
                 <source>label.info_google_connect</source>
                 <target>Autorise le site à lire les avis de votre fiche Google et à y répondre.</target>
@@ -481,6 +589,10 @@
             <trans-unit id="ehHeI2l">
                 <source>label.info_social_posts</source>
                 <target>Les publications préparées pour vos réseaux, un texte par réseau. Celles en brouillon attendent votre relecture : corrigez les textes, enregistrez, puis cliquez sur « Publier ». Supprimer une publication l'annule.</target>
+            </trans-unit>
+            <trans-unit id="w4NSFiG">
+                <source>label.info_social_schedules</source>
+                <target>Chaque créneau publie une fois par jour, à son heure, sur ses réseaux, en puisant dans ses contenus. Tant qu'un créneau est actif, l'intervalle de publication de la configuration n'est plus utilisé.</target>
             </trans-unit>
             <trans-unit id="YtqDGiK">
                 <source>label.intro</source>
@@ -637,6 +749,54 @@
             <trans-unit id="LlZoHrF">
                 <source>label.social_sample_review_waiting_comment</source>
                 <target>Le travail est sérieux, rien à dire là-dessus. Le stationnement devant est en revanche compliqué le samedi.</target>
+            </trans-unit>
+            <trans-unit id="rlK4OIJ">
+                <source>label.social_schedule</source>
+                <target>Créneau de publication</target>
+            </trans-unit>
+            <trans-unit id="BzuSan4">
+                <source>label.social_schedule_enabled</source>
+                <target>Actif</target>
+            </trans-unit>
+            <trans-unit id="FNyzeCo">
+                <source>label.social_schedule_name</source>
+                <target>Nom</target>
+            </trans-unit>
+            <trans-unit id="5Q3tqnL">
+                <source>label.social_schedule_networks</source>
+                <target>Réseaux</target>
+            </trans-unit>
+            <trans-unit id="M77AEJr">
+                <source>label.social_schedule_networks_help</source>
+                <target>Les réseaux sur lesquels ce créneau publie, parmi ceux configurés. Aucun coché, tous. Un contenu déjà publié sur un réseau n'y repart pas, mais peut partir sur un autre.</target>
+            </trans-unit>
+            <trans-unit id="K.tSG3K">
+                <source>label.social_schedule_sources</source>
+                <target>Contenus</target>
+            </trans-unit>
+            <trans-unit id="B5_UFAm">
+                <source>label.social_schedule_sources_help</source>
+                <target>Où prendre ce qui est publié : un contenu entier, ou seulement certaines de ses galeries. Vide, tous les contenus à tour de rôle.</target>
+            </trans-unit>
+            <trans-unit id="Xr8Qgzn">
+                <source>label.social_schedule_text</source>
+                <target>Texte du créneau</target>
+            </trans-unit>
+            <trans-unit id="xbXmd_x">
+                <source>label.social_schedule_text_help</source>
+                <target>Inséré là où le modèle de publication commun contient {slot}. Le modèle commun se règle dans la configuration (social-publish-template).</target>
+            </trans-unit>
+            <trans-unit id="L9x10.g">
+                <source>label.social_schedule_time</source>
+                <target>Heure</target>
+            </trans-unit>
+            <trans-unit id="axzipJt">
+                <source>label.social_schedule_time_help</source>
+                <target>Chaque jour à cette heure, une publication est préparée. Un créneau ajouté ou modifié est pris en compte dans l'heure.</target>
+            </trans-unit>
+            <trans-unit id="gQdm7IR">
+                <source>label.social_schedules</source>
+                <target>Créneaux de publication</target>
             </trans-unit>
             <trans-unit id="XWMpUxP">
                 <source>label.style</source>

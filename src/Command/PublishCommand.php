@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Command;
 
+use c975L\SocialBundle\Repository\SocialScheduleRepository;
 use c975L\SocialBundle\Service\SocialPublisher;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -18,15 +19,17 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-// Prepares the next post once the configured interval has passed, and sends it at once on the networks set to publish automatically - scheduled hourly (see SocialMaintenanceTaskProvider), the interval being the site's to set rather than the schedule's. "--url" prepares a post of any page instead, "--force" ignores the interval and the on/off switch, "--dry-run" prints what each network would receive and sends nothing - the JPEG copy Meta would download is written, being the one the post will use
+// Prepares the next post once the configured interval has passed, and sends it at once on the networks set to publish automatically - scheduled hourly (see SocialMaintenanceTaskProvider), the interval being the site's to set rather than the schedule's. "--url" prepares a post of any page instead, "--force" ignores the interval and the on/off switch, "--slot" runs a publication slot (see SocialSchedule), "--dry-run" prints what each network would receive and sends nothing - the JPEG copy Meta would download is written, being the one the post will use
 #[AsCommand(
     name: 'c975l:social:publish',
     description: 'Prepares the next post for the social networks, and sends it where they publish automatically',
 )]
 class PublishCommand extends Command
 {
-    public function __construct(private readonly SocialPublisher $socialPublisher)
-    {
+    public function __construct(
+        private readonly SocialPublisher $socialPublisher,
+        private readonly SocialScheduleRepository $scheduleRepository,
+    ) {
         parent::__construct();
     }
 
@@ -34,6 +37,7 @@ class PublishCommand extends Command
     {
         $this
             ->addOption('url', null, InputOption::VALUE_REQUIRED, 'Prepare a post of this page, read from its Open Graph tags')
+            ->addOption('slot', null, InputOption::VALUE_REQUIRED, 'Run this publication slot, by its id')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Prepare now, whatever the interval and the on/off switch')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Print what each network would receive, without sending anything');
     }
@@ -42,12 +46,15 @@ class PublishCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $url = $input->getOption('url');
+        $slotId = $input->getOption('slot');
         $dryRun = (bool) $input->getOption('dry-run');
 
         try {
-            $report = \is_string($url)
-                ? $this->socialPublisher->prepareUrl($url, $dryRun)
-                : $this->socialPublisher->prepareNext((bool) $input->getOption('force'), $dryRun);
+            $report = match (true) {
+                \is_string($url) => $this->socialPublisher->prepareUrl($url, $dryRun),
+                \is_string($slotId) => $this->prepareSlot((int) $slotId, $dryRun),
+                default => $this->socialPublisher->prepareNext((bool) $input->getOption('force'), $dryRun),
+            };
         } catch (\Throwable $exception) {
             $io->error($exception->getMessage());
 
@@ -73,5 +80,17 @@ class PublishCommand extends Command
 
         // A refused post is kept, failed, on the screen where it is published again - the run did its job, so a cron has nothing to be woken for
         return Command::SUCCESS;
+    }
+
+    // A slot disabled or deleted since the worker read the schedule prepares nothing: its task only goes away with the next start of the worker
+    /** @return array<string, array<string, mixed>> */
+    private function prepareSlot(int $slotId, bool $dryRun): array
+    {
+        $slot = $this->scheduleRepository->find($slotId);
+        if (null === $slot || (!$slot->isEnabled() && !$dryRun)) {
+            return [];
+        }
+
+        return $this->socialPublisher->prepareSlot($slot, $dryRun);
     }
 }
