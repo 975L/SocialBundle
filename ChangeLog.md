@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.9.1
+
+Requires the published core-bundle 1.49.2
+
+- Requires `c975l/core-bundle` ^1.49.2 (01/10/2026)
+
 ## v2.9.0
 
 Publication slots, and Bluesky connected without a password
