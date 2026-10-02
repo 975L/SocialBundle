@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.9.2
+
+Connection links drawn under the Social submenu
+
+- "Connecter Google", "Connecter Meta" and "Connecter Bluesky" drawn under "Social" instead of "Avancé" (02/10/2026)
+
 ## v2.9.1
 
 Requires the published core-bundle 1.49.2

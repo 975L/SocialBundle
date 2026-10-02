@@ -121,7 +121,7 @@ class MenuProvider implements MenuProviderInterface
             ];
         }
 
-        // A route redirecting straight to Google's consent page, tiered "advanced" as it is run once and again the day the token is revoked. Dropped with the reviews off, as it would fetch reviews the site never shows
+        // A route redirecting straight to Google's consent page, drawn among this bundle's entries where an editor looks for it rather than in "Avancé". Dropped with the reviews off, as it would fetch reviews the site never shows
         if ($this->configService->getBool($this->configService->get('ui-enable-reviews'))) {
             $links['social_google_connect'] = [
                 'name' => 'social_google_oauth_connect',
@@ -130,13 +130,12 @@ class MenuProvider implements MenuProviderInterface
                 'translation_domain' => 'social',
                 'icon' => 'fab fa-google',
                 'role' => $this->configService->get('site-role-editor'),
-                'tier' => 'advanced',
                 // Written for the tour alone, where the other descriptions quote their screen: a redirection has no screen whose text to reuse
                 'description' => 'label.info_google_connect',
             ];
         }
 
-        // Consenting once gives the site the Page token its posts on Facebook and Instagram are made with - tiered "advanced" like the Google one, run at first and again the day the token is revoked
+        // Consenting once gives the site the Page token its posts on Facebook and Instagram are made with - drawn under "Social" like the Google one
         if ($this->configService->getBool($this->configService->get('social-publish-enabled'))) {
             $links['social_meta_connect'] = [
                 'name' => 'social_meta_oauth_connect',
@@ -145,7 +144,6 @@ class MenuProvider implements MenuProviderInterface
                 'translation_domain' => 'social',
                 'icon' => 'fab fa-meta',
                 'role' => $this->configService->get('site-role-editor'),
-                'tier' => 'advanced',
                 'description' => 'label.info_meta_connect',
             ];
             // Consenting once gives the site the Bluesky session its posts are made with, with no app to create and no password to type
@@ -156,7 +154,6 @@ class MenuProvider implements MenuProviderInterface
                 'translation_domain' => 'social',
                 'icon' => 'fab fa-bluesky',
                 'role' => $this->configService->get('site-role-editor'),
-                'tier' => 'advanced',
                 'description' => 'label.info_bluesky_connect',
             ];
         }

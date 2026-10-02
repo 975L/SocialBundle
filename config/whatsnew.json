@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-02",
+        "description": [
+            {
+                "en": "The Connect Google, Connect Meta and Connect Bluesky links are now in the Social menu, next to the screens they serve",
+                "fr": "Les liens Connecter Google, Connecter Meta et Connecter Bluesky sont maintenant dans le menu Social, à côté des écrans qu'ils servent",
+                "es": "Los enlaces Conectar Google, Conectar Meta y Conectar Bluesky están ahora en el menú Social, junto a las pantallas a las que sirven"
+            }
+        ]
+    },
+    {
         "date": "2026-09-30",
         "description": [
             {

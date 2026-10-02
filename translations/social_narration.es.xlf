@@ -12,7 +12,7 @@
             </trans-unit>
             <trans-unit id="6v0WkQM">
                 <source>narration.guided_step_social_bluesky_connect</source>
-                <target>En la columna de la izquierda, abra el menú «Avanzado» y haga clic en «Conectar Bluesky», luego autorice el acceso en Bluesky. El sitio guarda la sesión por sí mismo.</target>
+                <target>En la columna de la izquierda, abra el menú «Social» y haga clic en «Conectar Bluesky», luego autorice el acceso en Bluesky. El sitio guarda la sesión por sí mismo.</target>
             </trans-unit>
             <trans-unit id="SiT0_lg">
                 <source>narration.guided_step_social_bluesky_handle</source>
@@ -24,7 +24,7 @@
             </trans-unit>
             <trans-unit id="5VACpzn">
                 <source>narration.guided_step_social_google_connect</source>
-                <target>En la columna de la izquierda, abra el menú «Avanzado» y haga clic en «Conectar Google», luego autorice el acceso con la cuenta de Google propietaria de la ficha. El sitio guarda por sí mismo el token, la cuenta y la ficha.</target>
+                <target>En la columna de la izquierda, abra el menú «Social» y haga clic en «Conectar Google», luego autorice el acceso con la cuenta de Google propietaria de la ficha. El sitio guarda por sí mismo el token, la cuenta y la ficha.</target>
             </trans-unit>
             <trans-unit id="KaaiHLF">
                 <source>narration.guided_step_social_google_credentials</source>
@@ -84,7 +84,7 @@
             </trans-unit>
             <trans-unit id="Nhfo2ra">
                 <source>narration.guided_step_social_meta_connect</source>
-                <target>En la columna de la izquierda, abra el menú «Avanzado» y haga clic en «Conectar Meta», luego autorice el acceso con la cuenta de Facebook que gestiona la Página. El sitio guarda por sí mismo la Página, su token y la cuenta de Instagram.</target>
+                <target>En la columna de la izquierda, abra el menú «Social» y haga clic en «Conectar Meta», luego autorice el acceso con la cuenta de Facebook que gestiona la Página. El sitio guarda por sí mismo la Página, su token y la cuenta de Instagram.</target>
             </trans-unit>
             <trans-unit id="ek3eUUp">
                 <source>narration.guided_step_social_meta_credentials</source>

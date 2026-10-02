@@ -12,7 +12,7 @@
             </trans-unit>
             <trans-unit id="6v0WkQM">
                 <source>narration.guided_step_social_bluesky_connect</source>
-                <target>In the left-hand column, open the "Advanced" submenu and click "Connect Bluesky", then grant access on Bluesky. The site stores the session by itself.</target>
+                <target>In the left-hand column, open the "Social" submenu and click "Connect Bluesky", then grant access on Bluesky. The site stores the session by itself.</target>
             </trans-unit>
             <trans-unit id="SiT0_lg">
                 <source>narration.guided_step_social_bluesky_handle</source>
@@ -24,7 +24,7 @@
             </trans-unit>
             <trans-unit id="5VACpzn">
                 <source>narration.guided_step_social_google_connect</source>
-                <target>In the left-hand column, open the "Advanced" submenu and click "Connect Google", then grant access with the Google account owning the listing. The site stores the token, the account and the listing by itself.</target>
+                <target>In the left-hand column, open the "Social" submenu and click "Connect Google", then grant access with the Google account owning the listing. The site stores the token, the account and the listing by itself.</target>
             </trans-unit>
             <trans-unit id="KaaiHLF">
                 <source>narration.guided_step_social_google_credentials</source>
@@ -84,7 +84,7 @@
             </trans-unit>
             <trans-unit id="Nhfo2ra">
                 <source>narration.guided_step_social_meta_connect</source>
-                <target>In the left-hand column, open the "Advanced" submenu and click "Connect Meta", then grant access with the Facebook account managing the Page. The site stores the Page, its token and the Instagram account by itself.</target>
+                <target>In the left-hand column, open the "Social" submenu and click "Connect Meta", then grant access with the Facebook account managing the Page. The site stores the Page, its token and the Instagram account by itself.</target>
             </trans-unit>
             <trans-unit id="ek3eUUp">
                 <source>narration.guided_step_social_meta_credentials</source>

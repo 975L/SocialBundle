@@ -60,7 +60,7 @@
             </trans-unit>
             <trans-unit id="0CvXFm7">
                 <source>description.guided_step_social_bluesky_connect</source>
-                <target>Dans le menu "Avancé" de la barre latérale, cliquer sur "Connecter Bluesky", puis autoriser l'accès sur Bluesky. Le site enregistre lui-même la session.</target>
+                <target>Dans le menu "Social" de la barre latérale, cliquer sur "Connecter Bluesky", puis autoriser l'accès sur Bluesky. Le site enregistre lui-même la session.</target>
             </trans-unit>
             <trans-unit id="opsSET4">
                 <source>description.guided_step_social_bluesky_handle</source>
@@ -72,7 +72,7 @@
             </trans-unit>
             <trans-unit id="Q2.88W1">
                 <source>description.guided_step_social_google_connect</source>
-                <target>Dans le menu "Avancé" de la barre latérale, cliquer sur "Connecter Google", puis autoriser l'accès avec le compte Google propriétaire de la fiche. Le site enregistre lui-même le jeton, le compte et la fiche.</target>
+                <target>Dans le menu "Social" de la barre latérale, cliquer sur "Connecter Google", puis autoriser l'accès avec le compte Google propriétaire de la fiche. Le site enregistre lui-même le jeton, le compte et la fiche.</target>
             </trans-unit>
             <trans-unit id="XzEU5fT">
                 <source>description.guided_step_social_google_credentials</source>
@@ -128,7 +128,7 @@
             </trans-unit>
             <trans-unit id="a4QkcYj">
                 <source>description.guided_step_social_meta_connect</source>
-                <target>Dans le menu "Avancé" de la barre latérale, cliquer sur "Connecter Meta", puis autoriser l'accès avec le compte Facebook qui gère la Page. Le site enregistre lui-même la Page, son jeton et le compte Instagram.</target>
+                <target>Dans le menu "Social" de la barre latérale, cliquer sur "Connecter Meta", puis autoriser l'accès avec le compte Facebook qui gère la Page. Le site enregistre lui-même la Page, son jeton et le compte Instagram.</target>
             </trans-unit>
             <trans-unit id="0xEpiaR">
                 <source>description.guided_step_social_meta_credentials</source>

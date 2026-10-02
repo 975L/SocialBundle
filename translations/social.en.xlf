@@ -60,7 +60,7 @@
             </trans-unit>
             <trans-unit id="0CvXFm7">
                 <source>description.guided_step_social_bluesky_connect</source>
-                <target>In the sidebar's "Advanced" submenu, click "Connect Bluesky", then grant access on Bluesky. The site stores the session by itself.</target>
+                <target>In the sidebar's "Social" submenu, click "Connect Bluesky", then grant access on Bluesky. The site stores the session by itself.</target>
             </trans-unit>
             <trans-unit id="opsSET4">
                 <source>description.guided_step_social_bluesky_handle</source>
@@ -72,7 +72,7 @@
             </trans-unit>
             <trans-unit id="Q2.88W1">
                 <source>description.guided_step_social_google_connect</source>
-                <target>In the sidebar's "Advanced" submenu, click "Connect Google", then grant access with the Google account owning the listing. The site stores the token, the account and the listing by itself.</target>
+                <target>In the sidebar's "Social" submenu, click "Connect Google", then grant access with the Google account owning the listing. The site stores the token, the account and the listing by itself.</target>
             </trans-unit>
             <trans-unit id="XzEU5fT">
                 <source>description.guided_step_social_google_credentials</source>
@@ -128,7 +128,7 @@
             </trans-unit>
             <trans-unit id="a4QkcYj">
                 <source>description.guided_step_social_meta_connect</source>
-                <target>In the sidebar's "Advanced" submenu, click "Connect Meta", then grant access with the Facebook account managing the Page. The site stores the Page, its token and the Instagram account by itself.</target>
+                <target>In the sidebar's "Social" submenu, click "Connect Meta", then grant access with the Facebook account managing the Page. The site stores the Page, its token and the Instagram account by itself.</target>
             </trans-unit>
             <trans-unit id="0xEpiaR">
                 <source>description.guided_step_social_meta_credentials</source>

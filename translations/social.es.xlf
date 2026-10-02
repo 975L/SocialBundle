@@ -60,7 +60,7 @@
             </trans-unit>
             <trans-unit id="0CvXFm7">
                 <source>description.guided_step_social_bluesky_connect</source>
-                <target>En el submenú "Avanzado" de la barra lateral, hacer clic en "Conectar Bluesky" y autorizar el acceso en Bluesky. El sitio guarda la sesión por sí mismo.</target>
+                <target>En el submenú "Social" de la barra lateral, hacer clic en "Conectar Bluesky" y autorizar el acceso en Bluesky. El sitio guarda la sesión por sí mismo.</target>
             </trans-unit>
             <trans-unit id="opsSET4">
                 <source>description.guided_step_social_bluesky_handle</source>
@@ -72,7 +72,7 @@
             </trans-unit>
             <trans-unit id="Q2.88W1">
                 <source>description.guided_step_social_google_connect</source>
-                <target>En el submenú "Avanzado" de la barra lateral, hacer clic en "Conectar Google" y autorizar el acceso con la cuenta de Google propietaria de la ficha. El sitio guarda por sí mismo el token, la cuenta y la ficha.</target>
+                <target>En el submenú "Social" de la barra lateral, hacer clic en "Conectar Google" y autorizar el acceso con la cuenta de Google propietaria de la ficha. El sitio guarda por sí mismo el token, la cuenta y la ficha.</target>
             </trans-unit>
             <trans-unit id="XzEU5fT">
                 <source>description.guided_step_social_google_credentials</source>
@@ -128,7 +128,7 @@
             </trans-unit>
             <trans-unit id="a4QkcYj">
                 <source>description.guided_step_social_meta_connect</source>
-                <target>En el submenú "Avanzado" de la barra lateral, hacer clic en "Conectar Meta" y autorizar el acceso con la cuenta de Facebook que gestiona la Página. El sitio guarda por sí mismo la Página, su token y la cuenta de Instagram.</target>
+                <target>En el submenú "Social" de la barra lateral, hacer clic en "Conectar Meta" y autorizar el acceso con la cuenta de Facebook que gestiona la Página. El sitio guarda por sí mismo la Página, su token y la cuenta de Instagram.</target>
             </trans-unit>
             <trans-unit id="0xEpiaR">
                 <source>description.guided_step_social_meta_credentials</source>

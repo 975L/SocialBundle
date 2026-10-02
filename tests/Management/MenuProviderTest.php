@@ -101,7 +101,7 @@ class MenuProviderTest extends TestCase
 
         $link = $this->createProvider(false, publishEnabled: true)->getLinks()['social_meta_connect'];
         $this->assertSame('social_meta_oauth_connect', $link['name']);
-        $this->assertSame('advanced', $link['tier']);
+        $this->assertArrayNotHasKey('tier', $link);
     }
 
     public function testTheBlueskyConnectionFollowsThePublicationSwitch(): void
@@ -110,7 +110,7 @@ class MenuProviderTest extends TestCase
 
         $link = $this->createProvider(false, publishEnabled: true)->getLinks()['social_bluesky_connect'];
         $this->assertSame('social_bluesky_oauth_connect', $link['name']);
-        $this->assertSame('advanced', $link['tier']);
+        $this->assertArrayNotHasKey('tier', $link);
     }
 
     // Connecting Google is what fetches the reviews, so the link goes with them
@@ -119,14 +119,14 @@ class MenuProviderTest extends TestCase
         $this->assertSame([], $this->createProvider(true, false)->getLinks());
     }
 
-    // The Google connection is a route, not a Crud screen, so it is a link - tiered "advanced", being run once when the site is first connected
-    public function testGetLinksOffersTheGoogleConnectionInTheAdvancedTier(): void
+    // The Google connection is a route, not a Crud screen, so it is a link - left in the essential tier, drawn under "Social" where an editor looks for it
+    public function testGetLinksOffersTheGoogleConnectionUnderSocial(): void
     {
         $links = $this->createProvider(true)->getLinks();
 
         $this->assertSame(['social_google_connect'], array_keys($links));
         $this->assertSame('social_google_oauth_connect', $links['social_google_connect']['name']);
-        $this->assertSame('advanced', $links['social_google_connect']['tier']);
+        $this->assertArrayNotHasKey('tier', $links['social_google_connect']);
     }
 
     // Every entry gets a step in the onboarding tour, one without a description showing its label alone - and an untranslated one reads as its own key

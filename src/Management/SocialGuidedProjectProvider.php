@@ -92,7 +92,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'narration' => 'narration.guided_step_social_google_credentials',
                 ],
                 [
-                    // Matched on the href rather than on a marker: the entry is a plain link in the sidebar's "Avancé" submenu (see MenuProvider::getLinks()), not a rendered action of a screen
+                    // Matched on the href rather than on a marker: the entry is a plain link in the sidebar's "Social" submenu (see MenuProvider::getLinks()), not a rendered action of a screen
                     'label' => 'label.guided_step_social_google_connect',
                     'description' => 'description.guided_step_social_google_connect',
                     'narration' => 'narration.guided_step_social_google_connect',
@@ -215,7 +215,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'narration' => 'narration.guided_step_social_meta_credentials',
                 ],
                 [
-                    // A plain link in the sidebar's "Avancé" submenu, as Google's is
+                    // A plain link in the sidebar's "Social" submenu, as Google's is
                     'label' => 'label.guided_step_social_meta_connect',
                     'description' => 'description.guided_step_social_meta_connect',
                     'narration' => 'narration.guided_step_social_meta_connect',
@@ -309,7 +309,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'url' => $this->indexUrl(ConfigCrudController::class),
                 ],
                 [
-                    // A plain link in the sidebar's "Avancé" submenu, as Meta's is
+                    // A plain link in the sidebar's "Social" submenu, as Meta's is
                     'label' => 'label.guided_step_social_bluesky_connect',
                     'description' => 'description.guided_step_social_bluesky_connect',
                     'narration' => 'narration.guided_step_social_bluesky_connect',

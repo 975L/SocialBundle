@@ -200,8 +200,8 @@ key. `ConfigsJsonTest::testGroupsAreEitherSharedOrLabelledByThisBundle` locks th
 Google's reviews endpoints need the Cloud project to be **allowlisted** (7-10 business days) and the
 OAuth app **published in production**, or its refresh tokens expire every seven days.
 
-The connection is started from **"Connecter Google"**, a `getLinks()` entry tiered `advanced` — so it
-sits in the sidebar's collapsed "Avancé" submenu, not next to the CRUD screens.
+The connection is started from **"Connecter Google"**, a `getLinks()` entry with no target — so it
+sits in the sidebar's "Social" submenu, next to the CRUD screens.
 
 `Service\SameAsProvider` implements UiBundle's `SameAsProviderInterface`, so a `contact_details` block
 publishes the listing (`social-google-listing-url`, a `maps?cid=…` address) and the social links in its
@@ -249,8 +249,7 @@ JPEG copy written by `SocialImageExporter` under `public/medias/social/`, never 
 ## What the bundle already contributes
 
 Nothing below is declared in the app: `MenuProvider` (the dashboard entries, each declaring
-`site-role-editor` as the bar its own screen states, plus the "Connecter Google", "Connecter Meta" and "Connecter Bluesky" links in the "Avancé"
-tier), `ProcedureProvider`
+`site-role-editor` as the bar its own screen states, plus the "Connecter Google", "Connecter Meta" and "Connecter Bluesky" links drawn under "Social"), `ProcedureProvider`
 (the admin help procedures), `SocialGuidedProjectProvider` (the guided walk-through of each screen,
 offered only to who can open it), `WhatsNewProvider`, `ImportmapProvider`, `Service\ScriptProvider`,
 `Service\StylesheetProvider` (the public sheet and the back-office silhouettes both),
