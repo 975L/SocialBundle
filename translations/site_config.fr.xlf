@@ -2,9 +2,9 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="fr" datatype="plaintext" original="site_config.fr.xlf">
         <body>
-            <trans-unit id="iS6Wrju">
-                <source>description.social_bluesky_app_password</source>
-                <target>À créer dans Bluesky, Paramètres &gt; Confidentialité et sécurité &gt; Mots de passe d'application. Jamais le mot de passe du compte.</target>
+            <trans-unit id="ynVdtEb">
+                <source>description.social_ai_guidelines</source>
+                <target>Ce que l'IA du site doit savoir pour écrire vos publications : public, ton, emojis, mots à éviter. Elle utilise la clé de la reformulation ; sans clé, le modèle de texte ci-dessus écrit les publications.</target>
             </trans-unit>
             <trans-unit id="kmlwOk1">
                 <source>description.social_bluesky_handle</source>
@@ -21,6 +21,14 @@
             <trans-unit id="mgDQlK8">
                 <source>description.social_bluesky_publish_mode</source>
                 <target>review : chaque publication attend votre relecture dans « Publications ». auto : elle part dès qu'elle est préparée.</target>
+            </trans-unit>
+            <trans-unit id="r0wZwja">
+                <source>description.social_calendar_hour_end</source>
+                <target>L'heure en bas de la grille de la vue semaine (23 par défaut). Une publication en dehors de ces heures est montrée au bord de la grille.</target>
+            </trans-unit>
+            <trans-unit id="lp2codY">
+                <source>description.social_calendar_hour_start</source>
+                <target>L'heure en haut de la grille de la vue semaine (6 par défaut).</target>
             </trans-unit>
             <trans-unit id="qi3JaGX">
                 <source>description.social_enable_share_buttons</source>
@@ -54,9 +62,37 @@
                 <source>description.social_google_oauth_refresh_token</source>
                 <target>Jeton obtenu lors de la connexion à Google ; le remplacer coupe l'import des avis.</target>
             </trans-unit>
+            <trans-unit id="00x9orl">
+                <source>description.social_image_format</source>
+                <target>framed : l'image telle quelle, encadrée seulement là où un réseau l'exige. square : un même carré 1080 x 1080 sur tous les réseaux, l'image centrée sur la couleur de fond du site.</target>
+            </trans-unit>
             <trans-unit id="61_ZokG">
                 <source>description.social_instagram_publish_mode</source>
                 <target>review : chaque publication attend votre relecture dans « Publications ». auto : elle part dès qu'elle est préparée.</target>
+            </trans-unit>
+            <trans-unit id="BANWhG0">
+                <source>description.social_linkedin_access_token</source>
+                <target>Renseigné par « Connecter » sur la tuile LinkedIn de « Connexions ». Valable 60 jours : il faut se reconnecter avant son expiration.</target>
+            </trans-unit>
+            <trans-unit id="XIOiN6Y">
+                <source>description.social_linkedin_client_id</source>
+                <target>Client ID de l'app créée sur linkedin.com/developers, avec les produits « Share on LinkedIn » et « Sign In with LinkedIn using OpenID Connect ».</target>
+            </trans-unit>
+            <trans-unit id="2nDJLVA">
+                <source>description.social_linkedin_client_secret</source>
+                <target>Primary Client Secret de l'app, onglet Auth.</target>
+            </trans-unit>
+            <trans-unit id="hNZKcg8">
+                <source>description.social_linkedin_member_id</source>
+                <target>Renseigné par la connexion : le profil sur lequel les publications partent.</target>
+            </trans-unit>
+            <trans-unit id="O1_Nec.">
+                <source>description.social_linkedin_publish_mode</source>
+                <target>review : chaque publication attend votre relecture dans « Publications ». auto : elle part dès qu'elle est préparée.</target>
+            </trans-unit>
+            <trans-unit id="36ObS3d">
+                <source>description.social_linkedin_token_expires_at</source>
+                <target>Renseigné par la connexion : la date après laquelle LinkedIn refuse le jeton.</target>
             </trans-unit>
             <trans-unit id="vdijy68">
                 <source>description.social_meta_app_id</source>
@@ -78,10 +114,6 @@
                 <source>description.social_meta_page_token</source>
                 <target>Renseigné par « Connecter Meta ». Il n'expire pas, sauf changement de mot de passe ou retrait de l'app.</target>
             </trans-unit>
-            <trans-unit id="5.iDFNb">
-                <source>description.social_publish_enabled</source>
-                <target>Publie un contenu (une photo de la galerie par exemple) sur chaque réseau configuré, à l'intervalle ci-dessous. Un contenu n'est jamais publié deux fois.</target>
-            </trans-unit>
             <trans-unit id="93yR.lo">
                 <source>description.social_publish_interval_hours</source>
                 <target>Temps minimum entre deux publications automatiques : 24 pour une par jour, 168 pour une par semaine.</target>
@@ -90,9 +122,9 @@
                 <source>description.social_publish_template</source>
                 <target>Modèle du texte publié. Variables : {title}, {url}, et celles du contenu ({category}, {description}...). Une variable sans valeur est retirée.</target>
             </trans-unit>
-            <trans-unit id="ZuIuKpS">
-                <source>label.social_bluesky_app_password</source>
-                <target>Mot de passe d'application Bluesky</target>
+            <trans-unit id="cqh6P23">
+                <source>label.social_ai_guidelines</source>
+                <target>Ton des publications (IA)</target>
             </trans-unit>
             <trans-unit id="EXIzXnl">
                 <source>label.social_bluesky_handle</source>
@@ -109,6 +141,14 @@
             <trans-unit id="mOorxO_">
                 <source>label.social_bluesky_publish_mode</source>
                 <target>Publication sur Bluesky</target>
+            </trans-unit>
+            <trans-unit id="cQjSQul">
+                <source>label.social_calendar_hour_end</source>
+                <target>Calendrier : dernière heure</target>
+            </trans-unit>
+            <trans-unit id="ijmz2OX">
+                <source>label.social_calendar_hour_start</source>
+                <target>Calendrier : première heure</target>
             </trans-unit>
             <trans-unit id="Dfr17Uy">
                 <source>label.social_enable_share_buttons</source>
@@ -142,9 +182,37 @@
                 <source>label.social_google_oauth_refresh_token</source>
                 <target>Jeton de rafraîchissement Google (avis)</target>
             </trans-unit>
+            <trans-unit id="NHvPdOc">
+                <source>label.social_image_format</source>
+                <target>Format du visuel</target>
+            </trans-unit>
             <trans-unit id="vS8bljm">
                 <source>label.social_instagram_publish_mode</source>
                 <target>Publication sur Instagram</target>
+            </trans-unit>
+            <trans-unit id="MIY6APF">
+                <source>label.social_linkedin_access_token</source>
+                <target>Jeton LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="NNCAytt">
+                <source>label.social_linkedin_client_id</source>
+                <target>Identifiant de l'app LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="zzm_PBk">
+                <source>label.social_linkedin_client_secret</source>
+                <target>Secret de l'app LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="W6z9srG">
+                <source>label.social_linkedin_member_id</source>
+                <target>Membre LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="iMiaYts">
+                <source>label.social_linkedin_publish_mode</source>
+                <target>Publication sur LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="VNIF16G">
+                <source>label.social_linkedin_token_expires_at</source>
+                <target>Expiration du jeton LinkedIn</target>
             </trans-unit>
             <trans-unit id="5EmIqzw">
                 <source>label.social_meta_app_id</source>
@@ -165,10 +233,6 @@
             <trans-unit id="q7doyNI">
                 <source>label.social_meta_page_token</source>
                 <target>Jeton de la Page Facebook</target>
-            </trans-unit>
-            <trans-unit id="23L_2ku">
-                <source>label.social_publish_enabled</source>
-                <target>Publication automatique sur les réseaux</target>
             </trans-unit>
             <trans-unit id="VFQrmGE">
                 <source>label.social_publish_interval_hours</source>

@@ -44,6 +44,20 @@ class ScaffoldThemeTest extends TestCase
         '--section-space-tight',
     ];
 
+    // Bootstrap's own tokens, read by sass/management.scss on the back-office screens EasyAdmin draws with Bootstrap: they follow the dashboard's light and dark themes, not the site's, so a site has nothing to set there
+    /** @return list<string> */
+    private function backOfficeTokens(): array
+    {
+        return array_values(array_filter(array_keys($this->tokensReadFromSass()), static fn (string $name): bool => str_starts_with($name, '--bs-')));
+    }
+
+    // Set by the calendar's template on each group of the week's grid, the quarter of an hour it stands at and the lane it takes: data, not a look
+    private const array PER_ITEM = [
+        '--row',
+        '--lane',
+        '--lanes',
+    ];
+
     // A. Every token a site is meant to set is offered, so the file stays the single place to look
     public function testScaffoldOffersEveryThemableToken(): void
     {
@@ -54,7 +68,9 @@ class ScaffoldThemeTest extends TestCase
             self::PER_VARIANT,
             self::PREVIEW_ONLY,
             self::NOT_THEMABLE,
-            self::UI_OWNED
+            self::UI_OWNED,
+            self::PER_ITEM,
+            $this->backOfficeTokens()
         ));
 
         $this->assertSame([], $missing, sprintf(

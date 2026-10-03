@@ -11,26 +11,18 @@
 namespace c975L\SocialBundle\Management;
 
 use c975L\ConfigBundle\Management\MenuProviderInterface;
-use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
+use c975L\SocialBundle\Controller\Management\SocialCalendarController;
+use c975L\SocialBundle\Controller\Management\SocialConnectionsController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use c975L\SocialBundle\Controller\Management\SocialPostCrudController;
 use c975L\SocialBundle\Controller\Management\SocialScheduleCrudController;
-use c975L\UiBundle\Service\ConfigEditUrlResolver;
 
 class MenuProvider implements MenuProviderInterface
 {
-    // The site-wide switch the share buttons band is drawn under (see ShareButtonsExtension and default.html.twig)
-    private const string SHARE_BUTTONS_SLUG = 'social-enable-share-buttons';
-
-    // The switch's edit url, resolved on the first getLinks() needing it (see shareButtonsSwitchUrl())
-    private ?string $shareButtonsSwitchUrl = null;
-
     public function __construct(
         private readonly ConfigServiceInterface $configService,
-        private readonly ConfigRepository $configRepository,
-        private readonly ConfigEditUrlResolver $configEditUrlResolver,
     ) {
     }
 
@@ -43,9 +35,10 @@ class MenuProvider implements MenuProviderInterface
         ];
     }
 
+    // Every screen listed whatever the site uses: one that governs nothing yet says so itself, rather than going missing from the sidebar
     public function getMenus(): array
     {
-        $menus = [
+        return [
             'social_links' => [
                 'controller' => SocialLinksCrudController::class,
                 'label' => 'label.social_links',
@@ -57,11 +50,7 @@ class MenuProvider implements MenuProviderInterface
                 // The bar SocialLinksCrudController states on its own rows
                 'role' => $this->configService->get('site-role-editor'),
             ],
-        ];
-
-        // Settings for a band the site does not draw would govern nothing: turned off, the entry is a link to the switch instead (see getLinks())
-        if ($this->shareButtonsEnabled()) {
-            $menus['share_buttons_settings'] = [
+            'share_buttons_settings' => [
                 'controller' => ShareButtonsSettingsCrudController::class,
                 'label' => 'label.share_buttons_settings',
                 'narration' => 'narration.share_buttons_settings',
@@ -70,12 +59,8 @@ class MenuProvider implements MenuProviderInterface
                 'description' => 'label.info_share_buttons_settings',
                 // The bar ShareButtonsSettingsCrudController states on its own rows
                 'role' => $this->configService->get('site-role-editor'),
-            ];
-        }
-
-        // The posts prepared for the networks, only while the publication is on: turned off, nothing is prepared and the screen would stay empty
-        if ($this->configService->getBool($this->configService->get('social-publish-enabled'))) {
-            $menus['social_posts'] = [
+            ],
+            'social_posts' => [
                 'controller' => SocialPostCrudController::class,
                 // Lists what happened rather than what an admin makes: empty, it is no feature left unused (see UnusedFeatureBuilder)
                 'creatable' => false,
@@ -86,9 +71,8 @@ class MenuProvider implements MenuProviderInterface
                 'description' => 'label.info_social_posts',
                 // The bar SocialPostCrudController states on its own rows
                 'role' => $this->configService->get('site-role-editor'),
-            ];
-            // The slots pacing those posts, under the same switch: without it, nothing they schedule would be prepared
-            $menus['social_schedules'] = [
+            ],
+            'social_schedules' => [
                 'controller' => SocialScheduleCrudController::class,
                 'label' => 'label.social_schedules',
                 'narration' => 'narration.social_schedules',
@@ -97,79 +81,32 @@ class MenuProvider implements MenuProviderInterface
                 'description' => 'label.info_social_schedules',
                 // The bar SocialScheduleCrudController states on its own rows
                 'role' => $this->configService->get('site-role-editor'),
-            ];
-        }
-
-        return $menus;
+            ],
+        ];
     }
 
+    // The networks the site connects to, gathered on one screen of tiles rather than one link each; the calendar, a screen of its own rather than a list of entities
     public function getLinks(): array
     {
-        $links = [];
-
-        // Turned off, the entry stays as a link (no target, so drawn among this bundle's entries) walking to its own switch. Admin rather than editor: ConfigCrudController denies anything below it, so an editor sent there, or walked there by the tour, would only meet a 403
-        if (!$this->shareButtonsEnabled()) {
-            $links['social_share_buttons_disabled'] = [
-                'url' => $this->shareButtonsSwitchUrl(),
-                'label' => 'label.share_buttons_disabled',
-                'narration' => 'narration.share_buttons_disabled',
+        return [
+            'social_calendar' => [
+                'name' => SocialCalendarController::ROUTE,
+                'label' => 'label.social_calendar',
+                'narration' => 'narration.social_calendar',
                 'translation_domain' => 'social',
-                'icon' => 'fas fa-toggle-off',
-                'role' => $this->configService->get('site-role-admin'),
-                // Written for the tour alone, where the other descriptions quote their screen: this one stands in for a screen that is not reachable yet
-                'description' => 'label.info_share_buttons_disabled',
-            ];
-        }
-
-        // A route redirecting straight to Google's consent page, drawn among this bundle's entries where an editor looks for it rather than in "Avancé". Dropped with the reviews off, as it would fetch reviews the site never shows
-        if ($this->configService->getBool($this->configService->get('ui-enable-reviews'))) {
-            $links['social_google_connect'] = [
-                'name' => 'social_google_oauth_connect',
-                'label' => 'label.google_connect',
-                'narration' => 'narration.google_connect',
-                'translation_domain' => 'social',
-                'icon' => 'fab fa-google',
+                'icon' => 'fas fa-calendar-days',
                 'role' => $this->configService->get('site-role-editor'),
-                // Written for the tour alone, where the other descriptions quote their screen: a redirection has no screen whose text to reuse
-                'description' => 'label.info_google_connect',
-            ];
-        }
-
-        // Consenting once gives the site the Page token its posts on Facebook and Instagram are made with - drawn under "Social" like the Google one
-        if ($this->configService->getBool($this->configService->get('social-publish-enabled'))) {
-            $links['social_meta_connect'] = [
-                'name' => 'social_meta_oauth_connect',
-                'label' => 'label.meta_connect',
-                'narration' => 'narration.meta_connect',
+                'description' => 'label.info_social_calendar',
+            ],
+            'social_connections' => [
+                'name' => SocialConnectionsController::ROUTE,
+                'label' => 'label.social_connections',
+                'narration' => 'narration.social_connections',
                 'translation_domain' => 'social',
-                'icon' => 'fab fa-meta',
+                'icon' => 'fas fa-plug',
                 'role' => $this->configService->get('site-role-editor'),
-                'description' => 'label.info_meta_connect',
-            ];
-            // Consenting once gives the site the Bluesky session its posts are made with, with no app to create and no password to type
-            $links['social_bluesky_connect'] = [
-                'name' => 'social_bluesky_oauth_connect',
-                'label' => 'label.bluesky_connect',
-                'narration' => 'narration.bluesky_connect',
-                'translation_domain' => 'social',
-                'icon' => 'fab fa-bluesky',
-                'role' => $this->configService->get('site-role-editor'),
-                'description' => 'label.info_bluesky_connect',
-            ];
-        }
-
-        return $links;
-    }
-
-    // Read by both the settings entry and the link standing in for it, which are the two faces of the same switch
-    private function shareButtonsEnabled(): bool
-    {
-        return $this->configService->getBool($this->configService->get(self::SHARE_BUTTONS_SLUG));
-    }
-
-    // Kept once resolved: the dashboard reads getLinks() several times per page, and findOneBySlug() queries the database on every call
-    private function shareButtonsSwitchUrl(): string
-    {
-        return $this->shareButtonsSwitchUrl ??= $this->configEditUrlResolver->resolve($this->configRepository->findOneBySlug(self::SHARE_BUTTONS_SLUG));
+                'description' => 'label.info_social_connections',
+            ],
+        ];
     }
 }

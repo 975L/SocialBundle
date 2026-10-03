@@ -11,6 +11,7 @@
 namespace c975L\SocialBundle\Controller;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\SocialBundle\Controller\Management\SocialConnectionsController;
 use c975L\SocialBundle\Service\ConfigValueWriter;
 use c975L\SocialBundle\Service\MetaGraphClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -41,7 +42,7 @@ class MetaOAuthController extends AbstractController
         if (!$this->metaGraphClient->isConfigured()) {
             $this->addFlash('danger', t('flash.meta_not_configured', [], 'social'));
 
-            return $this->redirectToRoute('management');
+            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
         // Held in the session and checked on the way back: without it the callback would accept a code obtained by anyone who can make the editor's browser follow a link
@@ -61,7 +62,7 @@ class MetaOAuthController extends AbstractController
         if (!\is_string($expected) || $expected !== $request->query->get('state') || !\is_string($code) || '' === $code) {
             $this->addFlash('danger', t('flash.meta_refused', [], 'social'));
 
-            return $this->redirectToRoute('management');
+            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
         // Everything fetched before anything is written: a failure on a reconnection leaves the working connection as it was
@@ -70,7 +71,7 @@ class MetaOAuthController extends AbstractController
         } catch (\Throwable $exception) {
             $this->addFlash('danger', $exception->getMessage());
 
-            return $this->redirectToRoute('management');
+            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
         $this->configValueWriter->write([
@@ -81,7 +82,7 @@ class MetaOAuthController extends AbstractController
 
         $this->addFlash('success', t(null === $connection['instagramId'] ? 'flash.meta_connected_without_instagram' : 'flash.meta_connected', [], 'social'));
 
-        return $this->redirectToRoute('management');
+        return $this->redirectToRoute(SocialConnectionsController::ROUTE);
     }
 
     // Absolute, and built from the route rather than configured: it has to match the redirect uri declared in the Meta app character for character

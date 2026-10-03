@@ -10,12 +10,14 @@
 
 namespace c975L\SocialBundle\Tests\Controller\Management;
 
+use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\ShareButtonsSettingsCrudController;
 use c975L\SocialBundle\Form\Block\ShareButtonsSettingsType;
 use c975L\SocialBundle\Form\Block\ShareButtonsStylePreviewType;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Repository\BlockRepository;
+use c975L\UiBundle\Service\ConfigEditUrlResolver;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -94,6 +96,8 @@ class ShareButtonsSettingsCrudControllerTest extends TestCase
             $blockRepository,
             $this->createAdminUrlGenerator(),
             $this->createTranslator(),
+            $this->createStub(ConfigRepository::class),
+            $this->createStub(ConfigEditUrlResolver::class),
         );
     }
 
@@ -247,6 +251,8 @@ class ShareButtonsSettingsCrudControllerTest extends TestCase
             $blockRepository,
             $this->createAdminUrlGenerator($adminRouteGenerator),
             $this->createTranslator(),
+            $this->createStub(ConfigRepository::class),
+            $this->createStub(ConfigEditUrlResolver::class),
         );
 
         $response = $controller->new(AdminContext::forTesting());

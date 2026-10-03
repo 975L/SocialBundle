@@ -13,11 +13,13 @@ namespace c975L\SocialBundle\Enum;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Where one network's version of a post stands. No "scheduled" nor "cancelled": the hourly run is the schedule, and cancelling is deleting. Translatable so EasyAdmin offers the cases translated with no choice list to keep in step (same as UiBundle's ReviewStatus)
+// Where one network's version of a post stands. No "cancelled": cancelling is deleting. "Approved" is the only schedule a post carries, the publication slots being the clock it goes out on (see SocialPublisher::prepareSlot()). Translatable so EasyAdmin offers the cases translated with no choice list to keep in step (same as UiBundle's ReviewStatus)
 enum SocialPostStatus: string implements TranslatableInterface
 {
     // Waiting for someone to read it and press "Publish", on a network set to review
     case Draft = 'draft';
+    // Read and approved: the next publication slot posting on its network sends it, unless its post is planned later (see SocialPost::$plannedAt)
+    case Approved = 'approved';
     case Published = 'published';
     // The network refused it; it stays so until someone publishes it again from the screen, never retried on its own - a post refused for its content would be refused every hour
     case Failed = 'failed';
@@ -49,6 +51,7 @@ enum SocialPostStatus: string implements TranslatableInterface
     {
         return match ($this) {
             self::Draft => 'warning',
+            self::Approved => 'info',
             self::Published => 'success',
             self::Failed => 'danger',
         };

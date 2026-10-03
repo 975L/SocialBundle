@@ -104,6 +104,21 @@ class SocialPostTarget
         return SocialPostStatus::Published !== $this->status;
     }
 
+    // A failed target is approved too: the slot then tries it again, its refusal kept until it goes out
+    public function approve(): void
+    {
+        if ($this->isPending()) {
+            $this->status = SocialPostStatus::Approved;
+        }
+    }
+
+    public function unapprove(): void
+    {
+        if (SocialPostStatus::Approved === $this->status) {
+            $this->status = SocialPostStatus::Draft;
+        }
+    }
+
     public function markPublished(string $externalId): void
     {
         $this->status = SocialPostStatus::Published;

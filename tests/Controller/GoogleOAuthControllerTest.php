@@ -115,7 +115,7 @@ class GoogleOAuthControllerTest extends TestCase
 
         $response = $this->createController($request, $googleOAuthClient)->connect($request);
 
-        $this->assertSame('/management', $response->getTargetUrl());
+        $this->assertSame('/management_social_connections', $response->getTargetUrl());
         $this->assertSame(['danger' => ['review.google_not_configured']], $this->flashes($request));
     }
 
@@ -144,7 +144,7 @@ class GoogleOAuthControllerTest extends TestCase
             ['social-google-business-account-id' => '123', 'social-google-business-location-id' => '456'],
         ], $written);
         $this->assertSame(['success' => ['review.google_connected']], $this->flashes($request));
-        $this->assertSame('/management', $response->getTargetUrl());
+        $this->assertSame('/management_social_connections', $response->getTargetUrl());
     }
 
     // A code arriving with a state the session never issued is the forged callback the state exists to catch
@@ -217,7 +217,7 @@ class GoogleOAuthControllerTest extends TestCase
         $response = $this->createController($request, $googleOAuthClient, $configValueWriter)->callback($request);
 
         $this->assertSame(['danger' => ['Google refused the code.']], $this->flashes($request));
-        $this->assertSame('/management', $response->getTargetUrl());
+        $this->assertSame('/management_social_connections', $response->getTargetUrl());
     }
 
     // A fresh token left paired with the previous account's listing would answer 403 on every later synchronization, so the failed connection goes back to "not connected"

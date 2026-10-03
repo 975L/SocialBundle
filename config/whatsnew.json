@@ -1,5 +1,45 @@
 [
     {
+        "date": "2026-10-03",
+        "description": [
+            {
+                "en": "A new Connections screen gathers every network on one page, each with its state and its Connect button",
+                "fr": "Un nouvel écran Connexions rassemble tous les réseaux sur une page, chacun avec son état et son bouton Connecter",
+                "es": "Una nueva pantalla Conexiones reúne todas las redes en una página, cada una con su estado y su botón Conectar"
+            },
+            {
+                "en": "Your posts can now also go out on your LinkedIn profile",
+                "fr": "Vos publications peuvent maintenant partir aussi sur votre profil LinkedIn",
+                "es": "Sus publicaciones ahora también pueden salir en su perfil de LinkedIn"
+            },
+            {
+                "en": "A new Calendar shows where each post will go out, and you move it with a drag and drop",
+                "fr": "Un nouveau Calendrier montre où chaque publication partira, et vous la déplacez d'un glisser-déposer",
+                "es": "Un nuevo Calendario muestra dónde saldrá cada publicación, y usted la mueve arrastrándola"
+            },
+            {
+                "en": "Approve a post for the next slot, or give it a date and time: it goes out at that very moment",
+                "fr": "Validez une publication pour le prochain créneau, ou donnez-lui une date et une heure : elle part à ce moment précis",
+                "es": "Valide una publicación para la próxima franja, o dele una fecha y una hora: sale en ese momento preciso"
+            },
+            {
+                "en": "Prepare a week of drafts in one click, to approve afterwards one by one",
+                "fr": "Préparez une semaine de brouillons en un clic, à valider ensuite une par une",
+                "es": "Prepare una semana de borradores con un clic, para validarlos después uno a uno"
+            },
+            {
+                "en": "The texts of your posts can be written by the site's AI, in the tone you describe",
+                "fr": "Les textes de vos publications peuvent être écrits par l'IA du site, sur le ton que vous décrivez",
+                "es": "Los textos de sus publicaciones pueden ser escritos por la IA del sitio, en el tono que usted describa"
+            },
+            {
+                "en": "Two new guided projects walk you through connecting LinkedIn and planning your posts on the calendar",
+                "fr": "Deux nouveaux projets guidés vous accompagnent pour connecter LinkedIn et planifier vos publications sur le calendrier",
+                "es": "Dos nuevos proyectos guiados le acompañan para conectar LinkedIn y planificar sus publicaciones en el calendario"
+            }
+        ]
+    },
+    {
         "date": "2026-10-02",
         "description": [
             {

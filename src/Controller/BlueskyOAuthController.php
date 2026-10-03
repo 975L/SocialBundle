@@ -11,6 +11,7 @@
 namespace c975L\SocialBundle\Controller;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\SocialBundle\Controller\Management\SocialConnectionsController;
 use c975L\SocialBundle\Service\BlueskyOAuthClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -53,11 +54,18 @@ class BlueskyOAuthController extends AbstractController
         $handle = trim((string) $this->configService->get('social-bluesky-handle'));
 
         try {
+            // Started anywhere but on "site-url", Bluesky would check the assertion against that site's key and refuse it without saying why
+            if (!$this->oauthClient->isSiteHost($request->getHost())) {
+                $this->addFlash('danger', t('flash.bluesky_wrong_host', ['%url%' => $this->oauthClient->siteUrl()], 'social'));
+
+                return $this->redirectToRoute(SocialConnectionsController::ROUTE);
+            }
+
             $authorization = $this->oauthClient->startAuthorization('' === $handle ? null : $handle, bin2hex(random_bytes(16)));
         } catch (\Throwable $exception) {
             $this->addFlash('danger', $exception->getMessage());
 
-            return $this->redirectToRoute('management');
+            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
         // Held in the session and checked on the way back, with the PKCE verifier and the DPoP key the tokens will be bound to
@@ -76,7 +84,7 @@ class BlueskyOAuthController extends AbstractController
         if (!\is_array($pending) || ($pending['state'] ?? null) !== $request->query->get('state') || !\is_string($code) || '' === $code) {
             $this->addFlash('danger', t('flash.bluesky_refused', [], 'social'));
 
-            return $this->redirectToRoute('management');
+            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
         try {
@@ -84,11 +92,11 @@ class BlueskyOAuthController extends AbstractController
         } catch (\Throwable $exception) {
             $this->addFlash('danger', $exception->getMessage());
 
-            return $this->redirectToRoute('management');
+            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
         $this->addFlash('success', t('flash.bluesky_connected', [], 'social'));
 
-        return $this->redirectToRoute('management');
+        return $this->redirectToRoute(SocialConnectionsController::ROUTE);
     }
 }

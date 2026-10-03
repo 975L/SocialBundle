@@ -16,6 +16,7 @@ use c975L\SocialBundle\Service\SocialPublisher;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -37,6 +38,15 @@ class SocialScheduleCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return SocialSchedule::class;
+    }
+
+    // Tells the index whether a network is connected, its notice walking to the connections screen otherwise
+    #[\Override]
+    public function configureResponseParameters(KeyValueStore $responseParameters): KeyValueStore
+    {
+        $responseParameters->set('has_connected_network', $this->socialPublisher->hasConnectedNetwork());
+
+        return $responseParameters;
     }
 
     #[\Override]
@@ -92,6 +102,8 @@ class SocialScheduleCrudController extends AbstractCrudController
         yield TextareaField::new('text', t('label.social_schedule_text', [], 'social'))
             ->hideOnIndex()
             ->setHelp(t('label.social_schedule_text_help', [], 'social'))
+            // Opt-in marker read by the block form theme, which is what puts Donovan under a plain textarea
+            ->setFormTypeOption('attr', ['data-ai-rephrase' => true])
         ;
     }
 }

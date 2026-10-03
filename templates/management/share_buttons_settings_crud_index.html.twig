@@ -3,5 +3,15 @@
 {% block main %}
     <p>{{ ('label.info_share_buttons_settings'|trans({}, 'social')) }}</p>
 
+    {# The band off site-wide, these settings govern nothing yet: said here rather than the entry going missing from the sidebar #}
+    {% if not share_buttons_enabled %}
+        <div class="alert alert-warning">
+            {{ ('label.info_share_buttons_disabled'|trans({}, 'social')) }}
+            {% if share_buttons_switch_url %}
+                <a href="{{ share_buttons_switch_url }}" class="alert-link">{{ ('label.share_buttons_enable'|trans({}, 'social')) }}</a>
+            {% endif %}
+        </div>
+    {% endif %}
+
     {{ parent() }}
 {% endblock main %}

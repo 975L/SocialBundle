@@ -1,0 +1,352 @@
+/*
+ * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+@use '_social-brand-colors.scss';
+
+/* The back-office screens of the publication: the calendar (management/social_calendar.html.twig) and the network badges it shares with them. Loaded on the management screens only, through the ui.management_stylesheet tag */
+
+/* A network as a small badge: its own glyph, white on its official colour - greyed while the site is not connected to it */
+.social-network-badge {
+    display: inline-grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background-color: var(--bs-secondary, #6c757d);
+
+    img {
+        width: 12px;
+        height: 12px;
+        filter: social-brand-colors.$white-icon-filter;
+    }
+
+    &.is-off {
+        background-color: var(--bs-secondary-bg, #e9ecef);
+        opacity: .6;
+
+        img {
+            filter: grayscale(1);
+        }
+    }
+}
+
+@each $network, $brand-color in social-brand-colors.$social-brand-colors {
+    .social-network-badge--#{$network}:not(.is-off) {
+        background-color: $brand-color;
+    }
+}
+
+.social-network-badges {
+    display: inline-flex;
+    gap: 3px;
+}
+
+/* The calendar: seven columns, a week of tall days or a month of short ones */
+.social-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 2px;
+}
+
+.social-calendar-weekday {
+    font-weight: 600;
+    text-align: center;
+    padding: .25rem;
+}
+
+.social-calendar-day {
+    min-height: 7rem;
+    padding: .25rem;
+    background: var(--bs-tertiary-bg, #f5f5f5);
+    border-radius: 4px;
+    min-width: 0;
+
+    &.is-other-month {
+        opacity: .5;
+    }
+
+    &.is-today {
+        outline: 2px solid var(--bs-primary, #0d6efd);
+    }
+}
+
+.social-calendar-date {
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.social-calendar-slot {
+    margin-top: .25rem;
+    padding: .2rem;
+    border: 1px dashed var(--bs-border-color, #ccc);
+    border-radius: 4px;
+    font-size: .75rem;
+}
+
+.social-calendar-slot-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: .25rem;
+}
+
+.social-calendar-slot.is-over,
+.social-calendar-list.is-over {
+    background: var(--bs-info-bg-subtle, #cff4fc);
+    border-style: solid;
+}
+
+.social-calendar-card {
+    display: flex;
+    gap: .25rem;
+    align-items: center;
+    padding: .15rem .25rem;
+    margin-top: .15rem;
+    border-radius: 4px;
+    background: var(--bs-body-bg, #fff);
+    border-left: 3px solid var(--bs-info, #0dcaf0);
+    color: inherit;
+    text-decoration: none;
+    font-size: .75rem;
+    cursor: grab;
+
+    &.is-published {
+        border-left-color: var(--bs-success, #198754);
+        cursor: pointer;
+    }
+
+    &.is-pinned {
+        border-left-color: var(--bs-primary, #0d6efd);
+    }
+
+    &.is-draft {
+        border-left-color: var(--bs-warning, #ffc107);
+    }
+
+    > img {
+        width: 24px;
+        height: 24px;
+        object-fit: cover;
+        border-radius: 2px;
+        flex: none;
+    }
+
+    > span:not(.social-network-badges) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+    }
+}
+
+/* When a post of the queue goes out, read off the projection */
+.social-calendar-next {
+    flex: none;
+    font-variant-numeric: tabular-nums;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+.social-calendar-list {
+    min-height: 4rem;
+    padding: .25rem;
+    border: 1px dashed var(--bs-border-color, #ccc);
+    border-radius: 4px;
+}
+
+.social-calendar-prepare {
+    padding: 0;
+    font-size: .75rem;
+}
+
+.social-calendar-networks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    align-items: center;
+    font-size: .85rem;
+
+    > span {
+        display: inline-flex;
+        gap: .25rem;
+        align-items: center;
+    }
+}
+
+/* The week: a column of hours, then seven days of quarters of an hour, the items laid over the quarter they stand at */
+$quarter: .75rem;
+
+.social-week {
+    display: grid;
+    grid-template-columns: 3.25rem repeat(7, minmax(0, 1fr));
+    gap: 2px;
+}
+
+/* Scrolled sideways on a narrow screen rather than squeezed: seven days a few pixels wide would show no card at all */
+.social-week-scroll {
+    overflow-x: auto;
+
+    .social-week {
+        min-width: 48rem;
+    }
+}
+
+.social-week-head {
+    height: 1.75rem;
+    font-weight: 600;
+    font-size: .85rem;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.social-week-hour {
+    height: 4 * $quarter;
+    font-size: .75rem;
+    color: var(--bs-secondary-color, #6c757d);
+    font-variant-numeric: tabular-nums;
+    transform: translateY(-.5em);
+}
+
+.social-week-day {
+    min-width: 0;
+
+    &.is-today .social-week-head {
+        color: var(--bs-primary, #0d6efd);
+    }
+}
+
+.social-week-body {
+    position: relative;
+    background: var(--bs-tertiary-bg, #f5f5f5);
+    border-radius: 4px;
+}
+
+.social-week-cell {
+    height: $quarter;
+    border-top: 1px dotted var(--bs-border-color, #ccc);
+
+    &:nth-child(4n + 1) {
+        border-top-style: solid;
+    }
+
+    &.is-past {
+        background: var(--bs-secondary-bg, #e9ecef);
+    }
+
+    &.is-over {
+        background: var(--bs-info-bg-subtle, #cff4fc);
+    }
+}
+
+.social-week-items {
+    position: absolute;
+    top: calc(var(--row) * #{$quarter});
+    left: calc(2px + var(--lane, 0) * (100% - 4px) / var(--lanes, 1));
+    width: calc((100% - 4px) / var(--lanes, 1) - 2px);
+    z-index: 1;
+    display: flex;
+    gap: 2px;
+
+    > * {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .social-calendar-card,
+    .social-calendar-slot {
+        margin-top: 0;
+    }
+
+    .social-calendar-slot {
+        background: var(--bs-body-bg, #fff);
+        padding: 1px 3px;
+    }
+
+    /* Compact on the grid: a quarter of an hour is short, and the networks and the moment are read in the panel */
+    .social-calendar-slot-head {
+        font-size: .66rem;
+        line-height: 1.1;
+    }
+
+    .social-calendar-card {
+        height: 22px;
+        padding: 1px 4px;
+        font-size: .7rem;
+        line-height: 1.15;
+
+        > img {
+            width: 16px;
+            height: 16px;
+        }
+
+        .social-network-badges,
+        .social-calendar-next {
+            display: none;
+        }
+    }
+
+    .social-calendar-prepare {
+        font-size: .66rem;
+    }
+}
+
+/* A card being dragged follows the pointer, the zones under it read through it */
+.social-calendar-card.ui-dragging {
+    position: relative;
+    z-index: 10;
+    opacity: .8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+}
+
+/* The panel a card opens, over the right of the screen */
+.social-calendar-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1050;
+    width: min(28rem, 100%);
+    padding: 1rem;
+    overflow-y: auto;
+    background: var(--bs-body-bg, #fff);
+    border-left: 1px solid var(--bs-border-color, #ccc);
+    box-shadow: -.5rem 0 1.5rem rgba(0, 0, 0, .15);
+    display: grid;
+    gap: .75rem;
+    align-content: start;
+}
+
+.social-calendar-panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.social-calendar-panel-body {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: .85rem;
+    padding: .5rem;
+    border: 1px solid var(--bs-border-color, #ccc);
+    border-radius: 4px;
+}
+
+@media (max-width: 767.98px) {
+    .social-calendar {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .social-calendar-weekday,
+    .social-calendar-day.is-empty {
+        display: none;
+    }
+
+    .social-calendar-day {
+        min-height: 0;
+    }
+}

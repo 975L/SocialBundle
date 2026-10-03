@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Tests\Service;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use c975L\SocialBundle\Service\SocialImageExporter;
 use c975L\UiBundle\Model\SocialContent;
@@ -41,12 +42,14 @@ class SocialImageExporterTest extends TestCase
         return $path;
     }
 
-    private function exporter(?string $siteUrl = 'https://example.org'): SocialImageExporter
+    private function exporter(?string $siteUrl = 'https://example.org', string $format = 'framed', ?string $background = null): SocialImageExporter
     {
         $siteUrlResolver = $this->createStub(SiteUrlResolver::class);
         $siteUrlResolver->method('siteUrl')->willReturn($siteUrl);
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnCallback(static fn (string $key): ?string => ['social-image-format' => $format, 'theme-color-background' => $background][$key] ?? null);
 
-        return new SocialImageExporter(new MockHttpClient(), $siteUrlResolver, $this->projectDir);
+        return new SocialImageExporter(new MockHttpClient(), $siteUrlResolver, $this->projectDir, $configService);
     }
 
     /**
@@ -89,5 +92,31 @@ class SocialImageExporterTest extends TestCase
     {
         $this->assertNull($this->exporter()->jpegUrl(new SocialContent('1', 'Title', 'https://example.org')));
         $this->assertNull($this->exporter(null)->jpegUrl(new SocialContent('1', 'Title', 'https://example.org', imagePath: $this->webp(10, 10))));
+    }
+
+    // The site's square: one 1080 x 1080 visual everywhere, the picture centred on the site's own background
+    public function testASquareIsDrawnOnTheSitesBackground(): void
+    {
+        $content = new SocialContent('1', 'Title', 'https://example.org/1', imagePath: $this->webp(600, 849));
+        $exporter = $this->exporter(format: 'square', background: '#0c1f33');
+
+        $size = $this->exported((string) $exporter->jpegUrl($content, 0.8, 1.91));
+        $bytes = (string) $exporter->bytes($content);
+        $image = imagecreatefromstring($bytes);
+        $this->assertNotFalse($image);
+
+        $this->assertSame([1080, 1080], [$size[0], $size[1]]);
+        $this->assertSame([1080, 1080], [imagesx($image), imagesy($image)]);
+        // A band pixel, left of the portrait: the background colour, give or take the JPEG compression
+        $rgb = imagecolorat($image, 5, 540);
+        $this->assertEqualsWithDelta([0x0C, 0x1F, 0x33], [($rgb >> 16) & 0xFF, ($rgb >> 8) & 0xFF, $rgb & 0xFF], 6);
+    }
+
+    // Framed, the bytes a network uploads itself are the picture as it is
+    public function testFramedBytesAreThePictureAsItIs(): void
+    {
+        $path = $this->webp(600, 849);
+
+        $this->assertSame((string) file_get_contents($path), $this->exporter()->bytes(new SocialContent('1', 'Title', 'https://example.org/1', imagePath: $path)));
     }
 }

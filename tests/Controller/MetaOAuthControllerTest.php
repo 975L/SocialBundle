@@ -111,7 +111,7 @@ class MetaOAuthControllerTest extends TestCase
 
         $response = $this->createController($request, $metaGraphClient)->connect($request);
 
-        $this->assertSame('/management', $response->getTargetUrl());
+        $this->assertSame('/management_social_connections', $response->getTargetUrl());
         $this->assertSame(['danger' => ['flash.meta_not_configured']], $this->flashes($request));
     }
 
@@ -171,6 +171,6 @@ class MetaOAuthControllerTest extends TestCase
         $response = $this->createController($request, $metaGraphClient, $configValueWriter)->callback($request);
 
         $this->assertSame(['danger' => ['This Facebook account manages no Page: the posts need one to go out under.']], $this->flashes($request));
-        $this->assertSame('/management', $response->getTargetUrl());
+        $this->assertSame('/management_social_connections', $response->getTargetUrl());
     }
 }

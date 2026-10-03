@@ -1,5 +1,43 @@
 # Changelog
 
+## v2.10.0
+
+LinkedIn, the publications calendar and planned posts
+
+- New "Connexions" screen (`SocialConnectionsController`), one tile per network, replacing the three "Connecter" links (03/10/2026)
+- OAuth callbacks land on "Connexions" (03/10/2026)
+- `social-publish-enabled` removed: publishing starts once a network is connected (03/10/2026) [BC-Break]
+- `social-bluesky-app-password` removed: Bluesky connects through OAuth only (03/10/2026) [BC-Break]
+- Bluesky connection refused on a host other than `site-url`'s (03/10/2026)
+- Bluesky client key id is its RFC 7638 thumbprint (`Es256Signer::thumbprint()`) (03/10/2026)
+- LinkedIn profile publishing (`LinkedInClient`, `LinkedInPublisher`, `LinkedInOAuthController`) (03/10/2026)
+- New configs `social-linkedin-*` (03/10/2026)
+- `LinkedInHealthCheckProvider` warns before the 60-day access expires (03/10/2026)
+- New `approved` status, "Valider pour le prochain créneau" and "Retirer de la file" actions (03/10/2026)
+- New `SocialPost::$plannedAt` and its "Prévue le" field (03/10/2026) [Needs db update]
+- `c975l:social:publish --planned`, run every 15 minutes, sends the planned posts due (03/10/2026)
+- `c975l:social:publish --drafts=N` and "Préparer 7 brouillons" action (03/10/2026)
+- `--drafts` refuses `--dry-run` (03/10/2026)
+- `--dry-run` never calls the AI (03/10/2026)
+- A planned draft leaves its slot to the queue (03/10/2026)
+- New `SocialPlanner`, the queue rule shared by the slots and the calendar (03/10/2026)
+- New "Calendrier" screen (`SocialCalendarController`), drag-and-drop planning (03/10/2026)
+- A draft prepared for a calendar slot shows on it and is not prepared twice (03/10/2026)
+- New `SocialPostWriter`, network texts written by the site's AI (03/10/2026)
+- New config `social-ai-guidelines` (03/10/2026)
+- New config `social-image-format` (03/10/2026)
+- New management stylesheet `public/css/management.min.css` (03/10/2026)
+- "Publications", "Créneaux de publication" and "Boutons de partage" always listed, saying when off (03/10/2026)
+- `MenuProvider`, `ShareButtonsSettingsCrudController`, `BlueskyPublisher`, `SocialPostCrudController`, `SocialPublisher` and `SocialImageExporter` constructors changed (03/10/2026) [BC-Break]
+- Guided projects "Connecter le profil LinkedIn" and "Planifier vos publications sur le calendrier" (03/10/2026)
+- Guided connection projects point at their tile's "Connecter" button (03/10/2026)
+- Guided project "Connecter le compte Bluesky" opens on "Connexions" (03/10/2026)
+- Guided project "Relire et publier" walks "Prévue le", "Envoyer sur", "Préparer 7 brouillons" and "Valider" (03/10/2026)
+- Guided project "Créneaux de publication" ordered before "Relire et publier" (03/10/2026)
+- `SocialGuidedProjectProvider` takes an `UrlGeneratorInterface` (03/10/2026) [BC-Break]
+- Bluesky connection without "site-url" shows its error instead of a 500 (03/10/2026)
+- Translation files sorted (03/10/2026)
+
 ## v2.9.2
 
 Connection links drawn under the Social submenu

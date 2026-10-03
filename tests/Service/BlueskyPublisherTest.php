@@ -25,29 +25,35 @@ class BlueskyPublisherTest extends TestCase
     /** @var list<array{url: string, body: string}> */
     private array $requests = [];
 
-    private function createPublisher(?string $handle = '@example.bsky.social', ?string $password = 'app-password', int $recordStatus = 200, ?string $mode = null, string $remoteImage = '', ?BlueskyOAuthClient $oauthClient = null): BlueskyPublisher
+    // The OAuth connection stubbed: every call recorded with its json body, Bluesky's refusal thrown the way BlueskyOAuthClient words it
+    private function createPublisher(bool $connected = true, bool $refused = false, ?string $mode = null, string $remoteImage = ''): BlueskyPublisher
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnMap([
-            ['social-bluesky-handle', $handle],
-            ['social-bluesky-app-password', $password],
             ['social-bluesky-publish-mode', $mode],
         ]);
 
-        $responses = [
-            'createSession' => new MockResponse('{"accessJwt":"jwt","refreshJwt":"r","handle":"example.bsky.social","did":"did:plc:abc"}'),
-            'uploadBlob' => new MockResponse('{"blob":{"$type":"blob","ref":{"$link":"bafy"},"mimeType":"image/png","size":70}}'),
-            'createRecord' => new MockResponse(200 === $recordStatus ? '{"uri":"at://did:plc:abc/app.bsky.feed.post/3k","cid":"bafy"}' : '{"error":"InvalidRequest","message":"Record too long"}', ['http_code' => $recordStatus]),
-        ];
+        $oauthClient = $this->createStub(BlueskyOAuthClient::class);
+        $oauthClient->method('isConnected')->willReturn($connected);
+        $oauthClient->method('getDid')->willReturn('did:plc:abc');
+        $oauthClient->method('call')->willReturnCallback(function (string $method, array $options) use ($refused): array {
+            $this->requests[] = ['url' => $method, 'body' => (string) json_encode($options['json'] ?? [])];
 
-        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use ($responses, $remoteImage): MockResponse {
-            $this->requests[] = ['url' => $url, 'body' => (string) ($options['body'] ?? '')];
-
-            // Anything but an xrpc call is the image of a content read from a page, downloaded from where it is
-            return str_contains($url, '/xrpc/') ? $responses[substr((string) strrchr($url, '.'), 1)] : new MockResponse($remoteImage);
+            return match (true) {
+                'com.atproto.repo.uploadBlob' === $method => ['blob' => ['$type' => 'blob', 'ref' => ['$link' => 'bafy'], 'mimeType' => 'image/png', 'size' => 70]],
+                $refused => throw new \RuntimeException('Bluesky refused com.atproto.repo.createRecord: Record too long'),
+                default => ['uri' => 'at://did:plc:abc/app.bsky.feed.post/3k', 'cid' => 'bafy'],
+            };
         });
 
-        return new BlueskyPublisher($httpClient, $configService, new SocialImageExporter($httpClient, $this->createStub(SiteUrlResolver::class), sys_get_temp_dir()), $oauthClient ?? $this->createStub(BlueskyOAuthClient::class));
+        // Anything else is the image of a content read from a page, downloaded from where it is
+        $httpClient = new MockHttpClient(function (string $method, string $url) use ($remoteImage): MockResponse {
+            $this->requests[] = ['url' => $url, 'body' => ''];
+
+            return new MockResponse($remoteImage);
+        });
+
+        return new BlueskyPublisher($configService, new SocialImageExporter($httpClient, $this->createStub(SiteUrlResolver::class), sys_get_temp_dir(), $configService), $oauthClient);
     }
 
     /**
@@ -58,20 +64,20 @@ class BlueskyPublisherTest extends TestCase
         return json_decode(end($this->requests)['body'], true)['record'];
     }
 
-    public function testIsConfiguredNeedsTheHandleAndTheAppPassword(): void
+    // The OAuth connection is the only way in, no app password any more
+    public function testIsConfiguredOnceConnected(): void
     {
         $this->assertTrue($this->createPublisher()->isConfigured());
-        $this->assertFalse($this->createPublisher(handle: null)->isConfigured());
-        $this->assertFalse($this->createPublisher(password: '')->isConfigured());
+        $this->assertFalse($this->createPublisher(connected: false)->isConfigured());
     }
 
-    // The handle is often copied with its "@", which createSession refuses
-    public function testTheSessionIsOpenedWithTheHandleWithoutItsAt(): void
+    // Posted as the connected account
+    public function testTheRecordIsWrittenInTheConnectedRepo(): void
     {
         $this->createPublisher()->publish('Hello', new SocialContent('1', 'Title', 'https://example.org'));
 
-        $this->assertStringEndsWith('com.atproto.server.createSession', $this->requests[0]['url']);
-        $this->assertSame('example.bsky.social', json_decode($this->requests[0]['body'], true)['identifier']);
+        $this->assertSame('com.atproto.repo.createRecord', $this->requests[0]['url']);
+        $this->assertSame('did:plc:abc', json_decode($this->requests[0]['body'], true)['repo']);
     }
 
     public function testPublishReturnsThePostUri(): void
@@ -119,7 +125,7 @@ class BlueskyPublisherTest extends TestCase
             unlink($path);
         }
 
-        $this->assertStringEndsWith('com.atproto.repo.uploadBlob', $this->requests[1]['url']);
+        $this->assertSame('com.atproto.repo.uploadBlob', $this->requests[0]['url']);
         $image = $this->postedRecord()['embed']['images'][0];
         $this->assertSame('Title', $image['alt']);
         $this->assertSame(['width' => 4, 'height' => 2], $image['aspectRatio']);
@@ -129,7 +135,7 @@ class BlueskyPublisherTest extends TestCase
     {
         $this->createPublisher()->publish('Hello', new SocialContent('1', 'Title', 'https://example.org', imagePath: '/nowhere.jpg'));
 
-        $this->assertCount(2, $this->requests);
+        $this->assertCount(1, $this->requests);
         $this->assertArrayNotHasKey('embed', $this->postedRecord());
     }
 
@@ -138,7 +144,7 @@ class BlueskyPublisherTest extends TestCase
     {
         $this->expectExceptionMessage('Record too long');
 
-        $this->createPublisher(recordStatus: 400)->publish('Hello', new SocialContent('1', 'Title', 'https://example.org'));
+        $this->createPublisher(refused: true)->publish('Hello', new SocialContent('1', 'Title', 'https://example.org'));
     }
 
     // A post nobody read going out under the site's name is the mistake not to make by default
@@ -152,7 +158,7 @@ class BlueskyPublisherTest extends TestCase
     {
         $this->createPublisher(remoteImage: $this->png())->publish('Hello', new SocialContent('1', 'Title', 'https://example.org', imageUrl: 'https://example.org/og.png'));
 
-        $this->assertSame('https://example.org/og.png', $this->requests[1]['url']);
+        $this->assertSame('https://example.org/og.png', $this->requests[0]['url']);
         $this->assertSame(['width' => 4, 'height' => 2], $this->postedRecord()['embed']['images'][0]['aspectRatio']);
     }
 
@@ -172,25 +178,5 @@ class BlueskyPublisherTest extends TestCase
         imagepng(imagecreatetruecolor(4, 2));
 
         return (string) ob_get_clean();
-    }
-
-    // Connected, the account's own server is called through the OAuth session: no session opened with a password, the account being the connected one
-    public function testTheOAuthConnectionIsUsedWhenThereIsOne(): void
-    {
-        $calls = [];
-        $oauthClient = $this->createStub(BlueskyOAuthClient::class);
-        $oauthClient->method('isConnected')->willReturn(true);
-        $oauthClient->method('getDid')->willReturn('did:plc:oauth');
-        $oauthClient->method('call')->willReturnCallback(static function (string $method, array $options) use (&$calls): array {
-            $calls[$method] = $options;
-
-            return ['uri' => 'at://did:plc:oauth/app.bsky.feed.post/3k'];
-        });
-        $publisher = $this->createPublisher(null, null, oauthClient: $oauthClient);
-
-        $this->assertTrue($publisher->isConfigured());
-        $this->assertSame('at://did:plc:oauth/app.bsky.feed.post/3k', $publisher->publish('Hello', new SocialContent('1', 'Title', 'https://example.org/1')));
-        $this->assertSame([], $this->requests);
-        $this->assertSame('did:plc:oauth', $calls['com.atproto.repo.createRecord']['json']['repo']);
     }
 }

@@ -2,29 +2,45 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="fr" datatype="plaintext" original="social_narration.fr.xlf">
         <body>
-            <trans-unit id="8.eMazc">
-                <source>narration.bluesky_connect</source>
-                <target>« Connecter Bluesky » relie le site à votre compte Bluesky : une fois, puis à nouveau si l'accès est retiré.</target>
-            </trans-unit>
-            <trans-unit id="_JCsjxB">
-                <source>narration.google_connect</source>
-                <target>« Connecter Google » autorise le site à lire les avis de votre fiche Google et à y répondre.</target>
-            </trans-unit>
             <trans-unit id="6v0WkQM">
                 <source>narration.guided_step_social_bluesky_connect</source>
-                <target>Dans la colonne de gauche, ouvrez le menu « Social » et cliquez sur « Connecter Bluesky », puis autorisez l'accès sur Bluesky. Le site enregistre lui-même la session.</target>
+                <target>Cliquez sur « Connecter » dans la tuile « Bluesky », puis autorisez l'accès sur Bluesky. Le site enregistre lui-même la session.</target>
             </trans-unit>
             <trans-unit id="SiT0_lg">
                 <source>narration.guided_step_social_bluesky_handle</source>
-                <target>Si vous le souhaitez, cherchez « social-bluesky-handle » dans la liste des réglages et indiquez le compte à relier ; laissé vide, vous le choisirez sur la page de Bluesky.</target>
+                <target>Enfin, si vous le souhaitez, cherchez « social-bluesky-handle » dans la configuration et indiquez le compte relié : la prochaine connexion le proposera d'emblée. Laissé vide, vous le choisirez sur la page de Bluesky.</target>
             </trans-unit>
             <trans-unit id=".hfIUWY">
                 <source>narration.guided_step_social_bluesky_mode</source>
                 <target>Reste à choisir si une publication attend votre relecture ou part d'elle-même : c'est le réglage « social-bluesky-publish-mode ».</target>
             </trans-unit>
+            <trans-unit id="d1zkKea">
+                <source>narration.guided_step_social_calendar_drafts</source>
+                <target>À droite, « À valider » rassemble les brouillons : un clic en ouvre un, et le glisser sur un créneau le valide et le prévoit à ce moment.</target>
+            </trans-unit>
+            <trans-unit id=".Jk8anA">
+                <source>narration.guided_step_social_calendar_open</source>
+                <target>Le panneau vous emmène sur le calendrier : la semaine de vos publications, celles parties et celles validées à la place du créneau qui les enverra. Ses heures de début et de fin se règlent dans la configuration.</target>
+            </trans-unit>
+            <trans-unit id="eg9BzH0">
+                <source>narration.guided_step_social_calendar_panel</source>
+                <target>Cliquez une publication du calendrier : son panneau la prévoit à une heure précise, la remet dans la file ou ouvre ses textes pour les modifier.</target>
+            </trans-unit>
+            <trans-unit id="txGnEBN">
+                <source>narration.guided_step_social_calendar_queue</source>
+                <target>Au-dessus, « File » garde les publications validées sans date : elles partent, dans l'ordre, au prochain créneau libre qui publie sur leurs réseaux.</target>
+            </trans-unit>
+            <trans-unit id="qdz7h.H">
+                <source>narration.guided_step_social_calendar_slot</source>
+                <target>Chaque créneau à venir accepte une publication glissée dessus, qui partira à ce moment précis. Un créneau libre propose aussi « Préparer pour ce créneau ».</target>
+            </trans-unit>
+            <trans-unit id="9Xxpgca">
+                <source>narration.guided_step_social_connections_open</source>
+                <target>Dans la colonne de gauche, le menu « Social » mène à « Connexions » : chaque réseau y a sa tuile, avec son état et son bouton « Connecter ».</target>
+            </trans-unit>
             <trans-unit id="5VACpzn">
                 <source>narration.guided_step_social_google_connect</source>
-                <target>Dans la colonne de gauche, ouvrez le menu « Social » et cliquez sur « Connecter Google », puis autorisez l'accès avec le compte Google propriétaire de la fiche. Le site enregistre lui-même le jeton, le compte et la fiche.</target>
+                <target>Cliquez sur « Connecter » dans la tuile « Fiche Google », puis autorisez l'accès avec le compte Google propriétaire de la fiche. Le site enregistre lui-même le jeton, le compte et la fiche.</target>
             </trans-unit>
             <trans-unit id="KaaiHLF">
                 <source>narration.guided_step_social_google_credentials</source>
@@ -49,6 +65,22 @@
             <trans-unit id="v_voss_">
                 <source>narration.guided_step_social_google_sync</source>
                 <target>Le reste se fait sans vous : les avis arrivent chaque nuit, la tâche de synchronisation étant planifiée par le bundle. Il ne reste qu'une clé facultative, « social-google-listing-url », l'adresse publique de la fiche, reprise dans les données structurées du site.</target>
+            </trans-unit>
+            <trans-unit id="xmLlJfS">
+                <source>narration.guided_step_social_linkedin_connect</source>
+                <target>Cliquez sur « Connecter » dans la tuile « LinkedIn », puis autorisez l'accès avec le compte LinkedIn du profil. Le site enregistre lui-même le jeton et le profil.</target>
+            </trans-unit>
+            <trans-unit id="zUH7tGI">
+                <source>narration.guided_step_social_linkedin_credentials</source>
+                <target>Cherchez « social-linkedin-client-id » et « social-linkedin-client-secret » dans la liste des réglages, et collez-y les deux valeurs de l'application.</target>
+            </trans-unit>
+            <trans-unit id="h_A4fIC">
+                <source>narration.guided_step_social_linkedin_mode</source>
+                <target>Reste à choisir si une publication attend votre relecture ou part d'elle-même : c'est le réglage « social-linkedin-publish-mode ». Et l'accès dure soixante jours : reconnectez-vous depuis la tuile avant qu'il expire.</target>
+            </trans-unit>
+            <trans-unit id="ocfaM9d">
+                <source>narration.guided_step_social_linkedin_prerequisites</source>
+                <target>Cette première partie se passe chez LinkedIn : créez une application rattachée à une Page que vous administrez, ajoutez-lui les produits de partage et de connexion, et déclarez l'adresse de retour du site. Revenez ici avec l'identifiant et la clé secrète.</target>
             </trans-unit>
             <trans-unit id="O5SVDU.">
                 <source>narration.guided_step_social_links_display_label</source>
@@ -84,7 +116,7 @@
             </trans-unit>
             <trans-unit id="Nhfo2ra">
                 <source>narration.guided_step_social_meta_connect</source>
-                <target>Dans la colonne de gauche, ouvrez le menu « Social » et cliquez sur « Connecter Meta », puis autorisez l'accès avec le compte Facebook qui gère la Page. Le site enregistre lui-même la Page, son jeton et le compte Instagram.</target>
+                <target>Cliquez sur « Connecter » dans la tuile « Facebook et Instagram », puis autorisez l'accès avec le compte Facebook qui gère la Page. Le site enregistre lui-même la Page, son jeton et le compte Instagram.</target>
             </trans-unit>
             <trans-unit id="ek3eUUp">
                 <source>narration.guided_step_social_meta_credentials</source>
@@ -98,17 +130,29 @@
                 <source>narration.guided_step_social_meta_prerequisites</source>
                 <target>Cette première partie se passe chez Meta, sur developers.facebook.com : créez une application, ajoutez-lui la connexion Facebook avec l'adresse de retour du site, et laissez-la en mode développement. Vérifiez aussi que la Page est reliée au compte Instagram professionnel. Revenez ici avec l'identifiant et la clé secrète.</target>
             </trans-unit>
+            <trans-unit id="vcZmc00">
+                <source>narration.guided_step_social_posts_approve</source>
+                <target>De retour sur la liste, si des créneaux sont actifs, « Valider pour le prochain créneau » confie la publication au prochain créneau qui publie sur ses réseaux, ou à sa date prévue, au lieu de l'envoyer tout de suite.</target>
+            </trans-unit>
             <trans-unit id="4cJ._fk">
                 <source>narration.guided_step_social_posts_edit</source>
                 <target>Le bouton de modification ouvre la publication : un texte par réseau, chacun à la longueur que ce réseau accepte, sous l'image qui partira avec. Corrigez ce qui doit l'être.</target>
+            </trans-unit>
+            <trans-unit id="kNA4Y5N">
+                <source>narration.guided_step_social_posts_networks</source>
+                <target>« Envoyer sur » choisit les réseaux de cette publication : décochez-en un pour ne pas y publier, cochez-en un pour qu'un texte lui soit écrit.</target>
             </trans-unit>
             <trans-unit id="EhIZhRa">
                 <source>narration.guided_step_social_posts_open</source>
                 <target>Le panneau vous emmène sur l'écran des publications. Elles se préparent d'elles-mêmes, aux heures des créneaux de publication, ou à défaut au rythme que fixe le réglage de l'intervalle ; celles en brouillon attendent ici votre relecture.</target>
             </trans-unit>
+            <trans-unit id="RyKdiUj">
+                <source>narration.guided_step_social_posts_planned_at</source>
+                <target>Le champ « Prévue le » est facultatif : vide, la publication validée part au prochain créneau libre ; rempli, elle part à cette date et heure précises, au quart d'heure près.</target>
+            </trans-unit>
             <trans-unit id="kE9wnJX">
                 <source>narration.guided_step_social_posts_prepare</source>
-                <target>Pour ne pas attendre, « Préparer maintenant » prend le prochain contenu, et « Depuis une adresse » prépare n'importe quelle page, de ce site ou d'un autre.</target>
+                <target>Pour ne pas attendre, « Préparer maintenant » prend le prochain contenu, et « Depuis une adresse » prépare n'importe quelle page, de ce site ou d'un autre. Et « Préparer 7 brouillons » en prépare une semaine d'avance, que vous validerez ensuite une par une.</target>
             </trans-unit>
             <trans-unit id="nuTQi3q">
                 <source>narration.guided_step_social_posts_publish</source>
@@ -124,7 +168,7 @@
             </trans-unit>
             <trans-unit id="w7ckofR">
                 <source>narration.guided_step_social_schedules_networks</source>
-                <target>Cochez les réseaux sur lesquels ce créneau publie ; sans rien cocher, il publie sur tous ceux qui sont configurés.</target>
+                <target>Cochez les réseaux sur lesquels ce créneau publie ; sans rien cocher, il publie sur tous ceux qui sont connectés.</target>
             </trans-unit>
             <trans-unit id="FrNIZFb">
                 <source>narration.guided_step_social_schedules_open</source>
@@ -172,7 +216,7 @@
             </trans-unit>
             <trans-unit id="Of.lzyi">
                 <source>narration.guided_step_social_share_buttons_open</source>
-                <target>Les boutons de partage sont déjà sur vos pages. Ce que nous réglons ici, c'est lesquels apparaissent et à quoi ils ressemblent. Le panneau vous emmène sur leur écran.</target>
+                <target>Les boutons de partage s'affichent sur vos pages. Ce que nous réglons ici, c'est lesquels apparaissent et à quoi ils ressemblent ; si un avertissement indique qu'ils sont désactivés, réactivez-les d'abord. Le panneau vous emmène sur leur écran.</target>
             </trans-unit>
             <trans-unit id="W4zEcwv">
                 <source>narration.guided_step_social_share_buttons_save</source>
@@ -182,17 +226,17 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>En dessous, choisissez la forme : bouton large, carré ou rond. C'est la place que les boutons prendront sous vos pages.</target>
             </trans-unit>
-            <trans-unit id="SsICxhs">
-                <source>narration.meta_connect</source>
-                <target>« Connecter Meta » relie le site à votre Page Facebook et à votre compte Instagram : une fois, puis à nouveau si l'accès est retiré.</target>
-            </trans-unit>
-            <trans-unit id="eIkRyvF">
-                <source>narration.share_buttons_disabled</source>
-                <target>« Boutons de partage (désactivés) » vous emmène au réglage qui les commande : passez-le à true et les boutons reviennent, avec l'écran qui règle leurs réseaux et leur style.</target>
-            </trans-unit>
             <trans-unit id="._Fe6M5">
                 <source>narration.share_buttons_settings</source>
                 <target>« Boutons de partage » règle les boutons posés sous vos pages : quels réseaux, dans quel ordre et à quoi ils ressemblent.</target>
+            </trans-unit>
+            <trans-unit id="dugZDEg">
+                <source>narration.social_calendar</source>
+                <target>« Calendrier » montre le calendrier de vos publications : celles parties, et celles validées à la place où elles partiront. Glissez-en une sur un créneau pour la prévoir.</target>
+            </trans-unit>
+            <trans-unit id="Yn0vUBO">
+                <source>narration.social_connections</source>
+                <target>« Connexions » rassemble les réseaux auxquels le site se connecte, chacun sur sa tuile : connecté ou non, et le bouton qui le connecte.</target>
             </trans-unit>
             <trans-unit id="hCyh7lI">
                 <source>narration.social_links</source>

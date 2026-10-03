@@ -30,8 +30,6 @@ class BlueskyOAuthClient
 
     public const string SESSION_SLUG = 'social-bluesky-oauth-session';
 
-    private const string KEY_ID = 'c975l-social-1';
-
     // A token refreshed this many seconds before it expires, so it never runs out between the check and the call
     private const int EXPIRY_MARGIN = 60;
 
@@ -85,7 +83,21 @@ class BlueskyOAuthClient
     /** @return array{keys: list<array<string, string>>} */
     public function jwks(): array
     {
-        return ['keys' => [[...$this->signer->publicJwk($this->clientKey()), 'kid' => self::KEY_ID, 'use' => 'sig', 'alg' => 'ES256']]];
+        $jwk = $this->signer->publicJwk($this->clientKey());
+
+        return ['keys' => [[...$jwk, 'kid' => Es256Signer::thumbprint($jwk), 'use' => 'sig', 'alg' => 'ES256']]];
+    }
+
+    // Bluesky reads the client from "site-url": an authorization started from another host would be signed with that host's key and sent back to "site-url"'s callback, so it can only fail
+    public function isSiteHost(string $host): bool
+    {
+        return strtolower($host) === strtolower((string) parse_url($this->siteUrl(), \PHP_URL_HOST));
+    }
+
+    // The address the connection has to be started from
+    public function siteUrl(): string
+    {
+        return $this->siteUrlResolver->siteUrl() ?? throw new \RuntimeException('"site-url" is not set: Bluesky needs the site\'s address to connect it.');
     }
 
     // Pushes the authorization request and answers the url to send the owner to, with what the callback needs kept in the session - the account the handle names, or the one picked on Bluesky's page when there is none
@@ -298,9 +310,11 @@ class BlueskyOAuthClient
     /** @return array{client_assertion_type: string, client_assertion: string} */
     private function clientAssertion(string $issuer): array
     {
+        $key = $this->clientKey();
+
         return [
             'client_assertion_type' => 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
-            'client_assertion' => $this->signer->sign($this->clientKey(), ['kid' => self::KEY_ID], [
+            'client_assertion' => $this->signer->sign($key, ['kid' => Es256Signer::thumbprint($this->signer->publicJwk($key))], [
                 'iss' => $this->clientId(),
                 'sub' => $this->clientId(),
                 'aud' => $issuer,
@@ -438,10 +452,5 @@ class BlueskyOAuthClient
     private function redirectUri(): string
     {
         return $this->siteUrl() . $this->urlGenerator->generate('social_bluesky_oauth_callback');
-    }
-
-    private function siteUrl(): string
-    {
-        return $this->siteUrlResolver->siteUrl() ?? throw new \RuntimeException('"site-url" is not set: Bluesky needs the site\'s address to connect it.');
     }
 }

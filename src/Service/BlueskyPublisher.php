@@ -13,13 +13,10 @@ namespace c975L\SocialBundle\Service;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\UiBundle\Model\SocialContent;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-// Posts on Bluesky through the AT Protocol, through the OAuth connection when there is one (see BlueskyOAuthClient), otherwise signed in with an app password - one the account owner creates in Bluesky's settings and revokes there, never the account's own password. With the app password, a session per post: a few a day at most, not worth storing a refresh token for
+// Posts on Bluesky through the AT Protocol, with the OAuth connection made on the "Connexions" screen (see BlueskyOAuthClient)
 class BlueskyPublisher implements NetworkPublisherInterface
 {
-    public const string SERVICE = 'https://bsky.social';
-
     // What app.bsky.feed.post accepts, counted in graphemes - as many code points never exceed it
     private const int MAX_LENGTH = 300;
 
@@ -27,7 +24,6 @@ class BlueskyPublisher implements NetworkPublisherInterface
     private const int MAX_IMAGE_SIZE = 2000000;
 
     public function __construct(
-        private readonly HttpClientInterface $httpClient,
         private readonly ConfigServiceInterface $configService,
         private readonly SocialImageExporter $imageExporter,
         private readonly BlueskyOAuthClient $oauthClient,
@@ -41,7 +37,7 @@ class BlueskyPublisher implements NetworkPublisherInterface
 
     public function isConfigured(): bool
     {
-        return $this->oauthClient->isConnected() || (null !== $this->handle() && null !== $this->appPassword());
+        return $this->oauthClient->isConnected();
     }
 
     // Review unless the site said otherwise: a post nobody read going out under the site's name is the one mistake not to make by default
@@ -57,20 +53,18 @@ class BlueskyPublisher implements NetworkPublisherInterface
 
     public function publish(string $text, SocialContent $content): string
     {
-        [$did, $call] = $this->session();
-
         $record = $this->record($text);
         $image = $this->image($content);
         if (null !== $image) {
-            $uploaded = $call('com.atproto.repo.uploadBlob', [
+            $uploaded = $this->oauthClient->call('com.atproto.repo.uploadBlob', [
                 'headers' => ['Content-Type' => $image['mime']],
                 'body' => $image['bytes'],
             ]);
             $record['embed'] = $this->embed($uploaded['blob'], $image, $content);
         }
 
-        $created = $call('com.atproto.repo.createRecord', ['json' => [
-            'repo' => $did,
+        $created = $this->oauthClient->call('com.atproto.repo.createRecord', ['json' => [
+            'repo' => (string) $this->oauthClient->getDid(),
             'collection' => 'app.bsky.feed.post',
             'record' => $record,
         ]]);
@@ -158,61 +152,12 @@ class BlueskyPublisher implements NetworkPublisherInterface
     /** @return array{mime: string, bytes: string, width: int, height: int}|null */
     private function image(SocialContent $content): ?array
     {
-        $bytes = $this->imageExporter->read($content);
+        $bytes = $this->imageExporter->bytes($content);
         $size = null === $bytes || \strlen($bytes) > self::MAX_IMAGE_SIZE ? false : getimagesizefromstring($bytes);
         if (false === $size) {
             return null;
         }
 
         return ['mime' => $size['mime'], 'bytes' => (string) $bytes, 'width' => $size[0], 'height' => $size[1]];
-    }
-
-    // The account posted as and how to call its server: the OAuth connection, or a session opened with the app password whose token every call carries
-    /** @return array{0: string, 1: \Closure(string, array<string, mixed>): array<string, mixed>} */
-    private function session(): array
-    {
-        if ($this->oauthClient->isConnected()) {
-            return [(string) $this->oauthClient->getDid(), $this->oauthClient->call(...)];
-        }
-
-        $session = $this->call('com.atproto.server.createSession', ['json' => [
-            'identifier' => $this->handle(),
-            'password' => $this->appPassword(),
-        ]]);
-        $authorization = 'Bearer ' . $session['accessJwt'];
-
-        return [(string) $session['did'], fn (string $method, array $options): array => $this->call($method, [...$options, 'headers' => [...$options['headers'] ?? [], 'Authorization' => $authorization]])];
-    }
-
-    /**
-     * @param array<string, mixed> $options
-     *
-     * @return array<string, mixed>
-     */
-    private function call(string $method, array $options): array
-    {
-        $response = $this->httpClient->request('POST', self::SERVICE . '/xrpc/' . $method, [...$options, 'timeout' => 30]);
-
-        // Bluesky explains a refusal in the body ("AuthenticationRequired", "BlobTooLarge"...), which is what the screen should show rather than a bare status code
-        $data = $response->toArray(false);
-        if (200 !== $response->getStatusCode()) {
-            throw new \RuntimeException(sprintf('Bluesky refused %s: %s', $method, $data['message'] ?? $data['error'] ?? $response->getStatusCode()));
-        }
-
-        return $data;
-    }
-
-    private function handle(): ?string
-    {
-        $handle = trim((string) $this->configService->get('social-bluesky-handle'));
-
-        return '' === $handle ? null : ltrim($handle, '@');
-    }
-
-    private function appPassword(): ?string
-    {
-        $password = trim((string) $this->configService->get('social-bluesky-app-password'));
-
-        return '' === $password ? null : $password;
     }
 }

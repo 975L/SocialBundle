@@ -58,6 +58,13 @@ class Es256Signer
         return $input . '.' . self::base64Url($this->derToRaw($der));
     }
 
+    // The RFC 7638 thumbprint of a public JWK: its required members in lexicographic order, hashed - a key id that changes with the key itself
+    /** @param array<string, string> $jwk */
+    public static function thumbprint(array $jwk): string
+    {
+        return self::base64Url(hash('sha256', (string) json_encode(['crv' => $jwk['crv'], 'kty' => $jwk['kty'], 'x' => $jwk['x'], 'y' => $jwk['y']], \JSON_UNESCAPED_SLASHES), true));
+    }
+
     public static function base64Url(string $bytes): string
     {
         return rtrim(strtr(base64_encode($bytes), '+/', '-_'), '=');

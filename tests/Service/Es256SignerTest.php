@@ -61,4 +61,12 @@ class Es256SignerTest extends TestCase
         $this->assertSame('P-256', $jwk['crv']);
         $this->assertSame(32, \strlen(self::base64UrlDecode($jwk['x'])));
     }
+
+    // RFC 7638: the required members alone, in lexicographic order and without spaces, whatever else the JWK carries
+    public function testTheThumbprintHashesTheRequiredMembersInOrder(): void
+    {
+        $jwk = ['kty' => 'EC', 'y' => 'Y', 'crv' => 'P-256', 'x' => 'X', 'kid' => 'ignored', 'use' => 'sig'];
+
+        $this->assertSame(Es256Signer::base64Url(hash('sha256', '{"crv":"P-256","kty":"EC","x":"X","y":"Y"}', true)), Es256Signer::thumbprint($jwk));
+    }
 }

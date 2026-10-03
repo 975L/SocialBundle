@@ -2,29 +2,45 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="social_narration.en.xlf">
         <body>
-            <trans-unit id="8.eMazc">
-                <source>narration.bluesky_connect</source>
-                <target>"Connect Bluesky" links the site to your Bluesky account: once, then again if the access is revoked.</target>
-            </trans-unit>
-            <trans-unit id="_JCsjxB">
-                <source>narration.google_connect</source>
-                <target>"Connect Google" lets the site read the reviews of your Google listing and answer them.</target>
-            </trans-unit>
             <trans-unit id="6v0WkQM">
                 <source>narration.guided_step_social_bluesky_connect</source>
-                <target>In the left-hand column, open the "Social" submenu and click "Connect Bluesky", then grant access on Bluesky. The site stores the session by itself.</target>
+                <target>Click "Connect" on the "Bluesky" tile, then grant access on Bluesky. The site stores the session by itself.</target>
             </trans-unit>
             <trans-unit id="SiT0_lg">
                 <source>narration.guided_step_social_bluesky_handle</source>
-                <target>If you wish, search for "social-bluesky-handle" in the settings list and name the account to link; left empty, you will pick it on Bluesky's page.</target>
+                <target>Last, if you wish, search for "social-bluesky-handle" in the configuration and name the linked account: the next connection will offer it at once. Left empty, you will pick it on Bluesky's page.</target>
             </trans-unit>
             <trans-unit id=".hfIUWY">
                 <source>narration.guided_step_social_bluesky_mode</source>
                 <target>What is left is choosing whether a post waits for your review or goes out by itself: that is the "social-bluesky-publish-mode" setting.</target>
             </trans-unit>
+            <trans-unit id="d1zkKea">
+                <source>narration.guided_step_social_calendar_drafts</source>
+                <target>On the right, "To approve" gathers the drafts: a click opens one, and dragging it onto a slot approves it and plans it there.</target>
+            </trans-unit>
+            <trans-unit id=".Jk8anA">
+                <source>narration.guided_step_social_calendar_open</source>
+                <target>The panel takes you to the calendar: the week of your posts, the ones gone out and the approved ones in the slot that will send them. Its start and end hours are set in the configuration.</target>
+            </trans-unit>
+            <trans-unit id="eg9BzH0">
+                <source>narration.guided_step_social_calendar_panel</source>
+                <target>Click a post on the calendar: its panel plans it at a given time, puts it back in the queue or opens its texts to edit them.</target>
+            </trans-unit>
+            <trans-unit id="txGnEBN">
+                <source>narration.guided_step_social_calendar_queue</source>
+                <target>Above it, "Queue" keeps the approved posts with no date: they go out, in order, at the next free slot publishing on their networks.</target>
+            </trans-unit>
+            <trans-unit id="qdz7h.H">
+                <source>narration.guided_step_social_calendar_slot</source>
+                <target>Each coming slot takes a post dragged onto it, which will go out at that very moment. A free slot also offers "Prepare for this slot".</target>
+            </trans-unit>
+            <trans-unit id="9Xxpgca">
+                <source>narration.guided_step_social_connections_open</source>
+                <target>In the left-hand column, the "Social" submenu leads to "Connections": each network has its tile there, with its state and its "Connect" button.</target>
+            </trans-unit>
             <trans-unit id="5VACpzn">
                 <source>narration.guided_step_social_google_connect</source>
-                <target>In the left-hand column, open the "Social" submenu and click "Connect Google", then grant access with the Google account owning the listing. The site stores the token, the account and the listing by itself.</target>
+                <target>Click "Connect" on the "Google Business Profile" tile, then grant access with the Google account owning the listing. The site stores the token, the account and the listing by itself.</target>
             </trans-unit>
             <trans-unit id="KaaiHLF">
                 <source>narration.guided_step_social_google_credentials</source>
@@ -49,6 +65,22 @@
             <trans-unit id="v_voss_">
                 <source>narration.guided_step_social_google_sync</source>
                 <target>The rest happens without you: the reviews come in every night, the synchronization task being scheduled by the bundle itself. Only one optional key is left, "social-google-listing-url", the public address of the listing, carried into the site's structured data.</target>
+            </trans-unit>
+            <trans-unit id="xmLlJfS">
+                <source>narration.guided_step_social_linkedin_connect</source>
+                <target>Click "Connect" on the "LinkedIn" tile, then grant access with the profile's LinkedIn account. The site stores the token and the profile by itself.</target>
+            </trans-unit>
+            <trans-unit id="zUH7tGI">
+                <source>narration.guided_step_social_linkedin_credentials</source>
+                <target>Search for "social-linkedin-client-id" and "social-linkedin-client-secret" in the settings list, and paste in the app's two values.</target>
+            </trans-unit>
+            <trans-unit id="h_A4fIC">
+                <source>narration.guided_step_social_linkedin_mode</source>
+                <target>What is left is choosing whether a post waits for your review or goes out by itself: that is the "social-linkedin-publish-mode" setting. And the access lasts sixty days: connect again from the tile before it expires.</target>
+            </trans-unit>
+            <trans-unit id="ocfaM9d">
+                <source>narration.guided_step_social_linkedin_prerequisites</source>
+                <target>This first part happens at LinkedIn: create an app attached to a Page you administer, add it the sharing and sign-in products, and declare the site's return address. Come back here with the ID and the secret.</target>
             </trans-unit>
             <trans-unit id="O5SVDU.">
                 <source>narration.guided_step_social_links_display_label</source>
@@ -84,7 +116,7 @@
             </trans-unit>
             <trans-unit id="Nhfo2ra">
                 <source>narration.guided_step_social_meta_connect</source>
-                <target>In the left-hand column, open the "Social" submenu and click "Connect Meta", then grant access with the Facebook account managing the Page. The site stores the Page, its token and the Instagram account by itself.</target>
+                <target>Click "Connect" on the "Facebook &amp; Instagram" tile, then grant access with the Facebook account managing the Page. The site stores the Page, its token and the Instagram account by itself.</target>
             </trans-unit>
             <trans-unit id="ek3eUUp">
                 <source>narration.guided_step_social_meta_credentials</source>
@@ -98,17 +130,29 @@
                 <source>narration.guided_step_social_meta_prerequisites</source>
                 <target>This first part happens at Meta, on developers.facebook.com: create an app, add Facebook Login to it with the site's return address, and leave it in development mode. Check too that the Page is linked to the Instagram professional account. Come back here with the ID and the secret.</target>
             </trans-unit>
+            <trans-unit id="vcZmc00">
+                <source>narration.guided_step_social_posts_approve</source>
+                <target>Back on the list, with slots on, "Approve for the next slot" hands the post to the next slot publishing on its networks, or to its planned date, instead of sending it at once.</target>
+            </trans-unit>
             <trans-unit id="4cJ._fk">
                 <source>narration.guided_step_social_posts_edit</source>
                 <target>The edit button opens the post: one text per network, each at the length that network accepts, under the image going out with it. Correct what needs to be.</target>
+            </trans-unit>
+            <trans-unit id="kNA4Y5N">
+                <source>narration.guided_step_social_posts_networks</source>
+                <target>"Send on" picks this post's networks: untick one not to post there, tick one to get a text written for it.</target>
             </trans-unit>
             <trans-unit id="EhIZhRa">
                 <source>narration.guided_step_social_posts_open</source>
                 <target>The panel takes you to the posts screen. They are prepared by themselves, at the times of the publication slots, or failing any, at the pace the interval setting sets; the drafts wait here for your review.</target>
             </trans-unit>
+            <trans-unit id="RyKdiUj">
+                <source>narration.guided_step_social_posts_planned_at</source>
+                <target>The "Planned for" field is optional: empty, the approved post goes out at the next free slot; filled, it goes out at that very date and time, to the quarter of an hour.</target>
+            </trans-unit>
             <trans-unit id="kE9wnJX">
                 <source>narration.guided_step_social_posts_prepare</source>
-                <target>Not to wait, "Prepare now" takes the next content, and "From an address" prepares any page, of this site or another one.</target>
+                <target>Not to wait, "Prepare now" takes the next content, and "From an address" prepares any page, of this site or another one. And "Prepare 7 drafts" prepares a week ahead, which you then approve one by one.</target>
             </trans-unit>
             <trans-unit id="nuTQi3q">
                 <source>narration.guided_step_social_posts_publish</source>
@@ -124,7 +168,7 @@
             </trans-unit>
             <trans-unit id="w7ckofR">
                 <source>narration.guided_step_social_schedules_networks</source>
-                <target>Tick the networks this slot posts on; with nothing ticked, it posts on every configured one.</target>
+                <target>Tick the networks this slot posts on; with nothing ticked, it posts on every connected one.</target>
             </trans-unit>
             <trans-unit id="FrNIZFb">
                 <source>narration.guided_step_social_schedules_open</source>
@@ -172,7 +216,7 @@
             </trans-unit>
             <trans-unit id="Of.lzyi">
                 <source>narration.guided_step_social_share_buttons_open</source>
-                <target>The share buttons are already on your pages. What we set here is which ones show and what they look like. The panel takes you to their screen.</target>
+                <target>The share buttons show on your pages. What we set here is which ones show and what they look like; if a warning says they are disabled, turn them back on first. The panel takes you to their screen.</target>
             </trans-unit>
             <trans-unit id="W4zEcwv">
                 <source>narration.guided_step_social_share_buttons_save</source>
@@ -182,17 +226,17 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>Below, pick the shape: wide, square or round button. That is the room the buttons will take under your pages.</target>
             </trans-unit>
-            <trans-unit id="SsICxhs">
-                <source>narration.meta_connect</source>
-                <target>"Connect Meta" links the site to your Facebook Page and Instagram account: once, then again if the access is withdrawn.</target>
-            </trans-unit>
-            <trans-unit id="eIkRyvF">
-                <source>narration.share_buttons_disabled</source>
-                <target>"Share buttons (disabled)" takes you to the setting that governs them: set it to true and the buttons come back, along with the screen setting their networks and style.</target>
-            </trans-unit>
             <trans-unit id="._Fe6M5">
                 <source>narration.share_buttons_settings</source>
                 <target>"Share buttons" sets the buttons placed under your pages: which networks, in which order and what they look like.</target>
+            </trans-unit>
+            <trans-unit id="dugZDEg">
+                <source>narration.social_calendar</source>
+                <target>"Calendar" shows the calendar of your posts: the ones gone out, and the approved ones where they will go out. Drag one onto a slot to plan it there.</target>
+            </trans-unit>
+            <trans-unit id="Yn0vUBO">
+                <source>narration.social_connections</source>
+                <target>"Connections" gathers the networks the site connects to, each on its tile: connected or not, and the button that connects it.</target>
             </trans-unit>
             <trans-unit id="hCyh7lI">
                 <source>narration.social_links</source>

@@ -12,7 +12,9 @@ namespace c975L\SocialBundle\Tests\Controller\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\SocialPostCrudController;
+use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPublisher;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -37,6 +39,8 @@ class SocialPostCrudControllerTest extends TestCase
             $this->createStub(AdminUrlGeneratorInterface::class),
             $this->createStub(CsrfTokenManagerInterface::class),
             $translator,
+            $this->createStub(EntityManagerInterface::class),
+            $this->createStub(SocialPlanner::class),
         );
 
         // A real EasyAdmin runtime pre-populates the default actions before calling configureActions()
@@ -51,7 +55,7 @@ class SocialPostCrudControllerTest extends TestCase
     {
         $permissions = $this->configureActions()->getAsDto(null)->getActionPermissions();
 
-        foreach ([Action::INDEX, Action::EDIT, Action::DELETE, 'publishPost', 'prepareNextPost', 'prepareUrlPost'] as $action) {
+        foreach ([Action::INDEX, Action::EDIT, Action::DELETE, 'publishPost', 'approvePost', 'unapprovePost', 'prepareNextPost', 'prepareDrafts', 'prepareUrlPost'] as $action) {
             $this->assertSame('ROLE_EDITOR', $permissions[$action], $action);
         }
     }
@@ -73,5 +77,15 @@ class SocialPostCrudControllerTest extends TestCase
         $this->assertContains(Action::NEW, $actions->getAsDto(null)->getDisabledActions());
         $this->assertNotNull($actions->getAsDto(Crud::PAGE_INDEX)->getAction(Crud::PAGE_INDEX, 'prepareNextPost'));
         $this->assertNotNull($actions->getAsDto(Crud::PAGE_INDEX)->getAction(Crud::PAGE_INDEX, 'prepareUrlPost'));
+        $this->assertNotNull($actions->getAsDto(Crud::PAGE_INDEX)->getAction(Crud::PAGE_INDEX, 'prepareDrafts'));
+    }
+
+    // Approving is a gesture of the list, next to "Publish", the post's page saving the planned moment with its texts
+    public function testApprovingIsOfferedOnTheList(): void
+    {
+        $actions = $this->configureActions()->getAsDto(Crud::PAGE_INDEX);
+
+        $this->assertNotNull($actions->getAction(Crud::PAGE_INDEX, 'approvePost'));
+        $this->assertNotNull($actions->getAction(Crud::PAGE_INDEX, 'unapprovePost'));
     }
 }

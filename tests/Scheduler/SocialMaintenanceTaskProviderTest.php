@@ -47,9 +47,11 @@ class SocialMaintenanceTaskProviderTest extends TestCase
     {
         $tasks = $this->createProvider()->getMaintenanceTasks();
 
-        $this->assertCount(2, $tasks);
+        $this->assertCount(3, $tasks);
         $this->assertSame('c975l:social:publish', $tasks[1]->command);
         $this->assertSame('# * * * *', $tasks[1]->expression);
+        // The planned posts, to the quarter of an hour the calendar plans them by
+        $this->assertSame(['*/15 * * * *', 'c975l:social:publish --planned'], [$tasks[2]->expression, $tasks[2]->command]);
     }
 
     // One task of its own per slot, at its time - two slots at the same time being two tasks all the same
@@ -57,15 +59,15 @@ class SocialMaintenanceTaskProviderTest extends TestCase
     {
         $tasks = $this->createProvider([$this->createSlot(1, '08:05'), $this->createSlot(2, '08:05'), $this->createSlot(3, '19:30')])->getMaintenanceTasks();
 
-        $this->assertCount(5, $tasks);
-        $this->assertSame(['5 8 * * *', 'c975l:social:publish --slot=1'], [$tasks[2]->expression, $tasks[2]->command]);
-        $this->assertSame(['5 8 * * *', 'c975l:social:publish --slot=2'], [$tasks[3]->expression, $tasks[3]->command]);
-        $this->assertSame(['30 19 * * *', 'c975l:social:publish --slot=3'], [$tasks[4]->expression, $tasks[4]->command]);
+        $this->assertCount(6, $tasks);
+        $this->assertSame(['5 8 * * *', 'c975l:social:publish --slot=1'], [$tasks[3]->expression, $tasks[3]->command]);
+        $this->assertSame(['5 8 * * *', 'c975l:social:publish --slot=2'], [$tasks[4]->expression, $tasks[4]->command]);
+        $this->assertSame(['30 19 * * *', 'c975l:social:publish --slot=3'], [$tasks[5]->expression, $tasks[5]->command]);
     }
 
     // Before the migration created the table, every other task still has to run
     public function testAnUnreadableTableSchedulesNoSlot(): void
     {
-        $this->assertCount(2, $this->createProvider(failure: new \RuntimeException('Table not found'))->getMaintenanceTasks());
+        $this->assertCount(3, $this->createProvider(failure: new \RuntimeException('Table not found'))->getMaintenanceTasks());
     }
 }

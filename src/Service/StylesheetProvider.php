@@ -22,11 +22,13 @@ class StylesheetProvider implements BundleStylesheetProviderInterface, BundleSty
         ];
     }
 
-    // The silhouettes of this bundle's block kinds (see sass/block-thumbs.scss), for the visual picker of the back-office. A site showing them on a public page - a block showcase - contributes the same file through its own stylesheet provider, rather than every site carrying it on every page for the one that has such a page.
+    // The silhouettes of this bundle's block kinds (see sass/block-thumbs.scss), for the visual picker of the back-office, and the publication's screens. A site showing them on a public page - a block showcase - contributes the same file through its own stylesheet provider, rather than every site carrying it on every page for the one that has such a page.
     public function getManagementStylesheets(): array
     {
         return [
             'bundles/c975lsocial/css/block-thumbs.min.css',
+            // The publication's own screens: the calendar and the network badges (see sass/management.scss)
+            'bundles/c975lsocial/css/management.min.css',
         ];
     }
 }

@@ -23,13 +23,14 @@ class StylesheetProviderTest extends TestCase
         $this->assertSame(['bundles/c975lsocial/css/styles.min.css'], $provider->getStylesheets());
     }
 
-    // The sheet drawing this bundle's kinds, loaded in the back-office by UiBundle's picker and by any site page listing what the bundle offers
-    public function testTheSilhouetteSheetIsAdvertisedAndShipped(): void
+    // The sheet drawing this bundle's kinds, loaded in the back-office by UiBundle's picker and by any site page listing what the bundle offers, and the one of the publication's screens
+    public function testTheManagementSheetsAreAdvertisedAndShipped(): void
     {
         $stylesheets = new StylesheetProvider()->getManagementStylesheets();
 
-        $this->assertSame(['bundles/c975lsocial/css/block-thumbs.min.css'], $stylesheets);
+        $this->assertSame(['bundles/c975lsocial/css/block-thumbs.min.css', 'bundles/c975lsocial/css/management.min.css'], $stylesheets);
         $this->assertFileExists(\dirname(__DIR__, 2) . '/public/css/block-thumbs.min.css', 'The silhouettes sass has not been compiled.');
+        $this->assertFileExists(\dirname(__DIR__, 2) . '/public/css/management.min.css', 'The management sass has not been compiled.');
     }
 
     // A kind shipped without its silhouette falls back to UiBundle's default one - a title and two lines, the same frame as every other kind left undrawn, which is exactly what the picker exists to avoid

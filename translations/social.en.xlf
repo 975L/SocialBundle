@@ -30,6 +30,10 @@
                 <source>description.guided_project_social_bluesky_connect</source>
                 <target>Link the site to your Bluesky account, with no app to create and no password to type. Done once, then again if the access is withdrawn.</target>
             </trans-unit>
+            <trans-unit id="DmlLCtb">
+                <source>description.guided_project_social_calendar</source>
+                <target>See where each approved post will fall among the slots, and move it with a drag and drop.</target>
+            </trans-unit>
             <trans-unit id="Z4mtym8">
                 <source>description.guided_project_social_google_connect</source>
                 <target>The agency's own part: the access at Google, the two keys, and the consent. Done once, then again the day the token is revoked.</target>
@@ -37,6 +41,10 @@
             <trans-unit id="VNxe2Mo">
                 <source>description.guided_project_social_google_reviews</source>
                 <target>Moderate what Google brought in, answer it, and put the reviews on a page.</target>
+            </trans-unit>
+            <trans-unit id="1Qxr9lg">
+                <source>description.guided_project_social_linkedin_connect</source>
+                <target>The agency's part: the LinkedIn app, its two keys, and the consent. Done once, then every 60 days, the length of the access.</target>
             </trans-unit>
             <trans-unit id="FrDtWdT">
                 <source>description.guided_project_social_links</source>
@@ -60,19 +68,43 @@
             </trans-unit>
             <trans-unit id="0CvXFm7">
                 <source>description.guided_step_social_bluesky_connect</source>
-                <target>In the sidebar's "Social" submenu, click "Connect Bluesky", then grant access on Bluesky. The site stores the session by itself.</target>
+                <target>Click "Connect" on the "Bluesky" tile, then grant access on Bluesky. The site stores the session by itself.</target>
             </trans-unit>
             <trans-unit id="opsSET4">
                 <source>description.guided_step_social_bluesky_handle</source>
-                <target>Optional: search for "social-bluesky-handle" in the list and put the account's handle in it, for instance example.bsky.social. Left empty, the account is picked on Bluesky's page.</target>
+                <target>Optional, in the configuration: search for "social-bluesky-handle" and put the account's handle in it, for instance example.bsky.social, for the next connection to offer it at once. Left empty, the account is picked on Bluesky's page.</target>
             </trans-unit>
             <trans-unit id="82P_F59">
                 <source>description.guided_step_social_bluesky_mode</source>
                 <target>"social-bluesky-publish-mode" is set to "review": each post waits for review on the Posts screen. "auto" sends it as soon as it is prepared.</target>
             </trans-unit>
+            <trans-unit id="L8sqUEj">
+                <source>description.guided_step_social_calendar_drafts</source>
+                <target>The drafts wait here for their review: a click opens one, and dragging it onto a slot approves it and plans it there.</target>
+            </trans-unit>
+            <trans-unit id="17dUjo3">
+                <source>description.guided_step_social_calendar_open</source>
+                <target>The week of publications: the ones gone out, and each approved post in the slot that will send it. "Month" shows the whole month. The hours shown are set in the configuration.</target>
+            </trans-unit>
+            <trans-unit id="UA0SeWu">
+                <source>description.guided_step_social_calendar_panel</source>
+                <target>Click a post: its panel plans it at a given time, puts it back in the queue or opens its texts to edit them.</target>
+            </trans-unit>
+            <trans-unit id="rqDkuRv">
+                <source>description.guided_step_social_calendar_queue</source>
+                <target>The approved posts with no date: they go out, in order, at the next free slot publishing on their networks.</target>
+            </trans-unit>
+            <trans-unit id="4CAagYG">
+                <source>description.guided_step_social_calendar_slot</source>
+                <target>Drag a post onto a slot to plan it there, onto "Queue" for it to go out at the next free slot, onto "To approve" to take it out of the queue. A free slot also offers "Prepare for this slot".</target>
+            </trans-unit>
+            <trans-unit id="hLyq6N2">
+                <source>description.guided_step_social_connections_open</source>
+                <target>The "Connections" screen, in the sidebar's "Social" submenu: each network has its tile there, with its state and its "Connect" button.</target>
+            </trans-unit>
             <trans-unit id="Q2.88W1">
                 <source>description.guided_step_social_google_connect</source>
-                <target>In the sidebar's "Social" submenu, click "Connect Google", then grant access with the Google account owning the listing. The site stores the token, the account and the listing by itself.</target>
+                <target>Click "Connect" on the "Google Business Profile" tile, then grant access with the Google account owning the listing. The site stores the token, the account and the listing by itself.</target>
             </trans-unit>
             <trans-unit id="XzEU5fT">
                 <source>description.guided_step_social_google_credentials</source>
@@ -97,6 +129,22 @@
             <trans-unit id="r_RYin.">
                 <source>description.guided_step_social_google_sync</source>
                 <target>The reviews come in on their own every night, the "c975l:social:reviews:sync" task being scheduled by the bundle itself. One optional key is left, "social-google-listing-url": the public address of the listing, carried into the site's structured data.</target>
+            </trans-unit>
+            <trans-unit id="2BLT8wV">
+                <source>description.guided_step_social_linkedin_connect</source>
+                <target>Click "Connect" on the "LinkedIn" tile, then grant access with the profile's LinkedIn account. The site stores the token and the profile by itself.</target>
+            </trans-unit>
+            <trans-unit id="w.Eq8PT">
+                <source>description.guided_step_social_linkedin_credentials</source>
+                <target>Search for "social-linkedin-client-id" and "social-linkedin-client-secret" in the list, and paste in the app's two values. The secret only shows with the "Show sensitive data" button. The token and the profile fill themselves in at the next step.</target>
+            </trans-unit>
+            <trans-unit id="wF5Oo9b">
+                <source>description.guided_step_social_linkedin_mode</source>
+                <target>"social-linkedin-publish-mode" is set to "review": each post waits for review on the Posts screen. "auto" sends it as soon as it is prepared. The access lasts 60 days: connect again from the tile before it expires.</target>
+            </trans-unit>
+            <trans-unit id="h8ze_vb">
+                <source>description.guided_step_social_linkedin_prerequisites</source>
+                <target>This part happens on linkedin.com/developers: create an app attached to a LinkedIn Page you administer, add it the "Share on LinkedIn" and "Sign In with LinkedIn using OpenID Connect" products, and declare the site's address followed by "/social/linkedin/callback" as its redirect URL. Come back here with the app's ID and secret.</target>
             </trans-unit>
             <trans-unit id="vgXH0gX">
                 <source>description.guided_step_social_links_display_label</source>
@@ -128,7 +176,7 @@
             </trans-unit>
             <trans-unit id="a4QkcYj">
                 <source>description.guided_step_social_meta_connect</source>
-                <target>In the sidebar's "Social" submenu, click "Connect Meta", then grant access with the Facebook account managing the Page. The site stores the Page, its token and the Instagram account by itself.</target>
+                <target>Click "Connect" on the "Facebook &amp; Instagram" tile, then grant access with the Facebook account managing the Page. The site stores the Page, its token and the Instagram account by itself.</target>
             </trans-unit>
             <trans-unit id="0xEpiaR">
                 <source>description.guided_step_social_meta_credentials</source>
@@ -142,6 +190,10 @@
                 <source>description.guided_step_social_meta_prerequisites</source>
                 <target>This part happens on developers.facebook.com: create an app, add Facebook Login to it with the site's address followed by "/social/meta/callback" as redirect URI, and leave it in development mode. The Page must be linked to the Instagram professional account. Come back here with the app's ID and secret.</target>
             </trans-unit>
+            <trans-unit id="2_2asy8">
+                <source>description.guided_step_social_posts_approve</source>
+                <target>With slots on, this button hands the post to the next slot publishing on its networks, or to its planned date, instead of sending it at once.</target>
+            </trans-unit>
             <trans-unit id="hq1t6co">
                 <source>description.guided_step_social_posts_edit</source>
                 <target>The edit button opens the post: one text per network, each limited to the length that network accepts, under the image going out with it.</target>
@@ -152,7 +204,7 @@
             </trans-unit>
             <trans-unit id="hc6ecvb">
                 <source>description.guided_step_social_posts_prepare</source>
-                <target>"Prepare now" takes the next content without waiting; "From an address" prepares any page, of this site or another one, from its Open Graph tags.</target>
+                <target>"Prepare now" takes the next content without waiting; "From an address" prepares any page, of this site or another one, from its Open Graph tags. "Prepare 7 drafts" prepares a week ahead, to approve afterwards one by one.</target>
             </trans-unit>
             <trans-unit id="SvQRq5R">
                 <source>description.guided_step_social_posts_publish</source>
@@ -161,10 +213,6 @@
             <trans-unit id="lw9Mjxv">
                 <source>description.guided_step_social_schedules_edit</source>
                 <target>Add a slot, or take up an existing one.</target>
-            </trans-unit>
-            <trans-unit id="N0uYKyC">
-                <source>description.guided_step_social_schedules_networks</source>
-                <target>The networks this slot posts on. None ticked, every configured one.</target>
             </trans-unit>
             <trans-unit id="YvE_dVx">
                 <source>description.guided_step_social_schedules_open</source>
@@ -208,7 +256,7 @@
             </trans-unit>
             <trans-unit id="LxtX23p">
                 <source>description.guided_step_social_share_buttons_open</source>
-                <target>The share buttons are already on your pages: what is set here is which ones, and what they look like.</target>
+                <target>The share buttons show on your pages: what is set here is which ones, and what they look like. If a warning says they are disabled, turn them back on first.</target>
             </trans-unit>
             <trans-unit id="bRoisnG">
                 <source>description.guided_step_social_share_buttons_shape</source>
@@ -221,6 +269,22 @@
             <trans-unit id="10Bz8lS">
                 <source>flash.bluesky_refused</source>
                 <target>Bluesky connection interrupted: start it again from the dashboard.</target>
+            </trans-unit>
+            <trans-unit id="4_w_WZC">
+                <source>flash.bluesky_wrong_host</source>
+                <target>Bluesky can only be connected from %url%, the address it knows the site by.</target>
+            </trans-unit>
+            <trans-unit id="ZAt717E">
+                <source>flash.linkedin_connected</source>
+                <target>LinkedIn profile of %name% connected, until %date%.</target>
+            </trans-unit>
+            <trans-unit id="r5XMty8">
+                <source>flash.linkedin_not_configured</source>
+                <target>First fill your LinkedIn app's ID and secret in the configuration.</target>
+            </trans-unit>
+            <trans-unit id="kYVRLNI">
+                <source>flash.linkedin_refused</source>
+                <target>The LinkedIn connection was refused or interrupted.</target>
             </trans-unit>
             <trans-unit id="iOFL8AK">
                 <source>flash.meta_connected</source>
@@ -238,9 +302,21 @@
                 <source>flash.meta_refused</source>
                 <target>The connection to Meta was refused or interrupted.</target>
             </trans-unit>
+            <trans-unit id="H7BmV19">
+                <source>flash.social_calendar_slot_taken</source>
+                <target>This slot already has its post: here it is, rather than preparing a second one.</target>
+            </trans-unit>
+            <trans-unit id="i2TxptH">
+                <source>flash.social_post_approved</source>
+                <target>"%title%" is approved: it goes out at the next slot of its networks.</target>
+            </trans-unit>
             <trans-unit id="87Pcbcr">
                 <source>flash.social_post_draft</source>
                 <target>Prepared for %network%, waiting for your review.</target>
+            </trans-unit>
+            <trans-unit id="QqaXATm">
+                <source>flash.social_post_drafts</source>
+                <target>%count% draft(s) prepared, to read and approve one by one.</target>
             </trans-unit>
             <trans-unit id="k5cHJcN">
                 <source>flash.social_post_failed</source>
@@ -258,6 +334,22 @@
                 <source>flash.social_post_publishing</source>
                 <target>This post is already being sent: wait for it to finish.</target>
             </trans-unit>
+            <trans-unit id="52E_8Ux">
+                <source>flash.social_post_unapproved</source>
+                <target>"%title%" is out of the queue and waits for your reading again.</target>
+            </trans-unit>
+            <trans-unit id="HF4A7I.">
+                <source>help.social_post_next_slot</source>
+                <target>Goes out on %date%, at the next free slot. Fill a date and time for it to go out at that moment, to the quarter of an hour.</target>
+            </trans-unit>
+            <trans-unit id="6dpEFVs">
+                <source>help.social_post_planned_at</source>
+                <target>Empty: an approved post goes out at the next free slot, in the order the posts were prepared. Filled: it goes out at that date and time, to the quarter of an hour.</target>
+            </trans-unit>
+            <trans-unit id="PoY.WA0">
+                <source>help.social_post_send_on</source>
+                <target>Untick a network not to post there; tick one to get a text written for it, shown the next time the post is opened. A greyed network is not connected: see "Connections".</target>
+            </trans-unit>
             <trans-unit id="PmT6SQr">
                 <source>label.anchor</source>
                 <target>Anchor</target>
@@ -266,13 +358,45 @@
                 <source>label.anchor_help</source>
                 <target>Short id to link a menu entry to this band (e.g. "share"). Without an anchor, it can't be targeted from a menu.</target>
             </trans-unit>
-            <trans-unit id="_oMMwKM">
-                <source>label.bluesky_connect</source>
-                <target>Connect Bluesky</target>
-            </trans-unit>
             <trans-unit id="tKFuD86">
                 <source>label.category_navigation</source>
                 <target>Navigation</target>
+            </trans-unit>
+            <trans-unit id="lXCPPAS">
+                <source>label.connection_account</source>
+                <target>Account: %account%</target>
+            </trans-unit>
+            <trans-unit id="h7bW5vi">
+                <source>label.connection_connect</source>
+                <target>Connect</target>
+            </trans-unit>
+            <trans-unit id="aIBoIFC">
+                <source>label.connection_connected</source>
+                <target>Connected</target>
+            </trans-unit>
+            <trans-unit id="vlvWStb">
+                <source>label.connection_expires</source>
+                <target>Valid until %date%.</target>
+            </trans-unit>
+            <trans-unit id="eYUcNRk">
+                <source>label.connection_instagram_missing</source>
+                <target>No professional Instagram account is linked to the Facebook Page: only Facebook will receive the posts.</target>
+            </trans-unit>
+            <trans-unit id="UxBN9pJ">
+                <source>label.connection_not_configured</source>
+                <target>App to set up</target>
+            </trans-unit>
+            <trans-unit id="ovlfB2H">
+                <source>label.connection_not_connected</source>
+                <target>Not connected</target>
+            </trans-unit>
+            <trans-unit id="B8XG1pX">
+                <source>label.connection_reconnect</source>
+                <target>Reconnect</target>
+            </trans-unit>
+            <trans-unit id="JQ_3soN">
+                <source>label.connection_wrong_host</source>
+                <target>Bluesky only knows the site by its address: connect it from %url%.</target>
             </trans-unit>
             <trans-unit id="cnGpTz.">
                 <source>label.display_label</source>
@@ -326,13 +450,13 @@
                 <source>label.gallery_showcase_social_links_description</source>
                 <target>Available styles for social network links.</target>
             </trans-unit>
-            <trans-unit id="Hw3DjDB">
-                <source>label.google_connect</source>
-                <target>Connect Google</target>
-            </trans-unit>
             <trans-unit id="tf7xOaW">
                 <source>label.guided_project_social_bluesky_connect</source>
                 <target>Connect the Bluesky account</target>
+            </trans-unit>
+            <trans-unit id="4Y81vK8">
+                <source>label.guided_project_social_calendar</source>
+                <target>Plan your posts on the calendar</target>
             </trans-unit>
             <trans-unit id="viNLaDg">
                 <source>label.guided_project_social_google_connect</source>
@@ -341,6 +465,10 @@
             <trans-unit id="9gMwOTb">
                 <source>label.guided_project_social_google_reviews</source>
                 <target>Read and display the Google reviews</target>
+            </trans-unit>
+            <trans-unit id="M.lArB1">
+                <source>label.guided_project_social_linkedin_connect</source>
+                <target>Connect the LinkedIn profile</target>
             </trans-unit>
             <trans-unit id="__S_HiT">
                 <source>label.guided_project_social_links</source>
@@ -374,6 +502,30 @@
                 <source>label.guided_step_social_bluesky_mode</source>
                 <target>Choose what goes out unreviewed</target>
             </trans-unit>
+            <trans-unit id="lfXvHb6">
+                <source>label.guided_step_social_calendar_drafts</source>
+                <target>The posts to approve</target>
+            </trans-unit>
+            <trans-unit id="a8cneSW">
+                <source>label.guided_step_social_calendar_open</source>
+                <target>Open the calendar</target>
+            </trans-unit>
+            <trans-unit id="9fHDZ.c">
+                <source>label.guided_step_social_calendar_panel</source>
+                <target>Open a post</target>
+            </trans-unit>
+            <trans-unit id="Je4Sg4x">
+                <source>label.guided_step_social_calendar_queue</source>
+                <target>The queue</target>
+            </trans-unit>
+            <trans-unit id="grdVdjR">
+                <source>label.guided_step_social_calendar_slot</source>
+                <target>Drag onto a slot</target>
+            </trans-unit>
+            <trans-unit id="tVdTpfQ">
+                <source>label.guided_step_social_connections_open</source>
+                <target>Open the connections</target>
+            </trans-unit>
             <trans-unit id="WWlxIlv">
                 <source>label.guided_step_social_google_connect</source>
                 <target>Start the connection</target>
@@ -401,6 +553,22 @@
             <trans-unit id="oqWYK8u">
                 <source>label.guided_step_social_google_sync</source>
                 <target>Let the synchronization do the rest</target>
+            </trans-unit>
+            <trans-unit id="Qr2OOFV">
+                <source>label.guided_step_social_linkedin_connect</source>
+                <target>Start the connection</target>
+            </trans-unit>
+            <trans-unit id="vKAjE7P">
+                <source>label.guided_step_social_linkedin_credentials</source>
+                <target>Fill in the app's two keys</target>
+            </trans-unit>
+            <trans-unit id="5gjF6SQ">
+                <source>label.guided_step_social_linkedin_mode</source>
+                <target>Choose what goes out unreviewed, and remember to reconnect</target>
+            </trans-unit>
+            <trans-unit id="n1.S19b">
+                <source>label.guided_step_social_linkedin_prerequisites</source>
+                <target>Create the LinkedIn app</target>
             </trans-unit>
             <trans-unit id="xNJPblz">
                 <source>label.guided_step_social_links_display_label</source>
@@ -450,13 +618,25 @@
                 <source>label.guided_step_social_meta_prerequisites</source>
                 <target>Create the Meta app</target>
             </trans-unit>
+            <trans-unit id="bIP872E">
+                <source>label.guided_step_social_posts_approve</source>
+                <target>Approve for the next slot</target>
+            </trans-unit>
             <trans-unit id="9zRMIWa">
                 <source>label.guided_step_social_posts_edit</source>
                 <target>Proofread the texts</target>
             </trans-unit>
+            <trans-unit id="P_m5tZm">
+                <source>label.guided_step_social_posts_networks</source>
+                <target>Choose the networks</target>
+            </trans-unit>
             <trans-unit id="WTphy6s">
                 <source>label.guided_step_social_posts_open</source>
                 <target>Open the posts</target>
+            </trans-unit>
+            <trans-unit id="P0gG9kM">
+                <source>label.guided_step_social_posts_planned_at</source>
+                <target>Choose the date (optional)</target>
             </trans-unit>
             <trans-unit id="2IN5mPN">
                 <source>label.guided_step_social_posts_prepare</source>
@@ -566,17 +746,45 @@
                 <source>label.info_google_connect</source>
                 <target>Lets the site read the reviews of your Google listing and answer them.</target>
             </trans-unit>
+            <trans-unit id="8MsrPrS">
+                <source>label.info_google_not_configured</source>
+                <target>Fill in the Google OAuth client id and secret in the configuration ("social-google-oauth-client-id" and "social-google-oauth-client-secret") first.</target>
+            </trans-unit>
+            <trans-unit id="0cTMFAS">
+                <source>label.info_linkedin_connect</source>
+                <target>Links the site to your personal LinkedIn profile. The access lasts 60 days: connect again before it expires.</target>
+            </trans-unit>
+            <trans-unit id="95gY_Ya">
+                <source>label.info_linkedin_not_configured</source>
+                <target>First fill the LinkedIn app's ID and secret in the configuration ("social-linkedin-client-id" and "social-linkedin-client-secret").</target>
+            </trans-unit>
             <trans-unit id="QtqwtAv">
                 <source>label.info_meta_connect</source>
                 <target>Links the site to your Facebook Page and the Instagram professional account attached to it: done once, then again if the access is withdrawn.</target>
             </trans-unit>
+            <trans-unit id="to_3wK2">
+                <source>label.info_meta_not_configured</source>
+                <target>Fill in the Meta app id and secret in the configuration ("social-meta-app-id" and "social-meta-app-secret") first.</target>
+            </trans-unit>
+            <trans-unit id="C_Ulqfe">
+                <source>label.info_no_connected_network</source>
+                <target>No network is connected yet: nothing will be posted until one is.</target>
+            </trans-unit>
             <trans-unit id="lZ1hyGi">
                 <source>label.info_share_buttons_disabled</source>
-                <target>Share buttons are turned off site-wide: no page shows any. Opens the "social-enable-share-buttons" setting, to be set to true to turn them on and get their settings screen back.</target>
+                <target>The share buttons are turned off for the whole site: no page shows them, so these settings have no effect for now.</target>
             </trans-unit>
             <trans-unit id="AuLTjz5">
                 <source>label.info_share_buttons_settings</source>
                 <target>Default networks/style for share buttons - a singleton, overridable per page via the "share_buttons_display" block. Edit the active networks, their order and the display style.</target>
+            </trans-unit>
+            <trans-unit id="k1q7HYe">
+                <source>label.info_social_calendar</source>
+                <target>The calendar of publications: what went out, and where each approved post will fall among the coming slots. Click a post to open it.</target>
+            </trans-unit>
+            <trans-unit id="G03WcyU">
+                <source>label.info_social_connections</source>
+                <target>The networks the site connects to. Facebook, Instagram, LinkedIn and Bluesky receive the posts prepared on the "Posts" screen: publishing starts as soon as one of them is connected, nothing else to turn on. Google gives access to the reviews of your Business Profile.</target>
             </trans-unit>
             <trans-unit id="RKLGNte">
                 <source>label.info_social_links</source>
@@ -588,7 +796,7 @@
             </trans-unit>
             <trans-unit id="ehHeI2l">
                 <source>label.info_social_posts</source>
-                <target>The posts prepared for your networks, one text per network. Drafts wait for your review: correct the texts, save, then click "Publish". Deleting a post cancels it.</target>
+                <target>The posts prepared for your networks, one text per network. Drafts wait for your review: correct the texts, save, then click "Publish", or "Approve for the next slot" for it to go out with the slots. Deleting a post cancels it.</target>
             </trans-unit>
             <trans-unit id="w4NSFiG">
                 <source>label.info_social_schedules</source>
@@ -606,13 +814,33 @@
                 <source>label.label</source>
                 <target>Label</target>
             </trans-unit>
-            <trans-unit id="igt5GrM">
-                <source>label.meta_connect</source>
-                <target>Connect Meta</target>
-            </trans-unit>
             <trans-unit id="qW0z.EV">
                 <source>label.network</source>
                 <target>Network</target>
+            </trans-unit>
+            <trans-unit id="duvrD74">
+                <source>label.network_bluesky</source>
+                <target>Bluesky</target>
+            </trans-unit>
+            <trans-unit id="D77Jgwt">
+                <source>label.network_google</source>
+                <target>Google Business Profile</target>
+            </trans-unit>
+            <trans-unit id="aMSshQf">
+                <source>label.network_linkedin</source>
+                <target>LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="BgAx0DX">
+                <source>label.network_meta</source>
+                <target>Facebook &amp; Instagram</target>
+            </trans-unit>
+            <trans-unit id="MnnG0dN">
+                <source>label.network_not_connected</source>
+                <target>%network% (not connected)</target>
+            </trans-unit>
+            <trans-unit id="o71OlA1">
+                <source>label.network_off</source>
+                <target>not connected</target>
             </trans-unit>
             <trans-unit id="NFkKnJC">
                 <source>label.networks</source>
@@ -646,9 +874,9 @@
                 <source>label.shape_wide</source>
                 <target>Wide</target>
             </trans-unit>
-            <trans-unit id="HgBfL.n">
-                <source>label.share_buttons_disabled</source>
-                <target>Share buttons (disabled)</target>
+            <trans-unit id="evThGHm">
+                <source>label.share_buttons_enable</source>
+                <target>Turn them on</target>
             </trans-unit>
             <trans-unit id="QGQ5OoP">
                 <source>label.share_buttons_settings</source>
@@ -666,6 +894,114 @@
                 <source>label.social</source>
                 <target>Social</target>
             </trans-unit>
+            <trans-unit id="sEl8agd">
+                <source>label.social_calendar</source>
+                <target>Calendar</target>
+            </trans-unit>
+            <trans-unit id="vqvZ3s4">
+                <source>label.social_calendar_approve_plan</source>
+                <target>Approve and plan at this time</target>
+            </trans-unit>
+            <trans-unit id="cm2xUra">
+                <source>label.social_calendar_back_to_queue</source>
+                <target>Back to the queue</target>
+            </trans-unit>
+            <trans-unit id="bSspzgN">
+                <source>label.social_calendar_close</source>
+                <target>Close</target>
+            </trans-unit>
+            <trans-unit id="GaE3Zmi">
+                <source>label.social_calendar_draft_waits</source>
+                <target>It goes out only once approved.</target>
+            </trans-unit>
+            <trans-unit id="AzY0WvY">
+                <source>label.social_calendar_drafts</source>
+                <target>To approve</target>
+            </trans-unit>
+            <trans-unit id="l0Dqa_D">
+                <source>label.social_calendar_drag_hint</source>
+                <target>Drag a post onto a slot to plan it there, onto "Queue" for it to go out at the next free slot, onto "To approve" to take it out of the queue.</target>
+            </trans-unit>
+            <trans-unit id="6zf3y2m">
+                <source>label.social_calendar_edit_texts</source>
+                <target>Edit the texts and networks</target>
+            </trans-unit>
+            <trans-unit id="WuPZbRF">
+                <source>label.social_calendar_goes_out</source>
+                <target>Goes out on %date%.</target>
+            </trans-unit>
+            <trans-unit id="wFpSXs5">
+                <source>label.social_calendar_goes_out_next</source>
+                <target>Goes out on %date%, at the next free slot.</target>
+            </trans-unit>
+            <trans-unit id="quz2fN2">
+                <source>label.social_calendar_month</source>
+                <target>Month</target>
+            </trans-unit>
+            <trans-unit id="o6LGnzr">
+                <source>label.social_calendar_move_failed</source>
+                <target>The move was not saved. The page will reload.</target>
+            </trans-unit>
+            <trans-unit id="NUU5AmN">
+                <source>label.social_calendar_next</source>
+                <target>Next</target>
+            </trans-unit>
+            <trans-unit id="QGFcEKz">
+                <source>label.social_calendar_no_slot</source>
+                <target>No publication slot is on: nothing goes out on its own. Create one in "Publication slots".</target>
+            </trans-unit>
+            <trans-unit id="vApxCIC">
+                <source>label.social_calendar_no_slot_ahead</source>
+                <target>no slot</target>
+            </trans-unit>
+            <trans-unit id="oZ_OaKV">
+                <source>label.social_calendar_plan</source>
+                <target>Plan at this time</target>
+            </trans-unit>
+            <trans-unit id="mVWRLZ8">
+                <source>label.social_calendar_plan_at</source>
+                <target>Go out at a set time (to the quarter of an hour)</target>
+            </trans-unit>
+            <trans-unit id="yY2ALhD">
+                <source>label.social_calendar_prepare</source>
+                <target>Prepare for this slot</target>
+            </trans-unit>
+            <trans-unit id="x_A7kw0">
+                <source>label.social_calendar_previous</source>
+                <target>Previous</target>
+            </trans-unit>
+            <trans-unit id="wy6rTY0">
+                <source>label.social_calendar_queue</source>
+                <target>Queue</target>
+            </trans-unit>
+            <trans-unit id="XoPg4k5">
+                <source>label.social_calendar_state_draft</source>
+                <target>To approve</target>
+            </trans-unit>
+            <trans-unit id="ZN6ftUq">
+                <source>label.social_calendar_state_planned</source>
+                <target>Planned</target>
+            </trans-unit>
+            <trans-unit id="1FWwu6R">
+                <source>label.social_calendar_state_published</source>
+                <target>Published</target>
+            </trans-unit>
+            <trans-unit id="Nei6_Of">
+                <source>label.social_calendar_state_queued</source>
+                <target>In the queue</target>
+            </trans-unit>
+            <trans-unit id="zGk8.GX">
+                <source>label.social_calendar_today</source>
+                <target>Today</target>
+            </trans-unit>
+            <trans-unit id="9cqH5Ke">
+                <source>label.social_calendar_week</source>
+                <target>Week</target>
+            </trans-unit>
+            <trans-unit id="J4QK2iR">
+                <source>label.social_connections</source>
+                <target>Connections</target>
+            </trans-unit>
             <trans-unit id="Eyn1gXP">
                 <source>label.social_links</source>
                 <target>Social links</target>
@@ -673,6 +1009,10 @@
             <trans-unit id="tiqhi.Y">
                 <source>label.social_post</source>
                 <target>Post</target>
+            </trans-unit>
+            <trans-unit id="cCYS3xz">
+                <source>label.social_post_approve</source>
+                <target>Approve for the next slot</target>
             </trans-unit>
             <trans-unit id="BDnUgUx">
                 <source>label.social_post_created_at</source>
@@ -686,9 +1026,17 @@
                 <source>label.social_post_networks</source>
                 <target>Networks</target>
             </trans-unit>
+            <trans-unit id=".4ENbZd">
+                <source>label.social_post_planned_at</source>
+                <target>Planned for</target>
+            </trans-unit>
             <trans-unit id="1wEVf6X">
                 <source>label.social_post_prepare</source>
                 <target>Prepare</target>
+            </trans-unit>
+            <trans-unit id="exBTO_f">
+                <source>label.social_post_prepare_drafts</source>
+                <target>Prepare %count% drafts</target>
             </trans-unit>
             <trans-unit id="l_6rzpX">
                 <source>label.social_post_prepare_next</source>
@@ -701,6 +1049,14 @@
             <trans-unit id="0b4w2zz">
                 <source>label.social_post_publish</source>
                 <target>Publish</target>
+            </trans-unit>
+            <trans-unit id="bFuD5Vi">
+                <source>label.social_post_send_on</source>
+                <target>Post on</target>
+            </trans-unit>
+            <trans-unit id="3sXk__W">
+                <source>label.social_post_status_approved</source>
+                <target>Approved</target>
             </trans-unit>
             <trans-unit id="NEMzvnD">
                 <source>label.social_post_status_draft</source>
@@ -721,6 +1077,10 @@
             <trans-unit id="bn7.hzs">
                 <source>label.social_post_title</source>
                 <target>Content</target>
+            </trans-unit>
+            <trans-unit id="3.CrzT8">
+                <source>label.social_post_unapprove</source>
+                <target>Take out of the queue</target>
             </trans-unit>
             <trans-unit id="L40zOCk">
                 <source>label.social_post_url</source>
@@ -768,7 +1128,7 @@
             </trans-unit>
             <trans-unit id="M77AEJr">
                 <source>label.social_schedule_networks_help</source>
-                <target>The networks this slot posts on, among the configured ones. None ticked, all of them. A content already posted on a network does not go there again, but may go on another one.</target>
+                <target>The networks this slot posts on, among the connected ones. None ticked, all of them. A content already posted on a network does not go there again, but may go on another one.</target>
             </trans-unit>
             <trans-unit id="K.tSG3K">
                 <source>label.social_schedule_sources</source>

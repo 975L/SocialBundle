@@ -140,7 +140,18 @@ class BlueskyOAuthClientTest extends TestCase
         $client->jwks();
         $client->jwks();
         $this->assertCount(1, $this->written);
-        $this->assertSame('c975l-social-1', $client->jwks()['keys'][0]['kid']);
+        // The key id is the key's own thumbprint, so a key of another site is told apart from this one
+        $jwk = $client->jwks()['keys'][0];
+        $this->assertSame(Es256Signer::thumbprint($jwk), $jwk['kid']);
+    }
+
+    // Bluesky knows the site by "site-url" alone, whatever the case of the host the request came on
+    public function testOnlyTheSiteUrlHostCanStartTheConnection(): void
+    {
+        $client = $this->createClient();
+
+        $this->assertTrue($client->isSiteHost('Site.Example'));
+        $this->assertFalse($client->isSiteHost('127.0.0.1'));
     }
 
     // No handle known: Bluesky's entryway, the owner picking the account there. The request is pushed again with the nonce the server asked for

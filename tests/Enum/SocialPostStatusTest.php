@@ -22,6 +22,7 @@ class SocialPostStatusTest extends TestCase
         $this->assertSame('danger', SocialPostStatus::badgeFor('failed'));
         $this->assertSame('danger', SocialPostStatus::badgeFor('Failed'));
         $this->assertSame('success', SocialPostStatus::badgeFor('published'));
+        $this->assertSame('info', SocialPostStatus::badgeFor('approved'));
     }
 
     // A badge is decoration: a status nobody recognises is not worth a 500 on the screen listing the posts

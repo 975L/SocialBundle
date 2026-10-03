@@ -1,6 +1,6 @@
 ---
 name: c975l-social
-description: "Use this skill when working with social links, share buttons, customer reviews or the publication on the social networks in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, the Google Business Profile review import with its pluggable sources, and the scheduled posts on Bluesky, Facebook and Instagram. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, startStimulusApp, c975lStimulusApp, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile, c975l:social:publish, SocialPublisher, SocialPost, SocialPostTarget, SocialPostCrudController, NetworkPublisherInterface, SocialContentSourceInterface, SocialContent, social-publish-enabled, social-publish-template, social-meta-app-id, social-bluesky-app-password, social-bluesky-oauth-session, Connecter Bluesky, BlueskyOAuthClient, Es256Signer, DPoP, SocialSchedule, SocialScheduleCrudController, publication slots, Connecter Meta, MetaGraphClient, SocialImageExporter, post on Bluesky, post on Facebook, post on Instagram, social publishing."
+description: "Use this skill when working with social links, share buttons, customer reviews or the publication on the social networks in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, the Google Business Profile review import with its pluggable sources, and the scheduled posts on Bluesky, Facebook, Instagram and LinkedIn, the publications calendar and the AI-written texts. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, startStimulusApp, c975lStimulusApp, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile, c975l:social:publish, SocialPublisher, SocialPost, SocialPostTarget, SocialPostCrudController, NetworkPublisherInterface, SocialContentSourceInterface, SocialContent, social-publish-template, social-meta-app-id, social-bluesky-oauth-session, SocialConnectionsController, Connexions, BlueskyOAuthClient, Es256Signer, DPoP, SocialSchedule, SocialScheduleCrudController, publication slots, MetaGraphClient, SocialImageExporter, post on Bluesky, post on Facebook, post on Instagram, LinkedInClient, LinkedInPublisher, social-linkedin-client-id, post on LinkedIn, SocialPlanner, plannedAt, publish --planned, SocialCalendarController, SocialPostWriter, social-ai-guidelines, social publishing."
 ---
 
 # c975L SocialBundle
@@ -82,10 +82,9 @@ invitation line and an optional anchor; the `social-enable-share-buttons` config
 default) turns the band on for every page. The reviews have the same kind of switch, `ui-enable-reviews`
 (see [Customer reviews](#customer-reviews)).
 
-Off, `MenuProvider` drops the settings screen but keeps a **Boutons de partage (désactivés)** entry in
-its place — a link (no `target`, so it stays in the Social section) opening that config's own edit form
-through UiBundle's `ConfigEditUrlResolver`, gated on `site-role-admin`, the bar `ConfigCrudController`
-states. Never hide a feature switch's screen without leaving something saying where it is turned on.
+Off, the settings screen stays in the sidebar and its index says the band is off, with a link to that
+config's own edit form (UiBundle's `ConfigEditUrlResolver`) for `site-role-admin`, the bar
+`ConfigCrudController` states. Never hide a screen: one governing nothing yet says so itself.
 
 The band itself is this bundle's `templates/shareButtons/default.html.twig`, and a layout includes it:
 
@@ -166,8 +165,7 @@ than showing it stale.
 moderation screen reaches it without this bundle owning the screen. Its `supports()` answers false for
 a review written on the site and for a source no longer connected, which is what hides the reply field.
 
-The `ui-enable-reviews` key still gates this bundle's own halves of the feature: the "Connecter Google"
-link and the two Google guided projects — connecting the listing being the agency's own job
+The `ui-enable-reviews` key only governs the public side; this bundle's two Google guided projects are always listed — connecting the listing being the agency's own job
 (`ROLE_SUPER_ADMIN`, the OAuth keys being `restricted` configs, its `role` key also listing
 `site-role-admin` and `site-role-editor`, the three screens that parcours walks demanding one each,
 all required by `GuidedProjectBuilder`), reading and displaying the reviews the site's editor. The sync command is deliberately left running while it is off, so a reactivation
@@ -200,8 +198,8 @@ key. `ConfigsJsonTest::testGroupsAreEitherSharedOrLabelledByThisBundle` locks th
 Google's reviews endpoints need the Cloud project to be **allowlisted** (7-10 business days) and the
 OAuth app **published in production**, or its refresh tokens expire every seven days.
 
-The connection is started from **"Connecter Google"**, a `getLinks()` entry with no target — so it
-sits in the sidebar's "Social" submenu, next to the CRUD screens.
+The connection is started from the Google tile of **"Connexions"** (`Controller\Management\SocialConnectionsController`,
+an `#[AdminRoute]` screen linked from the sidebar's "Social" submenu), which draws one tile per network.
 
 `Service\SameAsProvider` implements UiBundle's `SameAsProviderInterface`, so a `contact_details` block
 publishes the listing (`social-google-listing-url`, a `maps?cid=…` address) and the social links in its
@@ -210,8 +208,9 @@ publishes the listing (`social-google-listing-url`, a `maps?cid=…` address) an
 
 ## Publishing on the networks
 
-The site's contents posted on **Bluesky**, its **Facebook** Page and the **Instagram** professional
-account linked to that Page, behind **`social-publish-enabled`** (bool, `false` by default).
+The site's contents posted on **Bluesky**, its **Facebook** Page, the **Instagram** professional
+account linked to that Page and a member's **LinkedIn** profile (`LinkedInClient`, `LinkedInPublisher`: a
+self-serve app, so no Company Page and a token to renew every 60 days, watched by `LinkedInHealthCheckProvider`) — on as soon as one of them is connected (`SocialPublisher::hasConnectedNetwork()`), no switch besides.
 
 | Piece | Class |
 | --- | --- |
@@ -224,6 +223,8 @@ account linked to that Page, behind **`social-publish-enabled`** (bool, `false` 
 | Stored posts | `Entity\SocialPost`, one `Entity\SocialPostTarget` per network, `Enum\SocialPostStatus` |
 | Review screen | `Controller\Management\SocialPostCrudController` ("Publications", `site-role-editor`) |
 | Publication slots | `Entity\SocialSchedule`, `Controller\Management\SocialScheduleCrudController` ("Créneaux de publication", `site-role-editor`) |
+| AI texts | `Service\SocialPostWriter` (the rephrase key, `social-ai-guidelines`), the template as fallback |
+| Calendar | `Controller\Management\SocialCalendarController` ("Calendrier", `site-role-editor`), `Service\SocialPlanner`, `assets/js/social-calendar.js` |
 
 A bundle owning contents implements `SocialContentSourceInterface`, declared in UiBundle so it needs no
 dependency on this one; both contracts are auto-tagged by interface (`social.content_source`,
@@ -236,20 +237,27 @@ A `SocialSchedule` slot is a time, sources (`gallery_media` or a group `gallery_
 `ScopedSocialContentSourceInterface`), networks and a text put where the template writes `{slot}`. Each
 enabled slot is a task of its own (`c975l:social:publish --slot=<id>`); while one is enabled, the interval
 run stands aside. A missing `social_schedule` table reads as no slot, the interval run going on.
+A slot first sends the unplanned approved post `SocialPlanner::pick()` returns for its networks (the
+`approved` status, given by the list's "Valider" while a slot is on), in the order prepared. Only with none
+waiting does it prepare a content. A post with a `SocialPost::$plannedAt` goes out at that moment, to the
+quarter of an hour, from `c975l:social:publish --planned` (every 15 minutes), and the slot on that quarter
+stands aside (`SocialPlanner::isTaken()`), a draft planned there not taking it. `--drafts=N` refuses `--dry-run`, a draft being already a preview, and `--dry-run` never calls the AI. The calendar projects the
+queue with `SocialPlanner::project()`, the same rule, so it shows what the slots will do.
 
-"Connecter Bluesky" is the AT Protocol's OAuth with the site as its own confidential client: no app, no
+Bluesky's tile is the AT Protocol's OAuth with the site as its own confidential client: no app, no
 password. The session sits in `social-bluesky-oauth-session`, the client key in `social-bluesky-oauth-key`;
-the single-use refresh token is renewed under a lock, from a fresh read of the session.
-`social-bluesky-app-password` stays as a fallback.
+the single-use refresh token is renewed under a lock, from a fresh read of the session. The key id is the
+key's RFC 7638 thumbprint, and the connection only starts from the `site-url` host (Bluesky reads the
+client there, so another host's key would be refused). There is no app-password fallback.
 
-The Meta keys `social-meta-app-id` and `social-meta-app-secret` are `restricted`; "Connecter Meta" fills
+The Meta keys `social-meta-app-id` and `social-meta-app-secret` are `restricted`; the Meta tile fills
 the Page, its token and the Instagram id, keeping a `social-meta-page-id` filled beforehand. Meta gets a
 JPEG copy written by `SocialImageExporter` under `public/medias/social/`, never the site's WebP.
 
 ## What the bundle already contributes
 
 Nothing below is declared in the app: `MenuProvider` (the dashboard entries, each declaring
-`site-role-editor` as the bar its own screen states, plus the "Connecter Google", "Connecter Meta" and "Connecter Bluesky" links drawn under "Social"), `ProcedureProvider`
+`site-role-editor` as the bar its own screen states, plus the "Connexions" link drawn under "Social", every entry listed whatever the site uses), `ProcedureProvider`
 (the admin help procedures), `SocialGuidedProjectProvider` (the guided walk-through of each screen,
 offered only to who can open it), `WhatsNewProvider`, `ImportmapProvider`, `Service\ScriptProvider`,
 `Service\StylesheetProvider` (the public sheet and the back-office silhouettes both),
@@ -306,6 +314,10 @@ Google connection still answers - the import being the one thing here that stops
   or the screen's "Publier", which keep the network's refusal on the target.
 - **Do not offer "Publier" on the post's edit page.** A link does not submit the form: the text sent
   would be the saved one, not the one just corrected.
+- **Do not hand a network the picture's bytes without `SocialImageExporter::bytes()`.** With
+  `social-image-format` set to `square`, every network has to show the same 1080 x 1080 visual.
+- **Do not store where a post falls in the calendar.** It is `SocialPlanner::project()` playing the queue
+  over the slots; a second rule, or a stored date, would show a calendar the slots do not follow.
 - **Do not hand Meta the site's WebP url.** Go through `SocialImageExporter::jpegUrl()`.
 - **Do not make `share_buttons_display` cacheable.** Its render carries the current page's url, so the
   first page's share links would be served on every other page holding that block.

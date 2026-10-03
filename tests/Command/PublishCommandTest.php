@@ -11,6 +11,7 @@
 namespace c975L\SocialBundle\Tests\Command;
 
 use c975L\SocialBundle\Command\PublishCommand;
+use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialSchedule;
 use c975L\SocialBundle\Repository\SocialScheduleRepository;
 use c975L\SocialBundle\Service\SocialPublisher;
@@ -47,6 +48,12 @@ class PublishCommandTest extends TestCase
             $this->called = ['method' => 'prepareSlot', 'slot' => $slot->getName(), 'dryRun' => $dryRun];
 
             return $report;
+        });
+
+        $socialPublisher->method('prepareDrafts')->willReturnCallback(function (int $count): array {
+            $this->called = ['method' => 'prepareDrafts', 'count' => $count];
+
+            return [new SocialPost('gallery_media', '42', 'La sieste', 'https://example.org/42', null)];
         });
 
         $scheduleRepository = $this->createStub(SocialScheduleRepository::class);
@@ -122,6 +129,23 @@ class PublishCommandTest extends TestCase
         $this->assertSame([], $this->called);
 
         $this->assertSame(Command::SUCCESS, $this->createTester([])->execute(['--slot' => '3']));
+        $this->assertSame([], $this->called);
+    }
+
+    // A batch of drafts lists what was prepared, for whoever reads them next
+    public function testDraftsArePreparedInABatch(): void
+    {
+        $tester = $this->createTester([]);
+
+        $this->assertSame(0, $tester->execute(['--drafts' => '5']));
+        $this->assertSame(['method' => 'prepareDrafts', 'count' => 5], $this->called);
+        $this->assertStringContainsString('La sieste', $tester->getDisplay());
+    }
+
+    // A draft is already a preview: "--dry-run" there would save real posts
+    public function testDraftsRefuseADryRun(): void
+    {
+        $this->assertSame(Command::INVALID, $this->createTester([])->execute(['--drafts' => '5', '--dry-run' => true]));
         $this->assertSame([], $this->called);
     }
 }

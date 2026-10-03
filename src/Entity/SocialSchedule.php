@@ -139,6 +139,17 @@ class SocialSchedule implements \Stringable
         return $this->networks;
     }
 
+    // The networks the slot posts on among the given ones, none chosen meaning all of them
+    /**
+     * @param list<string> $available
+     *
+     * @return list<string>
+     */
+    public function resolveNetworks(array $available): array
+    {
+        return [] === $this->networks ? $available : array_values(array_intersect($this->networks, $available));
+    }
+
     /** @param array<int, string>|null $networks */
     public function setNetworks(?array $networks): self
     {

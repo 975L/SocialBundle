@@ -36,8 +36,16 @@ class BlueskyOAuthControllerTest extends TestCase
     }
 
     // Same seam as MetaOAuthControllerTest: AbstractController resolves security, routing and the flash bag through its container
-    private function createController(Request $request, ?BlueskyOAuthClient $oauthClient = null, string $handle = ''): BlueskyOAuthController
+    private function createController(Request $request, ?BlueskyOAuthClient $oauthClient = null, string $handle = '', bool | \Throwable $siteHost = true): BlueskyOAuthController
     {
+        $oauthClient ??= $this->createStub(BlueskyOAuthClient::class);
+        if ($siteHost instanceof \Throwable) {
+            $oauthClient->method('isSiteHost')->willThrowException($siteHost);
+        } else {
+            $oauthClient->method('isSiteHost')->willReturn($siteHost);
+        }
+        $oauthClient->method('siteUrl')->willReturn('https://site.example');
+
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $key) => match ($key) {
             'site-role-editor' => 'ROLE_EDITOR',
@@ -45,7 +53,7 @@ class BlueskyOAuthControllerTest extends TestCase
             default => null,
         });
 
-        $controller = new BlueskyOAuthController($configService, $oauthClient ?? $this->createStub(BlueskyOAuthClient::class));
+        $controller = new BlueskyOAuthController($configService, $oauthClient);
         $controller->setContainer($this->createContainer($request));
 
         return $controller;
@@ -115,6 +123,30 @@ class BlueskyOAuthControllerTest extends TestCase
         $this->createController($request, $oauthClient)->connect($request);
     }
 
+    // Started anywhere but on "site-url", Bluesky would check the assertion against another site's key: refused here, saying where to go
+    public function testConnectRefusesAHostOtherThanTheSiteUrl(): void
+    {
+        $oauthClient = $this->createMock(BlueskyOAuthClient::class);
+        $oauthClient->expects($this->never())->method('startAuthorization');
+        $request = $this->createRequest();
+
+        $response = $this->createController($request, $oauthClient, siteHost: false)->connect($request);
+
+        $this->assertSame('/management_social_connections', $response->getTargetUrl());
+        $this->assertSame(['danger' => ['flash.bluesky_wrong_host']], $this->flashes($request));
+    }
+
+    // An empty "site-url" is said on the Connections screen, not left to a server error
+    public function testConnectShowsAMissingSiteUrl(): void
+    {
+        $request = $this->createRequest();
+
+        $response = $this->createController($request, siteHost: new \RuntimeException('"site-url" is not set.'))->connect($request);
+
+        $this->assertSame('/management_social_connections', $response->getTargetUrl());
+        $this->assertSame(['danger' => ['"site-url" is not set.']], $this->flashes($request));
+    }
+
     public function testConnectShowsWhatBlueskyRefused(): void
     {
         $oauthClient = $this->createStub(BlueskyOAuthClient::class);
@@ -123,7 +155,7 @@ class BlueskyOAuthControllerTest extends TestCase
 
         $response = $this->createController($request, $oauthClient)->connect($request);
 
-        $this->assertSame('/management', $response->getTargetUrl());
+        $this->assertSame('/management_social_connections', $response->getTargetUrl());
         $this->assertSame(['danger' => ['The Bluesky handle "nobody" cannot be resolved.']], $this->flashes($request));
     }
 
@@ -170,7 +202,7 @@ class BlueskyOAuthControllerTest extends TestCase
 
         $response = $this->createController($request, $oauthClient)->callback($request);
 
-        $this->assertSame('/management', $response->getTargetUrl());
+        $this->assertSame('/management_social_connections', $response->getTargetUrl());
         $this->assertSame(['danger' => ['Bluesky connected another account than the one asked.']], $this->flashes($request));
     }
 }

@@ -29,6 +29,8 @@ class SocialMaintenanceTaskProvider implements MaintenanceTaskProviderInterface
             new MaintenanceTask('# #(2-5) * * *', 'c975l:social:reviews:sync'),
             // The scheduled posts, checked hourly: the command itself waits for the interval the site set, so changing it needs no new schedule - and stands aside while a slot is enabled
             new MaintenanceTask('# * * * *', 'c975l:social:publish'),
+            // The posts planned for a moment, sent to the quarter of an hour - the calendar's grid being that fine
+            new MaintenanceTask('*/15 * * * *', 'c975l:social:publish --planned'),
             ...$this->slotTasks(),
         ];
     }

@@ -11,6 +11,7 @@
 namespace c975L\SocialBundle\Controller;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\SocialBundle\Controller\Management\SocialConnectionsController;
 use c975L\SocialBundle\Service\ConfigValueWriter;
 use c975L\SocialBundle\Service\GoogleBusinessLocationResolver;
 use c975L\SocialBundle\Service\GoogleOAuthClient;
@@ -41,7 +42,7 @@ class GoogleOAuthController extends AbstractController
         if (!$this->googleOAuthClient->isConfigured()) {
             $this->addFlash('danger', 'review.google_not_configured');
 
-            return $this->redirectToRoute('management');
+            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
         // Held in the session and checked on the way back: without it the callback would accept a code obtained by anyone who can make the editor's browser follow a link
@@ -63,13 +64,13 @@ class GoogleOAuthController extends AbstractController
         if (!is_string($expected) || $expected !== $request->query->get('state')) {
             $this->addFlash('danger', 'review.google_state_mismatch');
 
-            return $this->redirectToRoute('management');
+            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
         if (!is_string($code) || '' === $code) {
             $this->addFlash('danger', 'review.google_authorization_refused');
 
-            return $this->redirectToRoute('management');
+            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
         // The exchange on its own, nothing written yet: a network hiccup on a reconnection must leave the working connection exactly as it was
@@ -78,7 +79,7 @@ class GoogleOAuthController extends AbstractController
         } catch (\Throwable $exception) {
             $this->addFlash('danger', $exception->getMessage());
 
-            return $this->redirectToRoute('management');
+            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
         try {
@@ -100,12 +101,12 @@ class GoogleOAuthController extends AbstractController
 
             $this->addFlash('danger', $exception->getMessage());
 
-            return $this->redirectToRoute('management');
+            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
         $this->addFlash('success', 'review.google_connected');
 
-        return $this->redirectToRoute('management');
+        return $this->redirectToRoute(SocialConnectionsController::ROUTE);
     }
 
     // Absolute, and built from the route rather than configured: it has to match the redirect uri declared in the Google Cloud console character for character

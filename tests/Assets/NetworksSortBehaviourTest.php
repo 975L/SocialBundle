@@ -12,8 +12,7 @@ namespace c975L\SocialBundle\Tests\Assets;
 
 use PHPUnit\Framework\Attributes\Group;
 
-// assets/js/share-buttons-networks-sort.js dragged for real, in a browser that lays the list out
-// There is no hidden order field anywhere: the order the settings are saved in is the order the checkboxes sit in the document, plain form submission serializing same-name fields as they stand. So what has to be checked is not that a class moved but that the form now leaves with the networks in the new order - and the reordering itself is decided by getBoundingClientRect, which an emulated DOM answers zero to, putting every item in the same place as every other
+// assets/js/share-buttons-networks-sort.js dragged for real, in a browser that lays the list out: no hidden order field, the networks are saved in the order their checkboxes sit in the document, so what is checked is that the form leaves in the new order - getBoundingClientRect deciding it, which an emulated DOM answers zero to
 #[Group('browser')]
 class NetworksSortBehaviourTest extends JsCase
 {
@@ -23,31 +22,16 @@ class NetworksSortBehaviourTest extends JsCase
         .ss-networks-sortable-item { display: block; height: 40px; line-height: 40px; }
     ';
 
-    // The checkbox and its label have to stay clickable, so nothing is draggable until the handle is held
-    public function testAnItemIsOnlyDraggableWhileItsHandleIsHeld(): void
+    // The checkbox and its label have to stay clickable, so only the handle starts a drag
+    public function testAPressOnTheLabelDragsNothing(): void
     {
-        $held = $this->list(
-            'const item = items()[0];
-             const before = item.getAttribute("draggable");
-             fire(item.querySelector(".ss-drag-handle"), "mousedown");
-             const during = item.getAttribute("draggable");
-             fire(item.querySelector(".ss-drag-handle"), "mouseup");
-
-             return { before, during, after: item.getAttribute("draggable") };'
-        );
-
-        $this->assertNull($held['before'], 'An item is draggable before anybody took hold of its handle, so ticking its checkbox starts a drag.');
-        $this->assertSame('true', $held['during'], 'Holding the handle does not make the item draggable, and nothing can be reordered at all.');
-        $this->assertNull($held['after'], 'The item stays draggable after the handle was let go.');
+        $this->assertSame(['facebook', 'x', 'linkedin'], $this->list('await drag(2, 0, "label"); return submitted();'), 'Pressing a label and moving the pointer reordered the list, so a box can no longer be ticked.');
     }
 
-    // A drag started anywhere but on an item is refused rather than carried out on nothing
-    public function testADragStartedBesideAnItemIsRefused(): void
+    // A gesture cancelled mid-drag puts the item back where it was
+    public function testACancelledDragPutsTheItemBack(): void
     {
-        $this->assertTrue(
-            (bool) $this->list('const event = new DragEvent("dragstart", { bubbles: true, cancelable: true }); container().dispatchEvent(event); return event.defaultPrevented;'),
-            'A drag started on the list itself is carried out, dragging nothing.'
-        );
+        $this->assertSame(['facebook', 'x', 'linkedin'], $this->list('await drag(2, 0, null, true); return submitted();'), 'A cancelled drag left the item where it had been dragged to.');
     }
 
     // What the whole file exists for, and the only thing the server ever sees of it
@@ -86,12 +70,11 @@ class NetworksSortBehaviourTest extends JsCase
              document.removeEventListener("share-buttons-networks:reordered", listen);
              const item = items()[0];
 
-             return { heard, dragging: item.classList.contains("ss-dragging"), draggable: item.getAttribute("draggable") };'
+             return { heard, dragging: item.classList.contains("ss-dragging") };'
         );
 
         $this->assertSame(1, $announced['heard'], 'A drop is announced to nobody, so the preview goes on showing the order the page was rendered with.');
         $this->assertFalse($announced['dragging'], 'The item that was dropped is still drawn as being dragged.');
-        $this->assertNull($announced['draggable'], 'The item that was dropped stays draggable, and its checkbox is no longer clickable.');
     }
 
     private function list(string $probe): mixed
@@ -99,18 +82,18 @@ class NetworksSortBehaviourTest extends JsCase
         $preamble = 'const container = () => root.querySelector("[data-share-networks-sortable]");
              const items = () => [...container().querySelectorAll(".ss-networks-sortable-item")];
              const submitted = () => [...new FormData(root.querySelector("form")).getAll("networks[]")];
-             const fire = (el, type) => el.dispatchEvent(new Event(type, { bubbles: true }));
              const frame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-             // A drag as the browser runs one: the handle held, the item picked up, moved over the place it is dropped at, and let go
-             const drag = async (from, to) => {
-                 const item = items()[from];
-                 fire(item.querySelector(".ss-drag-handle"), "mousedown");
-                 item.dispatchEvent(new DragEvent("dragstart", { bubbles: true, cancelable: true }));
-                 await frame();
-                 // Above the midpoint of the item dropped on, or past the last one when there is none to drop above
+             const point = (el, type, x, y) => el.dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true, pointerId: 1, pointerType: "mouse", button: 0, buttons: 1, clientX: x, clientY: y }));
+             // A drag as a mouse makes one: pressed on the handle (or on what "on" names), moved above the midpoint of the item dropped on - or past the last one when there is none - then let go
+             const drag = async (from, to, on, cancelled) => {
+                 const grip = items()[from].querySelector(on ?? ".ss-drag-handle");
+                 const start = grip.getBoundingClientRect();
+                 point(grip, "pointerdown", start.left + 2, start.top + 2);
                  const box = null === to ? container().getBoundingClientRect() : items()[to].getBoundingClientRect();
-                 container().dispatchEvent(new DragEvent("dragover", { bubbles: true, cancelable: true, clientY: null === to ? box.bottom + 10 : box.top + 1 }));
-                 container().dispatchEvent(new DragEvent("dragend", { bubbles: true }));
+                 const y = null === to ? box.bottom + 10 : box.top + 1;
+                 point(document, "pointermove", start.left + 2, y);
+                 await frame();
+                 point(document, cancelled ? "pointercancel" : "pointerup", start.left + 2, y);
                  await frame();
              };
              // The wiring runs on the document being ready, which it long since is on the page this suite shares

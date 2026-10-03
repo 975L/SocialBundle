@@ -19,7 +19,9 @@ use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Repository\SocialScheduleRepository;
 use c975L\SocialBundle\Service\SocialPageReader;
+use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPostTextBuilder;
+use c975L\SocialBundle\Service\SocialPostWriter;
 use c975L\SocialBundle\Service\SocialPublisher;
 use c975L\UiBundle\Contract\ScopedSocialContentSourceInterface;
 use c975L\UiBundle\Contract\SocialContentSourceInterface;
@@ -105,12 +107,12 @@ class SocialPublisherTest extends TestCase
      * @param list<SocialContentSourceInterface> $sources
      * @param list<NetworkPublisherInterface>    $networks
      * @param array<string, string>              $lastBySourceType
+     * @param array<string, string>              $written
      */
-    private function createPublisher(array $sources, array $networks, bool $enabled = true, ?\DateTimeImmutable $last = null, array $lastBySourceType = [], string $page = '', bool $slotEnabled = false, ?string $template = null): SocialPublisher
+    private function createPublisher(array $sources, array $networks, ?\DateTimeImmutable $last = null, array $lastBySourceType = [], string $page = '', bool $slotEnabled = false, ?string $template = null, ?SocialPost $approved = null, array $written = []): SocialPublisher
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnMap([
-            ['social-publish-enabled', $enabled ? 'true' : 'false'],
             ['social-publish-interval-hours', '24'],
             ['social-publish-template', $template],
         ]);
@@ -119,6 +121,7 @@ class SocialPublisherTest extends TestCase
         $repository = $this->createStub(SocialPostRepository::class);
         $repository->method('findLastCreatedAt')->willReturn($last);
         $repository->method('findLastCreatedAtBySourceType')->willReturn($lastBySourceType);
+        $repository->method('findApproved')->willReturn(null === $approved ? [] : [$approved]);
         $repository->method('findSourceIds')->willReturnCallback(function (string $type, ?\DateTimeImmutable $since, array $networks = []): array {
             $this->asked[$type]['since'] = $since;
             $this->asked[$type]['networks'] = $networks;
@@ -128,6 +131,14 @@ class SocialPublisherTest extends TestCase
 
         $scheduleRepository = $this->createStub(SocialScheduleRepository::class);
         $scheduleRepository->method('hasEnabled')->willReturn($slotEnabled);
+
+        // What the site's AI wrote, by network - none by default, the template then writing every text
+        $writer = $this->createStub(SocialPostWriter::class);
+        $writer->method('write')->willReturnCallback(function (SocialContent $content, array $maxLengths) use ($written): array {
+            $this->asked['writer']['networks'] = array_keys($maxLengths);
+
+            return $written;
+        });
 
         $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('persist')->willReturnCallback(function (object $entity): void {
@@ -145,6 +156,8 @@ class SocialPublisherTest extends TestCase
             new NullLogger(),
             $this->lockFactory ??= new LockFactory(new InMemoryStore()),
             $scheduleRepository,
+            new SocialPlanner($repository, $scheduleRepository),
+            $writer,
         );
     }
 
@@ -186,9 +199,10 @@ class SocialPublisherTest extends TestCase
         $this->assertSame([], $this->persisted);
     }
 
-    public function testNothingIsPreparedWhileTheFeatureIsOff(): void
+    // No switch any more: the publication is off for as long as no network is connected
+    public function testNothingIsPreparedWhileNoNetworkIsConnected(): void
     {
-        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky')], enabled: false);
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky', configured: false)]);
 
         $this->assertSame([], $publisher->prepareNext());
     }
@@ -208,17 +222,17 @@ class SocialPublisherTest extends TestCase
         $this->assertCount(1, $publisher->prepareNext());
     }
 
-    public function testForcePreparesWhateverTheIntervalAndTheSwitch(): void
+    public function testForcePreparesWhateverTheInterval(): void
     {
-        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky')], enabled: false, last: new \DateTimeImmutable());
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky')], last: new \DateTimeImmutable());
 
         $this->assertCount(1, $publisher->prepareNext(true));
     }
 
-    // What makes a dry run safe to try before any credential is plugged in: nothing written, nothing sent, the payload shown
+    // What makes a dry run safe to try before any credential is plugged in: nothing written, nothing sent, the AI not asked, the template's payload shown
     public function testADryRunShowsThePayloadAndWritesAndSendsNothing(): void
     {
-        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky')]);
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky')], written: ['bluesky' => 'Written by the AI']);
 
         $report = $publisher->prepareNext(dryRun: true);
 
@@ -226,6 +240,7 @@ class SocialPublisherTest extends TestCase
         $this->assertSame("Title 42\n\nhttps://example.org/42", $report['bluesky']['payload']['text']);
         $this->assertSame([], $this->persisted);
         $this->assertSame([], $this->published);
+        $this->assertArrayNotHasKey('writer', $this->asked);
     }
 
     // The dry run is read before any credential is plugged in, so it shows the networks not configured yet too
@@ -238,12 +253,12 @@ class SocialPublisherTest extends TestCase
         $this->assertSame('review, not configured', $report['bluesky']['message']);
     }
 
-    // Its drafts would wait on a screen the menu does not show while the publication is off
-    public function testAPageIsNotPreparedWhileThePublicationIsOff(): void
+    // Its drafts would have no network to go out on
+    public function testAPageIsNotPreparedWhileNoNetworkIsConnected(): void
     {
-        $this->expectExceptionMessage('social-publish-enabled');
+        $this->expectExceptionMessage('No network is connected yet');
 
-        $this->createPublisher([], [$this->createNetwork('bluesky')], enabled: false)->prepareUrl('https://example.org/page');
+        $this->createPublisher([], [$this->createNetwork('bluesky', configured: false)])->prepareUrl('https://example.org/page');
     }
 
     public function testARefusingNetworkLeavesAFailedTargetAndTheOthersPost(): void
@@ -398,9 +413,9 @@ class SocialPublisherTest extends TestCase
         $this->assertSame([], $this->persisted);
     }
 
-    public function testASlotPreparesNothingWhileThePublicationIsOff(): void
+    public function testASlotPreparesNothingWhileNoNetworkIsConnected(): void
     {
-        $this->assertSame([], $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky')], false)->prepareSlot(new SocialSchedule()));
+        $this->assertSame([], $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky', configured: false)])->prepareSlot(new SocialSchedule()));
     }
 
     // Its sources only, and within a source only the groups it picked
@@ -438,5 +453,106 @@ class SocialPublisherTest extends TestCase
         $publisher = $this->createPublisher([$this->createScopedSource('gallery_media', '42', ['3' => '2024', '7' => '2024'])], []);
 
         $this->assertSame(['gallery_media' => 'Gallery media', 'gallery_media:3' => 'Gallery media - 2024', 'gallery_media:7' => 'Gallery media - 2024 (#7)'], $publisher->getSourceChoices());
+    }
+
+    // A post approved, two of its networks waiting: the slot sends what goes out on its own networks, prepares nothing else, and leaves the other network's text to a slot posting there
+    public function testASlotSendsTheApprovedPostOnItsNetworksRatherThanPreparing(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null);
+        new SocialPostTarget($post, 'bluesky', 'Text');
+        new SocialPostTarget($post, 'instagram', 'Text');
+        $post->approve();
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', '43')], [$this->createNetwork('bluesky', automatic: false), $this->createNetwork('instagram', automatic: false)], approved: $post);
+
+        $report = $publisher->prepareSlot(new SocialSchedule()->setNetworks(['bluesky']));
+
+        $this->assertSame(['bluesky'], array_keys($report));
+        $this->assertSame(['bluesky:/moved.webp'], $this->published);
+        $this->assertSame([], $this->persisted);
+        $this->assertSame(SocialPostStatus::Approved, $post->getTargets()->last()->getStatus());
+    }
+
+    // The dry run of a slot shows the approved texts it would send, and sends none of them
+    public function testADryRunOfASlotShowsTheApprovedPost(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null);
+        new SocialPostTarget($post, 'bluesky', 'Approved text');
+        $post->approve();
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', '43')], [$this->createNetwork('bluesky')], approved: $post);
+
+        $report = $publisher->prepareSlot(new SocialSchedule(), true);
+
+        $this->assertSame(['text' => 'Approved text'], $report['bluesky']['payload']);
+        $this->assertSame([], $this->published);
+        $this->assertSame(SocialPostStatus::Approved, $post->getTargets()->first()->getStatus());
+    }
+
+    // No approved post waiting: the slot prepares its next content, as it always did
+    public function testASlotWithNothingApprovedPreparesItsNextContent(): void
+    {
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky', automatic: false)]);
+
+        $this->assertSame(['bluesky' => ['status' => 'draft', 'message' => '']], $publisher->prepareSlot(new SocialSchedule()));
+        $this->preparedPost();
+    }
+
+    // Prepared from the calendar, a post waits for its slot as a draft, even on a network publishing automatically
+    public function testAPostPreparedForASlotWaitsForItAsADraft(): void
+    {
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky')]);
+        $at = new \DateTimeImmutable('2026-10-04 19:00');
+
+        $post = $publisher->prepareForSlot(new SocialSchedule(), $at);
+
+        $this->assertSame($this->preparedPost(), $post);
+        $this->assertEquals($at, $post->getPlannedAt());
+        $this->assertSame(SocialPostStatus::Draft, $post->getTargets()->first()->getStatus());
+        $this->assertSame([], $this->published);
+    }
+
+    // A batch of drafts, sent nowhere even on a network publishing automatically
+    public function testABatchOfDraftsIsPreparedAndSentNowhere(): void
+    {
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky')]);
+
+        $posts = $publisher->prepareDrafts(3);
+
+        $this->assertCount(3, $posts);
+        $this->assertSame([], $this->published);
+        $this->assertSame(SocialPostStatus::Draft, $posts[0]->getTargets()->first()->getStatus());
+    }
+
+    // The contents running out end the batch early, and no network connected prepares nothing
+    public function testABatchStopsWhenTheContentsRunOut(): void
+    {
+        $this->assertSame([], $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createNetwork('bluesky')])->prepareDrafts(3));
+        $this->assertSame([], $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky', configured: false)])->prepareDrafts(3));
+    }
+
+    // The AI writes the networks it can, in one call for all of them, the template the ones it left out
+    public function testTheAiWritesWhatItCanAndTheTemplateTheRest(): void
+    {
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky', automatic: false), $this->createNetwork('facebook', automatic: false)], written: ['facebook' => 'Written by the AI']);
+
+        $publisher->prepareNext(true);
+
+        $texts = $this->preparedPost()->getTargets()->map(static fn (SocialPostTarget $target): string => $target->getText())->getValues();
+        $this->assertSame(["Title 42\n\nhttps://example.org/42", 'Written by the AI'], $texts);
+        $this->assertSame(['bluesky', 'facebook'], $this->asked['writer']['networks']);
+    }
+
+    // A network ticked on the post's screen gets its text, approved with the rest of the post; one not connected gets none
+    public function testANetworkTickedGetsItsTextApprovedWithThePost(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null);
+        new SocialPostTarget($post, 'bluesky', 'Text');
+        $post->approve();
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createNetwork('bluesky'), $this->createNetwork('facebook'), $this->createNetwork('linkedin', configured: false)], written: ['facebook' => 'Written']);
+
+        $publisher->addTargets($post, ['facebook', 'linkedin']);
+
+        $this->assertSame(['bluesky', 'facebook'], $post->getNetworks());
+        $this->assertSame(['bluesky', 'facebook'], $post->getApprovedNetworks());
+        $this->assertSame('Written', $post->getTargets()->last()->getText());
     }
 }

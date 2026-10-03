@@ -15,6 +15,7 @@ use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Entity\SocialSchedule;
+use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Repository\SocialScheduleRepository;
 use c975L\UiBundle\Contract\ScopedSocialContentSourceInterface;
@@ -32,6 +33,9 @@ class SocialPublisher
     // The run is scheduled hourly on a fixed minute, so a post prepared at 10:37 is checked again at 10:37 the next day, a few seconds short of 24 hours - without this margin, each post would slip an hour later than the one before
     private const int INTERVAL_MARGIN = 600;
 
+    // The post the last prepare() saved, its report being keyed by network
+    private ?SocialPost $prepared = null;
+
     /**
      * @param iterable<SocialContentSourceInterface> $sources
      * @param iterable<NetworkPublisherInterface>    $networks
@@ -47,6 +51,8 @@ class SocialPublisher
         private readonly LoggerInterface $logger,
         private readonly LockFactory $lockFactory,
         private readonly SocialScheduleRepository $scheduleRepository,
+        private readonly SocialPlanner $planner,
+        private readonly SocialPostWriter $writer,
     ) {
     }
 
@@ -54,7 +60,7 @@ class SocialPublisher
     /** @return array<string, array<string, mixed>> */
     public function prepareNext(bool $force = false, bool $dryRun = false): array
     {
-        if (!$force && ($this->scheduleRepository->hasEnabled() || !$this->isDue())) {
+        if (!$force && ($this->scheduleRepository->hasEnabled() || !$this->isDue($dryRun))) {
             return [];
         }
 
@@ -63,18 +69,25 @@ class SocialPublisher
         return null === $content ? [] : $this->prepare($sourceType, $content, $dryRun);
     }
 
-    // A publication slot's run: the next content of its sources not posted yet on its networks, sent on those alone - [] when the publication is off or nothing is left
+    // A publication slot's run: the first unplanned approved post waiting on its networks, sent on those alone - or, with none waiting, the next content of its sources not posted yet on them. [] when none of its networks is connected, a planned post takes its place or nothing is left
     /** @return array<string, array<string, mixed>> */
     public function prepareSlot(SocialSchedule $slot, bool $dryRun = false): array
     {
-        if (!$dryRun && !$this->isEnabled()) {
+        $networks = $slot->resolveNetworks(array_keys($dryRun ? $this->allNetworks() : $this->networksByName()));
+        if ([] === $networks) {
             return [];
         }
 
-        $available = array_keys($dryRun ? $this->allNetworks() : $this->networksByName());
-        $networks = [] === $slot->getNetworks() ? $available : array_values(array_intersect($slot->getNetworks(), $available));
-        if ([] === $networks) {
+        // A post planned on this slot's quarter of an hour stands in its place, whether the planned run sent it already or not
+        $time = $slot->getTime();
+        $moment = null === $time ? new \DateTimeImmutable() : new \DateTimeImmutable('today')->setTime((int) $time->format('G'), (int) $time->format('i'));
+        if ($this->planner->isTaken($this->postRepository->findPlannedBetween($moment, $moment->modify('+' . SocialPlanner::QUARTER . ' seconds')), $networks, $moment)) {
             return [];
+        }
+
+        $approved = $this->planner->pick($this->postRepository->findApproved(), $networks);
+        if (null !== $approved) {
+            return $this->sendApproved($approved, $networks, $dryRun) ?? [];
         }
 
         [$sourceType, $content] = $this->nextContent($slot->getScopesBySourceType(), $networks);
@@ -103,6 +116,13 @@ class SocialPublisher
         return $choices;
     }
 
+    // The networks connected on this site, what a slot naming none of its own posts on
+    /** @return list<string> */
+    public function getConnectedNetworkNames(): array
+    {
+        return array_keys($this->networksByName());
+    }
+
     // Every network a slot may post on, configured or not yet
     /** @return list<string> */
     public function getNetworkNames(): array
@@ -110,13 +130,72 @@ class SocialPublisher
         return array_keys($this->allNetworks());
     }
 
+    // The calendar's "Prepare for this slot": the slot's next content, left as a draft planned for that moment rather than sent - null when the slot has no network connected or nothing left
+    public function prepareForSlot(SocialSchedule $slot, \DateTimeImmutable $at): ?SocialPost
+    {
+        $networks = $slot->resolveNetworks($this->getConnectedNetworkNames());
+        if ([] === $networks) {
+            return null;
+        }
+
+        [$sourceType, $content] = $this->nextContent($slot->getScopesBySourceType(), $networks);
+        if (null === $content) {
+            return null;
+        }
+
+        $this->prepare($sourceType, $content, false, $networks, ['slot' => (string) $slot->getText()], $at, false);
+
+        return $this->prepared;
+    }
+
+    // The planned run, every quarter of an hour: every approved post whose moment has come, sent on all its approved networks, keyed "#<post id> <network>"
+    /** @return array<string, array<string, mixed>> */
+    public function publishPlanned(bool $dryRun = false): array
+    {
+        $now = new \DateTimeImmutable();
+        $report = [];
+        foreach ($this->postRepository->findApproved() as $post) {
+            $planned = $post->getPlannedAt();
+            if (null === $planned || $planned > $now) {
+                continue;
+            }
+
+            foreach ($this->sendApproved($post, $post->getApprovedNetworks(), $dryRun) ?? [] as $network => $result) {
+                $report['#' . $post->getId() . ' ' . $network] = $result;
+            }
+        }
+
+        return $report;
+    }
+
+    // Several posts prepared at once, as drafts to approve one after the other - never sent at once, even on a network set to publish automatically. Fewer when the contents run out, none while no network is connected
+    /** @return list<SocialPost> */
+    public function prepareDrafts(int $count): array
+    {
+        $posts = [];
+        while (\count($posts) < $count && $this->hasConnectedNetwork()) {
+            [$sourceType, $content] = $this->nextContent();
+            if (null === $content) {
+                break;
+            }
+
+            $this->prepare($sourceType, $content, false, send: false);
+            if (null === $this->prepared) {
+                break;
+            }
+            $posts[] = $this->prepared;
+        }
+
+        return $posts;
+    }
+
     // Prepares a post of any page, read from its Open Graph tags, whatever the interval
     /** @return array<string, array<string, mixed>> */
     public function prepareUrl(string $url, bool $dryRun = false): array
     {
-        // Its drafts would wait on a screen the menu does not show while the publication is off
-        if (!$dryRun && !$this->isEnabled()) {
-            throw new \RuntimeException('The publication is off: turn "social-publish-enabled" on first.');
+        // Its drafts would have no network to go out on
+        if (!$dryRun && !$this->hasConnectedNetwork()) {
+            throw new \RuntimeException('No network is connected yet: connect one on the "Connections" screen first.');
         }
 
         return $this->prepare(SocialPost::SOURCE_URL, $this->pageReader->read($url), $dryRun);
@@ -156,6 +235,75 @@ class SocialPublisher
         }
     }
 
+    // Sends the post's approved targets on the given networks, the others waiting for a slot posting on theirs - null while a "Publish" of the same post is sending it
+    /**
+     * @param list<string> $networks
+     *
+     * @return ?array<string, array<string, mixed>>
+     */
+    private function sendApproved(SocialPost $post, array $networks, bool $dryRun): ?array
+    {
+        $lock = $this->lockFactory->createLock('social_post_publish_' . $post->getId());
+        if (!$lock->acquire()) {
+            return null;
+        }
+
+        try {
+            // What a "Publish" finished just before has saved, the same as publish() does
+            foreach ($post->getTargets() as $target) {
+                $this->entityManager->refresh($target);
+            }
+
+            $content = $this->contentOf($post);
+            $all = $this->allNetworks();
+
+            $report = [];
+            foreach ($post->getTargets() as $target) {
+                if (SocialPostStatus::Approved !== $target->getStatus() || !\in_array($target->getNetwork(), $networks, true)) {
+                    continue;
+                }
+
+                $network = $all[$target->getNetwork()] ?? null;
+                if ($dryRun) {
+                    $report[$target->getNetwork()] = null === $network || null === $content
+                        ? ['status' => self::DRY_RUN, 'message' => 'approved', 'payload' => ['error' => 'Nothing to send it with.']]
+                        : $this->preview($network, $target->getText(), $content);
+                    continue;
+                }
+
+                $this->send($network, $target, $content);
+                $report[$target->getNetwork()] = $this->report($target);
+            }
+
+            if (!$dryRun) {
+                $this->entityManager->flush();
+            }
+
+            return $report;
+        } finally {
+            $lock->release();
+        }
+    }
+
+    // Writes a text for each network ticked on a post that had none, the way prepare() does - approved along with the rest of the post when it was. A network not connected gets no text: it could not send it
+    /** @param list<string> $networks */
+    public function addTargets(SocialPost $post, array $networks): void
+    {
+        $content = $this->contentOf($post);
+        $targets = array_intersect_key($this->networksByName(), array_flip($networks));
+        if (null === $content || [] === $targets) {
+            return;
+        }
+
+        $written = $this->writer->write($content, array_map(static fn (NetworkPublisherInterface $network): int => $network->getMaxLength(), $targets));
+        foreach ($targets as $name => $network) {
+            $target = new SocialPostTarget($post, $name, $written[$name] ?? $this->textBuilder->build($content, $network->getMaxLength()));
+            if ($post->isApproved()) {
+                $target->approve();
+            }
+        }
+    }
+
     // The longest text a configured network accepts, null for one this site does not post to - what the post's screen tells whoever edits its text
     public function getMaxLength(string $network): ?int
     {
@@ -169,25 +317,28 @@ class SocialPublisher
      *
      * @return array<string, array<string, mixed>>
      */
-    private function prepare(string $sourceType, SocialContent $content, bool $dryRun, ?array $networks = null, array $variables = []): array
+    private function prepare(string $sourceType, SocialContent $content, bool $dryRun, ?array $networks = null, array $variables = [], ?\DateTimeImmutable $plannedAt = null, bool $send = true): array
     {
         $post = new SocialPost($sourceType, $content->sourceId, $content->title, $content->url, $content->imageUrl);
+        $post->setPlannedAt($plannedAt);
+        $this->prepared = null;
+
+        // Every network on a dry run, the configured ones only otherwise: the dry run is what is read before any credential is plugged in
+        $targets = array_filter($dryRun ? $this->allNetworks() : $this->networksByName(), static fn (NetworkPublisherInterface $network, string $name): bool => null === $networks || \in_array($name, $networks, true), \ARRAY_FILTER_USE_BOTH);
+        // Written by the site's AI in one call where it has one, the template writing whatever it left out - never on a dry run, which costs nothing and shows the template's text
+        $written = $dryRun ? [] : $this->writer->write($content, array_map(static fn (NetworkPublisherInterface $network): int => $network->getMaxLength(), $targets), $variables);
 
         $report = [];
-        // Every network on a dry run, the configured ones only otherwise: the dry run is what is read before any credential is plugged in
-        foreach ($dryRun ? $this->allNetworks() : $this->networksByName() as $name => $network) {
-            if (null !== $networks && !\in_array($name, $networks, true)) {
-                continue;
-            }
-
-            $text = $this->textBuilder->build($content, $network->getMaxLength(), $variables);
+        foreach ($targets as $name => $network) {
+            $text = $written[$name] ?? $this->textBuilder->build($content, $network->getMaxLength(), $variables);
             if ($dryRun) {
                 $report[$name] = $this->preview($network, $text, $content);
                 continue;
             }
 
             $target = new SocialPostTarget($post, $name, $text);
-            if ($network->isAutomatic()) {
+            // A post prepared for a reading - planned for a slot, or one of a batch - waits on every network, an automatic one included
+            if ($send && $network->isAutomatic()) {
                 $this->send($network, $target, $content);
             }
             $report[$name] = $this->report($target);
@@ -197,15 +348,16 @@ class SocialPublisher
         if (!$dryRun && [] !== $report) {
             $this->entityManager->persist($post);
             $this->entityManager->flush();
+            $this->prepared = $post;
         }
 
         return $report;
     }
 
-    // Whether the feature is on and the interval since the last post prepared has passed
-    private function isDue(): bool
+    // Whether a network is connected - a dry run being read before any is - and the interval since the last post prepared has passed
+    private function isDue(bool $dryRun): bool
     {
-        if (!$this->isEnabled()) {
+        if (!$dryRun && !$this->hasConnectedNetwork()) {
             return false;
         }
 
@@ -302,9 +454,16 @@ class SocialPublisher
         }
     }
 
-    private function isEnabled(): bool
+    // Whether a publication slot is on, the slots being what sends an approved post - without one, "Publish" is the only way out
+    public function hasEnabledSlot(): bool
     {
-        return $this->configService->getBool($this->configService->get('social-publish-enabled'));
+        return $this->scheduleRepository->hasEnabled();
+    }
+
+    // The publication is on as soon as one network is connected, no switch to turn on besides
+    public function hasConnectedNetwork(): bool
+    {
+        return [] !== $this->networksByName();
     }
 
     // How a dry run labels a network: whether its post would wait for review, and whether it could go out at all yet

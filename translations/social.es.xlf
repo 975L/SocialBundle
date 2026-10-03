@@ -30,6 +30,10 @@
                 <source>description.guided_project_social_bluesky_connect</source>
                 <target>Vincular el sitio a su cuenta de Bluesky, sin aplicación que crear ni contraseña que escribir. Se hace una vez, y de nuevo si se retira el acceso.</target>
             </trans-unit>
+            <trans-unit id="DmlLCtb">
+                <source>description.guided_project_social_calendar</source>
+                <target>Ver dónde caerá cada publicación validada entre las franjas, y moverla arrastrándola.</target>
+            </trans-unit>
             <trans-unit id="Z4mtym8">
                 <source>description.guided_project_social_google_connect</source>
                 <target>La parte de la agencia: el acceso en Google, las dos claves y el consentimiento. Se hace una vez, y de nuevo el día en que se revoca el token.</target>
@@ -37,6 +41,10 @@
             <trans-unit id="VNxe2Mo">
                 <source>description.guided_project_social_google_reviews</source>
                 <target>Moderar lo que Google ha traído, responderlo y colocar las reseñas en una página.</target>
+            </trans-unit>
+            <trans-unit id="1Qxr9lg">
+                <source>description.guided_project_social_linkedin_connect</source>
+                <target>La parte de la agencia: la aplicación de LinkedIn, sus dos claves y el consentimiento. Se hace una vez, y luego cada 60 días, la duración del acceso.</target>
             </trans-unit>
             <trans-unit id="FrDtWdT">
                 <source>description.guided_project_social_links</source>
@@ -60,19 +68,43 @@
             </trans-unit>
             <trans-unit id="0CvXFm7">
                 <source>description.guided_step_social_bluesky_connect</source>
-                <target>En el submenú "Social" de la barra lateral, hacer clic en "Conectar Bluesky" y autorizar el acceso en Bluesky. El sitio guarda la sesión por sí mismo.</target>
+                <target>Hacer clic en "Conectar" en la ficha "Bluesky" y autorizar el acceso en Bluesky. El sitio guarda la sesión por sí mismo.</target>
             </trans-unit>
             <trans-unit id="opsSET4">
                 <source>description.guided_step_social_bluesky_handle</source>
-                <target>Opcional: buscar «social-bluesky-handle» en la lista y poner el identificador de la cuenta, por ejemplo ejemplo.bsky.social. Vacío, la cuenta se elige en la página de Bluesky.</target>
+                <target>Opcional, en la configuración: buscar «social-bluesky-handle» y poner el identificador de la cuenta, por ejemplo ejemplo.bsky.social, para que la próxima conexión lo proponga directamente. Vacío, la cuenta se elige en la página de Bluesky.</target>
             </trans-unit>
             <trans-unit id="82P_F59">
                 <source>description.guided_step_social_bluesky_mode</source>
                 <target>«social-bluesky-publish-mode» vale «review»: cada publicación espera la revisión en la pantalla Publicaciones. «auto» la envía en cuanto está preparada.</target>
             </trans-unit>
+            <trans-unit id="L8sqUEj">
+                <source>description.guided_step_social_calendar_drafts</source>
+                <target>Los borradores esperan aquí su revisión: un clic abre uno, y arrastrarlo a una franja lo valida y lo prevé en ese momento.</target>
+            </trans-unit>
+            <trans-unit id="17dUjo3">
+                <source>description.guided_step_social_calendar_open</source>
+                <target>La semana de las publicaciones: las que ya salieron, y cada publicación validada en la franja que la enviará. «Mes» muestra el mes entero. Las horas mostradas se ajustan en la configuración.</target>
+            </trans-unit>
+            <trans-unit id="UA0SeWu">
+                <source>description.guided_step_social_calendar_panel</source>
+                <target>Haga clic en una publicación: su panel la prevé a una hora precisa, la devuelve a la cola o abre sus textos para modificarlos.</target>
+            </trans-unit>
+            <trans-unit id="rqDkuRv">
+                <source>description.guided_step_social_calendar_queue</source>
+                <target>Las publicaciones validadas sin fecha: salen, en orden, en la próxima franja libre que publica en sus redes.</target>
+            </trans-unit>
+            <trans-unit id="4CAagYG">
+                <source>description.guided_step_social_calendar_slot</source>
+                <target>Arrastre una publicación a una franja para preverla allí, a «Cola» para que salga en la próxima franja libre, a «Por validar» para retirarla de la cola. Una franja libre también propone «Preparar para esta franja».</target>
+            </trans-unit>
+            <trans-unit id="hLyq6N2">
+                <source>description.guided_step_social_connections_open</source>
+                <target>La pantalla «Conexiones», en el submenú «Social» de la barra lateral: cada red tiene allí su ficha, con su estado y su botón «Conectar».</target>
+            </trans-unit>
             <trans-unit id="Q2.88W1">
                 <source>description.guided_step_social_google_connect</source>
-                <target>En el submenú "Social" de la barra lateral, hacer clic en "Conectar Google" y autorizar el acceso con la cuenta de Google propietaria de la ficha. El sitio guarda por sí mismo el token, la cuenta y la ficha.</target>
+                <target>Hacer clic en "Conectar" en la ficha "Perfil de Google" y autorizar el acceso con la cuenta de Google propietaria de la ficha. El sitio guarda por sí mismo el token, la cuenta y la ficha.</target>
             </trans-unit>
             <trans-unit id="XzEU5fT">
                 <source>description.guided_step_social_google_credentials</source>
@@ -97,6 +129,22 @@
             <trans-unit id="r_RYin.">
                 <source>description.guided_step_social_google_sync</source>
                 <target>Las reseñas llegan solas cada noche, ya que el propio bundle programa la tarea «c975l:social:reviews:sync». Queda una clave opcional, «social-google-listing-url»: la dirección pública de la ficha, recogida en los datos estructurados del sitio.</target>
+            </trans-unit>
+            <trans-unit id="2BLT8wV">
+                <source>description.guided_step_social_linkedin_connect</source>
+                <target>Hacer clic en «Conectar» en la ficha «LinkedIn» y autorizar el acceso con la cuenta de LinkedIn del perfil. El sitio guarda por sí mismo el token y el perfil.</target>
+            </trans-unit>
+            <trans-unit id="w.Eq8PT">
+                <source>description.guided_step_social_linkedin_credentials</source>
+                <target>Buscar «social-linkedin-client-id» y «social-linkedin-client-secret» en la lista, y pegar allí los dos valores de la aplicación. El secreto solo aparece con el botón «Ver datos sensibles». El token y el perfil se rellenan solos en el paso siguiente.</target>
+            </trans-unit>
+            <trans-unit id="wF5Oo9b">
+                <source>description.guided_step_social_linkedin_mode</source>
+                <target>«social-linkedin-publish-mode» vale «review»: cada publicación espera la revisión en la pantalla Publicaciones. «auto» la envía en cuanto está preparada. El acceso dura 60 días: vuelva a conectarse desde la ficha antes de que caduque.</target>
+            </trans-unit>
+            <trans-unit id="h8ze_vb">
+                <source>description.guided_step_social_linkedin_prerequisites</source>
+                <target>Esta parte se hace en linkedin.com/developers: crear una aplicación vinculada a una Página de LinkedIn que usted administra, añadirle los productos «Share on LinkedIn» y «Sign In with LinkedIn using OpenID Connect», y declarar como URL de redirección la dirección del sitio seguida de «/social/linkedin/callback». Volver aquí con el identificador y la clave secreta de la aplicación.</target>
             </trans-unit>
             <trans-unit id="vgXH0gX">
                 <source>description.guided_step_social_links_display_label</source>
@@ -128,7 +176,7 @@
             </trans-unit>
             <trans-unit id="a4QkcYj">
                 <source>description.guided_step_social_meta_connect</source>
-                <target>En el submenú "Social" de la barra lateral, hacer clic en "Conectar Meta" y autorizar el acceso con la cuenta de Facebook que gestiona la Página. El sitio guarda por sí mismo la Página, su token y la cuenta de Instagram.</target>
+                <target>Hacer clic en "Conectar" en la ficha "Facebook e Instagram" y autorizar el acceso con la cuenta de Facebook que gestiona la Página. El sitio guarda por sí mismo la Página, su token y la cuenta de Instagram.</target>
             </trans-unit>
             <trans-unit id="0xEpiaR">
                 <source>description.guided_step_social_meta_credentials</source>
@@ -142,6 +190,10 @@
                 <source>description.guided_step_social_meta_prerequisites</source>
                 <target>Esta parte se hace en developers.facebook.com: crear una aplicación, añadirle el inicio de sesión con Facebook con la dirección del sitio seguida de «/social/meta/callback» como URI de redirección, y dejarla en modo de desarrollo. La Página debe estar vinculada a la cuenta profesional de Instagram. Volver aquí con el identificador y la clave secreta de la aplicación.</target>
             </trans-unit>
+            <trans-unit id="2_2asy8">
+                <source>description.guided_step_social_posts_approve</source>
+                <target>Con franjas activas, este botón confía la publicación a la próxima franja que publica en sus redes, o a su fecha prevista, en lugar de enviarla de inmediato.</target>
+            </trans-unit>
             <trans-unit id="hq1t6co">
                 <source>description.guided_step_social_posts_edit</source>
                 <target>El botón de edición abre la publicación: un texto por red, cada uno limitado a la longitud que acepta esa red, bajo la imagen que saldrá con ella.</target>
@@ -152,7 +204,7 @@
             </trans-unit>
             <trans-unit id="hc6ecvb">
                 <source>description.guided_step_social_posts_prepare</source>
-                <target>«Preparar ahora» toma el siguiente contenido sin esperar; «Desde una dirección» prepara cualquier página, de este sitio o de otro, a partir de sus etiquetas Open Graph.</target>
+                <target>«Preparar ahora» toma el siguiente contenido sin esperar; «Desde una dirección» prepara cualquier página, de este sitio o de otro, a partir de sus etiquetas Open Graph. «Preparar 7 borradores» prepara una semana por adelantado, para validarlas después una a una.</target>
             </trans-unit>
             <trans-unit id="SvQRq5R">
                 <source>description.guided_step_social_posts_publish</source>
@@ -161,10 +213,6 @@
             <trans-unit id="lw9Mjxv">
                 <source>description.guided_step_social_schedules_edit</source>
                 <target>Añadir una franja, o retomar una existente.</target>
-            </trans-unit>
-            <trans-unit id="N0uYKyC">
-                <source>description.guided_step_social_schedules_networks</source>
-                <target>Las redes en las que publica esta franja. Ninguna marcada, todas las configuradas.</target>
             </trans-unit>
             <trans-unit id="YvE_dVx">
                 <source>description.guided_step_social_schedules_open</source>
@@ -208,7 +256,7 @@
             </trans-unit>
             <trans-unit id="LxtX23p">
                 <source>description.guided_step_social_share_buttons_open</source>
-                <target>Los botones de compartir ya están en sus páginas: aquí se decide cuáles y qué aspecto tienen.</target>
+                <target>Los botones de compartir se muestran en sus páginas: aquí se decide cuáles y qué aspecto tienen. Si un aviso indica que están desactivados, actívelos primero.</target>
             </trans-unit>
             <trans-unit id="bRoisnG">
                 <source>description.guided_step_social_share_buttons_shape</source>
@@ -221,6 +269,22 @@
             <trans-unit id="10Bz8lS">
                 <source>flash.bluesky_refused</source>
                 <target>Conexión con Bluesky interrumpida: vuelva a iniciarla desde el panel.</target>
+            </trans-unit>
+            <trans-unit id="4_w_WZC">
+                <source>flash.bluesky_wrong_host</source>
+                <target>Bluesky solo puede conectarse desde %url%, la dirección por la que conoce el sitio.</target>
+            </trans-unit>
+            <trans-unit id="ZAt717E">
+                <source>flash.linkedin_connected</source>
+                <target>Perfil de LinkedIn de %name% conectado, hasta el %date%.</target>
+            </trans-unit>
+            <trans-unit id="r5XMty8">
+                <source>flash.linkedin_not_configured</source>
+                <target>Rellene primero el ID y el secreto de su app de LinkedIn en la configuración.</target>
+            </trans-unit>
+            <trans-unit id="kYVRLNI">
+                <source>flash.linkedin_refused</source>
+                <target>La conexión con LinkedIn ha sido rechazada o interrumpida.</target>
             </trans-unit>
             <trans-unit id="iOFL8AK">
                 <source>flash.meta_connected</source>
@@ -238,9 +302,21 @@
                 <source>flash.meta_refused</source>
                 <target>La conexión con Meta fue rechazada o interrumpida.</target>
             </trans-unit>
+            <trans-unit id="H7BmV19">
+                <source>flash.social_calendar_slot_taken</source>
+                <target>Esta franja ya tiene su publicación: aquí está, en lugar de preparar una segunda.</target>
+            </trans-unit>
+            <trans-unit id="i2TxptH">
+                <source>flash.social_post_approved</source>
+                <target>«%title%» está validada: saldrá en la próxima franja de sus redes.</target>
+            </trans-unit>
             <trans-unit id="87Pcbcr">
                 <source>flash.social_post_draft</source>
                 <target>Preparada para %network%, a la espera de su revisión.</target>
+            </trans-unit>
+            <trans-unit id="QqaXATm">
+                <source>flash.social_post_drafts</source>
+                <target>%count% borrador(es) preparado(s), para revisar y validar uno a uno.</target>
             </trans-unit>
             <trans-unit id="k5cHJcN">
                 <source>flash.social_post_failed</source>
@@ -258,6 +334,22 @@
                 <source>flash.social_post_publishing</source>
                 <target>Esta publicación ya se está enviando: espere a que termine.</target>
             </trans-unit>
+            <trans-unit id="52E_8Ux">
+                <source>flash.social_post_unapproved</source>
+                <target>«%title%» se ha retirado de la cola y espera de nuevo su revisión.</target>
+            </trans-unit>
+            <trans-unit id="HF4A7I.">
+                <source>help.social_post_next_slot</source>
+                <target>Saldrá el %date%, en la próxima franja libre. Indique una fecha y una hora para que salga en ese momento, al cuarto de hora.</target>
+            </trans-unit>
+            <trans-unit id="6dpEFVs">
+                <source>help.social_post_planned_at</source>
+                <target>Vacío: una publicación validada sale en la próxima franja libre, en el orden de preparación. Rellenado: sale en esa fecha y hora, al cuarto de hora.</target>
+            </trans-unit>
+            <trans-unit id="PoY.WA0">
+                <source>help.social_post_send_on</source>
+                <target>Desmarque una red para no publicar allí; marque una para que se le escriba un texto, visible la próxima vez que abra la publicación. Una red en gris no está conectada: vea «Conexiones».</target>
+            </trans-unit>
             <trans-unit id="PmT6SQr">
                 <source>label.anchor</source>
                 <target>Ancla</target>
@@ -266,13 +358,45 @@
                 <source>label.anchor_help</source>
                 <target>Identificador corto para enlazar una entrada de menú a esta banda (ej. «compartir»). Sin ancla, no se puede enlazar desde un menú.</target>
             </trans-unit>
-            <trans-unit id="_oMMwKM">
-                <source>label.bluesky_connect</source>
-                <target>Conectar Bluesky</target>
-            </trans-unit>
             <trans-unit id="tKFuD86">
                 <source>label.category_navigation</source>
                 <target>Navegación</target>
+            </trans-unit>
+            <trans-unit id="lXCPPAS">
+                <source>label.connection_account</source>
+                <target>Cuenta: %account%</target>
+            </trans-unit>
+            <trans-unit id="h7bW5vi">
+                <source>label.connection_connect</source>
+                <target>Conectar</target>
+            </trans-unit>
+            <trans-unit id="aIBoIFC">
+                <source>label.connection_connected</source>
+                <target>Conectado</target>
+            </trans-unit>
+            <trans-unit id="vlvWStb">
+                <source>label.connection_expires</source>
+                <target>Válido hasta el %date%.</target>
+            </trans-unit>
+            <trans-unit id="eYUcNRk">
+                <source>label.connection_instagram_missing</source>
+                <target>Ninguna cuenta profesional de Instagram está vinculada a la página de Facebook: solo Facebook recibirá las publicaciones.</target>
+            </trans-unit>
+            <trans-unit id="UxBN9pJ">
+                <source>label.connection_not_configured</source>
+                <target>Aplicación por configurar</target>
+            </trans-unit>
+            <trans-unit id="ovlfB2H">
+                <source>label.connection_not_connected</source>
+                <target>No conectado</target>
+            </trans-unit>
+            <trans-unit id="B8XG1pX">
+                <source>label.connection_reconnect</source>
+                <target>Reconectar</target>
+            </trans-unit>
+            <trans-unit id="JQ_3soN">
+                <source>label.connection_wrong_host</source>
+                <target>Bluesky solo conoce el sitio por su dirección: conéctelo desde %url%.</target>
             </trans-unit>
             <trans-unit id="cnGpTz.">
                 <source>label.display_label</source>
@@ -326,13 +450,13 @@
                 <source>label.gallery_showcase_social_links_description</source>
                 <target>Estilos disponibles para los enlaces a redes sociales.</target>
             </trans-unit>
-            <trans-unit id="Hw3DjDB">
-                <source>label.google_connect</source>
-                <target>Conectar Google</target>
-            </trans-unit>
             <trans-unit id="tf7xOaW">
                 <source>label.guided_project_social_bluesky_connect</source>
                 <target>Conectar la cuenta de Bluesky</target>
+            </trans-unit>
+            <trans-unit id="4Y81vK8">
+                <source>label.guided_project_social_calendar</source>
+                <target>Planificar sus publicaciones en el calendario</target>
             </trans-unit>
             <trans-unit id="viNLaDg">
                 <source>label.guided_project_social_google_connect</source>
@@ -341,6 +465,10 @@
             <trans-unit id="9gMwOTb">
                 <source>label.guided_project_social_google_reviews</source>
                 <target>Consultar y mostrar las reseñas de Google</target>
+            </trans-unit>
+            <trans-unit id="M.lArB1">
+                <source>label.guided_project_social_linkedin_connect</source>
+                <target>Conectar el perfil de LinkedIn</target>
             </trans-unit>
             <trans-unit id="__S_HiT">
                 <source>label.guided_project_social_links</source>
@@ -374,6 +502,30 @@
                 <source>label.guided_step_social_bluesky_mode</source>
                 <target>Elegir lo que sale sin revisión</target>
             </trans-unit>
+            <trans-unit id="lfXvHb6">
+                <source>label.guided_step_social_calendar_drafts</source>
+                <target>Las publicaciones por validar</target>
+            </trans-unit>
+            <trans-unit id="a8cneSW">
+                <source>label.guided_step_social_calendar_open</source>
+                <target>Abrir el calendario</target>
+            </trans-unit>
+            <trans-unit id="9fHDZ.c">
+                <source>label.guided_step_social_calendar_panel</source>
+                <target>Abrir una publicación</target>
+            </trans-unit>
+            <trans-unit id="Je4Sg4x">
+                <source>label.guided_step_social_calendar_queue</source>
+                <target>La cola</target>
+            </trans-unit>
+            <trans-unit id="grdVdjR">
+                <source>label.guided_step_social_calendar_slot</source>
+                <target>Arrastrar a una franja</target>
+            </trans-unit>
+            <trans-unit id="tVdTpfQ">
+                <source>label.guided_step_social_connections_open</source>
+                <target>Abrir las conexiones</target>
+            </trans-unit>
             <trans-unit id="WWlxIlv">
                 <source>label.guided_step_social_google_connect</source>
                 <target>Iniciar la conexión</target>
@@ -401,6 +553,22 @@
             <trans-unit id="oqWYK8u">
                 <source>label.guided_step_social_google_sync</source>
                 <target>Dejar que la sincronización haga el resto</target>
+            </trans-unit>
+            <trans-unit id="Qr2OOFV">
+                <source>label.guided_step_social_linkedin_connect</source>
+                <target>Iniciar la conexión</target>
+            </trans-unit>
+            <trans-unit id="vKAjE7P">
+                <source>label.guided_step_social_linkedin_credentials</source>
+                <target>Rellenar las dos claves de la aplicación</target>
+            </trans-unit>
+            <trans-unit id="5gjF6SQ">
+                <source>label.guided_step_social_linkedin_mode</source>
+                <target>Elegir lo que sale sin revisión y acordarse de reconectar</target>
+            </trans-unit>
+            <trans-unit id="n1.S19b">
+                <source>label.guided_step_social_linkedin_prerequisites</source>
+                <target>Crear la aplicación de LinkedIn</target>
             </trans-unit>
             <trans-unit id="xNJPblz">
                 <source>label.guided_step_social_links_display_label</source>
@@ -450,13 +618,25 @@
                 <source>label.guided_step_social_meta_prerequisites</source>
                 <target>Crear la aplicación Meta</target>
             </trans-unit>
+            <trans-unit id="bIP872E">
+                <source>label.guided_step_social_posts_approve</source>
+                <target>Validar para la próxima franja</target>
+            </trans-unit>
             <trans-unit id="9zRMIWa">
                 <source>label.guided_step_social_posts_edit</source>
                 <target>Revisar los textos</target>
             </trans-unit>
+            <trans-unit id="P_m5tZm">
+                <source>label.guided_step_social_posts_networks</source>
+                <target>Elegir las redes</target>
+            </trans-unit>
             <trans-unit id="WTphy6s">
                 <source>label.guided_step_social_posts_open</source>
                 <target>Abrir las publicaciones</target>
+            </trans-unit>
+            <trans-unit id="P0gG9kM">
+                <source>label.guided_step_social_posts_planned_at</source>
+                <target>Elegir la fecha (opcional)</target>
             </trans-unit>
             <trans-unit id="2IN5mPN">
                 <source>label.guided_step_social_posts_prepare</source>
@@ -566,17 +746,45 @@
                 <source>label.info_google_connect</source>
                 <target>Permite al sitio leer las opiniones de su ficha de Google y responderlas.</target>
             </trans-unit>
+            <trans-unit id="8MsrPrS">
+                <source>label.info_google_not_configured</source>
+                <target>Indique primero el identificador y el secreto del cliente OAuth de Google en la configuración («social-google-oauth-client-id» y «social-google-oauth-client-secret»).</target>
+            </trans-unit>
+            <trans-unit id="0cTMFAS">
+                <source>label.info_linkedin_connect</source>
+                <target>Vincula el sitio a su perfil personal de LinkedIn. El acceso dura 60 días: vuelva a conectarse antes de que caduque.</target>
+            </trans-unit>
+            <trans-unit id="95gY_Ya">
+                <source>label.info_linkedin_not_configured</source>
+                <target>Rellene primero el ID y el secreto de la app de LinkedIn en la configuración («social-linkedin-client-id» y «social-linkedin-client-secret»).</target>
+            </trans-unit>
             <trans-unit id="QtqwtAv">
                 <source>label.info_meta_connect</source>
                 <target>Vincula el sitio con su Página de Facebook y la cuenta profesional de Instagram asociada: se hace una vez, y de nuevo si se retira el acceso.</target>
             </trans-unit>
+            <trans-unit id="to_3wK2">
+                <source>label.info_meta_not_configured</source>
+                <target>Indique primero el identificador y el secreto de la aplicación Meta en la configuración («social-meta-app-id» y «social-meta-app-secret»).</target>
+            </trans-unit>
+            <trans-unit id="C_Ulqfe">
+                <source>label.info_no_connected_network</source>
+                <target>Todavía no hay ninguna red conectada: no se publicará nada hasta que haya una.</target>
+            </trans-unit>
             <trans-unit id="lZ1hyGi">
                 <source>label.info_share_buttons_disabled</source>
-                <target>Los botones para compartir están desactivados en todo el sitio: ninguna página los muestra. Abre el ajuste «social-enable-share-buttons», que debe pasarse a true para activarlos y recuperar su pantalla de configuración.</target>
+                <target>Los botones para compartir están desactivados en todo el sitio: ninguna página los muestra, así que estos ajustes no tienen efecto por ahora.</target>
             </trans-unit>
             <trans-unit id="AuLTjz5">
                 <source>label.info_share_buttons_settings</source>
                 <target>Redes/estilo predeterminados de los botones de compartir - singleton, sobrescribible por página con el bloque "share_buttons_display". Modifique las redes activas, su orden y el estilo de visualización.</target>
+            </trans-unit>
+            <trans-unit id="k1q7HYe">
+                <source>label.info_social_calendar</source>
+                <target>El calendario de las publicaciones: lo que ya salió y dónde caerá cada publicación validada entre las próximas franjas. Haga clic en una publicación para abrirla.</target>
+            </trans-unit>
+            <trans-unit id="G03WcyU">
+                <source>label.info_social_connections</source>
+                <target>Las redes a las que se conecta el sitio. Facebook, Instagram, LinkedIn y Bluesky reciben las publicaciones preparadas en la pantalla «Publicaciones»: la publicación empieza en cuanto una de ellas está conectada, sin nada más que activar. Google da acceso a las reseñas de su ficha de empresa.</target>
             </trans-unit>
             <trans-unit id="RKLGNte">
                 <source>label.info_social_links</source>
@@ -588,7 +796,7 @@
             </trans-unit>
             <trans-unit id="ehHeI2l">
                 <source>label.info_social_posts</source>
-                <target>Las publicaciones preparadas para sus redes, un texto por red. Los borradores esperan su revisión: corrija los textos, guarde y haga clic en «Publicar». Eliminar una publicación la cancela.</target>
+                <target>Las publicaciones preparadas para sus redes, un texto por red. Los borradores esperan su revisión: corrija los textos, guarde y haga clic en «Publicar», o en «Validar para la próxima franja» para que salga con las franjas. Eliminar una publicación la cancela.</target>
             </trans-unit>
             <trans-unit id="w4NSFiG">
                 <source>label.info_social_schedules</source>
@@ -606,13 +814,33 @@
                 <source>label.label</source>
                 <target>Etiqueta</target>
             </trans-unit>
-            <trans-unit id="igt5GrM">
-                <source>label.meta_connect</source>
-                <target>Conectar Meta</target>
-            </trans-unit>
             <trans-unit id="qW0z.EV">
                 <source>label.network</source>
                 <target>Red</target>
+            </trans-unit>
+            <trans-unit id="duvrD74">
+                <source>label.network_bluesky</source>
+                <target>Bluesky</target>
+            </trans-unit>
+            <trans-unit id="D77Jgwt">
+                <source>label.network_google</source>
+                <target>Perfil de Google</target>
+            </trans-unit>
+            <trans-unit id="aMSshQf">
+                <source>label.network_linkedin</source>
+                <target>LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="BgAx0DX">
+                <source>label.network_meta</source>
+                <target>Facebook e Instagram</target>
+            </trans-unit>
+            <trans-unit id="MnnG0dN">
+                <source>label.network_not_connected</source>
+                <target>%network% (no conectado)</target>
+            </trans-unit>
+            <trans-unit id="o71OlA1">
+                <source>label.network_off</source>
+                <target>no conectado</target>
             </trans-unit>
             <trans-unit id="NFkKnJC">
                 <source>label.networks</source>
@@ -646,9 +874,9 @@
                 <source>label.shape_wide</source>
                 <target>Ancho</target>
             </trans-unit>
-            <trans-unit id="HgBfL.n">
-                <source>label.share_buttons_disabled</source>
-                <target>Botones para compartir (desactivados)</target>
+            <trans-unit id="evThGHm">
+                <source>label.share_buttons_enable</source>
+                <target>Activarlos</target>
             </trans-unit>
             <trans-unit id="QGQ5OoP">
                 <source>label.share_buttons_settings</source>
@@ -666,6 +894,114 @@
                 <source>label.social</source>
                 <target>Social</target>
             </trans-unit>
+            <trans-unit id="sEl8agd">
+                <source>label.social_calendar</source>
+                <target>Calendario</target>
+            </trans-unit>
+            <trans-unit id="vqvZ3s4">
+                <source>label.social_calendar_approve_plan</source>
+                <target>Validar y prever a esta hora</target>
+            </trans-unit>
+            <trans-unit id="cm2xUra">
+                <source>label.social_calendar_back_to_queue</source>
+                <target>Volver a la cola</target>
+            </trans-unit>
+            <trans-unit id="bSspzgN">
+                <source>label.social_calendar_close</source>
+                <target>Cerrar</target>
+            </trans-unit>
+            <trans-unit id="GaE3Zmi">
+                <source>label.social_calendar_draft_waits</source>
+                <target>Solo saldrá una vez validada.</target>
+            </trans-unit>
+            <trans-unit id="AzY0WvY">
+                <source>label.social_calendar_drafts</source>
+                <target>Por validar</target>
+            </trans-unit>
+            <trans-unit id="l0Dqa_D">
+                <source>label.social_calendar_drag_hint</source>
+                <target>Arrastre una publicación a una franja para preverla allí, a «Cola» para que salga en la próxima franja libre, a «Por validar» para retirarla de la cola.</target>
+            </trans-unit>
+            <trans-unit id="6zf3y2m">
+                <source>label.social_calendar_edit_texts</source>
+                <target>Editar los textos y las redes</target>
+            </trans-unit>
+            <trans-unit id="WuPZbRF">
+                <source>label.social_calendar_goes_out</source>
+                <target>Saldrá el %date%.</target>
+            </trans-unit>
+            <trans-unit id="wFpSXs5">
+                <source>label.social_calendar_goes_out_next</source>
+                <target>Saldrá el %date%, en la próxima franja libre.</target>
+            </trans-unit>
+            <trans-unit id="quz2fN2">
+                <source>label.social_calendar_month</source>
+                <target>Mes</target>
+            </trans-unit>
+            <trans-unit id="o6LGnzr">
+                <source>label.social_calendar_move_failed</source>
+                <target>El desplazamiento no se ha guardado. La página se recargará.</target>
+            </trans-unit>
+            <trans-unit id="NUU5AmN">
+                <source>label.social_calendar_next</source>
+                <target>Siguiente</target>
+            </trans-unit>
+            <trans-unit id="QGFcEKz">
+                <source>label.social_calendar_no_slot</source>
+                <target>Ninguna franja de publicación está activa: nada sale por sí solo. Cree una en «Franjas de publicación».</target>
+            </trans-unit>
+            <trans-unit id="vApxCIC">
+                <source>label.social_calendar_no_slot_ahead</source>
+                <target>ninguna franja</target>
+            </trans-unit>
+            <trans-unit id="oZ_OaKV">
+                <source>label.social_calendar_plan</source>
+                <target>Prever a esta hora</target>
+            </trans-unit>
+            <trans-unit id="mVWRLZ8">
+                <source>label.social_calendar_plan_at</source>
+                <target>Salir a una hora precisa (al cuarto de hora)</target>
+            </trans-unit>
+            <trans-unit id="yY2ALhD">
+                <source>label.social_calendar_prepare</source>
+                <target>Preparar para esta franja</target>
+            </trans-unit>
+            <trans-unit id="x_A7kw0">
+                <source>label.social_calendar_previous</source>
+                <target>Anterior</target>
+            </trans-unit>
+            <trans-unit id="wy6rTY0">
+                <source>label.social_calendar_queue</source>
+                <target>Cola</target>
+            </trans-unit>
+            <trans-unit id="XoPg4k5">
+                <source>label.social_calendar_state_draft</source>
+                <target>Por validar</target>
+            </trans-unit>
+            <trans-unit id="ZN6ftUq">
+                <source>label.social_calendar_state_planned</source>
+                <target>Prevista</target>
+            </trans-unit>
+            <trans-unit id="1FWwu6R">
+                <source>label.social_calendar_state_published</source>
+                <target>Publicada</target>
+            </trans-unit>
+            <trans-unit id="Nei6_Of">
+                <source>label.social_calendar_state_queued</source>
+                <target>En la cola</target>
+            </trans-unit>
+            <trans-unit id="zGk8.GX">
+                <source>label.social_calendar_today</source>
+                <target>Hoy</target>
+            </trans-unit>
+            <trans-unit id="9cqH5Ke">
+                <source>label.social_calendar_week</source>
+                <target>Semana</target>
+            </trans-unit>
+            <trans-unit id="J4QK2iR">
+                <source>label.social_connections</source>
+                <target>Conexiones</target>
+            </trans-unit>
             <trans-unit id="Eyn1gXP">
                 <source>label.social_links</source>
                 <target>Redes sociales</target>
@@ -673,6 +1009,10 @@
             <trans-unit id="tiqhi.Y">
                 <source>label.social_post</source>
                 <target>Publicación</target>
+            </trans-unit>
+            <trans-unit id="cCYS3xz">
+                <source>label.social_post_approve</source>
+                <target>Validar para la próxima franja</target>
             </trans-unit>
             <trans-unit id="BDnUgUx">
                 <source>label.social_post_created_at</source>
@@ -686,9 +1026,17 @@
                 <source>label.social_post_networks</source>
                 <target>Redes</target>
             </trans-unit>
+            <trans-unit id=".4ENbZd">
+                <source>label.social_post_planned_at</source>
+                <target>Prevista para</target>
+            </trans-unit>
             <trans-unit id="1wEVf6X">
                 <source>label.social_post_prepare</source>
                 <target>Preparar</target>
+            </trans-unit>
+            <trans-unit id="exBTO_f">
+                <source>label.social_post_prepare_drafts</source>
+                <target>Preparar %count% borradores</target>
             </trans-unit>
             <trans-unit id="l_6rzpX">
                 <source>label.social_post_prepare_next</source>
@@ -701,6 +1049,14 @@
             <trans-unit id="0b4w2zz">
                 <source>label.social_post_publish</source>
                 <target>Publicar</target>
+            </trans-unit>
+            <trans-unit id="bFuD5Vi">
+                <source>label.social_post_send_on</source>
+                <target>Publicar en</target>
+            </trans-unit>
+            <trans-unit id="3sXk__W">
+                <source>label.social_post_status_approved</source>
+                <target>Validada</target>
             </trans-unit>
             <trans-unit id="NEMzvnD">
                 <source>label.social_post_status_draft</source>
@@ -721,6 +1077,10 @@
             <trans-unit id="bn7.hzs">
                 <source>label.social_post_title</source>
                 <target>Contenido</target>
+            </trans-unit>
+            <trans-unit id="3.CrzT8">
+                <source>label.social_post_unapprove</source>
+                <target>Retirar de la cola</target>
             </trans-unit>
             <trans-unit id="L40zOCk">
                 <source>label.social_post_url</source>
@@ -768,7 +1128,7 @@
             </trans-unit>
             <trans-unit id="M77AEJr">
                 <source>label.social_schedule_networks_help</source>
-                <target>Las redes en las que publica esta franja, entre las configuradas. Ninguna marcada, todas. Un contenido ya publicado en una red no vuelve a salir en ella, pero puede salir en otra.</target>
+                <target>Las redes en las que publica esta franja, entre las conectadas. Ninguna marcada, todas. Un contenido ya publicado en una red no vuelve a salir en ella, pero puede salir en otra.</target>
             </trans-unit>
             <trans-unit id="K.tSG3K">
                 <source>label.social_schedule_sources</source>

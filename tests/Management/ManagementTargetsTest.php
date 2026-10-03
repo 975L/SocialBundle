@@ -10,39 +10,33 @@
 
 namespace c975L\SocialBundle\Tests\Management;
 
-use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Test\ManagementTargetsTestCase;
 use c975L\SocialBundle\Management\MenuProvider;
 use c975L\SocialBundle\Management\SocialGuidedProjectProvider;
-use c975L\UiBundle\Service\ConfigEditUrlResolver;
 
 // Every CRUD controller and route this bundle's management providers name, checked against what its controllers actually declare - see ConfigBundle's ManagementTargetsTestCase
 class ManagementTargetsTest extends ManagementTargetsTestCase
 {
     protected function managementProviders(): iterable
     {
-        $configEditUrlResolver = new ConfigEditUrlResolver($this->adminUrlGenerator());
-
         return [
-            new MenuProvider($this->configService(), $this->createStub(ConfigRepository::class), $configEditUrlResolver),
-            // Switched off, the settings entry gives way to a link whose url is generated for ConfigCrudController, checked through the recorder
-            new MenuProvider($this->configService(false), $this->createStub(ConfigRepository::class), $configEditUrlResolver),
-            new SocialGuidedProjectProvider($this->configService(), $this->adminUrlGenerator()),
+            new MenuProvider($this->configService()),
+            new SocialGuidedProjectProvider($this->configService(), $this->adminUrlGenerator(), $this->urlGenerator()),
         ];
     }
 
-    // Share buttons on by default: both providers hide their share buttons entry when they are off site-wide, and the screen it names would then never be checked
-    private function configService(bool $enabled = true): ConfigServiceInterface
+    // No switch is read any more, every entry and parcours being listed whatever its answer
+    private function configService(): ConfigServiceInterface
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturn($enabled ? 'true' : 'false');
-        $configService->method('getBool')->willReturn($enabled);
+        $configService->method('get')->willReturn('true');
+        $configService->method('getBool')->willReturn(true);
 
         return $configService;
     }
 
-    // This bundle's own controllers on top of ConfigBundle's, whose screens its entries point to as well - both directories, the sidebar's "Connecter Google" link naming a route declared outside Management/
+    // This bundle's own controllers on top of ConfigBundle's, whose screens its entries point to as well - both directories, the guided parcours naming the OAuth routes declared outside Management/
     #[\Override]
     protected function controllerDirectories(): array
     {

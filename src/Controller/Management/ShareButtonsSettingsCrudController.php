@@ -11,11 +11,13 @@
 namespace c975L\SocialBundle\Controller\Management;
 
 use c975L\ConfigBundle\Management\EasyAdminActionHelper;
+use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Form\Block\ShareButtonsSettingsType;
 use c975L\SocialBundle\Form\Block\ShareButtonsStylePreviewType;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Repository\BlockRepository;
+use c975L\UiBundle\Service\ConfigEditUrlResolver;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -36,12 +38,29 @@ class ShareButtonsSettingsCrudController extends AbstractCrudController
 {
     private const string KIND = 'share_buttons_settings';
 
+    // The site-wide switch the share buttons band is drawn under (see ShareButtonsExtension and default.html.twig)
+    private const string SWITCH_SLUG = 'social-enable-share-buttons';
+
     public function __construct(
         private readonly ConfigServiceInterface $configService,
         private readonly BlockRepository $blockRepository,
         private readonly AdminUrlGenerator $adminUrlGenerator,
         private readonly TranslatorInterface $translator,
+        private readonly ConfigRepository $configRepository,
+        private readonly ConfigEditUrlResolver $configEditUrlResolver,
     ) {
+    }
+
+    // The band turned off, the index says so, with the switch's edit url for an admin - ConfigCrudController denying anything below that role
+    #[\Override]
+    public function configureResponseParameters(KeyValueStore $responseParameters): KeyValueStore
+    {
+        $enabled = $this->configService->getBool($this->configService->get(self::SWITCH_SLUG));
+
+        $responseParameters->set('share_buttons_enabled', $enabled);
+        $responseParameters->set('share_buttons_switch_url', $enabled || !$this->isGranted($this->configService->get('site-role-admin')) ? null : $this->configEditUrlResolver->resolve($this->configRepository->findOneBySlug(self::SWITCH_SLUG)));
+
+        return $responseParameters;
     }
 
     public static function getEntityFqcn(): string

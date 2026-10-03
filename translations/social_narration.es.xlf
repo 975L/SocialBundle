@@ -2,29 +2,45 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="es" datatype="plaintext" original="social_narration.es.xlf">
         <body>
-            <trans-unit id="8.eMazc">
-                <source>narration.bluesky_connect</source>
-                <target>«Conectar Bluesky» vincula el sitio a su cuenta de Bluesky: una vez, y de nuevo si se retira el acceso.</target>
-            </trans-unit>
-            <trans-unit id="_JCsjxB">
-                <source>narration.google_connect</source>
-                <target>«Conectar Google» autoriza al sitio a leer las reseñas de su ficha de Google y a responderlas.</target>
-            </trans-unit>
             <trans-unit id="6v0WkQM">
                 <source>narration.guided_step_social_bluesky_connect</source>
-                <target>En la columna de la izquierda, abra el menú «Social» y haga clic en «Conectar Bluesky», luego autorice el acceso en Bluesky. El sitio guarda la sesión por sí mismo.</target>
+                <target>Haga clic en «Conectar» en la ficha «Bluesky», luego autorice el acceso en Bluesky. El sitio guarda la sesión por sí mismo.</target>
             </trans-unit>
             <trans-unit id="SiT0_lg">
                 <source>narration.guided_step_social_bluesky_handle</source>
-                <target>Si lo desea, busque «social-bluesky-handle» en la lista de ajustes e indique la cuenta que vincular; vacío, la elegirá en la página de Bluesky.</target>
+                <target>Por último, si lo desea, busque «social-bluesky-handle» en la configuración e indique la cuenta vinculada: la próxima conexión la propondrá directamente. Vacío, la elegirá en la página de Bluesky.</target>
             </trans-unit>
             <trans-unit id=".hfIUWY">
                 <source>narration.guided_step_social_bluesky_mode</source>
                 <target>Queda elegir si una publicación espera su revisión o sale sola: es el ajuste «social-bluesky-publish-mode».</target>
             </trans-unit>
+            <trans-unit id="d1zkKea">
+                <source>narration.guided_step_social_calendar_drafts</source>
+                <target>A la derecha, «Por validar» reúne los borradores: un clic abre uno, y arrastrarlo a una franja lo valida y lo prevé en ese momento.</target>
+            </trans-unit>
+            <trans-unit id=".Jk8anA">
+                <source>narration.guided_step_social_calendar_open</source>
+                <target>El panel le lleva al calendario: la semana de sus publicaciones, las que ya salieron y las validadas en la franja que las enviará. Sus horas de inicio y fin se ajustan en la configuración.</target>
+            </trans-unit>
+            <trans-unit id="eg9BzH0">
+                <source>narration.guided_step_social_calendar_panel</source>
+                <target>Haga clic en una publicación del calendario: su panel la prevé a una hora precisa, la devuelve a la cola o abre sus textos para modificarlos.</target>
+            </trans-unit>
+            <trans-unit id="txGnEBN">
+                <source>narration.guided_step_social_calendar_queue</source>
+                <target>Encima, «Cola» guarda las publicaciones validadas sin fecha: salen, en orden, en la próxima franja libre que publica en sus redes.</target>
+            </trans-unit>
+            <trans-unit id="qdz7h.H">
+                <source>narration.guided_step_social_calendar_slot</source>
+                <target>Cada franja por venir acepta una publicación arrastrada encima, que saldrá en ese momento preciso. Una franja libre también propone «Preparar para esta franja».</target>
+            </trans-unit>
+            <trans-unit id="9Xxpgca">
+                <source>narration.guided_step_social_connections_open</source>
+                <target>En la columna de la izquierda, el menú «Social» lleva a «Conexiones»: cada red tiene allí su ficha, con su estado y su botón «Conectar».</target>
+            </trans-unit>
             <trans-unit id="5VACpzn">
                 <source>narration.guided_step_social_google_connect</source>
-                <target>En la columna de la izquierda, abra el menú «Social» y haga clic en «Conectar Google», luego autorice el acceso con la cuenta de Google propietaria de la ficha. El sitio guarda por sí mismo el token, la cuenta y la ficha.</target>
+                <target>Haga clic en «Conectar» en la ficha «Perfil de Google», luego autorice el acceso con la cuenta de Google propietaria de la ficha. El sitio guarda por sí mismo el token, la cuenta y la ficha.</target>
             </trans-unit>
             <trans-unit id="KaaiHLF">
                 <source>narration.guided_step_social_google_credentials</source>
@@ -49,6 +65,22 @@
             <trans-unit id="v_voss_">
                 <source>narration.guided_step_social_google_sync</source>
                 <target>El resto se hace sin usted: las opiniones llegan cada noche, ya que el propio bundle programa la tarea de sincronización. Solo queda una clave opcional, «social-google-listing-url», la dirección pública de la ficha, recogida en los datos estructurados del sitio.</target>
+            </trans-unit>
+            <trans-unit id="xmLlJfS">
+                <source>narration.guided_step_social_linkedin_connect</source>
+                <target>Haga clic en «Conectar» en la ficha «LinkedIn», luego autorice el acceso con la cuenta de LinkedIn del perfil. El sitio guarda por sí mismo el token y el perfil.</target>
+            </trans-unit>
+            <trans-unit id="zUH7tGI">
+                <source>narration.guided_step_social_linkedin_credentials</source>
+                <target>Busque «social-linkedin-client-id» y «social-linkedin-client-secret» en la lista de ajustes, y pegue allí los dos valores de la aplicación.</target>
+            </trans-unit>
+            <trans-unit id="h_A4fIC">
+                <source>narration.guided_step_social_linkedin_mode</source>
+                <target>Queda elegir si una publicación espera su revisión o sale sola: es el ajuste «social-linkedin-publish-mode». Y el acceso dura sesenta días: vuelva a conectarse desde la ficha antes de que caduque.</target>
+            </trans-unit>
+            <trans-unit id="ocfaM9d">
+                <source>narration.guided_step_social_linkedin_prerequisites</source>
+                <target>Esta primera parte se hace en LinkedIn: cree una aplicación vinculada a una Página que usted administra, añádale los productos de compartir y de inicio de sesión, y declare la dirección de retorno del sitio. Vuelva aquí con el identificador y la clave secreta.</target>
             </trans-unit>
             <trans-unit id="O5SVDU.">
                 <source>narration.guided_step_social_links_display_label</source>
@@ -84,7 +116,7 @@
             </trans-unit>
             <trans-unit id="Nhfo2ra">
                 <source>narration.guided_step_social_meta_connect</source>
-                <target>En la columna de la izquierda, abra el menú «Social» y haga clic en «Conectar Meta», luego autorice el acceso con la cuenta de Facebook que gestiona la Página. El sitio guarda por sí mismo la Página, su token y la cuenta de Instagram.</target>
+                <target>Haga clic en «Conectar» en la ficha «Facebook e Instagram», luego autorice el acceso con la cuenta de Facebook que gestiona la Página. El sitio guarda por sí mismo la Página, su token y la cuenta de Instagram.</target>
             </trans-unit>
             <trans-unit id="ek3eUUp">
                 <source>narration.guided_step_social_meta_credentials</source>
@@ -98,17 +130,29 @@
                 <source>narration.guided_step_social_meta_prerequisites</source>
                 <target>Esta primera parte se hace en Meta, en developers.facebook.com: cree una aplicación, añádale el inicio de sesión con Facebook con la dirección de retorno del sitio, y déjela en modo de desarrollo. Compruebe también que la Página está vinculada a la cuenta profesional de Instagram. Vuelva aquí con el identificador y la clave secreta.</target>
             </trans-unit>
+            <trans-unit id="vcZmc00">
+                <source>narration.guided_step_social_posts_approve</source>
+                <target>De vuelta en la lista, con franjas activas, «Validar para la próxima franja» confía la publicación a la próxima franja que publica en sus redes, o a su fecha prevista, en lugar de enviarla de inmediato.</target>
+            </trans-unit>
             <trans-unit id="4cJ._fk">
                 <source>narration.guided_step_social_posts_edit</source>
                 <target>El botón de edición abre la publicación: un texto por red, cada uno con la longitud que acepta esa red, bajo la imagen que saldrá con ella. Corrija lo que haga falta.</target>
+            </trans-unit>
+            <trans-unit id="kNA4Y5N">
+                <source>narration.guided_step_social_posts_networks</source>
+                <target>«Enviar a» elige las redes de esta publicación: desmarque una para no publicar allí, marque una para que se le escriba un texto.</target>
             </trans-unit>
             <trans-unit id="EhIZhRa">
                 <source>narration.guided_step_social_posts_open</source>
                 <target>El panel le lleva a la pantalla de publicaciones. Se preparan solas, a las horas de las franjas de publicación o, en su defecto, al ritmo que fija el ajuste del intervalo; los borradores esperan aquí su revisión.</target>
             </trans-unit>
+            <trans-unit id="RyKdiUj">
+                <source>narration.guided_step_social_posts_planned_at</source>
+                <target>El campo «Prevista para» es opcional: vacío, la publicación validada sale en la próxima franja libre; rellenado, sale en esa fecha y hora precisas, al cuarto de hora.</target>
+            </trans-unit>
             <trans-unit id="kE9wnJX">
                 <source>narration.guided_step_social_posts_prepare</source>
-                <target>Para no esperar, «Preparar ahora» toma el siguiente contenido, y «Desde una dirección» prepara cualquier página, de este sitio o de otro.</target>
+                <target>Para no esperar, «Preparar ahora» toma el siguiente contenido, y «Desde una dirección» prepara cualquier página, de este sitio o de otro. Y «Preparar 7 borradores» prepara una semana por adelantado, que luego validará una a una.</target>
             </trans-unit>
             <trans-unit id="nuTQi3q">
                 <source>narration.guided_step_social_posts_publish</source>
@@ -124,7 +168,7 @@
             </trans-unit>
             <trans-unit id="w7ckofR">
                 <source>narration.guided_step_social_schedules_networks</source>
-                <target>Marque las redes en las que publica esta franja; sin marcar ninguna, publica en todas las configuradas.</target>
+                <target>Marque las redes en las que publica esta franja; sin marcar ninguna, publica en todas las conectadas.</target>
             </trans-unit>
             <trans-unit id="FrNIZFb">
                 <source>narration.guided_step_social_schedules_open</source>
@@ -172,7 +216,7 @@
             </trans-unit>
             <trans-unit id="Of.lzyi">
                 <source>narration.guided_step_social_share_buttons_open</source>
-                <target>Los botones de compartir ya están en sus páginas. Lo que ajustamos aquí es cuáles aparecen y qué aspecto tienen. El panel le lleva a su pantalla.</target>
+                <target>Los botones de compartir se muestran en sus páginas. Lo que ajustamos aquí es cuáles aparecen y qué aspecto tienen; si un aviso indica que están desactivados, actívelos primero. El panel le lleva a su pantalla.</target>
             </trans-unit>
             <trans-unit id="W4zEcwv">
                 <source>narration.guided_step_social_share_buttons_save</source>
@@ -182,17 +226,17 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>Debajo, elija la forma: botón ancho, cuadrado o redondo. Es el espacio que ocuparán los botones bajo sus páginas.</target>
             </trans-unit>
-            <trans-unit id="SsICxhs">
-                <source>narration.meta_connect</source>
-                <target>«Conectar Meta» vincula el sitio con su Página de Facebook y su cuenta de Instagram: una vez, y de nuevo si se retira el acceso.</target>
-            </trans-unit>
-            <trans-unit id="eIkRyvF">
-                <source>narration.share_buttons_disabled</source>
-                <target>«Botones para compartir (desactivados)» le lleva al ajuste que los gobierna: póngalo en true y los botones vuelven, junto con la pantalla que ajusta sus redes y su estilo.</target>
-            </trans-unit>
             <trans-unit id="._Fe6M5">
                 <source>narration.share_buttons_settings</source>
                 <target>«Botones de compartir» ajusta los botones colocados bajo sus páginas: qué redes, en qué orden y qué aspecto tienen.</target>
+            </trans-unit>
+            <trans-unit id="dugZDEg">
+                <source>narration.social_calendar</source>
+                <target>«Calendario» muestra el calendario de sus publicaciones: las que ya salieron y las validadas donde saldrán. Arrastre una a una franja para preverla allí.</target>
+            </trans-unit>
+            <trans-unit id="Yn0vUBO">
+                <source>narration.social_connections</source>
+                <target>«Conexiones» reúne las redes a las que se conecta el sitio, cada una en su ficha: conectada o no, y el botón que la conecta.</target>
             </trans-unit>
             <trans-unit id="hCyh7lI">
                 <source>narration.social_links</source>

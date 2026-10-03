@@ -1,5 +1,50 @@
 # Upgrade
 
+## To 2.10
+
+**`social-publish-enabled` is gone: the publication is on as soon as one network is connected.** A site with a
+network connected while the switch read `false` **starts preparing posts the day it upgrades** - the per-network
+`*-publish-mode` keys (review by default) still keep every post waiting for a reading, set them before upgrading
+if one reads `auto`. The "Publications" and "Créneaux de publication" screens are always listed, saying so while
+no network is connected.
+
+**`social-bluesky-app-password` is gone: Bluesky is only connected through OAuth.** A site posting with an app
+password alone has to connect again, from the Bluesky tile of the new **"Connexions"** screen (sidebar, "Social"),
+**from its production address**: the connection is refused on any host other than `site-url`'s. The client key id
+is now its RFC 7638 thumbprint instead of `c975l-social-1`, so Bluesky may hold the former key set in its cache for
+up to ten minutes after deploying - a connection or refresh failing once in that window succeeds on the next try.
+
+**"Connexions" replaces the "Connecter Google", "Connecter Meta" and "Connecter Bluesky" links**, one tile per
+network, and the OAuth callbacks land on it. The "Boutons de partage" screen is always listed too, saying when the
+band is off.
+
+**Constructors:** `MenuProvider` only takes the `ConfigServiceInterface`; `ShareButtonsSettingsCrudController`
+takes two more arguments, `ConfigRepository` and `ConfigEditUrlResolver`; `BlueskyPublisher` no longer takes an
+`HttpClientInterface`. Nothing to do with autowiring; a class extending them or built by hand follows.
+
+The two stored rows are now undeclared: remove them with `c975l:config:prune` (or from ConfigBundle's prune screen).
+
+**LinkedIn joins the networks**, posting on a member's own profile: run `c975l:config:load-all` for the six
+`social-linkedin-*` keys, then follow the README's "LinkedIn profile, step by step". Nothing changes for a site
+leaving them empty. `SocialConnectionsController` takes a `LinkedInClient` last.
+
+**New task every 15 minutes, `c975l:social:publish --planned`**, declared by `SocialMaintenanceTaskProvider`: a post
+planned for a moment now goes out at that moment, no longer at the first slot after it. Nothing to schedule by hand.
+**New configs `social-calendar-hour-start` and `social-calendar-hour-end`** (6 and 23): the hours of the calendar's week.
+
+**New config `social-image-format`** (`framed` by default, the visual unchanged) and **a management stylesheet**,
+`public/css/management.min.css`: run `assets:install` so the calendar is styled. `SocialImageExporter` takes a
+`ConfigServiceInterface` last.
+
+**New config `social-ai-guidelines`**: run `c975l:config:load-all`, then write the site's tone there for its AI to
+write the posts (with the rephrase key set).
+
+**Needs a migration for the new `social_post.planned_at` column** (nullable, indexed): `doctrine:migrations:diff`
+then `doctrine:migrations:migrate`. The new `approved` status fits the existing `status` column.
+
+**Constructors:** `SocialPostCrudController` takes an `EntityManagerInterface` last, `SocialPublisher` a `SocialPlanner`
+and a `SocialPostWriter` last, `SocialGuidedProjectProvider` an `UrlGeneratorInterface` last. Nothing to do with autowiring.
+
 ## To 2.7.2
 
 **Update `c975l/core-bundle` to `^1.23` first, then run `c975l:config:load-all`.** The drawer these settings move

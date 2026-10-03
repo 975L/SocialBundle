@@ -30,6 +30,10 @@
                 <source>description.guided_project_social_bluesky_connect</source>
                 <target>Relier le site à votre compte Bluesky, sans application à créer ni mot de passe à saisir. À faire une fois, puis à nouveau si l'accès est retiré.</target>
             </trans-unit>
+            <trans-unit id="DmlLCtb">
+                <source>description.guided_project_social_calendar</source>
+                <target>Voir où chaque publication validée tombera parmi les créneaux, et la déplacer d'un glisser-déposer.</target>
+            </trans-unit>
             <trans-unit id="Z4mtym8">
                 <source>description.guided_project_social_google_connect</source>
                 <target>La partie agence : l'accès chez Google, les deux clés, et le consentement. À faire une fois, puis le jour où le jeton est révoqué.</target>
@@ -37,6 +41,10 @@
             <trans-unit id="VNxe2Mo">
                 <source>description.guided_project_social_google_reviews</source>
                 <target>Modérer ce que Google a rapporté, y répondre, et poser les avis sur une page.</target>
+            </trans-unit>
+            <trans-unit id="1Qxr9lg">
+                <source>description.guided_project_social_linkedin_connect</source>
+                <target>La partie agence : l'application LinkedIn, ses deux clés, et le consentement. À faire une fois, puis tous les 60 jours, la durée de l'accès.</target>
             </trans-unit>
             <trans-unit id="FrDtWdT">
                 <source>description.guided_project_social_links</source>
@@ -60,19 +68,43 @@
             </trans-unit>
             <trans-unit id="0CvXFm7">
                 <source>description.guided_step_social_bluesky_connect</source>
-                <target>Dans le menu "Social" de la barre latérale, cliquer sur "Connecter Bluesky", puis autoriser l'accès sur Bluesky. Le site enregistre lui-même la session.</target>
+                <target>Cliquer sur "Connecter" dans la tuile "Bluesky", puis autoriser l'accès sur Bluesky. Le site enregistre lui-même la session.</target>
             </trans-unit>
             <trans-unit id="opsSET4">
                 <source>description.guided_step_social_bluesky_handle</source>
-                <target>Facultatif : chercher « social-bluesky-handle » dans la liste et y mettre l'identifiant du compte, par exemple exemple.bsky.social. Laissé vide, le compte se choisit sur la page de Bluesky.</target>
+                <target>Facultatif, dans la configuration : chercher « social-bluesky-handle » et y mettre l'identifiant du compte, par exemple exemple.bsky.social, pour que la prochaine connexion le propose d'emblée. Laissé vide, le compte se choisit sur la page de Bluesky.</target>
             </trans-unit>
             <trans-unit id="82P_F59">
                 <source>description.guided_step_social_bluesky_mode</source>
                 <target>« social-bluesky-publish-mode » vaut « review » : chaque publication attend la relecture sur l'écran Publications. « auto » l'envoie dès qu'elle est préparée.</target>
             </trans-unit>
+            <trans-unit id="L8sqUEj">
+                <source>description.guided_step_social_calendar_drafts</source>
+                <target>Les brouillons attendent ici leur relecture : un clic en ouvre un, et le glisser sur un créneau le valide et le prévoit à ce moment.</target>
+            </trans-unit>
+            <trans-unit id="17dUjo3">
+                <source>description.guided_step_social_calendar_open</source>
+                <target>La semaine des publications : celles parties, et chaque publication validée à la place du créneau qui l'enverra. « Mois » montre le mois entier. Les heures affichées se règlent dans la configuration.</target>
+            </trans-unit>
+            <trans-unit id="UA0SeWu">
+                <source>description.guided_step_social_calendar_panel</source>
+                <target>Cliquez une publication : son panneau la prévoit à une heure précise, la remet dans la file ou ouvre ses textes pour les modifier.</target>
+            </trans-unit>
+            <trans-unit id="rqDkuRv">
+                <source>description.guided_step_social_calendar_queue</source>
+                <target>Les publications validées sans date : elles partent, dans l'ordre, au prochain créneau libre qui publie sur leurs réseaux.</target>
+            </trans-unit>
+            <trans-unit id="4CAagYG">
+                <source>description.guided_step_social_calendar_slot</source>
+                <target>Glissez une publication sur un créneau pour l'y prévoir, dans « File » pour qu'elle parte au prochain créneau libre, dans « À valider » pour la retirer de la file. Un créneau libre propose aussi « Préparer pour ce créneau ».</target>
+            </trans-unit>
+            <trans-unit id="hLyq6N2">
+                <source>description.guided_step_social_connections_open</source>
+                <target>L'écran « Connexions », dans le menu « Social » de la barre latérale : chaque réseau y a sa tuile, avec son état et son bouton « Connecter ».</target>
+            </trans-unit>
             <trans-unit id="Q2.88W1">
                 <source>description.guided_step_social_google_connect</source>
-                <target>Dans le menu "Social" de la barre latérale, cliquer sur "Connecter Google", puis autoriser l'accès avec le compte Google propriétaire de la fiche. Le site enregistre lui-même le jeton, le compte et la fiche.</target>
+                <target>Cliquer sur "Connecter" dans la tuile "Fiche Google", puis autoriser l'accès avec le compte Google propriétaire de la fiche. Le site enregistre lui-même le jeton, le compte et la fiche.</target>
             </trans-unit>
             <trans-unit id="XzEU5fT">
                 <source>description.guided_step_social_google_credentials</source>
@@ -97,6 +129,22 @@
             <trans-unit id="r_RYin.">
                 <source>description.guided_step_social_google_sync</source>
                 <target>Les avis arrivent d'eux-mêmes chaque nuit, la tâche « c975l:social:reviews:sync » étant planifiée par le bundle. Reste une clé facultative, « social-google-listing-url » : l'adresse publique de la fiche, reprise dans les données structurées du site.</target>
+            </trans-unit>
+            <trans-unit id="2BLT8wV">
+                <source>description.guided_step_social_linkedin_connect</source>
+                <target>Cliquer sur « Connecter » dans la tuile « LinkedIn », puis autoriser l'accès avec le compte LinkedIn du profil. Le site enregistre lui-même le jeton et le profil.</target>
+            </trans-unit>
+            <trans-unit id="w.Eq8PT">
+                <source>description.guided_step_social_linkedin_credentials</source>
+                <target>Chercher « social-linkedin-client-id » et « social-linkedin-client-secret » dans la liste, et y coller les deux valeurs de l'application. Le secret ne s'affiche qu'avec le bouton « Voir données sensibles ». Le jeton et le profil se remplissent tout seuls à l'étape suivante.</target>
+            </trans-unit>
+            <trans-unit id="wF5Oo9b">
+                <source>description.guided_step_social_linkedin_mode</source>
+                <target>« social-linkedin-publish-mode » vaut « review » : chaque publication attend la relecture sur l'écran Publications. « auto » l'envoie dès qu'elle est préparée. L'accès dure 60 jours : se reconnecter depuis la tuile avant qu'il expire.</target>
+            </trans-unit>
+            <trans-unit id="h8ze_vb">
+                <source>description.guided_step_social_linkedin_prerequisites</source>
+                <target>Cette partie se passe sur linkedin.com/developers : créer une application rattachée à une Page LinkedIn que vous administrez, lui ajouter les produits « Share on LinkedIn » et « Sign In with LinkedIn using OpenID Connect », et y déclarer comme adresse de redirection celle du site suivie de « /social/linkedin/callback ». Revenir ici avec l'identifiant et la clé secrète de l'application.</target>
             </trans-unit>
             <trans-unit id="vgXH0gX">
                 <source>description.guided_step_social_links_display_label</source>
@@ -128,7 +176,7 @@
             </trans-unit>
             <trans-unit id="a4QkcYj">
                 <source>description.guided_step_social_meta_connect</source>
-                <target>Dans le menu "Social" de la barre latérale, cliquer sur "Connecter Meta", puis autoriser l'accès avec le compte Facebook qui gère la Page. Le site enregistre lui-même la Page, son jeton et le compte Instagram.</target>
+                <target>Cliquer sur "Connecter" dans la tuile "Facebook et Instagram", puis autoriser l'accès avec le compte Facebook qui gère la Page. Le site enregistre lui-même la Page, son jeton et le compte Instagram.</target>
             </trans-unit>
             <trans-unit id="0xEpiaR">
                 <source>description.guided_step_social_meta_credentials</source>
@@ -142,6 +190,10 @@
                 <source>description.guided_step_social_meta_prerequisites</source>
                 <target>Cette partie se passe sur developers.facebook.com : créer une application, y ajouter la connexion Facebook avec pour adresse de redirection celle du site suivie de « /social/meta/callback », et la laisser en mode développement. La Page doit être reliée au compte Instagram professionnel. Revenir ici avec l'identifiant et la clé secrète de l'application.</target>
             </trans-unit>
+            <trans-unit id="2_2asy8">
+                <source>description.guided_step_social_posts_approve</source>
+                <target>Avec des créneaux actifs, ce bouton confie la publication au prochain créneau qui publie sur ses réseaux, ou à sa date prévue, au lieu de l'envoyer tout de suite.</target>
+            </trans-unit>
             <trans-unit id="hq1t6co">
                 <source>description.guided_step_social_posts_edit</source>
                 <target>Le bouton de modification ouvre la publication : un texte par réseau, chacun limité à la longueur que ce réseau accepte, sous l'image qui partira avec.</target>
@@ -152,7 +204,7 @@
             </trans-unit>
             <trans-unit id="hc6ecvb">
                 <source>description.guided_step_social_posts_prepare</source>
-                <target>« Préparer maintenant » prend le prochain contenu sans attendre ; « Depuis une adresse » prépare n'importe quelle page, de ce site ou d'un autre, à partir de ses balises Open Graph.</target>
+                <target>« Préparer maintenant » prend le prochain contenu sans attendre ; « Depuis une adresse » prépare n'importe quelle page, de ce site ou d'un autre, à partir de ses balises Open Graph. « Préparer 7 brouillons » en prépare une semaine d'avance, à valider ensuite une par une.</target>
             </trans-unit>
             <trans-unit id="SvQRq5R">
                 <source>description.guided_step_social_posts_publish</source>
@@ -161,10 +213,6 @@
             <trans-unit id="lw9Mjxv">
                 <source>description.guided_step_social_schedules_edit</source>
                 <target>Ajouter un créneau, ou reprendre un créneau existant.</target>
-            </trans-unit>
-            <trans-unit id="N0uYKyC">
-                <source>description.guided_step_social_schedules_networks</source>
-                <target>Les réseaux sur lesquels ce créneau publie. Aucun coché, tous ceux configurés.</target>
             </trans-unit>
             <trans-unit id="YvE_dVx">
                 <source>description.guided_step_social_schedules_open</source>
@@ -208,7 +256,7 @@
             </trans-unit>
             <trans-unit id="LxtX23p">
                 <source>description.guided_step_social_share_buttons_open</source>
-                <target>Les boutons de partage sont déjà sur vos pages : ce qui se règle ici, c'est lesquels et à quoi ils ressemblent.</target>
+                <target>Les boutons de partage s'affichent sur vos pages : ce qui se règle ici, c'est lesquels et à quoi ils ressemblent. Si un avertissement indique qu'ils sont désactivés, réactivez-les d'abord.</target>
             </trans-unit>
             <trans-unit id="bRoisnG">
                 <source>description.guided_step_social_share_buttons_shape</source>
@@ -221,6 +269,22 @@
             <trans-unit id="10Bz8lS">
                 <source>flash.bluesky_refused</source>
                 <target>Connexion Bluesky interrompue : relance-la depuis le tableau de bord.</target>
+            </trans-unit>
+            <trans-unit id="4_w_WZC">
+                <source>flash.bluesky_wrong_host</source>
+                <target>Bluesky ne peut être connecté que depuis %url%, l'adresse par laquelle il connaît le site.</target>
+            </trans-unit>
+            <trans-unit id="ZAt717E">
+                <source>flash.linkedin_connected</source>
+                <target>Profil LinkedIn de %name% connecté, jusqu'au %date%.</target>
+            </trans-unit>
+            <trans-unit id="r5XMty8">
+                <source>flash.linkedin_not_configured</source>
+                <target>Renseignez d'abord l'identifiant et le secret de votre app LinkedIn dans la configuration.</target>
+            </trans-unit>
+            <trans-unit id="kYVRLNI">
+                <source>flash.linkedin_refused</source>
+                <target>La connexion à LinkedIn a été refusée ou interrompue.</target>
             </trans-unit>
             <trans-unit id="iOFL8AK">
                 <source>flash.meta_connected</source>
@@ -238,9 +302,21 @@
                 <source>flash.meta_refused</source>
                 <target>La connexion à Meta a été refusée ou interrompue.</target>
             </trans-unit>
+            <trans-unit id="H7BmV19">
+                <source>flash.social_calendar_slot_taken</source>
+                <target>Ce créneau a déjà sa publication : la voici, plutôt que d'en préparer une seconde.</target>
+            </trans-unit>
+            <trans-unit id="i2TxptH">
+                <source>flash.social_post_approved</source>
+                <target>« %title% » est validée : elle partira au prochain créneau de ses réseaux.</target>
+            </trans-unit>
             <trans-unit id="87Pcbcr">
                 <source>flash.social_post_draft</source>
                 <target>Préparée pour %network%, en attente de votre relecture.</target>
+            </trans-unit>
+            <trans-unit id="QqaXATm">
+                <source>flash.social_post_drafts</source>
+                <target>%count% brouillon(s) préparé(s), à relire et valider un par un.</target>
             </trans-unit>
             <trans-unit id="k5cHJcN">
                 <source>flash.social_post_failed</source>
@@ -258,6 +334,22 @@
                 <source>flash.social_post_publishing</source>
                 <target>Cette publication est déjà en cours d'envoi : attendez qu'elle se termine.</target>
             </trans-unit>
+            <trans-unit id="52E_8Ux">
+                <source>flash.social_post_unapproved</source>
+                <target>« %title% » est retirée de la file et attend de nouveau votre relecture.</target>
+            </trans-unit>
+            <trans-unit id="HF4A7I.">
+                <source>help.social_post_next_slot</source>
+                <target>Partira le %date%, au prochain créneau libre. Renseignez une date et une heure pour la faire partir à ce moment-là, au quart d'heure près.</target>
+            </trans-unit>
+            <trans-unit id="6dpEFVs">
+                <source>help.social_post_planned_at</source>
+                <target>Vide : une publication validée part au prochain créneau libre, dans l'ordre de préparation. Remplie : elle part à cette date et heure, au quart d'heure près.</target>
+            </trans-unit>
+            <trans-unit id="PoY.WA0">
+                <source>help.social_post_send_on</source>
+                <target>Décochez un réseau pour ne pas y publier ce post ; cochez-en un pour lui écrire un texte, qui apparaîtra à la prochaine ouverture. Un réseau grisé n'est pas connecté : voir « Connexions ».</target>
+            </trans-unit>
             <trans-unit id="PmT6SQr">
                 <source>label.anchor</source>
                 <target>Ancre</target>
@@ -266,13 +358,45 @@
                 <source>label.anchor_help</source>
                 <target>Identifiant court pour lier une entrée de menu à ce bandeau (ex. « partage »). Sans ancre, il n'est pas atteignable depuis un menu.</target>
             </trans-unit>
-            <trans-unit id="_oMMwKM">
-                <source>label.bluesky_connect</source>
-                <target>Connecter Bluesky</target>
-            </trans-unit>
             <trans-unit id="tKFuD86">
                 <source>label.category_navigation</source>
                 <target>Navigation</target>
+            </trans-unit>
+            <trans-unit id="lXCPPAS">
+                <source>label.connection_account</source>
+                <target>Compte : %account%</target>
+            </trans-unit>
+            <trans-unit id="h7bW5vi">
+                <source>label.connection_connect</source>
+                <target>Connecter</target>
+            </trans-unit>
+            <trans-unit id="aIBoIFC">
+                <source>label.connection_connected</source>
+                <target>Connecté</target>
+            </trans-unit>
+            <trans-unit id="vlvWStb">
+                <source>label.connection_expires</source>
+                <target>Valable jusqu'au %date%.</target>
+            </trans-unit>
+            <trans-unit id="eYUcNRk">
+                <source>label.connection_instagram_missing</source>
+                <target>Aucun compte Instagram professionnel n'est lié à la Page Facebook : seul Facebook recevra les publications.</target>
+            </trans-unit>
+            <trans-unit id="UxBN9pJ">
+                <source>label.connection_not_configured</source>
+                <target>Application à configurer</target>
+            </trans-unit>
+            <trans-unit id="ovlfB2H">
+                <source>label.connection_not_connected</source>
+                <target>Non connecté</target>
+            </trans-unit>
+            <trans-unit id="B8XG1pX">
+                <source>label.connection_reconnect</source>
+                <target>Reconnecter</target>
+            </trans-unit>
+            <trans-unit id="JQ_3soN">
+                <source>label.connection_wrong_host</source>
+                <target>Bluesky ne connaît le site que par son adresse : connectez-le depuis %url%.</target>
             </trans-unit>
             <trans-unit id="cnGpTz.">
                 <source>label.display_label</source>
@@ -326,13 +450,13 @@
                 <source>label.gallery_showcase_social_links_description</source>
                 <target>Styles disponibles pour les liens vers les réseaux sociaux.</target>
             </trans-unit>
-            <trans-unit id="Hw3DjDB">
-                <source>label.google_connect</source>
-                <target>Connecter Google</target>
-            </trans-unit>
             <trans-unit id="tf7xOaW">
                 <source>label.guided_project_social_bluesky_connect</source>
                 <target>Connecter le compte Bluesky</target>
+            </trans-unit>
+            <trans-unit id="4Y81vK8">
+                <source>label.guided_project_social_calendar</source>
+                <target>Planifier vos publications sur le calendrier</target>
             </trans-unit>
             <trans-unit id="viNLaDg">
                 <source>label.guided_project_social_google_connect</source>
@@ -341,6 +465,10 @@
             <trans-unit id="9gMwOTb">
                 <source>label.guided_project_social_google_reviews</source>
                 <target>Consulter et afficher les avis Google</target>
+            </trans-unit>
+            <trans-unit id="M.lArB1">
+                <source>label.guided_project_social_linkedin_connect</source>
+                <target>Connecter le profil LinkedIn</target>
             </trans-unit>
             <trans-unit id="__S_HiT">
                 <source>label.guided_project_social_links</source>
@@ -374,6 +502,30 @@
                 <source>label.guided_step_social_bluesky_mode</source>
                 <target>Choisir ce qui part sans relecture</target>
             </trans-unit>
+            <trans-unit id="lfXvHb6">
+                <source>label.guided_step_social_calendar_drafts</source>
+                <target>Les publications à valider</target>
+            </trans-unit>
+            <trans-unit id="a8cneSW">
+                <source>label.guided_step_social_calendar_open</source>
+                <target>Ouvrir le calendrier</target>
+            </trans-unit>
+            <trans-unit id="9fHDZ.c">
+                <source>label.guided_step_social_calendar_panel</source>
+                <target>Ouvrir une publication</target>
+            </trans-unit>
+            <trans-unit id="Je4Sg4x">
+                <source>label.guided_step_social_calendar_queue</source>
+                <target>La file</target>
+            </trans-unit>
+            <trans-unit id="grdVdjR">
+                <source>label.guided_step_social_calendar_slot</source>
+                <target>Glisser sur un créneau</target>
+            </trans-unit>
+            <trans-unit id="tVdTpfQ">
+                <source>label.guided_step_social_connections_open</source>
+                <target>Ouvrir les connexions</target>
+            </trans-unit>
             <trans-unit id="WWlxIlv">
                 <source>label.guided_step_social_google_connect</source>
                 <target>Lancer la connexion</target>
@@ -401,6 +553,22 @@
             <trans-unit id="oqWYK8u">
                 <source>label.guided_step_social_google_sync</source>
                 <target>Laisser la synchronisation faire le reste</target>
+            </trans-unit>
+            <trans-unit id="Qr2OOFV">
+                <source>label.guided_step_social_linkedin_connect</source>
+                <target>Lancer la connexion</target>
+            </trans-unit>
+            <trans-unit id="vKAjE7P">
+                <source>label.guided_step_social_linkedin_credentials</source>
+                <target>Renseigner les deux clés de l'application</target>
+            </trans-unit>
+            <trans-unit id="5gjF6SQ">
+                <source>label.guided_step_social_linkedin_mode</source>
+                <target>Choisir ce qui part sans relecture, et penser à se reconnecter</target>
+            </trans-unit>
+            <trans-unit id="n1.S19b">
+                <source>label.guided_step_social_linkedin_prerequisites</source>
+                <target>Créer l'application LinkedIn</target>
             </trans-unit>
             <trans-unit id="xNJPblz">
                 <source>label.guided_step_social_links_display_label</source>
@@ -450,13 +618,25 @@
                 <source>label.guided_step_social_meta_prerequisites</source>
                 <target>Créer l'application Meta</target>
             </trans-unit>
+            <trans-unit id="bIP872E">
+                <source>label.guided_step_social_posts_approve</source>
+                <target>Valider pour le prochain créneau</target>
+            </trans-unit>
             <trans-unit id="9zRMIWa">
                 <source>label.guided_step_social_posts_edit</source>
                 <target>Relire les textes</target>
             </trans-unit>
+            <trans-unit id="P_m5tZm">
+                <source>label.guided_step_social_posts_networks</source>
+                <target>Choisir les réseaux</target>
+            </trans-unit>
             <trans-unit id="WTphy6s">
                 <source>label.guided_step_social_posts_open</source>
                 <target>Ouvrir les publications</target>
+            </trans-unit>
+            <trans-unit id="P0gG9kM">
+                <source>label.guided_step_social_posts_planned_at</source>
+                <target>Choisir la date (facultatif)</target>
             </trans-unit>
             <trans-unit id="2IN5mPN">
                 <source>label.guided_step_social_posts_prepare</source>
@@ -566,17 +746,45 @@
                 <source>label.info_google_connect</source>
                 <target>Autorise le site à lire les avis de votre fiche Google et à y répondre.</target>
             </trans-unit>
+            <trans-unit id="8MsrPrS">
+                <source>label.info_google_not_configured</source>
+                <target>Renseignez d'abord l'identifiant et le secret du client OAuth Google dans la configuration (« social-google-oauth-client-id » et « social-google-oauth-client-secret »).</target>
+            </trans-unit>
+            <trans-unit id="0cTMFAS">
+                <source>label.info_linkedin_connect</source>
+                <target>Relie le site à votre profil LinkedIn personnel. L'accès dure 60 jours : reconnectez-vous avant son expiration.</target>
+            </trans-unit>
+            <trans-unit id="95gY_Ya">
+                <source>label.info_linkedin_not_configured</source>
+                <target>Renseignez d'abord l'identifiant et le secret de l'app LinkedIn dans la configuration (« social-linkedin-client-id » et « social-linkedin-client-secret »).</target>
+            </trans-unit>
             <trans-unit id="QtqwtAv">
                 <source>label.info_meta_connect</source>
                 <target>Relie le site à votre Page Facebook et au compte Instagram professionnel qui lui est associé : à faire une fois, puis à refaire si l'accès est retiré.</target>
             </trans-unit>
+            <trans-unit id="to_3wK2">
+                <source>label.info_meta_not_configured</source>
+                <target>Renseignez d'abord l'identifiant et le secret de l'application Meta dans la configuration (« social-meta-app-id » et « social-meta-app-secret »).</target>
+            </trans-unit>
+            <trans-unit id="C_Ulqfe">
+                <source>label.info_no_connected_network</source>
+                <target>Aucun réseau n'est encore connecté : rien ne sera publié tant qu'aucun ne l'est.</target>
+            </trans-unit>
             <trans-unit id="lZ1hyGi">
                 <source>label.info_share_buttons_disabled</source>
-                <target>Les boutons de partage sont désactivés pour tout le site : aucune page n'en affiche. Ouvre le réglage « social-enable-share-buttons » à passer à true pour les activer et retrouver leur écran de configuration.</target>
+                <target>Les boutons de partage sont désactivés pour tout le site : aucune page ne les affiche, ces réglages restent donc sans effet pour l'instant.</target>
             </trans-unit>
             <trans-unit id="AuLTjz5">
                 <source>label.info_share_buttons_settings</source>
                 <target>Réseaux/style par défaut des boutons de partage - singleton, surchargeable par page via le bloc "share_buttons_display". Modifiez les réseaux actifs, leur ordre et le style d'affichage.</target>
+            </trans-unit>
+            <trans-unit id="k1q7HYe">
+                <source>label.info_social_calendar</source>
+                <target>Le calendrier des publications : ce qui est parti, et où chaque publication validée tombera parmi les prochains créneaux. Cliquez sur une publication pour l'ouvrir.</target>
+            </trans-unit>
+            <trans-unit id="G03WcyU">
+                <source>label.info_social_connections</source>
+                <target>Les réseaux auxquels le site se connecte. Facebook, Instagram, LinkedIn et Bluesky reçoivent les publications préparées dans l'écran « Publications » : la publication démarre dès que l'un d'eux est connecté, sans autre réglage à activer. Google donne accès aux avis de votre fiche d'établissement.</target>
             </trans-unit>
             <trans-unit id="RKLGNte">
                 <source>label.info_social_links</source>
@@ -588,7 +796,7 @@
             </trans-unit>
             <trans-unit id="ehHeI2l">
                 <source>label.info_social_posts</source>
-                <target>Les publications préparées pour vos réseaux, un texte par réseau. Celles en brouillon attendent votre relecture : corrigez les textes, enregistrez, puis cliquez sur « Publier ». Supprimer une publication l'annule.</target>
+                <target>Les publications préparées pour vos réseaux, un texte par réseau. Celles en brouillon attendent votre relecture : corrigez les textes, enregistrez, puis cliquez sur « Publier », ou sur « Valider pour le prochain créneau » pour qu'elle parte avec les créneaux. Supprimer une publication l'annule.</target>
             </trans-unit>
             <trans-unit id="w4NSFiG">
                 <source>label.info_social_schedules</source>
@@ -606,13 +814,33 @@
                 <source>label.label</source>
                 <target>Libellé</target>
             </trans-unit>
-            <trans-unit id="igt5GrM">
-                <source>label.meta_connect</source>
-                <target>Connecter Meta</target>
-            </trans-unit>
             <trans-unit id="qW0z.EV">
                 <source>label.network</source>
                 <target>Réseau</target>
+            </trans-unit>
+            <trans-unit id="duvrD74">
+                <source>label.network_bluesky</source>
+                <target>Bluesky</target>
+            </trans-unit>
+            <trans-unit id="D77Jgwt">
+                <source>label.network_google</source>
+                <target>Fiche Google</target>
+            </trans-unit>
+            <trans-unit id="aMSshQf">
+                <source>label.network_linkedin</source>
+                <target>LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="BgAx0DX">
+                <source>label.network_meta</source>
+                <target>Facebook et Instagram</target>
+            </trans-unit>
+            <trans-unit id="MnnG0dN">
+                <source>label.network_not_connected</source>
+                <target>%network% (non connecté)</target>
+            </trans-unit>
+            <trans-unit id="o71OlA1">
+                <source>label.network_off</source>
+                <target>non connecté</target>
             </trans-unit>
             <trans-unit id="NFkKnJC">
                 <source>label.networks</source>
@@ -646,9 +874,9 @@
                 <source>label.shape_wide</source>
                 <target>Large</target>
             </trans-unit>
-            <trans-unit id="HgBfL.n">
-                <source>label.share_buttons_disabled</source>
-                <target>Boutons de partage (désactivés)</target>
+            <trans-unit id="evThGHm">
+                <source>label.share_buttons_enable</source>
+                <target>Les activer</target>
             </trans-unit>
             <trans-unit id="QGQ5OoP">
                 <source>label.share_buttons_settings</source>
@@ -666,6 +894,114 @@
                 <source>label.social</source>
                 <target>Social</target>
             </trans-unit>
+            <trans-unit id="sEl8agd">
+                <source>label.social_calendar</source>
+                <target>Calendrier</target>
+            </trans-unit>
+            <trans-unit id="vqvZ3s4">
+                <source>label.social_calendar_approve_plan</source>
+                <target>Valider et prévoir à cette heure</target>
+            </trans-unit>
+            <trans-unit id="cm2xUra">
+                <source>label.social_calendar_back_to_queue</source>
+                <target>Remettre dans la file</target>
+            </trans-unit>
+            <trans-unit id="bSspzgN">
+                <source>label.social_calendar_close</source>
+                <target>Fermer</target>
+            </trans-unit>
+            <trans-unit id="GaE3Zmi">
+                <source>label.social_calendar_draft_waits</source>
+                <target>Elle ne partira qu'une fois validée.</target>
+            </trans-unit>
+            <trans-unit id="AzY0WvY">
+                <source>label.social_calendar_drafts</source>
+                <target>À valider</target>
+            </trans-unit>
+            <trans-unit id="l0Dqa_D">
+                <source>label.social_calendar_drag_hint</source>
+                <target>Glissez une publication sur un créneau pour l'y prévoir, dans « File » pour qu'elle parte au prochain créneau libre, dans « À valider » pour la retirer de la file.</target>
+            </trans-unit>
+            <trans-unit id="6zf3y2m">
+                <source>label.social_calendar_edit_texts</source>
+                <target>Modifier les textes et les réseaux</target>
+            </trans-unit>
+            <trans-unit id="WuPZbRF">
+                <source>label.social_calendar_goes_out</source>
+                <target>Partira le %date%.</target>
+            </trans-unit>
+            <trans-unit id="wFpSXs5">
+                <source>label.social_calendar_goes_out_next</source>
+                <target>Partira le %date%, au prochain créneau libre.</target>
+            </trans-unit>
+            <trans-unit id="quz2fN2">
+                <source>label.social_calendar_month</source>
+                <target>Mois</target>
+            </trans-unit>
+            <trans-unit id="o6LGnzr">
+                <source>label.social_calendar_move_failed</source>
+                <target>Le déplacement n'a pas été enregistré. La page va se recharger.</target>
+            </trans-unit>
+            <trans-unit id="NUU5AmN">
+                <source>label.social_calendar_next</source>
+                <target>Suivant</target>
+            </trans-unit>
+            <trans-unit id="QGFcEKz">
+                <source>label.social_calendar_no_slot</source>
+                <target>Aucun créneau de publication n'est actif : rien ne part tout seul. Créez-en un dans « Créneaux de publication ».</target>
+            </trans-unit>
+            <trans-unit id="vApxCIC">
+                <source>label.social_calendar_no_slot_ahead</source>
+                <target>aucun créneau</target>
+            </trans-unit>
+            <trans-unit id="oZ_OaKV">
+                <source>label.social_calendar_plan</source>
+                <target>Prévoir à cette heure</target>
+            </trans-unit>
+            <trans-unit id="mVWRLZ8">
+                <source>label.social_calendar_plan_at</source>
+                <target>Partir à une heure précise (au quart d'heure)</target>
+            </trans-unit>
+            <trans-unit id="yY2ALhD">
+                <source>label.social_calendar_prepare</source>
+                <target>Préparer pour ce créneau</target>
+            </trans-unit>
+            <trans-unit id="x_A7kw0">
+                <source>label.social_calendar_previous</source>
+                <target>Précédent</target>
+            </trans-unit>
+            <trans-unit id="wy6rTY0">
+                <source>label.social_calendar_queue</source>
+                <target>File</target>
+            </trans-unit>
+            <trans-unit id="XoPg4k5">
+                <source>label.social_calendar_state_draft</source>
+                <target>À valider</target>
+            </trans-unit>
+            <trans-unit id="ZN6ftUq">
+                <source>label.social_calendar_state_planned</source>
+                <target>Prévue</target>
+            </trans-unit>
+            <trans-unit id="1FWwu6R">
+                <source>label.social_calendar_state_published</source>
+                <target>Publiée</target>
+            </trans-unit>
+            <trans-unit id="Nei6_Of">
+                <source>label.social_calendar_state_queued</source>
+                <target>Dans la file</target>
+            </trans-unit>
+            <trans-unit id="zGk8.GX">
+                <source>label.social_calendar_today</source>
+                <target>Aujourd'hui</target>
+            </trans-unit>
+            <trans-unit id="9cqH5Ke">
+                <source>label.social_calendar_week</source>
+                <target>Semaine</target>
+            </trans-unit>
+            <trans-unit id="J4QK2iR">
+                <source>label.social_connections</source>
+                <target>Connexions</target>
+            </trans-unit>
             <trans-unit id="Eyn1gXP">
                 <source>label.social_links</source>
                 <target>Réseaux sociaux</target>
@@ -673,6 +1009,10 @@
             <trans-unit id="tiqhi.Y">
                 <source>label.social_post</source>
                 <target>Publication</target>
+            </trans-unit>
+            <trans-unit id="cCYS3xz">
+                <source>label.social_post_approve</source>
+                <target>Valider pour le prochain créneau</target>
             </trans-unit>
             <trans-unit id="BDnUgUx">
                 <source>label.social_post_created_at</source>
@@ -686,9 +1026,17 @@
                 <source>label.social_post_networks</source>
                 <target>Réseaux</target>
             </trans-unit>
+            <trans-unit id=".4ENbZd">
+                <source>label.social_post_planned_at</source>
+                <target>Prévue le</target>
+            </trans-unit>
             <trans-unit id="1wEVf6X">
                 <source>label.social_post_prepare</source>
                 <target>Préparer</target>
+            </trans-unit>
+            <trans-unit id="exBTO_f">
+                <source>label.social_post_prepare_drafts</source>
+                <target>Préparer %count% brouillons</target>
             </trans-unit>
             <trans-unit id="l_6rzpX">
                 <source>label.social_post_prepare_next</source>
@@ -701,6 +1049,14 @@
             <trans-unit id="0b4w2zz">
                 <source>label.social_post_publish</source>
                 <target>Publier</target>
+            </trans-unit>
+            <trans-unit id="bFuD5Vi">
+                <source>label.social_post_send_on</source>
+                <target>Publier sur</target>
+            </trans-unit>
+            <trans-unit id="3sXk__W">
+                <source>label.social_post_status_approved</source>
+                <target>Validée</target>
             </trans-unit>
             <trans-unit id="NEMzvnD">
                 <source>label.social_post_status_draft</source>
@@ -721,6 +1077,10 @@
             <trans-unit id="bn7.hzs">
                 <source>label.social_post_title</source>
                 <target>Contenu</target>
+            </trans-unit>
+            <trans-unit id="3.CrzT8">
+                <source>label.social_post_unapprove</source>
+                <target>Retirer de la file</target>
             </trans-unit>
             <trans-unit id="L40zOCk">
                 <source>label.social_post_url</source>
@@ -768,7 +1128,7 @@
             </trans-unit>
             <trans-unit id="M77AEJr">
                 <source>label.social_schedule_networks_help</source>
-                <target>Les réseaux sur lesquels ce créneau publie, parmi ceux configurés. Aucun coché, tous. Un contenu déjà publié sur un réseau n'y repart pas, mais peut partir sur un autre.</target>
+                <target>Les réseaux sur lesquels ce créneau publie, parmi ceux connectés. Aucun coché, tous. Un contenu déjà publié sur un réseau n'y repart pas, mais peut partir sur un autre.</target>
             </trans-unit>
             <trans-unit id="K.tSG3K">
                 <source>label.social_schedule_sources</source>

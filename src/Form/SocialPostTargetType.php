@@ -52,7 +52,8 @@ class SocialPostTargetType extends AbstractType
                 'help' => $help,
                 // A published text is what the network shows: changing it here would change nothing there
                 'disabled' => SocialPostStatus::Published === $target->getStatus(),
-                'attr' => array_filter(['maxlength' => $maxLength, 'rows' => 6]),
+                // Opt-in marker read by the block form theme, which is what puts Donovan under a plain textarea
+                'attr' => array_filter(['maxlength' => $maxLength, 'rows' => 6, 'data-ai-rephrase' => true]),
             ]);
         });
     }
