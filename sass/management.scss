@@ -79,25 +79,8 @@
     font-weight: 600;
 }
 
-.social-calendar-slot {
-    margin-top: .25rem;
-    padding: .2rem;
-    border: 1px dashed var(--bs-border-color, #ccc);
-    border-radius: 4px;
-    font-size: .75rem;
-}
-
-.social-calendar-slot-head {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: .25rem;
-}
-
-.social-calendar-slot.is-over,
-.social-calendar-list.is-over {
+.social-calendar-day.is-over {
     background: var(--bs-info-bg-subtle, #cff4fc);
-    border-style: solid;
 }
 
 .social-calendar-card {
@@ -108,23 +91,30 @@
     margin-top: .15rem;
     border-radius: 4px;
     background: var(--bs-body-bg, #fff);
-    border-left: 3px solid var(--bs-info, #0dcaf0);
+    border-left: 3px solid var(--bs-success, #198754);
     color: inherit;
     text-decoration: none;
     font-size: .75rem;
     cursor: grab;
 
+    /* Gone out: greyed and never dragged, only opened */
     &.is-published {
-        border-left-color: var(--bs-success, #198754);
+        border-left-color: var(--bs-secondary, #6c757d);
+        opacity: .6;
         cursor: pointer;
     }
 
-    &.is-pinned {
-        border-left-color: var(--bs-primary, #0d6efd);
+    &.is-draft {
+        border-left-color: var(--bs-danger, #dc3545);
     }
 
-    &.is-draft {
-        border-left-color: var(--bs-warning, #ffc107);
+    &.is-failed {
+        border-left-color: var(--bs-orange, #fd7e14);
+
+        &::before {
+            content: #{"\"\\26A0\""};
+            color: var(--bs-orange, #fd7e14);
+        }
     }
 
     > img {
@@ -141,25 +131,6 @@
         white-space: nowrap;
         flex: 1;
     }
-}
-
-/* When a post of the queue goes out, read off the projection */
-.social-calendar-next {
-    flex: none;
-    font-variant-numeric: tabular-nums;
-    color: var(--bs-secondary-color, #6c757d);
-}
-
-.social-calendar-list {
-    min-height: 4rem;
-    padding: .25rem;
-    border: 1px dashed var(--bs-border-color, #ccc);
-    border-radius: 4px;
-}
-
-.social-calendar-prepare {
-    padding: 0;
-    font-size: .75rem;
 }
 
 .social-calendar-networks {
@@ -257,23 +228,9 @@ $quarter: .75rem;
         min-width: 0;
     }
 
-    .social-calendar-card,
-    .social-calendar-slot {
-        margin-top: 0;
-    }
-
-    .social-calendar-slot {
-        background: var(--bs-body-bg, #fff);
-        padding: 1px 3px;
-    }
-
-    /* Compact on the grid: a quarter of an hour is short, and the networks and the moment are read in the panel */
-    .social-calendar-slot-head {
-        font-size: .66rem;
-        line-height: 1.1;
-    }
-
+    /* Compact on the grid: a quarter of an hour is short, and the networks are read in the panel */
     .social-calendar-card {
+        margin-top: 0;
         height: 22px;
         padding: 1px 4px;
         font-size: .7rem;
@@ -284,14 +241,9 @@ $quarter: .75rem;
             height: 16px;
         }
 
-        .social-network-badges,
-        .social-calendar-next {
+        .social-network-badges {
             display: none;
         }
-    }
-
-    .social-calendar-prepare {
-        font-size: .66rem;
     }
 }
 
@@ -349,4 +301,63 @@ $quarter: .75rem;
     .social-calendar-day {
         min-height: 0;
     }
+}
+
+/* A post's picture or video on its screen, as it goes out */
+.social-media-preview {
+    display: block;
+    max-width: 300px;
+    max-height: 300px;
+    margin-bottom: .25rem;
+    border-radius: 4px;
+}
+
+// The libraries' medias a post takes (see social_media_pick.html.twig): square thumbnails, the checked one framed
+.social-media-pick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: .75rem;
+}
+
+.social-media-pick-item {
+    position: relative;
+    display: block;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:has(input:checked) {
+        border-color: var(--bs-primary, #0d6efd);
+    }
+
+    input {
+        position: absolute;
+        top: .35rem;
+        left: .35rem;
+    }
+
+    img,
+    video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 2px;
+    }
+
+    span {
+        display: block;
+        overflow: hidden;
+        font-size: .8rem;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}
+
+.social-media-pick-video {
+    position: absolute;
+    top: .35rem;
+    right: .35rem;
+    color: #fff;
+    text-shadow: 0 0 3px #000;
 }

@@ -13,12 +13,12 @@ namespace c975L\SocialBundle\Enum;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Where one network's version of a post stands. No "cancelled": cancelling is deleting. "Approved" is the only schedule a post carries, the publication slots being the clock it goes out on (see SocialPublisher::prepareSlot()). Translatable so EasyAdmin offers the cases translated with no choice list to keep in step (same as UiBundle's ReviewStatus)
+// Where one network's version of a post stands. No "cancelled": cancelling is deleting. "Approved" is what lets a post go out at its planned moment (see SocialPublisher::publishPlanned()). Translatable so EasyAdmin offers the cases translated with no choice list to keep in step (same as UiBundle's ReviewStatus)
 enum SocialPostStatus: string implements TranslatableInterface
 {
     // Waiting for someone to read it and press "Publish", on a network set to review
     case Draft = 'draft';
-    // Read and approved: the next publication slot posting on its network sends it, unless its post is planned later (see SocialPost::$plannedAt)
+    // Read and approved: the planned run sends it at its post's moment (see SocialPost::$plannedAt)
     case Approved = 'approved';
     case Published = 'published';
     // The network refused it; it stays so until someone publishes it again from the screen, never retried on its own - a post refused for its content would be refused every hour
@@ -46,14 +46,14 @@ enum SocialPostStatus: string implements TranslatableInterface
         return self::Draft->badge();
     }
 
-    // What waits for a decision and what failed are the two that have to catch the eye
+    // Red waits for a decision, green waits for its moment, grey is done - a failure orange so it never reads as a draft
     public function badge(): string
     {
         return match ($this) {
-            self::Draft => 'warning',
-            self::Approved => 'info',
-            self::Published => 'success',
-            self::Failed => 'danger',
+            self::Draft => 'danger',
+            self::Approved => 'success',
+            self::Published => 'secondary',
+            self::Failed => 'warning',
         };
     }
 }

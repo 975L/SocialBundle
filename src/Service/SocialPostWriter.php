@@ -18,7 +18,7 @@ use c975L\UiBundle\Service\AiUsageTracker;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-// Writes a post's text for each network with the site's own AI key - the rephrase's ("ui-ai-assistant-rephrase-*"), whatever provider it names, so a site has one key to keep and nothing here is tied to one vendor. What it is told: each network's own rules (written here, the same for every site), the site's tone ("social-ai-guidelines", the site's alone) and the last texts the site posted on each network, which it was approved with. Null whenever it cannot answer, the template then writing the post as before
+// Writes a post's text for each network with the site's own AI key - Donovan's writer one ("ui-ai-assistant-writer-*"), whatever provider it names, so a site has one key to keep and nothing here is tied to one vendor. What it is told: each network's own rules (written here, the same for every site), the site's tone ("social-ai-guidelines", the site's alone) and the last texts the site posted on each network, which it was approved with. Null whenever it cannot answer, the template then writing the post as before
 class SocialPostWriter extends AbstractAiProviderClient
 {
     // Spent under its own row, so a month of posts never reads as rephrasing
@@ -47,7 +47,7 @@ class SocialPostWriter extends AbstractAiProviderClient
 
     protected function configPrefix(): string
     {
-        return 'ui-ai-assistant-rephrase';
+        return 'ui-ai-assistant-writer';
     }
 
     protected function feature(): string
@@ -58,7 +58,7 @@ class SocialPostWriter extends AbstractAiProviderClient
     // One text per network, keyed by its name, from a single call - only the networks it wrote within their length, the others left to the template
     /**
      * @param array<string, int>    $maxLengths network => the most characters it takes
-     * @param array<string, string> $variables  the run's own values, "slot" the text of the slot it goes out in
+     * @param array<string, string> $variables  the caller's own values, "extra" a text to put as it is in every post
      *
      * @return array<string, string>
      */
@@ -71,6 +71,41 @@ class SocialPostWriter extends AbstractAiProviderClient
         $answer = $this->send($this->prompt($content, $maxLengths, $variables), 'You write the social network posts of a website. You follow the site\'s guidelines and each network\'s rules, and answer with a JSON object only.');
 
         return null === $answer ? [] : $this->texts($answer, $maxLengths);
+    }
+
+    // $count texts for a series of posts written from one instruction, each its own take on it, none longer than $maxLength - fewer, or none, when the AI cannot answer
+    /** @return list<string> */
+    public function variants(string $instruction, int $count, int $maxLength): array
+    {
+        if ($count < 1 || '' === trim($instruction) || !$this->isEnabled()) {
+            return [];
+        }
+
+        $guidelines = trim((string) $this->siteConfig->get('social-ai-guidelines'));
+        $prompt = ('' === $guidelines ? '' : "The site's guidelines:\n" . $guidelines . "\n\n")
+            . "What the posts are about:\n" . trim($instruction) . "\n\n"
+            . sprintf('Write %d different posts on it, each standing on its own, %d characters at most each, in the language of the instruction. Invent nothing the instruction does not say. Answer with this JSON array of strings only: ["the first post", ...]', $count, $maxLength);
+        $answer = $this->send($prompt, 'You write the social network posts of a website. You follow the site\'s guidelines, and answer with a JSON array only.');
+
+        $texts = [];
+        foreach (null === $answer ? [] : $this->strings($answer) as $text) {
+            if (mb_strlen($text) <= $maxLength && \count($texts) < $count) {
+                $texts[] = $text;
+            }
+        }
+
+        return $texts;
+    }
+
+    // The non-empty strings of the array found in the answer, whatever a model puts around it
+    /** @return list<string> */
+    private function strings(string $answer): array
+    {
+        $start = strpos($answer, '[');
+        $end = strrpos($answer, ']');
+        $data = false === $start || false === $end ? null : json_decode(substr($answer, $start, $end - $start + 1), true);
+
+        return \is_array($data) ? array_values(array_filter(array_map(static fn (mixed $text): string => \is_string($text) ? trim($text) : '', $data), static fn (string $text): bool => '' !== $text)) : [];
     }
 
     /**
@@ -91,9 +126,9 @@ class SocialPostWriter extends AbstractAiProviderClient
                 $prompt .= ucfirst($name) . ': ' . $value . "\n";
             }
         }
-        $slot = trim($variables['slot'] ?? '');
-        if ('' !== $slot) {
-            $prompt .= 'To include as it is in every post: ' . $slot . "\n";
+        $extra = trim($variables['extra'] ?? '');
+        if ('' !== $extra) {
+            $prompt .= 'To include as it is in every post: ' . $extra . "\n";
         }
 
         $prompt .= "\nThe networks:\n";

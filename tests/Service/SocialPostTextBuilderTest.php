@@ -40,13 +40,13 @@ class SocialPostTextBuilderTest extends TestCase
         $this->assertSame('Lac (Montagne) https://example.org/photo', $this->build('{title} ({category}) {url}', $content));
     }
 
-    // A slot's text goes where the template writes {slot}, and a run without one drops the placeholder
+    // A batch's text goes where the template writes {extra}, and a post without one drops the placeholder
     public function testTheSlotTextFillsItsPlaceholder(): void
     {
         $content = new SocialContent('1', 'Lac', 'https://example.org/photo');
 
-        $this->assertSame("Lac\n\n#soir\n\nhttps://example.org/photo", $this->build("{title}\n\n{slot}\n\n{url}", $content, variables: ['slot' => '#soir']));
-        $this->assertSame("Lac\n\nhttps://example.org/photo", $this->build("{title}\n\n{slot}\n\n{url}", $content));
+        $this->assertSame("Lac\n\n#soir\n\nhttps://example.org/photo", $this->build("{title}\n\n{extra}\n\n{url}", $content, variables: ['extra' => '#soir']));
+        $this->assertSame("Lac\n\nhttps://example.org/photo", $this->build("{title}\n\n{extra}\n\n{url}", $content));
     }
 
     // A photo with no description must not post "{description}" nor leave a hole of blank lines where it would have been

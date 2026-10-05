@@ -1,0 +1,15 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{# A series of drafts to generate (see SocialPostCrudController::generateSeries()) - UiBundle's form theme putting Donovan under its text, a page of its own not getting the dashboard's #}
+{% form_theme form '@c975LUi/form/block_theme.html.twig' %}
+
+{% block main %}
+    <h1>{{ 'label.social_series_generate'|trans({}, 'social') }}</h1>
+
+    <p>{{ 'label.info_social_series'|trans({}, 'social') }}</p>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-primary">{{ 'label.social_series_submit'|trans({}, 'social') }}</button>
+    {{ form_end(form) }}
+{% endblock main %}

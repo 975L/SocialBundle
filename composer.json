@@ -20,14 +20,16 @@
     "require": {
         "php": ">=8.4",
         "ext-gd": "*",
-        "c975l/core-bundle": "^1.49.2",
+        "c975l/core-bundle": "^1.53.0",
         "doctrine/doctrine-bundle": "^3.3",
         "doctrine/orm": "^3.7",
         "easycorp/easyadmin-bundle": "^5.1",
+        "imagine/imagine": "^1.5",
         "symfony/form": "^8.0",
         "symfony/framework-bundle": "^8.0",
         "symfony/lock": "^8.0",
-        "symfony/security-bundle": "^8.0"
+        "symfony/security-bundle": "^8.0",
+        "vich/uploader-bundle": "^3.0"
     },
     "require-dev": {
         "chrome-php/chrome": "^1.16",

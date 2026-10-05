@@ -9,10 +9,10 @@
 import { Controller } from "@hotwired/stimulus";
 import { addSortGesture } from "@c975l/ui-bundle/pointer-sort.js";
 
-// The publications calendar (see management/social_calendar.html.twig): a card dragged onto a quarter of an hour of the week, or a slot of the month, is planned at that moment, onto the queue unplanned, onto the drafts taken back for a reading. The gesture is UiBundle's (pointer-sort.js), this controller owning only where a card lands, saved on the spot then the page reloaded, the server computing where every other post falls
+// The publications calendar (see management/social_calendar.html.twig): a card dragged onto a quarter of an hour of the week is planned at that moment, onto a day of the month at its own time that day, its approval untouched; a coming moment double-clicked writes a new post there. The gesture is UiBundle's (pointer-sort.js), this controller owning only where a card lands, saved on the spot then the page reloaded, the server computing where every other post falls
 export default class extends Controller {
     static targets = ["item", "zone", "panel", "planAt"];
-    static values = { url: String, token: String, panelUrl: String, failedLabel: String };
+    static values = { url: String, token: String, panelUrl: String, newUrl: String, failedLabel: String };
 
     // Armed per card as it appears; a plain click still opens the post, only a real drag being taken over
     itemTargetConnected(item) {
@@ -37,22 +37,12 @@ export default class extends Controller {
         this.start ??= { x, y };
         item.style.transform = `translate(${x - this.start.x}px, ${y - this.start.y}px)`;
 
-        const zone = document.elementsFromPoint(x, y).find((element) => element.matches('[data-social-calendar-target~="zone"]')) ?? null;
-        const over = zone && this.accepts(zone, item) ? zone : null;
+        const over = document.elementsFromPoint(x, y).find((element) => element.matches('[data-social-calendar-target~="zone"]')) ?? null;
         if (over === this.over) return;
 
         this.over?.classList.remove("is-over");
         this.over = over;
         over?.classList.add("is-over");
-    }
-
-    // A slot of the month takes a card waiting on one of its networks, a quarter of an hour, the queue and the drafts any card
-    accepts(zone, item) {
-        if ("" === zone.dataset.networks) return true;
-
-        const networks = zone.dataset.networks.split(",");
-
-        return item.dataset.networks.split(",").some((network) => networks.includes(network));
     }
 
     drop(item) {
@@ -87,6 +77,15 @@ export default class extends Controller {
             .catch(() => window.location.assign(event.currentTarget.href));
     }
 
+    // A coming moment double-clicked opens the screen of a new post planned there - a card double-clicked on it keeps opening its own. Announced first, cancelable, as a save is
+    create(event) {
+        if (event.target.closest('[data-social-calendar-target~="item"], .social-calendar-card')) return;
+
+        const url = new URL(this.newUrlValue, window.location.href);
+        url.searchParams.set("at", event.currentTarget.dataset.to);
+        if (!this.dispatch("create", { detail: { url: url.href }, cancelable: true }).defaultPrevented) window.location.assign(url);
+    }
+
     closePanel() {
         this.panelTarget.hidden = true;
         this.panelTarget.innerHTML = "";
@@ -100,7 +99,7 @@ export default class extends Controller {
         this.save(event.currentTarget.dataset.postId, value);
     }
 
-    // The panel's other buttons: back to the queue, or out of it
+    // The panel's other buttons: approving the post, or taking it back to a draft
     place(event) {
         this.save(event.currentTarget.dataset.postId, event.currentTarget.dataset.to);
     }
@@ -112,13 +111,13 @@ export default class extends Controller {
             headers: { "X-CSRF-Token": this.tokenValue },
             body: new URLSearchParams({ post, to }),
         })
-            .then((response) => this.saved(response.ok))
+            .then((response) => (response.ok ? this.saved(true) : response.text().then((reason) => this.saved(false, reason))))
             .catch(() => this.saved(false));
     }
 
-    // Announced before the reload, cancelable, so a page refreshing its calendar on its own may take over
-    saved(ok) {
-        if (!ok) window.alert(this.failedLabelValue);
+    // Announced before the reload, cancelable, so a page refreshing its calendar on its own may take over - a refusal says the server's reason when it gave one
+    saved(ok, reason = "") {
+        if (!ok) window.alert("" !== reason ? reason : this.failedLabelValue);
 
         const event = this.dispatch("saved", { detail: { ok }, cancelable: true });
         if (!event.defaultPrevented) window.location.reload();

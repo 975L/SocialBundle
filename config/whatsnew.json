@@ -1,5 +1,40 @@
 [
     {
+        "date": "2026-10-05",
+        "description": [
+            {
+                "en": "Write a post yourself, or double-click a moment on the calendar to plan one there",
+                "fr": "Écrivez vous-même une publication, ou double-cliquez sur un moment du calendrier pour l'y planifier",
+                "es": "Escriba usted mismo una publicación, o haga doble clic en un momento del calendario para planificarla allí"
+            },
+            {
+                "en": "Every post now has its moment on the calendar, and nothing goes out before you approve it",
+                "fr": "Chaque publication a désormais son moment sur le calendrier, et rien ne part avant que vous l'ayez validée",
+                "es": "Cada publicación tiene ahora su momento en el calendario, y nada sale antes de que usted la valide"
+            },
+            {
+                "en": "Add photos or a video to a post, including those of your gallery",
+                "fr": "Ajoutez des photos ou une vidéo à une publication, y compris celles de votre galerie",
+                "es": "Añada fotos o un vídeo a una publicación, incluidas las de su galería"
+            },
+            {
+                "en": "Generate a series of drafts at a steady pace, from one text, the AI or your next contents",
+                "fr": "Générez une série de brouillons à rythme régulier, à partir d'un texte, de l'IA ou de vos prochains contenus",
+                "es": "Genere una serie de borradores a ritmo regular, a partir de un texto, de la IA o de sus próximos contenidos"
+            },
+            {
+                "en": "Approve several drafts at once with \"Approve the selection\"",
+                "fr": "Validez plusieurs brouillons d'un coup avec « Valider la sélection »",
+                "es": "Valide varios borradores a la vez con «Validar la selección»"
+            },
+            {
+                "en": "A new guided project walks you through generating a series",
+                "fr": "Un nouveau projet guidé vous accompagne pour générer une série",
+                "es": "Un nuevo proyecto guiado le acompaña para generar una serie"
+            }
+        ]
+    },
+    {
         "date": "2026-10-03",
         "description": [
             {

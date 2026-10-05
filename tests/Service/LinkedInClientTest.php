@@ -18,7 +18,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class LinkedInClientTest extends TestCase
 {
-    /** @var list<array{method: string, url: string, headers: list<string>}> */
+    /** @var list<array{method: string, url: string, headers: list<string>, body: mixed}> */
     private array $calls = [];
 
     /**
@@ -38,12 +38,12 @@ class LinkedInClientTest extends TestCase
         $configService->method('get')->willReturnCallback(static fn (string $key): ?string => $config[$key] ?? null);
 
         $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$responses): MockResponse {
-            $this->calls[] = ['method' => $method, 'url' => $url, 'headers' => $options['headers'] ?? []];
+            $this->calls[] = ['method' => $method, 'url' => $url, 'headers' => $options['headers'] ?? [], 'body' => $options['body'] ?? null];
 
             return array_shift($responses) ?? new MockResponse('{}');
         });
 
-        return new LinkedInClient($httpClient, $configService);
+        return new LinkedInClient($httpClient, $configService, 0);
     }
 
     // The code traded for the token, then the member asked who they are - what the posts are signed with
@@ -64,7 +64,7 @@ class LinkedInClientTest extends TestCase
     // A refused code says why, rather than storing nothing silently
     public function testARefusedCodeSaysWhy(): void
     {
-        $this->expectExceptionMessage('The code expired');
+        $this->expectExceptionMessageIsOrContains('The code expired');
 
         $this->client([new MockResponse('{"error_description": "The code expired"}', ['http_code' => 400])])->connect('code', 'https://example.org/callback');
     }
@@ -96,5 +96,80 @@ class LinkedInClientTest extends TestCase
 
         $this->assertSame('urn:li:image:1', $urn);
         $this->assertSame(['PUT', 'https://upload.example.org/1'], [$this->calls[1]['method'], $this->calls[1]['url']]);
+    }
+
+    // The video announced with its size, each part put at its own address, then finalized with the ETags in their order
+    public function testAVideoIsUploadedInPartsThenFinalized(): void
+    {
+        $path = (string) tempnam(sys_get_temp_dir(), 'linkedin');
+        file_put_contents($path, '0123456789');
+
+        try {
+            $urn = $this->client([
+                new MockResponse((string) json_encode(['value' => [
+                    'video' => 'urn:li:video:1',
+                    'uploadToken' => '',
+                    'uploadInstructions' => [
+                        ['uploadUrl' => 'https://upload.example.org/1', 'firstByte' => 0, 'lastByte' => 5],
+                        ['uploadUrl' => 'https://upload.example.org/2', 'firstByte' => 6, 'lastByte' => 9],
+                    ],
+                ]])),
+                new MockResponse('', ['http_code' => 200, 'response_headers' => ['etag' => 'tag-1']]),
+                new MockResponse('', ['http_code' => 200, 'response_headers' => ['etag' => 'tag-2']]),
+                new MockResponse('', ['http_code' => 200]),
+                new MockResponse('{"status": "PROCESSING"}'),
+                new MockResponse('{"status": "AVAILABLE"}'),
+            ])->uploadVideo($path);
+        } finally {
+            @unlink($path);
+        }
+
+        $this->assertSame('urn:li:video:1', $urn);
+        $this->assertSame('https://api.linkedin.com/rest/videos?action=initializeUpload', $this->calls[0]['url']);
+        $this->assertSame(10, json_decode($this->calls[0]['body'], true)['initializeUploadRequest']['fileSizeBytes']);
+        $this->assertSame([['PUT', 'https://upload.example.org/1', '012345'], ['PUT', 'https://upload.example.org/2', '6789']], [
+            [$this->calls[1]['method'], $this->calls[1]['url'], $this->calls[1]['body']],
+            [$this->calls[2]['method'], $this->calls[2]['url'], $this->calls[2]['body']],
+        ]);
+        $this->assertSame('https://api.linkedin.com/rest/videos?action=finalizeUpload', $this->calls[3]['url']);
+        $this->assertSame(['video' => 'urn:li:video:1', 'uploadToken' => '', 'uploadedPartIds' => ['tag-1', 'tag-2']], json_decode($this->calls[3]['body'], true)['finalizeUploadRequest']);
+        $this->assertContains('LinkedIn-Version: ' . LinkedInClient::VERSION, $this->calls[3]['headers']);
+        $this->assertSame(['GET', 'https://api.linkedin.com/rest/videos/urn%3Ali%3Avideo%3A1'], [$this->calls[5]['method'], $this->calls[5]['url']]);
+    }
+
+    // A video LinkedIn could not process is not put in a post
+    public function testAVideoLinkedInCouldNotProcessStopsThePost(): void
+    {
+        $path = (string) tempnam(sys_get_temp_dir(), 'linkedin');
+        file_put_contents($path, '0123');
+        $this->expectExceptionMessageIsOrContains('could not process');
+
+        try {
+            $this->client([
+                new MockResponse('{"value": {"video": "urn:li:video:1", "uploadInstructions": [{"uploadUrl": "https://upload.example.org/1", "firstByte": 0, "lastByte": 3}]}}'),
+                new MockResponse('', ['http_code' => 200, 'response_headers' => ['etag' => 'tag-1']]),
+                new MockResponse('', ['http_code' => 200]),
+                new MockResponse('{"status": "PROCESSING_FAILED"}'),
+            ])->uploadVideo($path);
+        } finally {
+            @unlink($path);
+        }
+    }
+
+    // A part LinkedIn does not acknowledge stops the upload rather than finalizing a broken video
+    public function testAPartWithNoEtagStopsTheUpload(): void
+    {
+        $path = (string) tempnam(sys_get_temp_dir(), 'linkedin');
+        file_put_contents($path, '0123');
+        $this->expectExceptionMessageIsOrContains('did not acknowledge');
+
+        try {
+            $this->client([
+                new MockResponse('{"value": {"video": "urn:li:video:1", "uploadInstructions": [{"uploadUrl": "https://upload.example.org/1", "firstByte": 0, "lastByte": 3}]}}'),
+                new MockResponse('', ['http_code' => 200]),
+            ])->uploadVideo($path);
+        } finally {
+            @unlink($path);
+        }
     }
 }

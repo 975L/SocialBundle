@@ -16,7 +16,6 @@ use c975L\SocialBundle\Controller\Management\SocialCalendarController;
 use c975L\SocialBundle\Controller\Management\SocialConnectionsController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use c975L\SocialBundle\Controller\Management\SocialPostCrudController;
-use c975L\SocialBundle\Controller\Management\SocialScheduleCrudController;
 use c975L\SocialBundle\Management\MenuProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -56,11 +55,10 @@ class MenuProviderTest extends TestCase
     {
         $menus = $this->createProvider()->getMenus();
 
-        $this->assertSame(['social_links', 'share_buttons_settings', 'social_posts', 'social_schedules'], array_keys($menus));
+        $this->assertSame(['social_links', 'share_buttons_settings', 'social_posts'], array_keys($menus));
         $this->assertSame(SocialLinksCrudController::class, $menus['social_links']['controller']);
         $this->assertSame(ShareButtonsSettingsCrudController::class, $menus['share_buttons_settings']['controller']);
         $this->assertSame(SocialPostCrudController::class, $menus['social_posts']['controller']);
-        $this->assertSame(SocialScheduleCrudController::class, $menus['social_schedules']['controller']);
     }
 
     // One entry for every network, the connections screen drawing a tile for each, and the calendar - two screens, no entity behind either

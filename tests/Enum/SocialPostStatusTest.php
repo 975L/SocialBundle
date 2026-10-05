@@ -18,17 +18,17 @@ class SocialPostStatusTest extends TestCase
     // EasyAdmin hands the badge callback the case name, its value or the case itself, depending on who asks
     public function testBadgeForAnswersEveryShapeEasyAdminHandsOver(): void
     {
-        $this->assertSame('danger', SocialPostStatus::badgeFor(SocialPostStatus::Failed));
-        $this->assertSame('danger', SocialPostStatus::badgeFor('failed'));
-        $this->assertSame('danger', SocialPostStatus::badgeFor('Failed'));
-        $this->assertSame('success', SocialPostStatus::badgeFor('published'));
-        $this->assertSame('info', SocialPostStatus::badgeFor('approved'));
+        $this->assertSame('warning', SocialPostStatus::badgeFor(SocialPostStatus::Failed));
+        $this->assertSame('warning', SocialPostStatus::badgeFor('failed'));
+        $this->assertSame('warning', SocialPostStatus::badgeFor('Failed'));
+        $this->assertSame('secondary', SocialPostStatus::badgeFor('published'));
+        $this->assertSame('success', SocialPostStatus::badgeFor('approved'));
     }
 
     // A badge is decoration: a status nobody recognises is not worth a 500 on the screen listing the posts
     public function testAnUnknownValueFallsBackOnTheDraftBadge(): void
     {
-        $this->assertSame('warning', SocialPostStatus::badgeFor('unknown'));
-        $this->assertSame('warning', SocialPostStatus::badgeFor(null));
+        $this->assertSame('danger', SocialPostStatus::badgeFor('unknown'));
+        $this->assertSame('danger', SocialPostStatus::badgeFor(null));
     }
 }

@@ -11,9 +11,7 @@
 namespace c975L\SocialBundle\Tests\Command;
 
 use c975L\SocialBundle\Command\PublishCommand;
-use c975L\SocialBundle\Entity\SocialPost;
-use c975L\SocialBundle\Entity\SocialSchedule;
-use c975L\SocialBundle\Repository\SocialScheduleRepository;
+use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPublisher;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
@@ -27,16 +25,16 @@ class PublishCommandTest extends TestCase
     /**
      * @param array<string, array<string, mixed>> $report
      */
-    private function createTester(array $report, ?\Throwable $failure = null, ?SocialSchedule $slot = null): CommandTester
+    private function createTester(array $report, ?\Throwable $failure = null): CommandTester
     {
         $socialPublisher = $this->createStub(SocialPublisher::class);
-        $socialPublisher->method('prepareNext')->willReturnCallback(function (bool $force, bool $dryRun) use ($report): array {
-            $this->called = ['method' => 'prepareNext', 'force' => $force, 'dryRun' => $dryRun];
+        $socialPublisher->method('publishPlanned')->willReturnCallback(function (bool $dryRun) use ($report): array {
+            $this->called = ['method' => 'publishPlanned', 'dryRun' => $dryRun];
 
             return $report;
         });
-        $socialPublisher->method('prepareUrl')->willReturnCallback(function (string $url, bool $dryRun) use ($report, $failure): array {
-            $this->called = ['method' => 'prepareUrl', 'url' => $url, 'dryRun' => $dryRun];
+        $socialPublisher->method('prepareUrl')->willReturnCallback(function (string $url, \DateTimeImmutable $at, bool $dryRun) use ($report, $failure): array {
+            $this->called = ['method' => 'prepareUrl', 'url' => $url, 'at' => $at, 'dryRun' => $dryRun];
             if (null !== $failure) {
                 throw $failure;
             }
@@ -44,31 +42,16 @@ class PublishCommandTest extends TestCase
             return $report;
         });
 
-        $socialPublisher->method('prepareSlot')->willReturnCallback(function (SocialSchedule $slot, bool $dryRun) use ($report): array {
-            $this->called = ['method' => 'prepareSlot', 'slot' => $slot->getName(), 'dryRun' => $dryRun];
-
-            return $report;
-        });
-
-        $socialPublisher->method('prepareDrafts')->willReturnCallback(function (int $count): array {
-            $this->called = ['method' => 'prepareDrafts', 'count' => $count];
-
-            return [new SocialPost('gallery_media', '42', 'La sieste', 'https://example.org/42', null)];
-        });
-
-        $scheduleRepository = $this->createStub(SocialScheduleRepository::class);
-        $scheduleRepository->method('find')->willReturn($slot);
-
-        return new CommandTester(new PublishCommand($socialPublisher, $scheduleRepository));
+        return new CommandTester(new PublishCommand($socialPublisher, new SocialPlanner()));
     }
 
-    // Most hourly runs have nothing due, which a cron must not read as a failure
-    public function testNothingPreparedIsASuccess(): void
+    // Most quarter-hourly runs have nothing due, which a cron must not read as a failure
+    public function testNothingToSendIsASuccess(): void
     {
         $tester = $this->createTester([]);
 
         $this->assertSame(Command::SUCCESS, $tester->execute([]));
-        $this->assertStringContainsString('Nothing prepared.', $tester->getDisplay());
+        $this->assertStringContainsString('Nothing to send.', $tester->getDisplay());
     }
 
     // A refused post is kept, failed, on the screen - the run itself did its job
@@ -81,71 +64,73 @@ class PublishCommandTest extends TestCase
         $this->assertStringContainsString('other: draft', $tester->getDisplay());
     }
 
-    public function testTheOptionsArePassedThrough(): void
+    // Without "--url", the run sends the planned posts whose moment has come
+    public function testTheDefaultRunPublishesThePlannedPosts(): void
     {
-        $tester = $this->createTester([]);
-        $tester->execute(['--force' => true, '--dry-run' => true]);
+        $this->createTester([])->execute([]);
 
-        $this->assertSame(['method' => 'prepareNext', 'force' => true, 'dryRun' => true], $this->called);
+        $this->assertSame(['method' => 'publishPlanned', 'dryRun' => false], $this->called);
     }
 
+    // "--dry-run" is passed through to the planned run
+    public function testTheDryRunIsPassedThrough(): void
+    {
+        $this->createTester([])->execute(['--dry-run' => true]);
+
+        $this->assertSame(['method' => 'publishPlanned', 'dryRun' => true], $this->called);
+    }
+
+    // A dry run prints what each network would receive
     public function testADryRunPrintsThePayload(): void
     {
-        $tester = $this->createTester(['bluesky' => ['status' => SocialPublisher::DRY_RUN, 'message' => 'review', 'payload' => ['text' => 'Été à Annecy']]]);
+        $tester = $this->createTester(['bluesky' => ['status' => SocialPublisher::DRY_RUN, 'message' => 'configured', 'payload' => ['text' => 'Été à Annecy']]]);
         $tester->execute(['--dry-run' => true]);
 
-        $this->assertStringContainsString('bluesky (review)', $tester->getDisplay());
+        $this->assertStringContainsString('bluesky (configured)', $tester->getDisplay());
         $this->assertStringContainsString('"text": "Été à Annecy"', $tester->getDisplay());
     }
 
-    public function testAnUrlPreparesThatPage(): void
+    // Without "--at", a page's draft is planned at the next quarter of an hour
+    public function testAnUrlIsPlannedAtTheNextQuarterByDefault(): void
     {
-        $tester = $this->createTester([]);
-        $tester->execute(['--url' => 'https://example.org/page']);
+        $before = time();
+        $this->createTester([])->execute(['--url' => 'https://example.org/page', '--dry-run' => true]);
+        $after = time();
 
-        $this->assertSame(['method' => 'prepareUrl', 'url' => 'https://example.org/page', 'dryRun' => false], $this->called);
+        $this->assertSame('prepareUrl', $this->called['method']);
+        $this->assertSame('https://example.org/page', $this->called['url']);
+        $this->assertTrue($this->called['dryRun']);
+        $at = $this->called['at']->getTimestamp();
+        $this->assertSame(0, $at % SocialPlanner::QUARTER);
+        $this->assertGreaterThan($before, $at);
+        $this->assertLessThanOrEqual($after + SocialPlanner::QUARTER, $at);
     }
 
+    // "--at" plans a page's draft at that moment, brought to the nearest quarter of an hour
+    public function testAnUrlIsPlannedAtTheMomentGivenRounded(): void
+    {
+        $this->createTester([])->execute(['--url' => 'https://example.org/page', '--at' => '2026-10-10 18:08']);
+
+        $this->assertSame('prepareUrl', $this->called['method']);
+        $this->assertSame('2026-10-10 18:15:00', $this->called['at']->format('Y-m-d H:i:s'));
+        $this->assertFalse($this->called['dryRun']);
+    }
+
+    // A moment that cannot be read fails the command before anything is prepared
+    public function testAnUnreadableMomentFailsTheCommand(): void
+    {
+        $tester = $this->createTester([]);
+
+        $this->assertSame(Command::FAILURE, $tester->execute(['--url' => 'https://example.org/page', '--at' => 'not a date']));
+        $this->assertSame([], $this->called);
+    }
+
+    // A page that cannot be read fails the command with its reason
     public function testAPageThatCannotBeReadFailsTheCommand(): void
     {
         $tester = $this->createTester([], new \RuntimeException('The page answered 404.'));
 
         $this->assertSame(Command::FAILURE, $tester->execute(['--url' => 'https://example.org/page']));
         $this->assertStringContainsString('answered 404', $tester->getDisplay());
-    }
-
-    public function testASlotIsRunByItsId(): void
-    {
-        $tester = $this->createTester([], slot: new SocialSchedule()->setName('Morning'));
-        $tester->execute(['--slot' => '3']);
-
-        $this->assertSame(['method' => 'prepareSlot', 'slot' => 'Morning', 'dryRun' => false], $this->called);
-    }
-
-    // Its task only goes away when the worker starts again: meanwhile, a slot turned off prepares nothing
-    public function testADisabledOrDeletedSlotPreparesNothing(): void
-    {
-        $this->assertSame(Command::SUCCESS, $this->createTester([], slot: new SocialSchedule()->setName('Morning')->setEnabled(false))->execute(['--slot' => '3']));
-        $this->assertSame([], $this->called);
-
-        $this->assertSame(Command::SUCCESS, $this->createTester([])->execute(['--slot' => '3']));
-        $this->assertSame([], $this->called);
-    }
-
-    // A batch of drafts lists what was prepared, for whoever reads them next
-    public function testDraftsArePreparedInABatch(): void
-    {
-        $tester = $this->createTester([]);
-
-        $this->assertSame(0, $tester->execute(['--drafts' => '5']));
-        $this->assertSame(['method' => 'prepareDrafts', 'count' => 5], $this->called);
-        $this->assertStringContainsString('La sieste', $tester->getDisplay());
-    }
-
-    // A draft is already a preview: "--dry-run" there would save real posts
-    public function testDraftsRefuseADryRun(): void
-    {
-        $this->assertSame(Command::INVALID, $this->createTester([])->execute(['--drafts' => '5', '--dry-run' => true]));
-        $this->assertSame([], $this->called);
     }
 }

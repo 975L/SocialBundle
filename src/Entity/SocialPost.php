@@ -28,6 +28,12 @@ class SocialPost implements \Stringable
     // The source type of a post prepared from a page's url rather than handed by a source
     public const string SOURCE_URL = 'url';
 
+    // The source type of a post written on its screen, its own text being its content
+    public const string SOURCE_MANUAL = 'manual';
+
+    // How much of the text a post written on its screen is named by
+    private const int TITLE_LENGTH = 80;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -39,13 +45,21 @@ class SocialPost implements \Stringable
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
 
-    // The moment an approved post may go out from, the first slot at or after it sending it - null takes the next slot free, in the order the posts were prepared
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $plannedAt = null;
+    // A post written on its screen: the text every network's own is cut from, rephrased or translated with Donovan
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $text = null;
+
+    // Whether the text changed since the post was read, its networks' texts then written from it again - never stored
+    private bool $textChanged = false;
 
     // The networks ticked on the post's screen that it has no text for yet, written by SocialPublisher::addTargets() once the screen is saved - never stored
     /** @var list<string> */
     private array $addedNetworks = [];
+
+    /** @var Collection<int, SocialMedia> */
+    #[ORM\OneToMany(targetEntity: SocialMedia::class, mappedBy: 'post', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['position' => \SortDirection::Ascending, 'id' => \SortDirection::Ascending])]
+    private Collection $medias;
 
     /** @var Collection<int, SocialPostTarget> */
     #[ORM\OneToMany(targetEntity: SocialPostTarget::class, mappedBy: 'post', cascade: ['persist', 'remove'], orphanRemoval: true)]
@@ -63,10 +77,14 @@ class SocialPost implements \Stringable
         private string $url,
         #[ORM\Column(length: 2048, nullable: true)]
         private ?string $imageUrl,
+        // The moment the post goes out once approved, to the quarter of an hour (the planned run) - every post has one, a draft holding its place on the calendar
+        #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+        private \DateTimeImmutable $plannedAt,
     ) {
         $this->title = mb_substr($title, 0, 255);
         $this->createdAt = new \DateTimeImmutable();
         $this->targets = new ArrayCollection();
+        $this->medias = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -99,6 +117,48 @@ class SocialPost implements \Stringable
         return $this->url;
     }
 
+    // A post written on its screen links where it says, or nowhere
+    public function setUrl(?string $url): self
+    {
+        $this->url = trim((string) $url);
+
+        return $this;
+    }
+
+    public function isManual(): bool
+    {
+        return self::SOURCE_MANUAL === $this->sourceType;
+    }
+
+    public function getText(): ?string
+    {
+        return $this->text;
+    }
+
+    // The post named by the first line of its text, cut, the list and the calendar reading it there
+    public function setText(?string $text): self
+    {
+        $text = null === $text || '' === trim($text) ? null : trim($text);
+        $this->textChanged = $this->textChanged || $text !== $this->text;
+        $this->text = $text;
+
+        $firstLine = trim(strtok((string) $text, "\n") ?: '');
+        if ('' !== $firstLine) {
+            $this->title = mb_strlen($firstLine) > self::TITLE_LENGTH ? mb_substr($firstLine, 0, self::TITLE_LENGTH - 1) . '…' : $firstLine;
+        }
+
+        return $this;
+    }
+
+    // Hands over once whether the text changed, to whoever writes the networks' texts from it
+    public function takeTextChanged(): bool
+    {
+        $changed = $this->textChanged;
+        $this->textChanged = false;
+
+        return $changed;
+    }
+
     public function getImageUrl(): ?string
     {
         return $this->imageUrl;
@@ -109,19 +169,20 @@ class SocialPost implements \Stringable
         return $this->createdAt;
     }
 
-    public function getPlannedAt(): ?\DateTimeImmutable
+    public function getPlannedAt(): \DateTimeImmutable
     {
         return $this->plannedAt;
     }
 
+    // A field emptied on the post's screen keeps the moment it had: a post is never left without one
     public function setPlannedAt(?\DateTimeImmutable $plannedAt): self
     {
-        $this->plannedAt = $plannedAt;
+        $this->plannedAt = $plannedAt ?? $this->plannedAt;
 
         return $this;
     }
 
-    // Hands every target not out yet to the next slot, a failed one being tried again there
+    // Hands every target not out yet to the planned run, a failed one being tried again at the post's moment
     public function approve(): void
     {
         foreach ($this->targets as $target) {
@@ -129,7 +190,7 @@ class SocialPost implements \Stringable
         }
     }
 
-    // Takes the post back out of the slots' queue, its approved targets waiting for a reading again
+    // Takes the post back to a draft, its approved targets waiting for a reading again at the same moment
     public function unapprove(): void
     {
         foreach ($this->targets as $target) {
@@ -143,7 +204,13 @@ class SocialPost implements \Stringable
         return $this->targets->exists(static fn (int $key, SocialPostTarget $target): bool => $target->isPending() && SocialPostStatus::Approved !== $target->getStatus());
     }
 
-    // Whether a target waits in the slots' queue - what "Unapprove" is offered on
+    // Whether it went out on every network it has, a post with none never having gone anywhere
+    public function isPublished(): bool
+    {
+        return !$this->targets->isEmpty() && !$this->targets->exists(static fn (int $key, SocialPostTarget $target): bool => $target->isPending());
+    }
+
+    // Whether a target waits for its moment - what "Unapprove" is offered on
     public function isApproved(): bool
     {
         return $this->targets->exists(static fn (int $key, SocialPostTarget $target): bool => SocialPostStatus::Approved === $target->getStatus());
@@ -181,24 +248,52 @@ class SocialPost implements \Stringable
         return $networks;
     }
 
-    // The networks the post waits in the slots' queue for
+    // The networks the post waits for its moment on
     /** @return list<string> */
     public function getApprovedNetworks(): array
     {
         return $this->targets->filter(static fn (SocialPostTarget $target): bool => SocialPostStatus::Approved === $target->getStatus())->map(static fn (SocialPostTarget $target): string => $target->getNetwork())->getValues();
     }
 
-    // The networks the post goes out or went out on - what a planned post takes a slot's place on, a draft or a failure taking none
-    /** @return list<string> */
-    public function getOutgoingNetworks(): array
-    {
-        return $this->targets->filter(static fn (SocialPostTarget $target): bool => \in_array($target->getStatus(), [SocialPostStatus::Approved, SocialPostStatus::Published], true))->map(static fn (SocialPostTarget $target): string => $target->getNetwork())->getValues();
-    }
-
     /** @return Collection<int, SocialPostTarget> */
     public function getTargets(): Collection
     {
         return $this->targets;
+    }
+
+    // The picture the post is shown with on the screens: its first own picture, the content's otherwise
+    public function getThumbnailUrl(): ?string
+    {
+        foreach ($this->medias as $media) {
+            if (!$media->isVideo() && null !== $media->getPublicPath()) {
+                return $media->getPublicPath();
+            }
+        }
+
+        return $this->imageUrl;
+    }
+
+    /** @return Collection<int, SocialMedia> */
+    public function getMedias(): Collection
+    {
+        return $this->medias;
+    }
+
+    public function addMedia(SocialMedia $media): self
+    {
+        if (!$this->medias->contains($media)) {
+            $media->setPost($this);
+            $this->medias->add($media);
+        }
+
+        return $this;
+    }
+
+    public function removeMedia(SocialMedia $media): self
+    {
+        $this->medias->removeElement($media);
+
+        return $this;
     }
 
     public function addTarget(SocialPostTarget $target): self

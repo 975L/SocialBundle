@@ -29,9 +29,13 @@ class LinkedInClient
     // Posting as the member, and reading who the member is
     public const string SCOPES = 'openid profile w_member_social';
 
+    // LinkedIn processes an uploaded video before a post may carry it: asked again this many times, this many seconds apart
+    private const int VIDEO_STATUS_ATTEMPTS = 100;
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly ConfigServiceInterface $configService,
+        private readonly int $statusDelay = 3,
     ) {
     }
 
@@ -119,16 +123,70 @@ class LinkedInClient
             throw new \RuntimeException('LinkedIn gave no address to upload the image to.');
         }
 
-        $response = $this->httpClient->request('PUT', (string) $upload['uploadUrl'], [
-            'auth_bearer' => (string) $this->accessToken(),
-            'body' => $bytes,
-            'timeout' => 60,
-        ]);
-        if ($response->getStatusCode() >= 300) {
-            throw new \RuntimeException(sprintf('LinkedIn refused the image upload (%d).', $response->getStatusCode()));
-        }
+        $this->put((string) $upload['uploadUrl'], $bytes, 'image');
 
         return (string) $upload['image'];
+    }
+
+    // Uploads a video for a post in the parts LinkedIn cuts it into (4 MB each), then finalizes it with the ETag of each part, answering its urn
+    public function uploadVideo(string $path): string
+    {
+        $size = @filesize($path);
+        if (false === $size) {
+            throw new \RuntimeException(sprintf('The video "%s" cannot be read.', $path));
+        }
+
+        $upload = $this->request('POST', '/rest/videos?action=initializeUpload', ['initializeUploadRequest' => [
+            'owner' => $this->author(),
+            'fileSizeBytes' => $size,
+            'uploadCaptions' => false,
+            'uploadThumbnail' => false,
+        ]])['value'] ?? [];
+        if (!\is_array($upload) || !isset($upload['video'], $upload['uploadInstructions']) || !\is_array($upload['uploadInstructions'])) {
+            throw new \RuntimeException('LinkedIn gave no address to upload the video to.');
+        }
+
+        // Each part put where LinkedIn said, its ETag being what proves it arrived
+        $etags = [];
+        foreach ($upload['uploadInstructions'] as $instruction) {
+            $first = (int) $instruction['firstByte'];
+            $bytes = file_get_contents($path, false, null, $first, (int) $instruction['lastByte'] - $first + 1);
+            if (false === $bytes) {
+                throw new \RuntimeException(sprintf('The video "%s" cannot be read.', $path));
+            }
+
+            $etag = $this->put((string) $instruction['uploadUrl'], $bytes, 'video')->getHeaders(false)['etag'][0] ?? null;
+            if (null === $etag) {
+                throw new \RuntimeException('LinkedIn did not acknowledge a part of the video.');
+            }
+            $etags[] = $etag;
+        }
+
+        $this->request('POST', '/rest/videos?action=finalizeUpload', ['finalizeUploadRequest' => [
+            'video' => (string) $upload['video'],
+            'uploadToken' => (string) ($upload['uploadToken'] ?? ''),
+            'uploadedPartIds' => $etags,
+        ]]);
+        $this->waitAvailable((string) $upload['video']);
+
+        return (string) $upload['video'];
+    }
+
+    // Asks LinkedIn until the video is processed, throwing when it failed or is still at it
+    private function waitAvailable(string $urn): void
+    {
+        for ($attempt = 1; $attempt <= self::VIDEO_STATUS_ATTEMPTS; ++$attempt) {
+            $status = (string) ($this->request('GET', '/rest/videos/' . rawurlencode($urn), null)['status'] ?? '');
+            if ('AVAILABLE' === $status) {
+                return;
+            }
+            if ('PROCESSING_FAILED' === $status) {
+                throw new \RuntimeException('LinkedIn could not process the video.');
+            }
+            sleep($this->statusDelay);
+        }
+
+        throw new \RuntimeException('LinkedIn is still processing the video: publish it again in a few minutes.');
     }
 
     // Creates a post, answering its urn, which LinkedIn hands back in a header rather than in the body
@@ -172,6 +230,22 @@ class LinkedInClient
         if ($response->getStatusCode() >= 300) {
             $data = json_decode($response->getContent(false), true);
             throw new \RuntimeException(sprintf('LinkedIn refused %s: %s', $path, \is_array($data) ? ($data['message'] ?? $response->getStatusCode()) : $response->getStatusCode()));
+        }
+
+        return $response;
+    }
+
+    // Puts raw bytes at an upload address LinkedIn handed out, outside the versioned API
+    private function put(string $url, string $bytes, string $what): ResponseInterface
+    {
+        $response = $this->httpClient->request('PUT', $url, [
+            'auth_bearer' => (string) $this->accessToken(),
+            'headers' => ['Content-Type' => 'application/octet-stream'],
+            'body' => $bytes,
+            'timeout' => 60,
+        ]);
+        if ($response->getStatusCode() >= 300) {
+            throw new \RuntimeException(sprintf('LinkedIn refused the %s upload (%d).', $what, $response->getStatusCode()));
         }
 
         return $response;

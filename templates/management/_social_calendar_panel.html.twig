@@ -1,33 +1,22 @@
 {# The panel a card opens beside the calendar (see SocialCalendarController::panel()): its buttons go through the same move as a drag, so a post planned here and a post dropped there are one and the same thing #}
 {% import '@c975LSocial/management/social_calendar.html.twig' as calendar %}
 <div class="social-calendar-panel-head">
-    <span class="badge badge-{{ {published: 'success', planned: 'primary', queued: 'info', draft: 'warning'}[state] }}">{{ ('label.social_calendar_state_' ~ state)|trans({}, 'social') }}</span>
+    <span class="badge badge-{{ {published: 'secondary', approved: 'success', failed: 'warning', draft: 'danger'}[state] }}">{{ ('label.social_calendar_state_' ~ state)|trans({}, 'social') }}</span>
     <button type="button" class="btn btn-sm btn-secondary" data-action="social-calendar#closePanel">{{ 'label.social_calendar_close'|trans({}, 'social') }}</button>
 </div>
 
 <h2 class="h5">{{ post.title }}</h2>
 
-<p class="small">
-    {% if state == 'planned' %}
-        {{ 'label.social_calendar_goes_out'|trans({'%date%': post.planned_at|date('d/m/Y H:i')}, 'social') }}
-    {% elseif state == 'queued' %}
-        {{ next ? 'label.social_calendar_goes_out_next'|trans({'%date%': next|date('d/m/Y H:i')}, 'social') : 'label.social_calendar_no_slot_ahead'|trans({}, 'social') }}
-    {% elseif state == 'draft' %}
-        {{ 'label.social_calendar_draft_waits'|trans({}, 'social') }}
-    {% endif %}
-</p>
-
 {% if state != 'published' %}
     <div class="social-calendar-panel-plan">
         <label for="social-calendar-plan-{{ post.id }}" class="form-label small">{{ 'label.social_calendar_plan_at'|trans({}, 'social') }}</label>
-        <input type="datetime-local" step="900" class="form-control" id="social-calendar-plan-{{ post.id }}" value="{{ plan_at|date('Y-m-d\\TH:i') }}" data-social-calendar-target="planAt">
+        <input type="datetime-local" step="900" class="form-control" id="social-calendar-plan-{{ post.id }}" value="{{ post.planned_at|date('Y-m-d\\TH:i') }}" data-social-calendar-target="planAt">
         <div class="d-flex flex-wrap gap-2 mt-2">
-            <button type="button" class="btn btn-primary btn-sm" data-action="social-calendar#plan" data-post-id="{{ post.id }}">{{ (state == 'draft' ? 'label.social_calendar_approve_plan' : 'label.social_calendar_plan')|trans({}, 'social') }}</button>
-            {% if state == 'planned' or state == 'draft' %}
-                <button type="button" class="btn btn-secondary btn-sm" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="queue">{{ (state == 'draft' ? 'label.social_post_approve' : 'label.social_calendar_back_to_queue')|trans({}, 'social') }}</button>
-            {% endif %}
-            {% if state != 'draft' %}
-                <button type="button" class="btn btn-secondary btn-sm" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="drafts">{{ 'label.social_post_unapprove'|trans({}, 'social') }}</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-action="social-calendar#plan" data-post-id="{{ post.id }}">{{ 'label.social_calendar_plan'|trans({}, 'social') }}</button>
+            {% if state == 'approved' %}
+                <button type="button" class="btn btn-secondary btn-sm" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="unapprove">{{ 'label.social_post_unapprove'|trans({}, 'social') }}</button>
+            {% else %}
+                <button type="button" class="btn btn-success btn-sm" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve">{{ 'label.social_post_approve'|trans({}, 'social') }}</button>
             {% endif %}
         </div>
     </div>

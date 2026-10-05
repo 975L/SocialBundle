@@ -18,10 +18,6 @@
                 <source>description.social_bluesky_oauth_session</source>
                 <target>Filled by "Connect Bluesky", never by hand. Emptying it disconnects the account.</target>
             </trans-unit>
-            <trans-unit id="mgDQlK8">
-                <source>description.social_bluesky_publish_mode</source>
-                <target>review: each post waits for your review in "Posts". auto: it goes out as soon as it is prepared.</target>
-            </trans-unit>
             <trans-unit id="r0wZwja">
                 <source>description.social_calendar_hour_end</source>
                 <target>The hour at the bottom of the week view's grid (23 by default). A post outside these hours shows at the edge of the grid.</target>
@@ -33,10 +29,6 @@
             <trans-unit id="qi3JaGX">
                 <source>description.social_enable_share_buttons</source>
                 <target>Automatically displays the share buttons on every page (settings under "Share buttons").</target>
-            </trans-unit>
-            <trans-unit id="UHhe1S3">
-                <source>description.social_facebook_publish_mode</source>
-                <target>review: each post waits for your review in "Posts". auto: it goes out as soon as it is prepared.</target>
             </trans-unit>
             <trans-unit id="TELuAM2">
                 <source>description.social_google_business_account_id</source>
@@ -66,10 +58,6 @@
                 <source>description.social_image_format</source>
                 <target>framed: the picture as it is, framed only where a network requires it. square: one 1080 x 1080 square on every network, the picture centred on the site's background colour.</target>
             </trans-unit>
-            <trans-unit id="61_ZokG">
-                <source>description.social_instagram_publish_mode</source>
-                <target>review: each post waits for your review in "Posts". auto: it goes out as soon as it is prepared.</target>
-            </trans-unit>
             <trans-unit id="BANWhG0">
                 <source>description.social_linkedin_access_token</source>
                 <target>Filled by "Connect" on the LinkedIn tile of "Connections". Valid for 60 days: connect again before it expires.</target>
@@ -86,13 +74,13 @@
                 <source>description.social_linkedin_member_id</source>
                 <target>Filled by the connection: the profile the posts go out on.</target>
             </trans-unit>
-            <trans-unit id="O1_Nec.">
-                <source>description.social_linkedin_publish_mode</source>
-                <target>review: every post waits for your reading in "Publications". auto: it goes out as soon as it is prepared.</target>
-            </trans-unit>
             <trans-unit id="36ObS3d">
                 <source>description.social_linkedin_token_expires_at</source>
                 <target>Filled by the connection: the date after which LinkedIn refuses the token.</target>
+            </trans-unit>
+            <trans-unit id="kjb5dLd">
+                <source>description.social_media_retention_days</source>
+                <target>The photos and videos uploaded for a post gone out on all its networks are deleted after this many days, the post staying as a record. The networks keep their own copy. 0 keeps everything.</target>
             </trans-unit>
             <trans-unit id="vdijy68">
                 <source>description.social_meta_app_id</source>
@@ -114,10 +102,6 @@
                 <source>description.social_meta_page_token</source>
                 <target>Filled by "Connect Meta". It does not expire, unless the password changes or the app is removed.</target>
             </trans-unit>
-            <trans-unit id="93yR.lo">
-                <source>description.social_publish_interval_hours</source>
-                <target>Minimum time between two automatic posts: 24 for one a day, 168 for one a week.</target>
-            </trans-unit>
             <trans-unit id="KPbdz0r">
                 <source>description.social_publish_template</source>
                 <target>Template of the posted text. Variables: {title}, {url}, and the content's own ({category}, {description}...). A variable with no value is removed.</target>
@@ -138,10 +122,6 @@
                 <source>label.social_bluesky_oauth_session</source>
                 <target>Bluesky session</target>
             </trans-unit>
-            <trans-unit id="mOorxO_">
-                <source>label.social_bluesky_publish_mode</source>
-                <target>Posting on Bluesky</target>
-            </trans-unit>
             <trans-unit id="cQjSQul">
                 <source>label.social_calendar_hour_end</source>
                 <target>Calendar: last hour</target>
@@ -153,10 +133,6 @@
             <trans-unit id="Dfr17Uy">
                 <source>label.social_enable_share_buttons</source>
                 <target>Enable share buttons</target>
-            </trans-unit>
-            <trans-unit id="jAU48bY">
-                <source>label.social_facebook_publish_mode</source>
-                <target>Posting on Facebook</target>
             </trans-unit>
             <trans-unit id="9BLGp.J">
                 <source>label.social_google_business_account_id</source>
@@ -186,10 +162,6 @@
                 <source>label.social_image_format</source>
                 <target>Visual format</target>
             </trans-unit>
-            <trans-unit id="vS8bljm">
-                <source>label.social_instagram_publish_mode</source>
-                <target>Posting on Instagram</target>
-            </trans-unit>
             <trans-unit id="MIY6APF">
                 <source>label.social_linkedin_access_token</source>
                 <target>LinkedIn token</target>
@@ -206,13 +178,13 @@
                 <source>label.social_linkedin_member_id</source>
                 <target>LinkedIn member</target>
             </trans-unit>
-            <trans-unit id="iMiaYts">
-                <source>label.social_linkedin_publish_mode</source>
-                <target>Posting on LinkedIn</target>
-            </trans-unit>
             <trans-unit id="VNIF16G">
                 <source>label.social_linkedin_token_expires_at</source>
                 <target>LinkedIn token expiry</target>
+            </trans-unit>
+            <trans-unit id="Ijbvg0M">
+                <source>label.social_media_retention_days</source>
+                <target>Retention of the posts' medias (days)</target>
             </trans-unit>
             <trans-unit id="5EmIqzw">
                 <source>label.social_meta_app_id</source>
@@ -233,10 +205,6 @@
             <trans-unit id="q7doyNI">
                 <source>label.social_meta_page_token</source>
                 <target>Facebook Page token</target>
-            </trans-unit>
-            <trans-unit id="VFQrmGE">
-                <source>label.social_publish_interval_hours</source>
-                <target>Interval between two posts (hours)</target>
             </trans-unit>
             <trans-unit id="XYTOV4b">
                 <source>label.social_publish_template</source>

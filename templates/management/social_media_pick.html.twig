@@ -1,0 +1,40 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{# The libraries' medias a post takes, checked then added after its own (see SocialPostCrudController::pickMedia()) - the search posted with the form, the same one checking what was offered #}
+{% block main %}
+    <h1>{{ 'label.social_media_pick'|trans({}, 'social') }}</h1>
+
+    <p>{{ 'label.info_social_media_pick'|trans({'%title%': post.title}, 'social') }}</p>
+
+    <form method="post" class="social-media-pick">
+        <input type="hidden" name="token" value="{{ csrf_token('social_post_publish') }}">
+
+        <div class="input-group mb-3">
+            <input type="search" name="search" value="{{ search }}" class="form-control" placeholder="{{ 'label.social_media_pick_search'|trans({}, 'social') }}">
+            <button type="submit" name="filter" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+        </div>
+
+        {% for library in libraries %}
+            <h2 class="h5">{{ library.label|trans }}</h2>
+            {% for media in library.medias %}
+                {% if loop.first %}<div class="social-media-pick-grid mb-3">{% endif %}
+                <label class="social-media-pick-item" title="{{ media.title }}">
+                    <input type="checkbox" name="paths[]" value="{{ media.path }}" class="form-check-input">
+                    {% if media.thumbnailPath %}
+                        <img src="{{ asset('/' ~ media.thumbnailPath) }}" alt="{{ media.title }}" loading="lazy">
+                    {% else %}
+                        <video src="{{ asset('/' ~ media.path) }}" preload="metadata" muted></video>
+                    {% endif %}
+                    {% if media.mimeType starts with 'video/' %}<i class="fa fa-video social-media-pick-video"></i>{% endif %}
+                    <span>{{ media.title }}</span>
+                </label>
+                {% if loop.last %}</div>{% endif %}
+            {% else %}
+                <p class="text-muted">{{ 'label.social_media_pick_none'|trans({}, 'social') }}</p>
+            {% endfor %}
+        {% endfor %}
+
+        <button type="submit" name="add" class="btn btn-primary">{{ 'label.social_media_pick_submit'|trans({}, 'social') }}</button>
+        <a href="{{ back_url }}" class="btn btn-link">{{ 'action.cancel'|trans({}, 'EasyAdminBundle') }}</a>
+    </form>
+{% endblock main %}

@@ -12,9 +12,11 @@ namespace c975L\SocialBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
+use c975L\SocialBundle\Model\MediaRules;
+use c975L\SocialBundle\Model\PostMedia;
 use c975L\UiBundle\Model\SocialContent;
 
-// Posts on the site's Facebook Page, never on a personal profile: a photo with its text when the content has an image, a link otherwise - Facebook then drawing the page's own preview
+// Posts on the site's Facebook Page, never on a personal profile: the post's own pictures or video when it has some, else a photo with its text when the content has an image, a link otherwise - Facebook then drawing the page's own preview
 class FacebookPublisher implements NetworkPublisherInterface
 {
     // What a Page post accepts
@@ -37,40 +39,78 @@ class FacebookPublisher implements NetworkPublisherInterface
         return '' !== $this->pageId() && null !== $this->metaGraphClient->pageToken();
     }
 
-    // Review unless the site said otherwise, as on every network
-    public function isAutomatic(): bool
-    {
-        return 'auto' === $this->configService->get('social-facebook-publish-mode');
-    }
-
     public function getMaxLength(): int
     {
         return self::MAX_LENGTH;
     }
 
-    // The post's own id ("pageid_postid"), its public address being facebook.com/ followed by it
-    public function publish(string $text, SocialContent $content): string
+    // Graph page/photos takes a picture under 10 MB (its French page says 4 MB); the count of a multi-photo post and the video limits are undocumented, 10 pictures kept as a sane cap
+    public function getMediaRules(): MediaRules
     {
-        ['path' => $path, 'parameters' => $parameters] = $this->request($text, $content);
-        $posted = $this->metaGraphClient->request('POST', $path, [...$parameters, 'access_token' => (string) $this->metaGraphClient->pageToken()]);
+        return new MediaRules(
+            maxImages: 10,
+            video: true,
+            mix: false,
+            required: false,
+            imageTypes: ['image/jpeg', 'image/png', 'image/gif'],
+            maxImageBytes: 10000000,
+            videoTypes: ['video/mp4', 'video/quicktime'],
+        );
+    }
+
+    // The post's own id ("pageid_postid", a video's id for a video), its public address being facebook.com/ followed by it. Several pictures are first uploaded unpublished, then attached to one post
+    public function publish(string $text, SocialContent $content, array $medias = []): string
+    {
+        $token = ['access_token' => (string) $this->metaGraphClient->pageToken()];
+        $request = $this->request($text, $content, $medias);
+
+        // Each uploaded picture becomes one "attached_media[i]", the JSON Graph expects in each
+        $parameters = $request['parameters'];
+        foreach ($request['uploads'] ?? [] as $index => $upload) {
+            $photo = $this->metaGraphClient->request('POST', $upload['path'], [...$upload['parameters'], ...$token]);
+            $parameters['attached_media[' . $index . ']'] = (string) json_encode(['media_fbid' => (string) $photo['id']]);
+        }
+
+        $posted = $this->metaGraphClient->request('POST', $request['path'], [...$parameters, ...$token]);
 
         return (string) ($posted['post_id'] ?? $posted['id']);
     }
 
-    public function preview(string $text, SocialContent $content): array
+    public function preview(string $text, SocialContent $content, array $medias = []): array
     {
-        return $this->request($text, $content);
+        return $this->request($text, $content, $medias);
     }
 
-    // The call publish() makes, token aside. "caption" is the text of a photo, "message" the text of a post
-    /** @return array{path: string, parameters: array<string, string>} */
-    private function request(string $text, SocialContent $content): array
+    // The calls publish() makes, token aside. "caption" is the text of a photo, "description" that of a video, "message" that of a post, its "link" left out for a post written with none
+    /**
+     * @param list<PostMedia> $medias
+     *
+     * @return array{path: string, parameters: array<string, string>, uploads?: list<array{path: string, parameters: array<string, string>}>}
+     */
+    private function request(string $text, SocialContent $content, array $medias): array
     {
-        $imageUrl = $this->imageExporter->jpegUrl($content);
+        $page = '/' . $this->pageId();
+
+        // The post's video, alone as Facebook takes it
+        foreach ($medias as $media) {
+            if ($media->isVideo()) {
+                return ['path' => $page . '/videos', 'parameters' => ['file_url' => $media->url, 'description' => $text]];
+            }
+        }
+
+        // Several pictures, uploaded unpublished then attached to one post
+        if (\count($medias) > 1) {
+            $uploads = array_map(fn (PostMedia $media): array => ['path' => $page . '/photos', 'parameters' => ['url' => $media->url, 'published' => 'false']], $medias);
+
+            return ['path' => $page . '/feed', 'parameters' => ['message' => $text], 'uploads' => $uploads];
+        }
+
+        // One picture, the post's own or the content's
+        $imageUrl = [] === $medias ? $this->imageExporter->jpegUrl($content) : $medias[0]->url;
 
         return null === $imageUrl
-            ? ['path' => '/' . $this->pageId() . '/feed', 'parameters' => ['message' => $text, 'link' => $content->url]]
-            : ['path' => '/' . $this->pageId() . '/photos', 'parameters' => ['url' => $imageUrl, 'caption' => $text]];
+            ? ['path' => $page . '/feed', 'parameters' => array_filter(['message' => $text, 'link' => $content->url])]
+            : ['path' => $page . '/photos', 'parameters' => ['url' => $imageUrl, 'caption' => $text]];
     }
 
     private function pageId(): string

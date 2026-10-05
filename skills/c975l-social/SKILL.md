@@ -1,6 +1,6 @@
 ---
 name: c975l-social
-description: "Use this skill when working with social links, share buttons, customer reviews or the publication on the social networks in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, the Google Business Profile review import with its pluggable sources, and the scheduled posts on Bluesky, Facebook, Instagram and LinkedIn, the publications calendar and the AI-written texts. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, startStimulusApp, c975lStimulusApp, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile, c975l:social:publish, SocialPublisher, SocialPost, SocialPostTarget, SocialPostCrudController, NetworkPublisherInterface, SocialContentSourceInterface, SocialContent, social-publish-template, social-meta-app-id, social-bluesky-oauth-session, SocialConnectionsController, Connexions, BlueskyOAuthClient, Es256Signer, DPoP, SocialSchedule, SocialScheduleCrudController, publication slots, MetaGraphClient, SocialImageExporter, post on Bluesky, post on Facebook, post on Instagram, LinkedInClient, LinkedInPublisher, social-linkedin-client-id, post on LinkedIn, SocialPlanner, plannedAt, publish --planned, SocialCalendarController, SocialPostWriter, social-ai-guidelines, social publishing."
+description: "Use this skill when working with social links, share buttons, customer reviews or the publication on the social networks in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, the Google Business Profile review import with its pluggable sources, and the scheduled posts on Bluesky, Facebook, Instagram and LinkedIn, the publications calendar and the AI-written texts. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, startStimulusApp, c975lStimulusApp, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile, c975l:social:publish, SocialPublisher, SocialPost, SocialPostTarget, SocialPostCrudController, NetworkPublisherInterface, SocialContentSourceInterface, SocialContent, social-publish-template, social-meta-app-id, social-bluesky-oauth-session, SocialConnectionsController, Connexions, BlueskyOAuthClient, Es256Signer, DPoP, MetaGraphClient, SocialImageExporter, post on Bluesky, post on Facebook, post on Instagram, LinkedInClient, LinkedInPublisher, social-linkedin-client-id, post on LinkedIn, SocialPlanner, plannedAt, SocialCalendarController, SocialPostWriter, social-ai-guidelines, social publishing."
 ---
 
 # c975L SocialBundle
@@ -215,34 +215,41 @@ self-serve app, so no Company Page and a token to renew every 60 days, watched b
 | Piece | Class |
 | --- | --- |
 | Content contract | `c975L\UiBundle\Contract\SocialContentSourceInterface`, handing out `c975L\UiBundle\Model\SocialContent` |
-| Network contract | `Contract\NetworkPublisherInterface` (`getName()`, `isConfigured()`, `isAutomatic()`, `getMaxLength()`, `publish()`, `preview()`) |
+| Network contract | `Contract\NetworkPublisherInterface` (`getName()`, `isConfigured()`, `getMaxLength()`, `getMediaRules()`, `publish()`, `preview()`) |
 | Networks | `Service\BlueskyPublisher`, `Service\FacebookPublisher`, `Service\InstagramPublisher` |
 | Meta connection | `Service\MetaGraphClient`, `Controller\MetaOAuthController` (`/social/meta/connect`, `/social/meta/callback`) |
 | Bluesky connection | `Service\BlueskyOAuthClient`, `Service\Es256Signer`, `Controller\BlueskyOAuthController` (`/social/bluesky/connect`, `/social/bluesky/callback`) |
 | Orchestration | `Service\SocialPublisher`, `Command\PublishCommand` (`c975l:social:publish`) |
 | Stored posts | `Entity\SocialPost`, one `Entity\SocialPostTarget` per network, `Enum\SocialPostStatus` |
 | Review screen | `Controller\Management\SocialPostCrudController` ("Publications", `site-role-editor`) |
-| Publication slots | `Entity\SocialSchedule`, `Controller\Management\SocialScheduleCrudController` ("Créneaux de publication", `site-role-editor`) |
-| AI texts | `Service\SocialPostWriter` (the rephrase key, `social-ai-guidelines`), the template as fallback |
+| AI texts | `Service\SocialPostWriter` (Donovan's writer key, `social-ai-guidelines`), the template as fallback |
 | Calendar | `Controller\Management\SocialCalendarController` ("Calendrier", `site-role-editor`), `Service\SocialPlanner`, `assets/js/social-calendar.js` |
 
 A bundle owning contents implements `SocialContentSourceInterface`, declared in UiBundle so it needs no
 dependency on this one; both contracts are auto-tagged by interface (`social.content_source`,
-`social.network_publisher`). The hourly run prepares a post once `social-publish-interval-hours` has
-passed, one text per network written from `social-publish-template` (`{name}` placeholders) and cut to
-`getMaxLength()`. `social-*-publish-mode` = `review` leaves a draft for the screen, `auto` sends it at once.
-"Publier" sends every target not out yet, under a per-post lock, and is offered on the list only.
-
-A `SocialSchedule` slot is a time, sources (`gallery_media` or a group `gallery_media:3`, from
-`ScopedSocialContentSourceInterface`), networks and a text put where the template writes `{slot}`. Each
-enabled slot is a task of its own (`c975l:social:publish --slot=<id>`); while one is enabled, the interval
-run stands aside. A missing `social_schedule` table reads as no slot, the interval run going on.
-A slot first sends the unplanned approved post `SocialPlanner::pick()` returns for its networks (the
-`approved` status, given by the list's "Valider" while a slot is on), in the order prepared. Only with none
-waiting does it prepare a content. A post with a `SocialPost::$plannedAt` goes out at that moment, to the
-quarter of an hour, from `c975l:social:publish --planned` (every 15 minutes), and the slot on that quarter
-stands aside (`SocialPlanner::isTaken()`), a draft planned there not taking it. `--drafts=N` refuses `--dry-run`, a draft being already a preview, and `--dry-run` never calls the AI. The calendar projects the
-queue with `SocialPlanner::project()`, the same rule, so it shows what the slots will do.
+`social.network_publisher`). Every `SocialPost` holds a mandatory `plannedAt` from its construction, a
+draft included: there is no queue and no post without a moment. A post is prepared as a draft, one text
+per network written from `social-publish-template` (`{name}` placeholders) and cut to `getMaxLength()`,
+never sent on preparation. "Valider" turns its targets `approved`; `c975l:social:publish`, every 15 minutes, sends the approved
+targets whose `plannedAt` has come. "Publier" sends every target not out yet at once, under a per-post lock,
+and is offered on the list only. `--url` prepares a draft of a page at `--at` (the next quarter of an hour
+by default), `--dry-run` never calls the AI. `SocialPublisher::prepareDrafts()` takes one moment per draft
+and source keys from `getSourceChoices()` (`gallery_media` or a group `gallery_media:3`, from
+`ScopedSocialContentSourceInterface`). A post written on its screen (`SocialPost::isManual()`, `SocialPublisher::createManual()`, the CRUD's
+"new" with `?at=`, which the calendar's double click opens) holds a `text`, Donovan on it; each network's
+text is cut from it (`SocialPostTextBuilder::cut()`), and written again by `rewriteTargets()` when the text
+changes. Its `url` may be empty. A post's own pictures and videos are `Entity\SocialMedia` (Vich mapping
+`social_media`, `Namer\SocialMediaNamer`, a picture rewritten as one JPEG by `Service\SocialMediaFile` from
+`Listener\SocialMediaUploadListener`, which also refuses to delete a file only referenced, an upload over a
+reference included, `reference` cleared on `POST_UPLOAD` only); they reach the
+networks as `Model\PostMedia`, checked against `Model\MediaRules` by `Service\SocialMediaChecker` before
+approval. `Service\SocialMediaPicker` adds the medias of UiBundle's `PickableMediaProviderInterface` libraries
+(tag `social.pickable_media`, action `pickMedia`): a picture copied as the post's JPEG, a video referenced.
+`Service\SocialSeriesGenerator` makes a series of drafts (one text, `SocialPostWriter::variants()`, or
+the sources), `c975l:social:media:purge` frees the uploads past `social-media-retention-days`. A post with no target is never published (`SocialPost::isPublished()`), and the CRUD requires one network.
+The calendar lays every post not published yet at its
+`plannedAt` (`SocialPostRepository::findPlannedBetween()`); a drag changes the moment only, never the
+approval.
 
 Bluesky's tile is the AT Protocol's OAuth with the site as its own confidential client: no app, no
 password. The session sits in `social-bluesky-oauth-session`, the client key in `social-bluesky-oauth-key`;
@@ -268,7 +275,7 @@ export/import provider per
 singleton (`SocialLinksExportProvider`, `ShareButtonsSettingsExportProvider` and their import twins),
 `Management\GoogleReviewsHealthCheckProvider` (one row on the health check page, saying whether the
 Google connection still answers - the import being the one thing here that stops silently) and
-`Scheduler\SocialMaintenanceTaskProvider` (the nightly review sync, the hourly publication run and one task per enabled slot).
+`Scheduler\SocialMaintenanceTaskProvider` (the nightly review sync and the publication run every 15 minutes).
 
 ## Do not
 
@@ -288,6 +295,8 @@ Google connection still answers - the import being the one thing here that stops
   `label.group_<slug>` in `translations/config.*.xlf`, in each of the three locales, or the back office shows
   the key.
 - **Do not add a page layout to this bundle.** A satellite never ships one.
+- **Do not clear `SocialMedia::$reference` before Vich has handled the old file.** `PRE_REMOVE` reads it
+  to spare a gallery's file; cleared in `setFile()`, an upload deletes it.
 - **Do not call `startStimulusApp()` bare in a barrel.** Each call also registers whatever the app's
   `controllers.json` enables, so a second application builds the `live` controller a second time and a
   Live Component answers twice. Join the page's one application with
@@ -316,8 +325,8 @@ Google connection still answers - the import being the one thing here that stops
   would be the saved one, not the one just corrected.
 - **Do not hand a network the picture's bytes without `SocialImageExporter::bytes()`.** With
   `social-image-format` set to `square`, every network has to show the same 1080 x 1080 visual.
-- **Do not store where a post falls in the calendar.** It is `SocialPlanner::project()` playing the queue
-  over the slots; a second rule, or a stored date, would show a calendar the slots do not follow.
+- **Do not create a `SocialPost` without a moment, nor approve on a drag.** The calendar shows every post
+  at its `plannedAt`, and the planned run is the only clock; a drag moves, "Valider" approves.
 - **Do not hand Meta the site's WebP url.** Go through `SocialImageExporter::jpegUrl()`.
 - **Do not make `share_buttons_display` cacheable.** Its render carries the current page's url, so the
   first page's share links would be served on every other page holding that block.

@@ -1,5 +1,43 @@
 # Changelog
 
+## v2.11.0
+
+Every post planned on the calendar, slots and hourly run removed
+
+- Status colours: draft red, approved green, published grey, failed orange with ⚠ (05/10/2026)
+- Publication slots removed (`SocialSchedule`, `SocialScheduleCrudController`, `--slot`) (05/10/2026) [BC-Break] [Needs db update]
+- Hourly run and `social-publish-interval-hours` removed, with "Préparer maintenant", "Préparer 7 brouillons", `--force` and `--drafts` (05/10/2026) [BC-Break]
+- `SocialPost::$plannedAt` mandatory, a draft included; the queue is gone (05/10/2026) [BC-Break] [Needs db update]
+- `c975l:social:publish` sends the approved posts due, `--planned` removed; `--url` takes `--at` (05/10/2026) [BC-Break]
+- A post is always prepared as a draft; the four `social-*-publish-mode` configs and `NetworkPublisherInterface::isAutomatic()` removed (05/10/2026) [BC-Break]
+- Calendar: every post at its moment, a drag moves it without approving it, a day of the month as drop zone (05/10/2026)
+- Calendar panel approves a post or takes it back to a draft (05/10/2026)
+- "Depuis une adresse" asks for the moment of the draft (05/10/2026)
+- `SocialPublisher::prepareDrafts()` takes one moment per draft and source keys (05/10/2026) [BC-Break]
+- Posts written on their screen: "Nouvelle publication", a text with Donovan cut to each network, an optional address (05/10/2026) [Needs db update]
+- Calendar: a double click on a coming moment writes a post planned there (05/10/2026)
+- Facebook and LinkedIn post without a link when the post has none (05/10/2026)
+- `{slot}` placeholder renamed `{extra}` (05/10/2026) [BC-Break]
+- AI texts read `ui-ai-assistant-writer-*`, requires c975l/core-bundle 1.53 (05/10/2026)
+- Photos and videos on a post (`SocialMedia`, Vich mapping `social_media`), a picture stored once as a JPEG (05/10/2026) [Needs db update]
+- `NetworkPublisherInterface::getMediaRules()`, `publish()`/`preview()` take the post's medias (05/10/2026) [BC-Break]
+- Several pictures or a video sent on Bluesky, Facebook, Instagram (carousel, Reels) and LinkedIn (multiImage, Videos API) (05/10/2026)
+- Medias checked against each network's rules on saving, the approval refused while one does not suit (05/10/2026)
+- `c975l:social:media:purge`, nightly, and new config `social-media-retention-days` (05/10/2026)
+- "Générer une série": drafts at a steady pace from one text, the AI (`SocialPostWriter::variants()`) or the sources (05/10/2026)
+- "Valider la sélection" batch action (05/10/2026)
+- "Ajouter depuis le site": pictures and videos of other bundles' libraries (`PickableMediaProviderInterface`, GalleryBundle 1.25) added to a post (05/10/2026)
+- Instagram and LinkedIn videos waited for until processed, up to five minutes (05/10/2026)
+- Calendar: `social-calendar:create` event, cancelable, before a new post opens (05/10/2026)
+- Requires `imagine/imagine` and `vich/uploader-bundle` directly (05/10/2026)
+- An upload over a referenced media no longer deletes the site's file (05/10/2026)
+- "Valider la sélection" checks EasyAdmin's batch CSRF token (05/10/2026)
+- A post with no network is a draft, neither published nor purged (05/10/2026)
+- A post requires at least one network (05/10/2026)
+- "Publications" counted among the unused features while empty (05/10/2026)
+- Guided project "Générer une série de publications" (05/10/2026)
+- Guided texts of the posts brought up to date (05/10/2026)
+
 ## v2.10.0
 
 LinkedIn, the publications calendar and planned posts

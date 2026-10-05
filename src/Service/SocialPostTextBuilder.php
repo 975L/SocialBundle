@@ -13,7 +13,7 @@ namespace c975L\SocialBundle\Service;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Model\SocialContent;
 
-// Writes a post's text from the site's own template ("social-publish-template"), each "{name}" taking the content's value of that name, "{slot}" the text of the publication slot it goes out in
+// Writes a post's text from the site's own template ("social-publish-template"), each "{name}" taking the content's value of that name, "{extra}" a text given for a batch of posts
 class SocialPostTextBuilder
 {
     // What a site that wrote no template posts: the title, and the link that brings the reader back
@@ -24,7 +24,7 @@ class SocialPostTextBuilder
     ) {
     }
 
-    // The text to post on a network taking at most $maxLength characters, $variables adding values of the run's own ("{slot}"); a placeholder with no value is dropped rather than posted as "{name}"
+    // The text to post on a network taking at most $maxLength characters, $variables adding values of the caller's own ("{extra}"); a placeholder with no value is dropped rather than posted as "{name}"
     /** @param array<string, string> $variables */
     public function build(SocialContent $content, int $maxLength, array $variables = []): string
     {
@@ -44,7 +44,13 @@ class SocialPostTextBuilder
         // An emptied placeholder on a line of its own would otherwise leave a gap of blank lines
         $text = trim((string) preg_replace("/\n{3,}/", "\n\n", $text));
 
-        // Cut at the end, which loses the url of a template putting it last: a reviewer sees the cut and rewrites the text, an automatic network posts it as it is
+        // Cut at the end, which loses the url of a template putting it last: a reviewer sees the cut and rewrites the text
+        return $this->cut($text, $maxLength);
+    }
+
+    // A text no longer than $maxLength characters, an ellipsis saying where it was cut
+    public function cut(string $text, int $maxLength): string
+    {
         return mb_strlen($text) > $maxLength ? rtrim(mb_substr($text, 0, $maxLength - 1)) . '…' : $text;
     }
 }

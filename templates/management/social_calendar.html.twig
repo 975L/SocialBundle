@@ -1,6 +1,6 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
-{# The week - or the month - of publications (see SocialCalendarController): a card is dragged onto a coming slot, the queue or the drafts, and opened with a click #}
+{# The week - or the month - of publications (see SocialCalendarController): a card is dragged onto a coming moment, and opened with a click #}
 {% macro networks(networks, connected) %}
     <span class="social-network-badges">
         {%- for network in networks -%}
@@ -12,38 +12,16 @@
     </span>
 {% endmacro %}
 
-{% macro card(post, draggable, extra, connected, at = null) %}
+{# A post on the calendar, coloured by its state: one gone out everywhere only opens, any other is dragged to another moment #}
+{% macro card(post, connected) %}
+    {% set draggable = post.state != 'published' %}
     <a href="{{ post.edit_url }}" draggable="false" data-action="social-calendar#open" data-panel-id="{{ post.id }}"
-        class="social-calendar-card{{ extra }}"
-        {% if draggable %}data-social-calendar-target="item" data-post-id="{{ post.id }}" data-networks="{{ post.networks|join(',') }}"{% if at %} data-at="{{ at|date('c') }}"{% endif %}{% endif %}>
+        class="social-calendar-card is-{{ post.state }}"
+        {% if draggable %}data-social-calendar-target="item" data-post-id="{{ post.id }}" data-at="{{ post.planned_at|date('c') }}"{% endif %}>
         {% if post.image %}<img src="{{ post.image }}" alt="" loading="lazy">{% endif %}
         <span>{{ post.title }}</span>
-        {% if post.next_at is defined %}<small class="social-calendar-next">{{ post.next_at ? post.next_at|date('d/m H:i') : 'label.social_calendar_no_slot_ahead'|trans({}, 'social') }}</small>{% endif %}
         {{ _self.networks(post.networks, connected) }}
     </a>
-{% endmacro %}
-
-{# One thing on the calendar: a post gone out, a post planned at its moment, or a coming slot with the post it will send - the slot itself a drop zone in the month, where no quarter of an hour is drawn #}
-{% macro item(item, zone, connected, prepare_url, token) %}
-    {% if item.kind == 'published' %}
-        {{ _self.card(item, false, ' is-published', connected) }}
-    {% elseif item.kind == 'planned' %}
-        {{ _self.card(item.post, true, item.post.draft ? ' is-draft' : ' is-pinned', connected, item.at) }}
-    {% else %}
-        <div class="social-calendar-slot"{% if zone %} data-social-calendar-target="zone" data-to="{{ item.at|date('c') }}" data-networks="{{ item.slot_networks|join(',') }}"{% endif %}>
-            <div class="social-calendar-slot-head"><span>{{ item.at|date('H:i') }} {{ item.slot.name }}</span>{{ _self.networks(item.slot_networks, connected) }}</div>
-            {% if item.post %}
-                {{ _self.card(item.post, true, item.post.draft ? ' is-draft' : (item.post.pinned ? ' is-pinned' : ''), connected) }}
-            {% elseif item.slot_networks is not empty %}
-                <form method="post" action="{{ prepare_url }}">
-                    <input type="hidden" name="_token" value="{{ csrf_token(token) }}">
-                    <input type="hidden" name="slot" value="{{ item.slot.id }}">
-                    <input type="hidden" name="at" value="{{ item.at|date('c') }}">
-                    <button type="submit" class="btn btn-link social-calendar-prepare">{{ 'label.social_calendar_prepare'|trans({}, 'social') }}</button>
-                </form>
-            {% endif %}
-        </div>
-    {% endif %}
 {% endmacro %}
 
 {% block main %}
@@ -52,11 +30,14 @@
         data-social-calendar-url-value="{{ move_url }}"
         data-social-calendar-token-value="{{ csrf_token(token) }}"
         data-social-calendar-panel-url-value="{{ panel_url }}"
+        data-social-calendar-new-url-value="{{ new_url }}"
         data-social-calendar-failed-label-value="{{ 'label.social_calendar_move_failed'|trans({}, 'social') }}">
 
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
             <h1 class="mb-0">{{ 'label.social_calendar'|trans({}, 'social') }} - {{ title|capitalize }}</h1>
             <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary social-calendar-new" href="{{ new_url }}"><i class="fa fa-plus"></i> {{ 'label.social_calendar_new'|trans({}, 'social') }}</a>
+                <a class="btn btn-secondary social-calendar-series" href="{{ series_url }}"><i class="fa fa-layer-group"></i> {{ 'label.social_series_generate'|trans({}, 'social') }}</a>
                 <div class="btn-group">
                     <a class="btn {{ view == 'week' ? 'btn-primary' : 'btn-secondary' }}" href="{{ path('management_social_calendar', {view: 'week', date: date}) }}">{{ 'label.social_calendar_week'|trans({}, 'social') }}</a>
                     <a class="btn {{ view == 'month' ? 'btn-primary' : 'btn-secondary' }}" href="{{ path('management_social_calendar', {view: 'month', date: date}) }}">{{ 'label.social_calendar_month'|trans({}, 'social') }}</a>
@@ -79,13 +60,9 @@
             <a href="{{ path(connections_route) }}">{{ 'label.social_connections'|trans({}, 'social') }}</a>
         </div>
 
-        {% if not has_slot %}
-            <div class="alert alert-warning">{{ 'label.social_calendar_no_slot'|trans({}, 'social') }}</div>
-        {% endif %}
+        <p class="small text-muted">{{ 'label.social_calendar_drag_hint'|trans({}, 'social') }}</p>
 
-        <div class="row g-3">
-            <div class="col-12 col-xl-9">
-                {% if view == 'week' %}
+        {% if view == 'week' %}
                     {# A week of quarters of an hour: each coming one a drop zone planning the card at that very moment, the items laid over them at the quarter they stand at #}
                     <div class="social-week-scroll"><div class="social-week">
                         <div class="social-week-hours">
@@ -97,11 +74,11 @@
                                 <div class="social-week-head">{{ weekdays[loop.index0]|capitalize }} {{ day.date|date('d/m') }}</div>
                                 <div class="social-week-body">
                                     {% for cell in day.cells %}
-                                        <div class="social-week-cell{{ cell.open ? '' : ' is-past' }}"{% if cell.open %} data-social-calendar-target="zone" data-to="{{ cell.at|date('c') }}" data-networks=""{% endif %}></div>
+                                        <div class="social-week-cell{{ cell.open ? '' : ' is-past' }}"{% if cell.open %} data-social-calendar-target="zone" data-to="{{ cell.at|date('c') }}" data-action="dblclick->social-calendar#create"{% endif %}></div>
                                     {% endfor %}
                                     {% for group in day.rows %}
                                         <div class="social-week-items" style="--row: {{ group.row }}; --lane: {{ group.lane }}; --lanes: {{ group.lanes }}">
-                                            {% for item in group.items %}{{ _self.item(item, false, connected, prepare_url, token) }}{% endfor %}
+                                            {% for item in group.items %}{{ _self.card(item, connected) }}{% endfor %}
                                         </div>
                                     {% endfor %}
                                 </div>
@@ -116,30 +93,15 @@
 
                         {% for week in weeks %}
                             {% for day in week %}
-                                <div class="social-calendar-day{{ day.in_month ? '' : ' is-other-month' }}{{ day.today ? ' is-today' : '' }}{{ day.items is empty ? ' is-empty' : '' }}">
+                                <div class="social-calendar-day{{ day.in_month ? '' : ' is-other-month' }}{{ day.today ? ' is-today' : '' }}{{ day.items is empty ? ' is-empty' : '' }}"{% if day.open %} data-social-calendar-target="zone" data-to="{{ day.date|date('Y-m-d') }}" data-action="dblclick->social-calendar#create"{% endif %}>
                                     <div class="social-calendar-date">{{ day.date|date('d/m') }}</div>
-                                    {% for item in day.items %}{{ _self.item(item, true, connected, prepare_url, token) }}{% endfor %}
+                                    {% for item in day.items %}{{ _self.card(item, connected) }}{% endfor %}
                                 </div>
                             {% endfor %}
                         {% endfor %}
                     </div>
-                {% endif %}
-            </div>
+        {% endif %}
 
-            <div class="col-12 col-xl-3">
-                <h2 class="h5">{{ 'label.social_calendar_queue'|trans({}, 'social') }}</h2>
-                <div class="social-calendar-list mb-3" data-social-calendar-target="zone" data-to="queue" data-networks="">
-                    {% for post in queue %}{{ _self.card(post, true, '', connected) }}{% endfor %}
-                </div>
-
-                <h2 class="h5">{{ 'label.social_calendar_drafts'|trans({}, 'social') }}</h2>
-                <div class="social-calendar-list" data-social-calendar-target="zone" data-to="drafts" data-networks="">
-                    {% for post in drafts %}{{ _self.card(post, true, ' is-draft', connected) }}{% endfor %}
-                </div>
-
-                <p class="small text-muted mt-2">{{ 'label.social_calendar_drag_hint'|trans({}, 'social') }}</p>
-            </div>
-        </div>
         {# Filled by social-calendar.js with the panel of the card clicked (see _social_calendar_panel.html.twig) #}
         <aside class="social-calendar-panel" data-social-calendar-target="panel" hidden></aside>
     </div>

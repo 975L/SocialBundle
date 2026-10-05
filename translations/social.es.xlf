@@ -32,7 +32,7 @@
             </trans-unit>
             <trans-unit id="DmlLCtb">
                 <source>description.guided_project_social_calendar</source>
-                <target>Ver dónde caerá cada publicación validada entre las franjas, y moverla arrastrándola.</target>
+                <target>Ver cada publicación en su fecha y hora, y moverla arrastrándola.</target>
             </trans-unit>
             <trans-unit id="Z4mtym8">
                 <source>description.guided_project_social_google_connect</source>
@@ -56,11 +56,11 @@
             </trans-unit>
             <trans-unit id="osYKEjU">
                 <source>description.guided_project_social_posts</source>
-                <target>Las publicaciones preparadas para sus redes: preparar una, revisar su texto red por red y enviarla.</target>
+                <target>Sus publicaciones para las redes: generar una serie o preparar una, revisar sus textos y medios, y luego validarla o enviarla.</target>
             </trans-unit>
-            <trans-unit id="4BPt5dm">
-                <source>description.guided_project_social_schedules</source>
-                <target>Elegir cada día a qué hora publicar, qué y en qué redes, en lugar del intervalo.</target>
+            <trans-unit id="eIR76HP">
+                <source>description.guided_project_social_series</source>
+                <target>Varios borradores de una vez, a ritmo regular: elegir el ritmo, de dónde vienen los textos y el medio, y luego generar los borradores que revisar.</target>
             </trans-unit>
             <trans-unit id="GjyFwm5">
                 <source>description.guided_project_social_share_buttons</source>
@@ -74,29 +74,21 @@
                 <source>description.guided_step_social_bluesky_handle</source>
                 <target>Opcional, en la configuración: buscar «social-bluesky-handle» y poner el identificador de la cuenta, por ejemplo ejemplo.bsky.social, para que la próxima conexión lo proponga directamente. Vacío, la cuenta se elige en la página de Bluesky.</target>
             </trans-unit>
-            <trans-unit id="82P_F59">
-                <source>description.guided_step_social_bluesky_mode</source>
-                <target>«social-bluesky-publish-mode» vale «review»: cada publicación espera la revisión en la pantalla Publicaciones. «auto» la envía en cuanto está preparada.</target>
+            <trans-unit id="y3lKM_7">
+                <source>description.guided_step_social_calendar_move</source>
+                <target>Arrastre una publicación a una hora próxima de la semana, o a un día próximo del mes donde conserva su hora: queda prevista allí, su validación no cambia.</target>
             </trans-unit>
-            <trans-unit id="L8sqUEj">
-                <source>description.guided_step_social_calendar_drafts</source>
-                <target>Los borradores esperan aquí su revisión: un clic abre uno, y arrastrarlo a una franja lo valida y lo prevé en ese momento.</target>
+            <trans-unit id="QikFj7G">
+                <source>description.guided_step_social_calendar_new</source>
+                <target>«Nueva publicación» abre una publicación por escribir, prevista para el próximo cuarto de hora. Un doble clic en una hora próxima de la semana, o en un día del mes, la abre directamente en ese momento.</target>
             </trans-unit>
             <trans-unit id="17dUjo3">
                 <source>description.guided_step_social_calendar_open</source>
-                <target>La semana de las publicaciones: las que ya salieron, y cada publicación validada en la franja que la enviará. «Mes» muestra el mes entero. Las horas mostradas se ajustan en la configuración.</target>
+                <target>La semana de publicaciones: las enviadas, y todas las próximas en su fecha y hora, en rojo por validar, en verde validadas. «Mes» muestra el mes entero. Las horas mostradas se ajustan en la configuración.</target>
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Haga clic en una publicación: su panel la prevé a una hora precisa, la devuelve a la cola o abre sus textos para modificarlos.</target>
-            </trans-unit>
-            <trans-unit id="rqDkuRv">
-                <source>description.guided_step_social_calendar_queue</source>
-                <target>Las publicaciones validadas sin fecha: salen, en orden, en la próxima franja libre que publica en sus redes.</target>
-            </trans-unit>
-            <trans-unit id="4CAagYG">
-                <source>description.guided_step_social_calendar_slot</source>
-                <target>Arrastre una publicación a una franja para preverla allí, a «Cola» para que salga en la próxima franja libre, a «Por validar» para retirarla de la cola. Una franja libre también propone «Preparar para esta franja».</target>
+                <target>Haga clic en una publicación: su panel cambia su fecha y hora, la valida o la devuelve a borrador, o abre sus textos para editarlos.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
@@ -138,10 +130,6 @@
                 <source>description.guided_step_social_linkedin_credentials</source>
                 <target>Buscar «social-linkedin-client-id» y «social-linkedin-client-secret» en la lista, y pegar allí los dos valores de la aplicación. El secreto solo aparece con el botón «Ver datos sensibles». El token y el perfil se rellenan solos en el paso siguiente.</target>
             </trans-unit>
-            <trans-unit id="wF5Oo9b">
-                <source>description.guided_step_social_linkedin_mode</source>
-                <target>«social-linkedin-publish-mode» vale «review»: cada publicación espera la revisión en la pantalla Publicaciones. «auto» la envía en cuanto está preparada. El acceso dura 60 días: vuelva a conectarse desde la ficha antes de que caduque.</target>
-            </trans-unit>
             <trans-unit id="h8ze_vb">
                 <source>description.guided_step_social_linkedin_prerequisites</source>
                 <target>Esta parte se hace en linkedin.com/developers: crear una aplicación vinculada a una Página de LinkedIn que usted administra, añadirle los productos «Share on LinkedIn» y «Sign In with LinkedIn using OpenID Connect», y declarar como URL de redirección la dirección del sitio seguida de «/social/linkedin/callback». Volver aquí con el identificador y la clave secreta de la aplicación.</target>
@@ -182,53 +170,49 @@
                 <source>description.guided_step_social_meta_credentials</source>
                 <target>Buscar «social-meta-app-id» y «social-meta-app-secret» en la lista, y pegar allí los dos valores de la aplicación. El secreto solo aparece con el botón «Ver datos sensibles». Para una cuenta que gestiona varias Páginas, rellenar también «social-meta-page-id», o se toma la primera. El token y la cuenta de Instagram se rellenan solos en el paso siguiente.</target>
             </trans-unit>
-            <trans-unit id="s_VRZkJ">
-                <source>description.guided_step_social_meta_mode</source>
-                <target>«social-facebook-publish-mode» y «social-instagram-publish-mode» valen «review»: cada publicación espera la revisión en la pantalla Publicaciones. «auto» la envía en cuanto está preparada.</target>
-            </trans-unit>
             <trans-unit id="JCFGCmV">
                 <source>description.guided_step_social_meta_prerequisites</source>
                 <target>Esta parte se hace en developers.facebook.com: crear una aplicación, añadirle el inicio de sesión con Facebook con la dirección del sitio seguida de «/social/meta/callback» como URI de redirección, y dejarla en modo de desarrollo. La Página debe estar vinculada a la cuenta profesional de Instagram. Volver aquí con el identificador y la clave secreta de la aplicación.</target>
             </trans-unit>
             <trans-unit id="2_2asy8">
                 <source>description.guided_step_social_posts_approve</source>
-                <target>Con franjas activas, este botón confía la publicación a la próxima franja que publica en sus redes, o a su fecha prevista, en lugar de enviarla de inmediato.</target>
+                <target>Este botón valida la publicación: saldrá sola en su fecha prevista, en lugar de enviarse enseguida. Marque varios borradores para validarlos juntos con «Validar la selección».</target>
             </trans-unit>
             <trans-unit id="hq1t6co">
                 <source>description.guided_step_social_posts_edit</source>
-                <target>El botón de edición abre la publicación: un texto por red, cada uno limitado a la longitud que acepta esa red, bajo la imagen que saldrá con ella.</target>
+                <target>El botón de edición abre la publicación: un texto por red, cada uno limitado a la longitud que acepta esa red, bajo las fotos o el vídeo que saldrán con ella.</target>
             </trans-unit>
             <trans-unit id="xXIWC.O">
                 <source>description.guided_step_social_posts_open</source>
-                <target>Las publicaciones se preparan solas, a las horas de las franjas de publicación o, en su defecto, al ritmo fijado por «social-publish-interval-hours». Los borradores esperan aquí su revisión.</target>
+                <target>Cada publicación tiene su fecha y hora. Las que están en borrador esperan aquí su revisión y luego su validación.</target>
             </trans-unit>
             <trans-unit id="hc6ecvb">
                 <source>description.guided_step_social_posts_prepare</source>
-                <target>«Preparar ahora» toma el siguiente contenido sin esperar; «Desde una dirección» prepara cualquier página, de este sitio o de otro, a partir de sus etiquetas Open Graph. «Preparar 7 borradores» prepara una semana por adelantado, para validarlas después una a una.</target>
+                <target>«Desde una dirección» prepara un borrador de cualquier página, de este sitio u otro, a partir de sus etiquetas Open Graph, en la fecha elegida.</target>
             </trans-unit>
             <trans-unit id="SvQRq5R">
                 <source>description.guided_step_social_posts_publish</source>
                 <target>De vuelta en la lista, el botón con forma de avión de papel envía la publicación a cada red que aún no la ha recibido. Una red que la rechaza conserva su mensaje de error, y «Publicar» vuelve a intentarlo.</target>
             </trans-unit>
-            <trans-unit id="lw9Mjxv">
-                <source>description.guided_step_social_schedules_edit</source>
-                <target>Añadir una franja, o retomar una existente.</target>
+            <trans-unit id="QWFdKJe">
+                <source>description.guided_step_social_posts_series</source>
+                <target>Prepara varios borradores de una vez, cada día, semana o mes: un mismo texto, textos escritos por la IA a partir de una consigna, o los próximos contenidos del sitio. Después se revisan y validan, uno a uno o juntos.</target>
             </trans-unit>
-            <trans-unit id="YvE_dVx">
-                <source>description.guided_step_social_schedules_open</source>
-                <target>Cada franja prepara una publicación al día, a su hora. En cuanto una franja está activa, ya no se usa «social-publish-interval-hours».</target>
+            <trans-unit id="Sr07Dp3">
+                <source>description.guided_step_social_series_frequency</source>
+                <target>Un borrador cada día, cada semana o cada mes, a partir del momento elegido.</target>
             </trans-unit>
-            <trans-unit id="QMpKFbt">
-                <source>description.guided_step_social_schedules_sources</source>
-                <target>Un contenido entero, o solo algunas de sus galerías. Vacío, todos los contenidos por turnos.</target>
+            <trans-unit id="lAe7DDv">
+                <source>description.guided_step_social_series_generate</source>
+                <target>Los borradores se crean y el calendario se abre en el primero: revíselos y luego valídelos uno a uno o juntos.</target>
             </trans-unit>
-            <trans-unit id="kNO7LNL">
-                <source>description.guided_step_social_schedules_text</source>
-                <target>Opcional: se inserta donde la plantilla común «social-publish-template» contiene {slot}.</target>
+            <trans-unit id="3sBXLnS">
+                <source>description.guided_step_social_series_mode</source>
+                <target>Un mismo texto para todas, textos escritos por la IA a partir de una consigna, o los próximos contenidos del sitio, cada uno con su propio texto.</target>
             </trans-unit>
-            <trans-unit id="5365y9u">
-                <source>description.guided_step_social_schedules_time</source>
-                <target>La hora a la que se prepara la publicación, cada día. Un cambio se tiene en cuenta en menos de una hora.</target>
+            <trans-unit id="9.bO7zc">
+                <source>description.guided_step_social_series_open</source>
+                <target>La pantalla de serie, que «Generar una serie» abre también desde las publicaciones y el calendario: cuántos borradores, desde cuándo, en qué redes.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -302,21 +286,17 @@
                 <source>flash.meta_refused</source>
                 <target>La conexión con Meta fue rechazada o interrumpida.</target>
             </trans-unit>
-            <trans-unit id="H7BmV19">
-                <source>flash.social_calendar_slot_taken</source>
-                <target>Esta franja ya tiene su publicación: aquí está, en lugar de preparar una segunda.</target>
+            <trans-unit id="IAy1Rxc">
+                <source>flash.social_media_picked</source>
+                <target>%count% medio(s) añadido(s).</target>
             </trans-unit>
             <trans-unit id="i2TxptH">
                 <source>flash.social_post_approved</source>
-                <target>«%title%» está validada: saldrá en la próxima franja de sus redes.</target>
+                <target>«%title%» está validada: saldrá en su fecha prevista.</target>
             </trans-unit>
             <trans-unit id="87Pcbcr">
                 <source>flash.social_post_draft</source>
                 <target>Preparada para %network%, a la espera de su revisión.</target>
-            </trans-unit>
-            <trans-unit id="QqaXATm">
-                <source>flash.social_post_drafts</source>
-                <target>%count% borrador(es) preparado(s), para revisar y validar uno a uno.</target>
             </trans-unit>
             <trans-unit id="k5cHJcN">
                 <source>flash.social_post_failed</source>
@@ -336,19 +316,47 @@
             </trans-unit>
             <trans-unit id="52E_8Ux">
                 <source>flash.social_post_unapproved</source>
-                <target>«%title%» se ha retirado de la cola y espera de nuevo su revisión.</target>
+                <target>«%title%» vuelve a borrador y espera de nuevo su revisión.</target>
             </trans-unit>
-            <trans-unit id="HF4A7I.">
-                <source>help.social_post_next_slot</source>
-                <target>Saldrá el %date%, en la próxima franja libre. Indique una fecha y una hora para que salga en ese momento, al cuarto de hora.</target>
+            <trans-unit id="TbRULOl">
+                <source>flash.social_posts_approved</source>
+                <target>%count% publicación(es) validada(s): saldrán en su fecha.</target>
+            </trans-unit>
+            <trans-unit id="BmODYyf">
+                <source>flash.social_series_generated</source>
+                <target>%count% borrador(es) creado(s), por revisar y validar.</target>
+            </trans-unit>
+            <trans-unit id="TRKXywk">
+                <source>help.social_media_reference</source>
+                <target>Archivo de la galería: se modifica en la galería, y nunca se borra con la publicación.</target>
+            </trans-unit>
+            <trans-unit id="MzBnBYd">
+                <source>help.social_post_medias</source>
+                <target>En el orden en que salen. Una foto se guarda en JPEG, el único formato que aceptan todas las redes. Cuando el sitio tiene una galería, «Añadir desde el sitio» toma de ella una foto o un vídeo. Sin foto ni vídeo, una publicación preparada desde un contenido sale con la imagen de ese contenido. Las reglas de cada red marcada se comprueban al guardar, y la validación se rechaza mientras una red no acepte los medios.</target>
             </trans-unit>
             <trans-unit id="6dpEFVs">
                 <source>help.social_post_planned_at</source>
-                <target>Vacío: una publicación validada sale en la próxima franja libre, en el orden de preparación. Rellenado: sale en esa fecha y hora, al cuarto de hora.</target>
+                <target>La fecha y hora en que sale la publicación una vez validada, al cuarto de hora.</target>
             </trans-unit>
             <trans-unit id="PoY.WA0">
                 <source>help.social_post_send_on</source>
                 <target>Desmarque una red para no publicar allí; marque una para que se le escriba un texto, visible la próxima vez que abra la publicación. Una red en gris no está conectada: vea «Conexiones».</target>
+            </trans-unit>
+            <trans-unit id="BPzQBuz">
+                <source>help.social_post_text</source>
+                <target>El texto de la publicación, reformulado o traducido con Donovan. Cada red recibe una copia cortada a su longitud, editable después red por red; cambiar este texto las reescribe todas.</target>
+            </trans-unit>
+            <trans-unit id="OixUWN1">
+                <source>help.social_series_media</source>
+                <target>Opcional: adjunta a cada publicación escrita aquí, guardada una sola vez.</target>
+            </trans-unit>
+            <trans-unit id="a1xocww">
+                <source>help.social_series_sources</source>
+                <target>Para los contenidos del sitio: nada marcado los toma todos, por turnos.</target>
+            </trans-unit>
+            <trans-unit id="4h1xjIz">
+                <source>help.social_series_text</source>
+                <target>El texto de cada publicación o, con la IA, de qué tratan: la IA escribe una versión distinta para cada una, a la longitud de la red marcada más corta. Innecesario para los contenidos del sitio.</target>
             </trans-unit>
             <trans-unit id="PmT6SQr">
                 <source>label.anchor</source>
@@ -482,9 +490,9 @@
                 <source>label.guided_project_social_posts</source>
                 <target>Revisar y publicar en sus redes</target>
             </trans-unit>
-            <trans-unit id="vcYJZKP">
-                <source>label.guided_project_social_schedules</source>
-                <target>Ajustar las franjas de publicación</target>
+            <trans-unit id="xnZAeX8">
+                <source>label.guided_project_social_series</source>
+                <target>Generar una serie de publicaciones</target>
             </trans-unit>
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
@@ -498,13 +506,13 @@
                 <source>label.guided_step_social_bluesky_handle</source>
                 <target>Indicar la cuenta</target>
             </trans-unit>
-            <trans-unit id="WZJUH3w">
-                <source>label.guided_step_social_bluesky_mode</source>
-                <target>Elegir lo que sale sin revisión</target>
+            <trans-unit id="CF6D8_T">
+                <source>label.guided_step_social_calendar_move</source>
+                <target>Mover una publicación</target>
             </trans-unit>
-            <trans-unit id="lfXvHb6">
-                <source>label.guided_step_social_calendar_drafts</source>
-                <target>Las publicaciones por validar</target>
+            <trans-unit id="k.rSJli">
+                <source>label.guided_step_social_calendar_new</source>
+                <target>Escribir una publicación</target>
             </trans-unit>
             <trans-unit id="a8cneSW">
                 <source>label.guided_step_social_calendar_open</source>
@@ -513,14 +521,6 @@
             <trans-unit id="9fHDZ.c">
                 <source>label.guided_step_social_calendar_panel</source>
                 <target>Abrir una publicación</target>
-            </trans-unit>
-            <trans-unit id="Je4Sg4x">
-                <source>label.guided_step_social_calendar_queue</source>
-                <target>La cola</target>
-            </trans-unit>
-            <trans-unit id="grdVdjR">
-                <source>label.guided_step_social_calendar_slot</source>
-                <target>Arrastrar a una franja</target>
             </trans-unit>
             <trans-unit id="tVdTpfQ">
                 <source>label.guided_step_social_connections_open</source>
@@ -561,10 +561,6 @@
             <trans-unit id="vKAjE7P">
                 <source>label.guided_step_social_linkedin_credentials</source>
                 <target>Rellenar las dos claves de la aplicación</target>
-            </trans-unit>
-            <trans-unit id="5gjF6SQ">
-                <source>label.guided_step_social_linkedin_mode</source>
-                <target>Elegir lo que sale sin revisión y acordarse de reconectar</target>
             </trans-unit>
             <trans-unit id="n1.S19b">
                 <source>label.guided_step_social_linkedin_prerequisites</source>
@@ -610,21 +606,21 @@
                 <source>label.guided_step_social_meta_credentials</source>
                 <target>Rellenar las dos claves de la aplicación</target>
             </trans-unit>
-            <trans-unit id="DrOhv0h">
-                <source>label.guided_step_social_meta_mode</source>
-                <target>Elegir lo que sale sin revisión</target>
-            </trans-unit>
             <trans-unit id="BzznW61">
                 <source>label.guided_step_social_meta_prerequisites</source>
                 <target>Crear la aplicación Meta</target>
             </trans-unit>
             <trans-unit id="bIP872E">
                 <source>label.guided_step_social_posts_approve</source>
-                <target>Validar para la próxima franja</target>
+                <target>Validar</target>
             </trans-unit>
             <trans-unit id="9zRMIWa">
                 <source>label.guided_step_social_posts_edit</source>
                 <target>Revisar los textos</target>
+            </trans-unit>
+            <trans-unit id="fvKKV3M">
+                <source>label.guided_step_social_posts_medias</source>
+                <target>Añadir fotos o un vídeo</target>
             </trans-unit>
             <trans-unit id="P_m5tZm">
                 <source>label.guided_step_social_posts_networks</source>
@@ -636,11 +632,11 @@
             </trans-unit>
             <trans-unit id="P0gG9kM">
                 <source>label.guided_step_social_posts_planned_at</source>
-                <target>Elegir la fecha (opcional)</target>
+                <target>Elegir la fecha</target>
             </trans-unit>
             <trans-unit id="2IN5mPN">
                 <source>label.guided_step_social_posts_prepare</source>
-                <target>Preparar una ahora</target>
+                <target>Preparar desde una dirección</target>
             </trans-unit>
             <trans-unit id="SPmUXau">
                 <source>label.guided_step_social_posts_publish</source>
@@ -650,33 +646,29 @@
                 <source>label.guided_step_social_posts_save</source>
                 <target>Guardar</target>
             </trans-unit>
-            <trans-unit id="OB5pxdE">
-                <source>label.guided_step_social_schedules_edit</source>
-                <target>Crear o modificar una franja</target>
+            <trans-unit id="IhPZtGG">
+                <source>label.guided_step_social_posts_series</source>
+                <target>Generar una serie</target>
             </trans-unit>
-            <trans-unit id="W8GFw1R">
-                <source>label.guided_step_social_schedules_networks</source>
-                <target>Marcar las redes</target>
+            <trans-unit id="auA9NI7">
+                <source>label.guided_step_social_series_frequency</source>
+                <target>Elegir el ritmo</target>
             </trans-unit>
-            <trans-unit id="jlfPArt">
-                <source>label.guided_step_social_schedules_open</source>
-                <target>Abrir las franjas</target>
+            <trans-unit id="2T0pkTO">
+                <source>label.guided_step_social_series_generate</source>
+                <target>Generar los borradores</target>
             </trans-unit>
-            <trans-unit id="Dd5k9GT">
-                <source>label.guided_step_social_schedules_save</source>
-                <target>Guardar la franja</target>
+            <trans-unit id="7D1JXLf">
+                <source>label.guided_step_social_series_media</source>
+                <target>Añadir una foto o un vídeo</target>
             </trans-unit>
-            <trans-unit id="IDN.aXf">
-                <source>label.guided_step_social_schedules_sources</source>
-                <target>Elegir los contenidos</target>
+            <trans-unit id="_PTnfm9">
+                <source>label.guided_step_social_series_mode</source>
+                <target>Elegir los textos</target>
             </trans-unit>
-            <trans-unit id="sdaB.QU">
-                <source>label.guided_step_social_schedules_text</source>
-                <target>Escribir el texto de la franja</target>
-            </trans-unit>
-            <trans-unit id="QzrhwtQ">
-                <source>label.guided_step_social_schedules_time</source>
-                <target>Elegir la hora</target>
+            <trans-unit id="MrMnSQv">
+                <source>label.guided_step_social_series_open</source>
+                <target>Abrir la generación</target>
             </trans-unit>
             <trans-unit id="GHatm_S">
                 <source>label.guided_step_social_share_buttons_anchor</source>
@@ -780,7 +772,7 @@
             </trans-unit>
             <trans-unit id="k1q7HYe">
                 <source>label.info_social_calendar</source>
-                <target>El calendario de las publicaciones: lo que ya salió y dónde caerá cada publicación validada entre las próximas franjas. Haga clic en una publicación para abrirla.</target>
+                <target>El calendario de publicaciones: lo enviado, y cada publicación próxima en su fecha y hora. Haga clic en una publicación para abrirla.</target>
             </trans-unit>
             <trans-unit id="G03WcyU">
                 <source>label.info_social_connections</source>
@@ -790,17 +782,21 @@
                 <source>label.info_social_links</source>
                 <target>Enlaces sociales del pie de página - singleton, un único conjunto de enlaces. Modifique la lista para añadir, quitar o reordenar una red social.</target>
             </trans-unit>
+            <trans-unit id="LYuSraW">
+                <source>label.info_social_media_pick</source>
+                <target>Marque las fotos o vídeos del sitio que añadir a «%title%», tras sus medios. Una foto se copia en JPEG para la publicación, un vídeo sigue siendo el del sitio. Guarde antes la publicación: sus cambios en curso no se conservan.</target>
+            </trans-unit>
             <trans-unit id="td4VA3T">
                 <source>label.info_social_post_prepare_url</source>
                 <target>La dirección de una página, de este sitio o de otro: su título, su resumen y su imagen para compartir se convierten en una publicación, que revisará antes de publicar.</target>
             </trans-unit>
             <trans-unit id="ehHeI2l">
                 <source>label.info_social_posts</source>
-                <target>Las publicaciones preparadas para sus redes, un texto por red. Los borradores esperan su revisión: corrija los textos, guarde y haga clic en «Publicar», o en «Validar para la próxima franja» para que salga con las franjas. Eliminar una publicación la cancela.</target>
+                <target>Las publicaciones preparadas para sus redes, un texto por red, cada una en su fecha. Las que están en borrador esperan su revisión: corrija los textos, guarde y luego haga clic en «Validar» para que salga en su fecha, o en «Publicar» para enviarla enseguida. Eliminar una publicación la cancela.</target>
             </trans-unit>
-            <trans-unit id="w4NSFiG">
-                <source>label.info_social_schedules</source>
-                <target>Cada franja publica una vez al día, a su hora, en sus redes, tomando de sus contenidos. Mientras una franja esté activa, ya no se usa el intervalo de publicación de la configuración.</target>
+            <trans-unit id="68T_uBv">
+                <source>label.info_social_series</source>
+                <target>Prepara de una vez una serie de borradores, a intervalo regular. Aparecen en rojo en el calendario: reléalos, corríjalos y valídelos uno a uno o juntos desde la lista. Una vez enviada la serie, genere otra.</target>
             </trans-unit>
             <trans-unit id="YtqDGiK">
                 <source>label.intro</source>
@@ -898,41 +894,17 @@
                 <source>label.social_calendar</source>
                 <target>Calendario</target>
             </trans-unit>
-            <trans-unit id="vqvZ3s4">
-                <source>label.social_calendar_approve_plan</source>
-                <target>Validar y prever a esta hora</target>
-            </trans-unit>
-            <trans-unit id="cm2xUra">
-                <source>label.social_calendar_back_to_queue</source>
-                <target>Volver a la cola</target>
-            </trans-unit>
             <trans-unit id="bSspzgN">
                 <source>label.social_calendar_close</source>
                 <target>Cerrar</target>
             </trans-unit>
-            <trans-unit id="GaE3Zmi">
-                <source>label.social_calendar_draft_waits</source>
-                <target>Solo saldrá una vez validada.</target>
-            </trans-unit>
-            <trans-unit id="AzY0WvY">
-                <source>label.social_calendar_drafts</source>
-                <target>Por validar</target>
-            </trans-unit>
             <trans-unit id="l0Dqa_D">
                 <source>label.social_calendar_drag_hint</source>
-                <target>Arrastre una publicación a una franja para preverla allí, a «Cola» para que salga en la próxima franja libre, a «Por validar» para retirarla de la cola.</target>
+                <target>Haga doble clic en una hora próxima, o en un día en la vista mensual, para escribir allí una publicación; arrastre una publicación a otra hora, u otro día, para moverla, su validación no cambia.</target>
             </trans-unit>
             <trans-unit id="6zf3y2m">
                 <source>label.social_calendar_edit_texts</source>
                 <target>Editar los textos y las redes</target>
-            </trans-unit>
-            <trans-unit id="WuPZbRF">
-                <source>label.social_calendar_goes_out</source>
-                <target>Saldrá el %date%.</target>
-            </trans-unit>
-            <trans-unit id="wFpSXs5">
-                <source>label.social_calendar_goes_out_next</source>
-                <target>Saldrá el %date%, en la próxima franja libre.</target>
             </trans-unit>
             <trans-unit id="quz2fN2">
                 <source>label.social_calendar_month</source>
@@ -942,53 +914,41 @@
                 <source>label.social_calendar_move_failed</source>
                 <target>El desplazamiento no se ha guardado. La página se recargará.</target>
             </trans-unit>
+            <trans-unit id="kH3__25">
+                <source>label.social_calendar_new</source>
+                <target>Nueva publicación</target>
+            </trans-unit>
             <trans-unit id="NUU5AmN">
                 <source>label.social_calendar_next</source>
                 <target>Siguiente</target>
             </trans-unit>
-            <trans-unit id="QGFcEKz">
-                <source>label.social_calendar_no_slot</source>
-                <target>Ninguna franja de publicación está activa: nada sale por sí solo. Cree una en «Franjas de publicación».</target>
-            </trans-unit>
-            <trans-unit id="vApxCIC">
-                <source>label.social_calendar_no_slot_ahead</source>
-                <target>ninguna franja</target>
-            </trans-unit>
             <trans-unit id="oZ_OaKV">
                 <source>label.social_calendar_plan</source>
-                <target>Prever a esta hora</target>
+                <target>Mover a esta hora</target>
             </trans-unit>
             <trans-unit id="mVWRLZ8">
                 <source>label.social_calendar_plan_at</source>
-                <target>Salir a una hora precisa (al cuarto de hora)</target>
-            </trans-unit>
-            <trans-unit id="yY2ALhD">
-                <source>label.social_calendar_prepare</source>
-                <target>Preparar para esta franja</target>
+                <target>Fecha y hora (al cuarto de hora)</target>
             </trans-unit>
             <trans-unit id="x_A7kw0">
                 <source>label.social_calendar_previous</source>
                 <target>Anterior</target>
             </trans-unit>
-            <trans-unit id="wy6rTY0">
-                <source>label.social_calendar_queue</source>
-                <target>Cola</target>
+            <trans-unit id="q59uuo1">
+                <source>label.social_calendar_state_approved</source>
+                <target>Validada</target>
             </trans-unit>
             <trans-unit id="XoPg4k5">
                 <source>label.social_calendar_state_draft</source>
                 <target>Por validar</target>
             </trans-unit>
-            <trans-unit id="ZN6ftUq">
-                <source>label.social_calendar_state_planned</source>
-                <target>Prevista</target>
+            <trans-unit id="T6Xt2Wg">
+                <source>label.social_calendar_state_failed</source>
+                <target>Fallida</target>
             </trans-unit>
             <trans-unit id="1FWwu6R">
                 <source>label.social_calendar_state_published</source>
                 <target>Publicada</target>
-            </trans-unit>
-            <trans-unit id="Nei6_Of">
-                <source>label.social_calendar_state_queued</source>
-                <target>En la cola</target>
             </trans-unit>
             <trans-unit id="zGk8.GX">
                 <source>label.social_calendar_today</source>
@@ -1006,13 +966,85 @@
                 <source>label.social_links</source>
                 <target>Redes sociales</target>
             </trans-unit>
+            <trans-unit id="w1pJ779">
+                <source>label.social_media_alt</source>
+                <target>Descripción (texto alternativo)</target>
+            </trans-unit>
+            <trans-unit id="Z_lnag3">
+                <source>label.social_media_file</source>
+                <target>Archivo</target>
+            </trans-unit>
+            <trans-unit id="CbaMOYf">
+                <source>label.social_media_image_too_big</source>
+                <target>una foto supera %max% MB</target>
+            </trans-unit>
+            <trans-unit id="f6SQAxN">
+                <source>label.social_media_no_mix</source>
+                <target>fotos y vídeo no van juntos en una publicación</target>
+            </trans-unit>
+            <trans-unit id="yL9PkO5">
+                <source>label.social_media_no_video</source>
+                <target>sin vídeo</target>
+            </trans-unit>
+            <trans-unit id="jAaAgEa">
+                <source>label.social_media_one_video</source>
+                <target>un solo vídeo por publicación</target>
+            </trans-unit>
+            <trans-unit id="dEEIWOF">
+                <source>label.social_media_pick</source>
+                <target>Añadir desde el sitio</target>
+            </trans-unit>
+            <trans-unit id="feTTKlo">
+                <source>label.social_media_pick_none</source>
+                <target>Ningún medio.</target>
+            </trans-unit>
+            <trans-unit id="t3sCURf">
+                <source>label.social_media_pick_search</source>
+                <target>Buscar por título</target>
+            </trans-unit>
+            <trans-unit id="4iYsdqL">
+                <source>label.social_media_pick_submit</source>
+                <target>Añadir a la publicación</target>
+            </trans-unit>
+            <trans-unit id="wtfHnvu">
+                <source>label.social_media_position</source>
+                <target>Orden</target>
+            </trans-unit>
+            <trans-unit id="R0yQQrM">
+                <source>label.social_media_required</source>
+                <target>una foto o un vídeo es obligatorio</target>
+            </trans-unit>
+            <trans-unit id="QH5X4ep">
+                <source>label.social_media_too_many</source>
+                <target>%max% fotos como máximo</target>
+            </trans-unit>
+            <trans-unit id="kXejKxZ">
+                <source>label.social_media_video_too_big</source>
+                <target>el vídeo supera %max% MB</target>
+            </trans-unit>
+            <trans-unit id="U70TJeB">
+                <source>label.social_media_video_too_long</source>
+                <target>el vídeo dura más de %max% min</target>
+            </trans-unit>
+            <trans-unit id="aFKhq.k">
+                <source>label.social_media_video_too_short</source>
+                <target>el vídeo dura menos de %min% s</target>
+            </trans-unit>
+            <trans-unit id="Ehl11pZ">
+                <source>label.social_media_video_type</source>
+                <target>vídeo aceptado solo en %types%</target>
+            </trans-unit>
             <trans-unit id="tiqhi.Y">
                 <source>label.social_post</source>
                 <target>Publicación</target>
             </trans-unit>
             <trans-unit id="cCYS3xz">
                 <source>label.social_post_approve</source>
-                <target>Validar para la próxima franja</target>
+                <target>Validar</target>
+            </trans-unit>
+            <trans-unit id="qx31nDf">
+                <source>label.social_post_approve_selection</source>
+                <target>Validar la selección</target>
             </trans-unit>
             <trans-unit id="BDnUgUx">
                 <source>label.social_post_created_at</source>
@@ -1021,6 +1053,10 @@
             <trans-unit id="SKEd7Fa">
                 <source>label.social_post_failed_help</source>
                 <target>Rechazada por la red: %error%</target>
+            </trans-unit>
+            <trans-unit id="3pF3BRH">
+                <source>label.social_post_medias</source>
+                <target>Fotos y vídeos</target>
             </trans-unit>
             <trans-unit id="6O9YNYV">
                 <source>label.social_post_networks</source>
@@ -1033,14 +1069,6 @@
             <trans-unit id="1wEVf6X">
                 <source>label.social_post_prepare</source>
                 <target>Preparar</target>
-            </trans-unit>
-            <trans-unit id="exBTO_f">
-                <source>label.social_post_prepare_drafts</source>
-                <target>Preparar %count% borradores</target>
-            </trans-unit>
-            <trans-unit id="l_6rzpX">
-                <source>label.social_post_prepare_next</source>
-                <target>Preparar ahora</target>
             </trans-unit>
             <trans-unit id="Ajfb2GE">
                 <source>label.social_post_prepare_url</source>
@@ -1070,6 +1098,10 @@
                 <source>label.social_post_status_published</source>
                 <target>Publicada</target>
             </trans-unit>
+            <trans-unit id="dlGt4a2">
+                <source>label.social_post_text</source>
+                <target>Texto</target>
+            </trans-unit>
             <trans-unit id="HcZTdf9">
                 <source>label.social_post_text_help</source>
                 <target>%max% caracteres como máximo.</target>
@@ -1080,7 +1112,7 @@
             </trans-unit>
             <trans-unit id="3.CrzT8">
                 <source>label.social_post_unapprove</source>
-                <target>Retirar de la cola</target>
+                <target>Volver a borrador</target>
             </trans-unit>
             <trans-unit id="L40zOCk">
                 <source>label.social_post_url</source>
@@ -1110,53 +1142,69 @@
                 <source>label.social_sample_review_waiting_comment</source>
                 <target>El trabajo es serio, nada que decir. Aparcar delante, en cambio, es complicado los sábados.</target>
             </trans-unit>
-            <trans-unit id="rlK4OIJ">
-                <source>label.social_schedule</source>
-                <target>Franja de publicación</target>
+            <trans-unit id="_olmR8R">
+                <source>label.social_series_count</source>
+                <target>Número de publicaciones</target>
             </trans-unit>
-            <trans-unit id="BzuSan4">
-                <source>label.social_schedule_enabled</source>
-                <target>Activa</target>
+            <trans-unit id="NMEQBct">
+                <source>label.social_series_frequency</source>
+                <target>Ritmo</target>
             </trans-unit>
-            <trans-unit id="FNyzeCo">
-                <source>label.social_schedule_name</source>
-                <target>Nombre</target>
+            <trans-unit id="sEUAbo7">
+                <source>label.social_series_frequency_day</source>
+                <target>Cada día</target>
             </trans-unit>
-            <trans-unit id="5Q3tqnL">
-                <source>label.social_schedule_networks</source>
-                <target>Redes</target>
+            <trans-unit id="rNFxPxN">
+                <source>label.social_series_frequency_month</source>
+                <target>Cada mes</target>
             </trans-unit>
-            <trans-unit id="M77AEJr">
-                <source>label.social_schedule_networks_help</source>
-                <target>Las redes en las que publica esta franja, entre las conectadas. Ninguna marcada, todas. Un contenido ya publicado en una red no vuelve a salir en ella, pero puede salir en otra.</target>
+            <trans-unit id="24KvQMW">
+                <source>label.social_series_frequency_week</source>
+                <target>Cada semana</target>
             </trans-unit>
-            <trans-unit id="K.tSG3K">
-                <source>label.social_schedule_sources</source>
+            <trans-unit id="LZyHW4t">
+                <source>label.social_series_generate</source>
+                <target>Generar una serie</target>
+            </trans-unit>
+            <trans-unit id="7rBrUdC">
+                <source>label.social_series_media</source>
+                <target>Foto o vídeo</target>
+            </trans-unit>
+            <trans-unit id="Iq_6JNH">
+                <source>label.social_series_mode</source>
+                <target>Textos</target>
+            </trans-unit>
+            <trans-unit id="W_3Bcge">
+                <source>label.social_series_mode_ai</source>
+                <target>Escritos por la IA a partir de una consigna</target>
+            </trans-unit>
+            <trans-unit id="HFEEXZa">
+                <source>label.social_series_mode_source</source>
+                <target>Los próximos contenidos del sitio (galería, páginas…)</target>
+            </trans-unit>
+            <trans-unit id="Sm7UvXD">
+                <source>label.social_series_mode_text</source>
+                <target>Un mismo texto para todas</target>
+            </trans-unit>
+            <trans-unit id="qCi9qFI">
+                <source>label.social_series_sources</source>
                 <target>Contenidos</target>
             </trans-unit>
-            <trans-unit id="B5_UFAm">
-                <source>label.social_schedule_sources_help</source>
-                <target>De dónde tomar lo que se publica: un contenido entero, o solo algunas de sus galerías. Vacío, todos los contenidos por turnos.</target>
+            <trans-unit id="IfcRk0.">
+                <source>label.social_series_start</source>
+                <target>Primera publicación</target>
             </trans-unit>
-            <trans-unit id="Xr8Qgzn">
-                <source>label.social_schedule_text</source>
-                <target>Texto de la franja</target>
+            <trans-unit id="UKWcsrC">
+                <source>label.social_series_submit</source>
+                <target>Generar los borradores</target>
             </trans-unit>
-            <trans-unit id="xbXmd_x">
-                <source>label.social_schedule_text_help</source>
-                <target>Se inserta donde la plantilla común de publicación contiene {slot}. La plantilla común se ajusta en la configuración (social-publish-template).</target>
+            <trans-unit id="i7_9dBk">
+                <source>label.social_series_text</source>
+                <target>Texto o consigna</target>
             </trans-unit>
-            <trans-unit id="L9x10.g">
-                <source>label.social_schedule_time</source>
-                <target>Hora</target>
-            </trans-unit>
-            <trans-unit id="axzipJt">
-                <source>label.social_schedule_time_help</source>
-                <target>Cada día a esta hora se prepara una publicación. Una franja añadida o modificada se tiene en cuenta en menos de una hora.</target>
-            </trans-unit>
-            <trans-unit id="gQdm7IR">
-                <source>label.social_schedules</source>
-                <target>Franjas de publicación</target>
+            <trans-unit id="tZ0rqIs">
+                <source>label.social_series_text_required</source>
+                <target>Escriba el texto o la consigna.</target>
             </trans-unit>
             <trans-unit id="XWMpUxP">
                 <source>label.style</source>

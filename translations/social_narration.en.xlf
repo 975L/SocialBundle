@@ -10,29 +10,21 @@
                 <source>narration.guided_step_social_bluesky_handle</source>
                 <target>Last, if you wish, search for "social-bluesky-handle" in the configuration and name the linked account: the next connection will offer it at once. Left empty, you will pick it on Bluesky's page.</target>
             </trans-unit>
-            <trans-unit id=".hfIUWY">
-                <source>narration.guided_step_social_bluesky_mode</source>
-                <target>What is left is choosing whether a post waits for your review or goes out by itself: that is the "social-bluesky-publish-mode" setting.</target>
+            <trans-unit id="2tNlQez">
+                <source>narration.guided_step_social_calendar_move</source>
+                <target>To change a post's date, drag it onto a coming time of the week, or onto a day of the month where it keeps its time: it is planned there, approved or not as before.</target>
             </trans-unit>
-            <trans-unit id="d1zkKea">
-                <source>narration.guided_step_social_calendar_drafts</source>
-                <target>On the right, "To approve" gathers the drafts: a click opens one, and dragging it onto a slot approves it and plans it there.</target>
+            <trans-unit id="Zx3lCKG">
+                <source>narration.guided_step_social_calendar_new</source>
+                <target>To write a post, click "New post", or double-click straight on the time or the day it should go out: the post's screen opens with that moment already filled in.</target>
             </trans-unit>
             <trans-unit id=".Jk8anA">
                 <source>narration.guided_step_social_calendar_open</source>
-                <target>The panel takes you to the calendar: the week of your posts, the ones gone out and the approved ones in the slot that will send them. Its start and end hours are set in the configuration.</target>
+                <target>The panel takes you to the calendar: the week of your posts, those gone out and every coming one at its date and time, red to approve, green approved. Its start and end hours are set in the configuration.</target>
             </trans-unit>
             <trans-unit id="eg9BzH0">
                 <source>narration.guided_step_social_calendar_panel</source>
-                <target>Click a post on the calendar: its panel plans it at a given time, puts it back in the queue or opens its texts to edit them.</target>
-            </trans-unit>
-            <trans-unit id="txGnEBN">
-                <source>narration.guided_step_social_calendar_queue</source>
-                <target>Above it, "Queue" keeps the approved posts with no date: they go out, in order, at the next free slot publishing on their networks.</target>
-            </trans-unit>
-            <trans-unit id="qdz7h.H">
-                <source>narration.guided_step_social_calendar_slot</source>
-                <target>Each coming slot takes a post dragged onto it, which will go out at that very moment. A free slot also offers "Prepare for this slot".</target>
+                <target>Click a post on the calendar: its panel changes its date and time, approves it or takes it back to a draft, or opens its texts to edit them.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>
@@ -73,10 +65,6 @@
             <trans-unit id="zUH7tGI">
                 <source>narration.guided_step_social_linkedin_credentials</source>
                 <target>Search for "social-linkedin-client-id" and "social-linkedin-client-secret" in the settings list, and paste in the app's two values.</target>
-            </trans-unit>
-            <trans-unit id="h_A4fIC">
-                <source>narration.guided_step_social_linkedin_mode</source>
-                <target>What is left is choosing whether a post waits for your review or goes out by itself: that is the "social-linkedin-publish-mode" setting. And the access lasts sixty days: connect again from the tile before it expires.</target>
             </trans-unit>
             <trans-unit id="ocfaM9d">
                 <source>narration.guided_step_social_linkedin_prerequisites</source>
@@ -122,21 +110,21 @@
                 <source>narration.guided_step_social_meta_credentials</source>
                 <target>Search for "social-meta-app-id" and "social-meta-app-secret" in the settings list, and paste in the app's two values. If the account manages several Pages, fill in "social-meta-page-id" too, or the first one will be taken.</target>
             </trans-unit>
-            <trans-unit id="7XOUZrd">
-                <source>narration.guided_step_social_meta_mode</source>
-                <target>What is left is choosing, network by network, whether a post waits for your review or goes out by itself: those are the "social-facebook-publish-mode" and "social-instagram-publish-mode" settings.</target>
-            </trans-unit>
             <trans-unit id="NauQ5Sa">
                 <source>narration.guided_step_social_meta_prerequisites</source>
                 <target>This first part happens at Meta, on developers.facebook.com: create an app, add Facebook Login to it with the site's return address, and leave it in development mode. Check too that the Page is linked to the Instagram professional account. Come back here with the ID and the secret.</target>
             </trans-unit>
             <trans-unit id="vcZmc00">
                 <source>narration.guided_step_social_posts_approve</source>
-                <target>Back on the list, with slots on, "Approve for the next slot" hands the post to the next slot publishing on its networks, or to its planned date, instead of sending it at once.</target>
+                <target>Back on the list, "Approve" hands the post over to its planned date: it goes out on its own, instead of being sent at once.</target>
             </trans-unit>
             <trans-unit id="4cJ._fk">
                 <source>narration.guided_step_social_posts_edit</source>
-                <target>The edit button opens the post: one text per network, each at the length that network accepts, under the image going out with it. Correct what needs to be.</target>
+                <target>The edit button opens the post: one text per network, each at the length that network accepts, under the photos or the video going out with it. Correct what needs to be.</target>
+            </trans-unit>
+            <trans-unit id="HRyz2B3">
+                <source>narration.guided_step_social_posts_medias</source>
+                <target>Add photos or a video here, in the order they go out, or take some from the gallery with "Add from the site". Each ticked network's rules are checked when saving.</target>
             </trans-unit>
             <trans-unit id="kNA4Y5N">
                 <source>narration.guided_step_social_posts_networks</source>
@@ -144,15 +132,15 @@
             </trans-unit>
             <trans-unit id="EhIZhRa">
                 <source>narration.guided_step_social_posts_open</source>
-                <target>The panel takes you to the posts screen. They are prepared by themselves, at the times of the publication slots, or failing any, at the pace the interval setting sets; the drafts wait here for your review.</target>
+                <target>The panel takes you to the posts screen. Each has its date and time; those in draft wait here for your reading, then your approval.</target>
             </trans-unit>
             <trans-unit id="RyKdiUj">
                 <source>narration.guided_step_social_posts_planned_at</source>
-                <target>The "Planned for" field is optional: empty, the approved post goes out at the next free slot; filled, it goes out at that very date and time, to the quarter of an hour.</target>
+                <target>The "Planned for" field sets the date and time the post goes out once approved, to the quarter of an hour.</target>
             </trans-unit>
             <trans-unit id="kE9wnJX">
                 <source>narration.guided_step_social_posts_prepare</source>
-                <target>Not to wait, "Prepare now" takes the next content, and "From an address" prepares any page, of this site or another one. And "Prepare 7 drafts" prepares a week ahead, which you then approve one by one.</target>
+                <target>"From an address" prepares a draft of any page, of this site or another one, at the date you choose.</target>
             </trans-unit>
             <trans-unit id="nuTQi3q">
                 <source>narration.guided_step_social_posts_publish</source>
@@ -162,33 +150,29 @@
                 <source>narration.guided_step_social_posts_save</source>
                 <target>Save with the button at the bottom of the form.</target>
             </trans-unit>
-            <trans-unit id="6Dywe6l">
-                <source>narration.guided_step_social_schedules_edit</source>
-                <target>Click the button to add a slot, or on the row of an existing slot to edit it.</target>
+            <trans-unit id="CxfcrdE">
+                <source>narration.guided_step_social_posts_series</source>
+                <target>"Generate a series" prepares several drafts at once, at a steady pace, which you read and then approve together.</target>
             </trans-unit>
-            <trans-unit id="w7ckofR">
-                <source>narration.guided_step_social_schedules_networks</source>
-                <target>Tick the networks this slot posts on; with nothing ticked, it posts on every connected one.</target>
+            <trans-unit id="fl_JIU5">
+                <source>narration.guided_step_social_series_frequency</source>
+                <target>Choose the pace: one draft a day, a week or a month.</target>
             </trans-unit>
-            <trans-unit id="FrNIZFb">
-                <source>narration.guided_step_social_schedules_open</source>
-                <target>The panel takes you to the publication slots screen. Each one prepares one post a day, at its time; as soon as a slot is enabled, the interval is no longer used.</target>
+            <trans-unit id="I6Q3TO3">
+                <source>narration.guided_step_social_series_generate</source>
+                <target>Click "Generate the drafts": the calendar opens on the first one, leaving only the proofreading and the approval.</target>
             </trans-unit>
-            <trans-unit id="FKs.IOq">
-                <source>narration.guided_step_social_schedules_save</source>
-                <target>Save with the button at the bottom of the form.</target>
+            <trans-unit id="CVYlOoX">
+                <source>narration.guided_step_social_series_media</source>
+                <target>If you wish, add a photo or a video: it goes out with every post written here.</target>
             </trans-unit>
-            <trans-unit id="1VpRy8b">
-                <source>narration.guided_step_social_schedules_sources</source>
-                <target>Choose the contents to draw from: a whole content, or only some of its galleries. Left empty, every content takes its turn.</target>
+            <trans-unit id="rPawNlG">
+                <source>narration.guided_step_social_series_mode</source>
+                <target>Choose where the texts come from: one text, an instruction the AI varies, or the site's next contents.</target>
             </trans-unit>
-            <trans-unit id="LMuUJQ_">
-                <source>narration.guided_step_social_schedules_text</source>
-                <target>If you wish, write a text of this slot's own: it takes the place of the "slot" tag in the common post template.</target>
-            </trans-unit>
-            <trans-unit id="0uawAGt">
-                <source>narration.guided_step_social_schedules_time</source>
-                <target>Choose the time the post will be prepared at, every day.</target>
+            <trans-unit id="yIyQYG.">
+                <source>narration.guided_step_social_series_open</source>
+                <target>The panel takes you to the generation of a series: several drafts at once, which you will proofread afterwards. Say how many, from when and on which networks.</target>
             </trans-unit>
             <trans-unit id="DrMJai5">
                 <source>narration.guided_step_social_share_buttons_anchor</source>
@@ -232,7 +216,7 @@
             </trans-unit>
             <trans-unit id="dugZDEg">
                 <source>narration.social_calendar</source>
-                <target>"Calendar" shows the calendar of your posts: the ones gone out, and the approved ones where they will go out. Drag one onto a slot to plan it there.</target>
+                <target>"Calendar" shows the calendar of your posts: those gone out, and every coming one at its date. Drag one onto another time to move it.</target>
             </trans-unit>
             <trans-unit id="Yn0vUBO">
                 <source>narration.social_connections</source>
@@ -244,11 +228,7 @@
             </trans-unit>
             <trans-unit id="m6sfKEB">
                 <source>narration.social_posts</source>
-                <target>"Posts" gathers what is prepared for your networks: you read each text, then you publish.</target>
-            </trans-unit>
-            <trans-unit id="16Jj3bI">
-                <source>narration.social_schedules</source>
-                <target>"Publication slots" sets the times your networks get a post, and what each slot posts.</target>
+                <target>"Posts" gathers your posts, written here or prepared: you read each text, then you approve or publish.</target>
             </trans-unit>
         </body>
     </file>

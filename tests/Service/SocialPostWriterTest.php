@@ -29,10 +29,10 @@ class SocialPostWriterTest extends TestCase
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $key): ?string => match ($key) {
-            'ui-ai-assistant-rephrase-provider' => $configured ? 'euria' : null,
-            'ui-ai-assistant-rephrase-api-key' => 'key',
-            'ui-ai-assistant-rephrase-base-uri' => 'https://api.example.org/v1',
-            'ui-ai-assistant-rephrase-model' => 'model',
+            'ui-ai-assistant-writer-provider' => $configured ? 'euria' : null,
+            'ui-ai-assistant-writer-api-key' => 'key',
+            'ui-ai-assistant-writer-base-uri' => 'https://api.example.org/v1',
+            'ui-ai-assistant-writer-model' => 'model',
             'social-ai-guidelines' => 'Warm and simple, for parents of young children.',
             default => null,
         });
@@ -54,10 +54,10 @@ class SocialPostWriterTest extends TestCase
         return new SocialContent('42', 'The racing cars', 'https://example.org/racing-cars', variables: ['description' => 'Even racing cars can lose a wheel.']);
     }
 
-    // What the model is told: the site's tone, the content, each network's rules and length, what the site already posted there, and the slot's own text
+    // What the model is told: the site's tone, the content, each network's rules and length, what the site already posted there, and the batch's own text
     public function testThePromptCarriesTheToneTheContentAndEachNetworksRules(): void
     {
-        $this->writer('{}')->write($this->content(), ['bluesky' => 300, 'facebook' => 2000], ['slot' => '#bedtime']);
+        $this->writer('{}')->write($this->content(), ['bluesky' => 300, 'facebook' => 2000], ['extra' => '#bedtime']);
 
         $prompt = (string) ($this->sent['messages'][1]['content'] ?? '');
         foreach (['Warm and simple', 'The racing cars', 'https://example.org/racing-cars', 'Even racing cars can lose a wheel.', '#bedtime', 'bluesky, 300 characters at most', 'open question', "Last night's story", '"facebook": "the post"'] as $expected) {
@@ -86,5 +86,15 @@ class SocialPostWriterTest extends TestCase
     {
         $this->assertSame([], $this->writer('{"bluesky": "x"}', false)->write($this->content(), ['bluesky' => 300]));
         $this->assertNull($this->sent);
+    }
+
+    // A series is written from one instruction in one call, each text its own; a text too long, empty or beyond the count asked is dropped
+    public function testASeriesIsWrittenFromOneInstruction(): void
+    {
+        $texts = $this->writer('Sure: ["Lundi au lac", "", "' . str_repeat('a', 400) . '", "Mardi en montagne", "Mercredi"]')->variants('Une photo par jour', 2, 300);
+
+        $this->assertSame(['Lundi au lac', 'Mardi en montagne'], $texts);
+        $this->assertStringContainsString('Une photo par jour', (string) ($this->sent['messages'][1]['content'] ?? ''));
+        $this->assertSame([], $this->writer('[]', false)->variants('Une photo par jour', 2, 300));
     }
 }

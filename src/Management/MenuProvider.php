@@ -17,7 +17,6 @@ use c975L\SocialBundle\Controller\Management\SocialCalendarController;
 use c975L\SocialBundle\Controller\Management\SocialConnectionsController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use c975L\SocialBundle\Controller\Management\SocialPostCrudController;
-use c975L\SocialBundle\Controller\Management\SocialScheduleCrudController;
 
 class MenuProvider implements MenuProviderInterface
 {
@@ -62,24 +61,12 @@ class MenuProvider implements MenuProviderInterface
             ],
             'social_posts' => [
                 'controller' => SocialPostCrudController::class,
-                // Lists what happened rather than what an admin makes: empty, it is no feature left unused (see UnusedFeatureBuilder)
-                'creatable' => false,
                 'label' => 'label.social_posts',
                 'narration' => 'narration.social_posts',
                 'translation_domain' => 'social',
                 'icon' => 'fas fa-paper-plane',
                 'description' => 'label.info_social_posts',
                 // The bar SocialPostCrudController states on its own rows
-                'role' => $this->configService->get('site-role-editor'),
-            ],
-            'social_schedules' => [
-                'controller' => SocialScheduleCrudController::class,
-                'label' => 'label.social_schedules',
-                'narration' => 'narration.social_schedules',
-                'translation_domain' => 'social',
-                'icon' => 'fas fa-clock',
-                'description' => 'label.info_social_schedules',
-                // The bar SocialScheduleCrudController states on its own rows
                 'role' => $this->configService->get('site-role-editor'),
             ],
         ];

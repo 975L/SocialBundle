@@ -1,5 +1,39 @@
 # Upgrade
 
+## To 2.11
+
+**Publication slots and the hourly run are gone: every post is planned on the calendar.** A post is prepared as a
+draft at a moment, approved with "Valider", then sent at that moment by `c975l:social:publish` (every 15 minutes,
+declared by `SocialMaintenanceTaskProvider`). Nothing is sent on preparation any more, even on a network whose
+`social-*-publish-mode` reads `auto`.
+
+**Database:** `plannedAt` is now mandatory, a post gains a `text`, and the `social_schedule` table goes - a site's
+own migration (`doctrine:migrations:diff`, then `migrate`). A site still holding posts without a moment from 2.10 gives
+them one first: `UPDATE social_post SET planned_at = created_at WHERE planned_at IS NULL`.
+
+**Config:** `social-publish-interval-hours` is undeclared: remove it with `c975l:config:prune`. In
+`social-publish-template`, `{slot}` is now `{extra}`.
+
+**Config:** the four `social-*-publish-mode` keys are undeclared, nothing being sent on preparation any more: remove
+them with `c975l:config:prune`. `NetworkPublisherInterface::isAutomatic()` is gone; `BlueskyPublisher` and
+`LinkedInPublisher` no longer take a `ConfigServiceInterface`.
+
+**AI key:** the posts are written with `ui-ai-assistant-writer-*`, the rephrase key renamed by c975l/core-bundle 1.53
+(carried over by `c975l:config:load-all`, nothing to do).
+
+**Medias:** a post gains its own pictures and videos, in a `social_media` table (the same migration). Run
+`c975l:config:load-all` for `social-media-retention-days`. A network of a site's own implements
+`getMediaRules()` and takes `array $medias = []` in `publish()` and `preview()`.
+
+**Command:** `c975l:social:publish` with no option now sends the approved posts due; `--planned`, `--slot`,
+`--force` and `--drafts` are gone, `--url` takes `--at`.
+
+**Code:** `SocialPost`'s constructor takes the `plannedAt` last, `getPlannedAt()` is never null;
+`SocialPublisher::prepareNext()`, `prepareSlot()`, `prepareForSlot()` and `hasEnabledSlot()` are gone,
+`prepareUrl()` takes the moment second, `prepareDrafts()` a list of moments; `SocialPlanner` keeps `nextQuarter()`
+and gains `round()`; `SocialPostRepository::findLastCreatedAt()` and `findDrafts()` are gone. Nothing to do with
+autowiring.
+
 ## To 2.10
 
 **`social-publish-enabled` is gone: the publication is on as soon as one network is connected.** A site with a

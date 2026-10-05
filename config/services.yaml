@@ -32,6 +32,28 @@ services:
         arguments:
             $sources: !tagged_iterator social.content_source
             $networks: !tagged_iterator social.network_publisher
+            $projectDir: '%kernel.project_dir%'
+
+    # A series' media is written under the site's public/ folder
+    c975L\SocialBundle\Service\SocialSeriesGenerator:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
+    # Libraries are auto-tagged from UiBundle's PickableMediaProviderInterface (see c975LSocialBundle::build()), their files read and copied under the site's public/ folder
+    c975L\SocialBundle\Service\SocialMediaPicker:
+        arguments:
+            $providers: !tagged_iterator social.pickable_media
+            $projectDir: '%kernel.project_dir%'
+
+    # The purge deletes the medias' files under the site's public/ folder
+    c975L\SocialBundle\Command\MediaPurgeCommand:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
+    # The medias uploaded for a post are read under the site's public/ folder
+    c975L\SocialBundle\Listener\SocialMediaUploadListener:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
 
     # The JPEG copies Meta downloads are written under the site's public/ folder
     c975L\SocialBundle\Service\SocialImageExporter:

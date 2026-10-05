@@ -214,25 +214,8 @@
   font-weight: 600;
 }
 
-.social-calendar-slot {
-  margin-top: 0.25rem;
-  padding: 0.2rem;
-  border: 1px dashed var(--bs-border-color, #ccc);
-  border-radius: 4px;
-  font-size: 0.75rem;
-}
-
-.social-calendar-slot-head {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 0.25rem;
-}
-
-.social-calendar-slot.is-over,
-.social-calendar-list.is-over {
+.social-calendar-day.is-over {
   background: var(--bs-info-bg-subtle, #cff4fc);
-  border-style: solid;
 }
 
 .social-calendar-card {
@@ -243,21 +226,27 @@
   margin-top: 0.15rem;
   border-radius: 4px;
   background: var(--bs-body-bg, #fff);
-  border-left: 3px solid var(--bs-info, #0dcaf0);
+  border-left: 3px solid var(--bs-success, #198754);
   color: inherit;
   text-decoration: none;
   font-size: 0.75rem;
   cursor: grab;
+  /* Gone out: greyed and never dragged, only opened */
 }
 .social-calendar-card.is-published {
-  border-left-color: var(--bs-success, #198754);
+  border-left-color: var(--bs-secondary, #6c757d);
+  opacity: 0.6;
   cursor: pointer;
 }
-.social-calendar-card.is-pinned {
-  border-left-color: var(--bs-primary, #0d6efd);
-}
 .social-calendar-card.is-draft {
-  border-left-color: var(--bs-warning, #ffc107);
+  border-left-color: var(--bs-danger, #dc3545);
+}
+.social-calendar-card.is-failed {
+  border-left-color: var(--bs-orange, #fd7e14);
+}
+.social-calendar-card.is-failed::before {
+  content: "\26A0";
+  color: var(--bs-orange, #fd7e14);
 }
 .social-calendar-card > img {
   width: 24px;
@@ -271,25 +260,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
-}
-
-/* When a post of the queue goes out, read off the projection */
-.social-calendar-next {
-  flex: none;
-  font-variant-numeric: tabular-nums;
-  color: var(--bs-secondary-color, #6c757d);
-}
-
-.social-calendar-list {
-  min-height: 4rem;
-  padding: 0.25rem;
-  border: 1px dashed var(--bs-border-color, #ccc);
-  border-radius: 4px;
-}
-
-.social-calendar-prepare {
-  padding: 0;
-  font-size: 0.75rem;
 }
 
 .social-calendar-networks {
@@ -378,22 +348,11 @@
   flex: 1;
   min-width: 0;
 }
-.social-week-items .social-calendar-card,
-.social-week-items .social-calendar-slot {
-  margin-top: 0;
-}
-.social-week-items .social-calendar-slot {
-  background: var(--bs-body-bg, #fff);
-  padding: 1px 3px;
-}
 .social-week-items {
-  /* Compact on the grid: a quarter of an hour is short, and the networks and the moment are read in the panel */
-}
-.social-week-items .social-calendar-slot-head {
-  font-size: 0.66rem;
-  line-height: 1.1;
+  /* Compact on the grid: a quarter of an hour is short, and the networks are read in the panel */
 }
 .social-week-items .social-calendar-card {
+  margin-top: 0;
   height: 22px;
   padding: 1px 4px;
   font-size: 0.7rem;
@@ -403,12 +362,8 @@
   width: 16px;
   height: 16px;
 }
-.social-week-items .social-calendar-card .social-network-badges,
-.social-week-items .social-calendar-card .social-calendar-next {
+.social-week-items .social-calendar-card .social-network-badges {
   display: none;
-}
-.social-week-items .social-calendar-prepare {
-  font-size: 0.66rem;
 }
 
 /* A card being dragged follows the pointer, the zones under it read through it */
@@ -463,6 +418,59 @@
   .social-calendar-day {
     min-height: 0;
   }
+}
+/* A post's picture or video on its screen, as it goes out */
+.social-media-preview {
+  display: block;
+  max-width: 300px;
+  max-height: 300px;
+  margin-bottom: 0.25rem;
+  border-radius: 4px;
+}
+
+.social-media-pick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.social-media-pick-item {
+  position: relative;
+  display: block;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.social-media-pick-item:has(input:checked) {
+  border-color: var(--bs-primary, #0d6efd);
+}
+.social-media-pick-item input {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.35rem;
+}
+.social-media-pick-item img,
+.social-media-pick-item video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 2px;
+}
+.social-media-pick-item span {
+  display: block;
+  overflow: hidden;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.social-media-pick-video {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  color: #fff;
+  text-shadow: 0 0 3px #000;
 }
 
 /*# sourceMappingURL=management.css.map */

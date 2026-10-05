@@ -12,6 +12,7 @@ namespace c975L\SocialBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
+use c975L\SocialBundle\Model\PostMedia;
 use c975L\SocialBundle\Service\BlueskyOAuthClient;
 use c975L\SocialBundle\Service\BlueskyPublisher;
 use c975L\SocialBundle\Service\SocialImageExporter;
@@ -22,22 +23,19 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class BlueskyPublisherTest extends TestCase
 {
-    /** @var list<array{url: string, body: string}> */
+    /** @var list<array{url: string, body: string, type?: string, bytes?: string}> */
     private array $requests = [];
 
     // The OAuth connection stubbed: every call recorded with its json body, Bluesky's refusal thrown the way BlueskyOAuthClient words it
-    private function createPublisher(bool $connected = true, bool $refused = false, ?string $mode = null, string $remoteImage = ''): BlueskyPublisher
+    private function createPublisher(bool $connected = true, bool $refused = false, string $remoteImage = ''): BlueskyPublisher
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturnMap([
-            ['social-bluesky-publish-mode', $mode],
-        ]);
 
         $oauthClient = $this->createStub(BlueskyOAuthClient::class);
         $oauthClient->method('isConnected')->willReturn($connected);
         $oauthClient->method('getDid')->willReturn('did:plc:abc');
         $oauthClient->method('call')->willReturnCallback(function (string $method, array $options) use ($refused): array {
-            $this->requests[] = ['url' => $method, 'body' => (string) json_encode($options['json'] ?? [])];
+            $this->requests[] = ['url' => $method, 'body' => (string) json_encode($options['json'] ?? []), 'type' => $options['headers']['Content-Type'] ?? '', 'bytes' => $options['body'] ?? ''];
 
             return match (true) {
                 'com.atproto.repo.uploadBlob' === $method => ['blob' => ['$type' => 'blob', 'ref' => ['$link' => 'bafy'], 'mimeType' => 'image/png', 'size' => 70]],
@@ -53,7 +51,7 @@ class BlueskyPublisherTest extends TestCase
             return new MockResponse($remoteImage);
         });
 
-        return new BlueskyPublisher($configService, new SocialImageExporter($httpClient, $this->createStub(SiteUrlResolver::class), sys_get_temp_dir(), $configService), $oauthClient);
+        return new BlueskyPublisher(new SocialImageExporter($httpClient, $this->createStub(SiteUrlResolver::class), sys_get_temp_dir(), $configService), $oauthClient);
     }
 
     /**
@@ -142,16 +140,9 @@ class BlueskyPublisherTest extends TestCase
     // What the run reports is Bluesky's own reason, not a bare status code
     public function testARefusalThrowsWithBlueskysMessage(): void
     {
-        $this->expectExceptionMessage('Record too long');
+        $this->expectExceptionMessageIsOrContains('Record too long');
 
         $this->createPublisher(refused: true)->publish('Hello', new SocialContent('1', 'Title', 'https://example.org'));
-    }
-
-    // A post nobody read going out under the site's name is the mistake not to make by default
-    public function testReviewIsTheDefaultMode(): void
-    {
-        $this->assertFalse($this->createPublisher()->isAutomatic());
-        $this->assertTrue($this->createPublisher(mode: 'auto')->isAutomatic());
     }
 
     public function testTheImageOfAContentReadFromAPageIsDownloaded(): void
@@ -170,6 +161,98 @@ class BlueskyPublisherTest extends TestCase
         $this->assertSame([], $this->requests);
         $this->assertSame('Voir https://example.org', $record['text']);
         $this->assertSame('https://example.org', $record['facets'][0]['features'][0]['uri']);
+    }
+
+    // Each picture uploaded with its own bytes, then embedded in its order with its alt and ratio
+    public function testThePostsPicturesReplaceTheContentImage(): void
+    {
+        $first = $this->tempFile('first');
+        $second = $this->tempFile('second');
+
+        try {
+            $this->createPublisher()->publish('Hello', new SocialContent('1', 'Title', 'https://example.org', imageUrl: 'https://example.org/og.png'), [
+                new PostMedia($first, 'https://example.org/1.jpg', 'image/jpeg', width: 2048, height: 1536, alt: 'Lake'),
+                new PostMedia($second, 'https://example.org/2.jpg', 'image/jpeg'),
+            ]);
+        } finally {
+            unlink($first);
+            unlink($second);
+        }
+
+        $uploads = array_values(array_filter($this->requests, static fn (array $request): bool => 'com.atproto.repo.uploadBlob' === $request['url']));
+        $this->assertCount(2, $uploads);
+        $this->assertSame(['first', 'second'], array_column($uploads, 'bytes'));
+        $this->assertSame('image/jpeg', $uploads[0]['type']);
+        $this->assertCount(3, $this->requests);
+
+        $embed = $this->postedRecord()['embed'];
+        $this->assertSame('app.bsky.embed.images', $embed['$type']);
+        $this->assertCount(2, $embed['images']);
+        $this->assertSame('Lake', $embed['images'][0]['alt']);
+        $this->assertSame(['width' => 2048, 'height' => 1536], $embed['images'][0]['aspectRatio']);
+        $this->assertSame('', $embed['images'][1]['alt']);
+        $this->assertArrayNotHasKey('aspectRatio', $embed['images'][1]);
+    }
+
+    // A video goes as embed.video, the pictures given with it ignored
+    public function testAVideoIsUploadedAndEmbeddedAsVideo(): void
+    {
+        $video = $this->tempFile('video');
+        $picture = $this->tempFile('picture');
+
+        try {
+            $this->createPublisher()->publish('Hello', new SocialContent('1', 'Title', 'https://example.org'), [
+                new PostMedia($picture, 'https://example.org/1.jpg', 'image/jpeg'),
+                new PostMedia($video, 'https://example.org/v.mp4', 'video/mp4', width: 1080, height: 1920, duration: 12.5, alt: 'Waves'),
+            ]);
+        } finally {
+            unlink($video);
+            unlink($picture);
+        }
+
+        $this->assertCount(2, $this->requests);
+        $this->assertSame('video', $this->requests[0]['bytes']);
+        $this->assertSame('video/mp4', $this->requests[0]['type']);
+        $embed = $this->postedRecord()['embed'];
+        $this->assertSame('app.bsky.embed.video', $embed['$type']);
+        $this->assertSame('bafy', $embed['video']['ref']['$link']);
+        $this->assertSame('Waves', $embed['alt']);
+        $this->assertSame(['width' => 1080, 'height' => 1920], $embed['aspectRatio']);
+    }
+
+    // The dry run shows each media by its url and uploads nothing
+    public function testPreviewShowsTheMediasWithoutUploading(): void
+    {
+        $record = $this->createPublisher()->preview('Hello', new SocialContent('1', 'Title', 'https://example.org'), [
+            new PostMedia('/nowhere.jpg', 'https://example.org/1.jpg', 'image/jpeg'),
+        ]);
+
+        $this->assertSame([], $this->requests);
+        $this->assertSame('https://example.org/1.jpg', $record['embed']['images'][0]['image']);
+    }
+
+    public function testTheMediaRulesFollowTheLexicons(): void
+    {
+        $rules = $this->createPublisher()->getMediaRules();
+
+        $this->assertSame(4, $rules->maxImages);
+        $this->assertTrue($rules->video);
+        $this->assertFalse($rules->mix);
+        $this->assertFalse($rules->required);
+        $this->assertSame(['image/jpeg', 'image/png', 'image/webp', 'image/gif'], $rules->imageTypes);
+        $this->assertSame(2000000, $rules->maxImageBytes);
+        $this->assertSame(['video/mp4'], $rules->videoTypes);
+        $this->assertSame(300000000, $rules->maxVideoBytes);
+        $this->assertSame(600.0, $rules->maxDuration);
+    }
+
+    // A media file holding these bytes
+    private function tempFile(string $bytes): string
+    {
+        $path = (string) tempnam(sys_get_temp_dir(), 'bsky');
+        file_put_contents($path, $bytes);
+
+        return $path;
     }
 
     private function png(): string

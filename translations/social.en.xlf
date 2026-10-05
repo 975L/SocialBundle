@@ -32,7 +32,7 @@
             </trans-unit>
             <trans-unit id="DmlLCtb">
                 <source>description.guided_project_social_calendar</source>
-                <target>See where each approved post will fall among the slots, and move it with a drag and drop.</target>
+                <target>See every post at its date and time, and move it with a drag.</target>
             </trans-unit>
             <trans-unit id="Z4mtym8">
                 <source>description.guided_project_social_google_connect</source>
@@ -56,11 +56,11 @@
             </trans-unit>
             <trans-unit id="osYKEjU">
                 <source>description.guided_project_social_posts</source>
-                <target>The posts prepared for your networks: prepare one, proofread its text network by network, then send it.</target>
+                <target>Your posts for the networks: generate a series or prepare one, proofread its texts and medias, then approve or send it.</target>
             </trans-unit>
-            <trans-unit id="4BPt5dm">
-                <source>description.guided_project_social_schedules</source>
-                <target>Choose each day at what time to post, what, and on which networks, instead of the interval.</target>
+            <trans-unit id="eIR76HP">
+                <source>description.guided_project_social_series</source>
+                <target>Several drafts at once, at a steady pace: choose the pace, where the texts and the media come from, then generate the drafts to proofread.</target>
             </trans-unit>
             <trans-unit id="GjyFwm5">
                 <source>description.guided_project_social_share_buttons</source>
@@ -74,29 +74,21 @@
                 <source>description.guided_step_social_bluesky_handle</source>
                 <target>Optional, in the configuration: search for "social-bluesky-handle" and put the account's handle in it, for instance example.bsky.social, for the next connection to offer it at once. Left empty, the account is picked on Bluesky's page.</target>
             </trans-unit>
-            <trans-unit id="82P_F59">
-                <source>description.guided_step_social_bluesky_mode</source>
-                <target>"social-bluesky-publish-mode" is set to "review": each post waits for review on the Posts screen. "auto" sends it as soon as it is prepared.</target>
+            <trans-unit id="y3lKM_7">
+                <source>description.guided_step_social_calendar_move</source>
+                <target>Drag a post onto a coming time of the week, or onto a coming day of the month where it keeps its time: it is planned there, its approval unchanged.</target>
             </trans-unit>
-            <trans-unit id="L8sqUEj">
-                <source>description.guided_step_social_calendar_drafts</source>
-                <target>The drafts wait here for their review: a click opens one, and dragging it onto a slot approves it and plans it there.</target>
+            <trans-unit id="QikFj7G">
+                <source>description.guided_step_social_calendar_new</source>
+                <target>"New post" opens a post to write, planned at the next quarter of an hour. A double click on a coming time of the week, or on a day of the month, opens it at that very moment.</target>
             </trans-unit>
             <trans-unit id="17dUjo3">
                 <source>description.guided_step_social_calendar_open</source>
-                <target>The week of publications: the ones gone out, and each approved post in the slot that will send it. "Month" shows the whole month. The hours shown are set in the configuration.</target>
+                <target>The week of posts: those gone out, and every coming one at its date and time, red to approve, green approved. "Month" shows the whole month. The hours shown are set in the configuration.</target>
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Click a post: its panel plans it at a given time, puts it back in the queue or opens its texts to edit them.</target>
-            </trans-unit>
-            <trans-unit id="rqDkuRv">
-                <source>description.guided_step_social_calendar_queue</source>
-                <target>The approved posts with no date: they go out, in order, at the next free slot publishing on their networks.</target>
-            </trans-unit>
-            <trans-unit id="4CAagYG">
-                <source>description.guided_step_social_calendar_slot</source>
-                <target>Drag a post onto a slot to plan it there, onto "Queue" for it to go out at the next free slot, onto "To approve" to take it out of the queue. A free slot also offers "Prepare for this slot".</target>
+                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, or opens its texts to edit them.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
@@ -138,10 +130,6 @@
                 <source>description.guided_step_social_linkedin_credentials</source>
                 <target>Search for "social-linkedin-client-id" and "social-linkedin-client-secret" in the list, and paste in the app's two values. The secret only shows with the "Show sensitive data" button. The token and the profile fill themselves in at the next step.</target>
             </trans-unit>
-            <trans-unit id="wF5Oo9b">
-                <source>description.guided_step_social_linkedin_mode</source>
-                <target>"social-linkedin-publish-mode" is set to "review": each post waits for review on the Posts screen. "auto" sends it as soon as it is prepared. The access lasts 60 days: connect again from the tile before it expires.</target>
-            </trans-unit>
             <trans-unit id="h8ze_vb">
                 <source>description.guided_step_social_linkedin_prerequisites</source>
                 <target>This part happens on linkedin.com/developers: create an app attached to a LinkedIn Page you administer, add it the "Share on LinkedIn" and "Sign In with LinkedIn using OpenID Connect" products, and declare the site's address followed by "/social/linkedin/callback" as its redirect URL. Come back here with the app's ID and secret.</target>
@@ -182,53 +170,49 @@
                 <source>description.guided_step_social_meta_credentials</source>
                 <target>Search for "social-meta-app-id" and "social-meta-app-secret" in the list, and paste in the app's two values. The secret only shows with the "Show sensitive data" button. For an account managing several Pages, fill in "social-meta-page-id" too, or the first one is taken. The token and the Instagram account fill themselves in at the next step.</target>
             </trans-unit>
-            <trans-unit id="s_VRZkJ">
-                <source>description.guided_step_social_meta_mode</source>
-                <target>"social-facebook-publish-mode" and "social-instagram-publish-mode" are set to "review": each post waits for review on the Posts screen. "auto" sends it as soon as it is prepared.</target>
-            </trans-unit>
             <trans-unit id="JCFGCmV">
                 <source>description.guided_step_social_meta_prerequisites</source>
                 <target>This part happens on developers.facebook.com: create an app, add Facebook Login to it with the site's address followed by "/social/meta/callback" as redirect URI, and leave it in development mode. The Page must be linked to the Instagram professional account. Come back here with the app's ID and secret.</target>
             </trans-unit>
             <trans-unit id="2_2asy8">
                 <source>description.guided_step_social_posts_approve</source>
-                <target>With slots on, this button hands the post to the next slot publishing on its networks, or to its planned date, instead of sending it at once.</target>
+                <target>This button approves the post: it goes out on its own at its planned date, instead of being sent at once. Tick several drafts to approve them together with "Approve the selection".</target>
             </trans-unit>
             <trans-unit id="hq1t6co">
                 <source>description.guided_step_social_posts_edit</source>
-                <target>The edit button opens the post: one text per network, each limited to the length that network accepts, under the image going out with it.</target>
+                <target>The edit button opens the post: one text per network, each limited to the length that network accepts, under the photos or the video going out with it.</target>
             </trans-unit>
             <trans-unit id="xXIWC.O">
                 <source>description.guided_step_social_posts_open</source>
-                <target>The posts are prepared by themselves, at the times of the publication slots, or failing any, at the pace set by "social-publish-interval-hours". The drafts wait here for your review.</target>
+                <target>Every post has its date and time. Those in draft wait here for your reading, then your approval.</target>
             </trans-unit>
             <trans-unit id="hc6ecvb">
                 <source>description.guided_step_social_posts_prepare</source>
-                <target>"Prepare now" takes the next content without waiting; "From an address" prepares any page, of this site or another one, from its Open Graph tags. "Prepare 7 drafts" prepares a week ahead, to approve afterwards one by one.</target>
+                <target>"From an address" prepares a draft of any page, of this site or another one, from its Open Graph tags, at the date chosen.</target>
             </trans-unit>
             <trans-unit id="SvQRq5R">
                 <source>description.guided_step_social_posts_publish</source>
                 <target>Back on the list, the paper-plane button sends the post to every network that has not taken it yet. A network refusing keeps its error message, and "Publish" tries it again.</target>
             </trans-unit>
-            <trans-unit id="lw9Mjxv">
-                <source>description.guided_step_social_schedules_edit</source>
-                <target>Add a slot, or take up an existing one.</target>
+            <trans-unit id="QWFdKJe">
+                <source>description.guided_step_social_posts_series</source>
+                <target>Prepares several drafts at once, every day, week or month: one text, texts written by the AI from an instruction, or the site's next contents. They are then read and approved, one by one or together.</target>
             </trans-unit>
-            <trans-unit id="YvE_dVx">
-                <source>description.guided_step_social_schedules_open</source>
-                <target>Each slot prepares one post a day, at its time. As soon as a slot is enabled, "social-publish-interval-hours" is no longer used.</target>
+            <trans-unit id="Sr07Dp3">
+                <source>description.guided_step_social_series_frequency</source>
+                <target>One draft every day, every week or every month, from the moment chosen.</target>
             </trans-unit>
-            <trans-unit id="QMpKFbt">
-                <source>description.guided_step_social_schedules_sources</source>
-                <target>A whole content, or only some of its galleries. Left empty, every content in turn.</target>
+            <trans-unit id="lAe7DDv">
+                <source>description.guided_step_social_series_generate</source>
+                <target>The drafts are created and the calendar opens on the first one: proofread them, then approve them one by one or together.</target>
             </trans-unit>
-            <trans-unit id="kNO7LNL">
-                <source>description.guided_step_social_schedules_text</source>
-                <target>Optional: put where the common template "social-publish-template" holds {slot}.</target>
+            <trans-unit id="3sBXLnS">
+                <source>description.guided_step_social_series_mode</source>
+                <target>One text for all, texts written by the AI from an instruction, or the site's next contents, each with its own text.</target>
             </trans-unit>
-            <trans-unit id="5365y9u">
-                <source>description.guided_step_social_schedules_time</source>
-                <target>The time the post is prepared at, every day. A change is taken into account within the hour.</target>
+            <trans-unit id="9.bO7zc">
+                <source>description.guided_step_social_series_open</source>
+                <target>The series screen, which "Generate a series" also opens from the posts and the calendar: how many drafts, from when, on which networks.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -302,21 +286,17 @@
                 <source>flash.meta_refused</source>
                 <target>The connection to Meta was refused or interrupted.</target>
             </trans-unit>
-            <trans-unit id="H7BmV19">
-                <source>flash.social_calendar_slot_taken</source>
-                <target>This slot already has its post: here it is, rather than preparing a second one.</target>
+            <trans-unit id="IAy1Rxc">
+                <source>flash.social_media_picked</source>
+                <target>%count% media(s) added.</target>
             </trans-unit>
             <trans-unit id="i2TxptH">
                 <source>flash.social_post_approved</source>
-                <target>"%title%" is approved: it goes out at the next slot of its networks.</target>
+                <target>"%title%" is approved: it will go out at its planned date.</target>
             </trans-unit>
             <trans-unit id="87Pcbcr">
                 <source>flash.social_post_draft</source>
                 <target>Prepared for %network%, waiting for your review.</target>
-            </trans-unit>
-            <trans-unit id="QqaXATm">
-                <source>flash.social_post_drafts</source>
-                <target>%count% draft(s) prepared, to read and approve one by one.</target>
             </trans-unit>
             <trans-unit id="k5cHJcN">
                 <source>flash.social_post_failed</source>
@@ -336,19 +316,47 @@
             </trans-unit>
             <trans-unit id="52E_8Ux">
                 <source>flash.social_post_unapproved</source>
-                <target>"%title%" is out of the queue and waits for your reading again.</target>
+                <target>"%title%" is back to a draft and waits for your reading again.</target>
             </trans-unit>
-            <trans-unit id="HF4A7I.">
-                <source>help.social_post_next_slot</source>
-                <target>Goes out on %date%, at the next free slot. Fill a date and time for it to go out at that moment, to the quarter of an hour.</target>
+            <trans-unit id="TbRULOl">
+                <source>flash.social_posts_approved</source>
+                <target>%count% post(s) approved: they will go out at their date.</target>
+            </trans-unit>
+            <trans-unit id="BmODYyf">
+                <source>flash.social_series_generated</source>
+                <target>%count% draft(s) created, to read and approve.</target>
+            </trans-unit>
+            <trans-unit id="TRKXywk">
+                <source>help.social_media_reference</source>
+                <target>A gallery file: it is changed in the gallery, and never deleted with the post.</target>
+            </trans-unit>
+            <trans-unit id="MzBnBYd">
+                <source>help.social_post_medias</source>
+                <target>In the order they go out. A photo is stored as a JPEG, the one format every network takes. When the site has a gallery, "Add from the site" takes a photo or a video from it. With no photo nor video, a post prepared from a content goes out with that content's picture. Each ticked network's rules are checked when saving, and the approval is refused while a network does not take the medias.</target>
             </trans-unit>
             <trans-unit id="6dpEFVs">
                 <source>help.social_post_planned_at</source>
-                <target>Empty: an approved post goes out at the next free slot, in the order the posts were prepared. Filled: it goes out at that date and time, to the quarter of an hour.</target>
+                <target>The date and time the post goes out once approved, to the quarter of an hour.</target>
             </trans-unit>
             <trans-unit id="PoY.WA0">
                 <source>help.social_post_send_on</source>
                 <target>Untick a network not to post there; tick one to get a text written for it, shown the next time the post is opened. A greyed network is not connected: see "Connections".</target>
+            </trans-unit>
+            <trans-unit id="BPzQBuz">
+                <source>help.social_post_text</source>
+                <target>The post's text, rephrased or translated with Donovan. Each network gets a copy cut to its length, editable afterwards network by network; changing this text writes them all again.</target>
+            </trans-unit>
+            <trans-unit id="OixUWN1">
+                <source>help.social_series_media</source>
+                <target>Optional: attached to every post written here, stored once.</target>
+            </trans-unit>
+            <trans-unit id="a1xocww">
+                <source>help.social_series_sources</source>
+                <target>For the site's contents: nothing ticked takes them all, in turn.</target>
+            </trans-unit>
+            <trans-unit id="4h1xjIz">
+                <source>help.social_series_text</source>
+                <target>Each post's text or, with the AI, what they are about: the AI writes a different take for each, at the length of the shortest network ticked. Not needed for the site's contents.</target>
             </trans-unit>
             <trans-unit id="PmT6SQr">
                 <source>label.anchor</source>
@@ -482,9 +490,9 @@
                 <source>label.guided_project_social_posts</source>
                 <target>Review and publish on your networks</target>
             </trans-unit>
-            <trans-unit id="vcYJZKP">
-                <source>label.guided_project_social_schedules</source>
-                <target>Set the publication slots</target>
+            <trans-unit id="xnZAeX8">
+                <source>label.guided_project_social_series</source>
+                <target>Generate a series of posts</target>
             </trans-unit>
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
@@ -498,13 +506,13 @@
                 <source>label.guided_step_social_bluesky_handle</source>
                 <target>Name the account</target>
             </trans-unit>
-            <trans-unit id="WZJUH3w">
-                <source>label.guided_step_social_bluesky_mode</source>
-                <target>Choose what goes out unreviewed</target>
+            <trans-unit id="CF6D8_T">
+                <source>label.guided_step_social_calendar_move</source>
+                <target>Move a post</target>
             </trans-unit>
-            <trans-unit id="lfXvHb6">
-                <source>label.guided_step_social_calendar_drafts</source>
-                <target>The posts to approve</target>
+            <trans-unit id="k.rSJli">
+                <source>label.guided_step_social_calendar_new</source>
+                <target>Write a post</target>
             </trans-unit>
             <trans-unit id="a8cneSW">
                 <source>label.guided_step_social_calendar_open</source>
@@ -513,14 +521,6 @@
             <trans-unit id="9fHDZ.c">
                 <source>label.guided_step_social_calendar_panel</source>
                 <target>Open a post</target>
-            </trans-unit>
-            <trans-unit id="Je4Sg4x">
-                <source>label.guided_step_social_calendar_queue</source>
-                <target>The queue</target>
-            </trans-unit>
-            <trans-unit id="grdVdjR">
-                <source>label.guided_step_social_calendar_slot</source>
-                <target>Drag onto a slot</target>
             </trans-unit>
             <trans-unit id="tVdTpfQ">
                 <source>label.guided_step_social_connections_open</source>
@@ -561,10 +561,6 @@
             <trans-unit id="vKAjE7P">
                 <source>label.guided_step_social_linkedin_credentials</source>
                 <target>Fill in the app's two keys</target>
-            </trans-unit>
-            <trans-unit id="5gjF6SQ">
-                <source>label.guided_step_social_linkedin_mode</source>
-                <target>Choose what goes out unreviewed, and remember to reconnect</target>
             </trans-unit>
             <trans-unit id="n1.S19b">
                 <source>label.guided_step_social_linkedin_prerequisites</source>
@@ -610,21 +606,21 @@
                 <source>label.guided_step_social_meta_credentials</source>
                 <target>Fill in the app's two keys</target>
             </trans-unit>
-            <trans-unit id="DrOhv0h">
-                <source>label.guided_step_social_meta_mode</source>
-                <target>Choose what goes out unreviewed</target>
-            </trans-unit>
             <trans-unit id="BzznW61">
                 <source>label.guided_step_social_meta_prerequisites</source>
                 <target>Create the Meta app</target>
             </trans-unit>
             <trans-unit id="bIP872E">
                 <source>label.guided_step_social_posts_approve</source>
-                <target>Approve for the next slot</target>
+                <target>Approve</target>
             </trans-unit>
             <trans-unit id="9zRMIWa">
                 <source>label.guided_step_social_posts_edit</source>
                 <target>Proofread the texts</target>
+            </trans-unit>
+            <trans-unit id="fvKKV3M">
+                <source>label.guided_step_social_posts_medias</source>
+                <target>Add photos or a video</target>
             </trans-unit>
             <trans-unit id="P_m5tZm">
                 <source>label.guided_step_social_posts_networks</source>
@@ -636,11 +632,11 @@
             </trans-unit>
             <trans-unit id="P0gG9kM">
                 <source>label.guided_step_social_posts_planned_at</source>
-                <target>Choose the date (optional)</target>
+                <target>Choose the date</target>
             </trans-unit>
             <trans-unit id="2IN5mPN">
                 <source>label.guided_step_social_posts_prepare</source>
-                <target>Prepare one now</target>
+                <target>Prepare from an address</target>
             </trans-unit>
             <trans-unit id="SPmUXau">
                 <source>label.guided_step_social_posts_publish</source>
@@ -650,33 +646,29 @@
                 <source>label.guided_step_social_posts_save</source>
                 <target>Save</target>
             </trans-unit>
-            <trans-unit id="OB5pxdE">
-                <source>label.guided_step_social_schedules_edit</source>
-                <target>Create or edit a slot</target>
+            <trans-unit id="IhPZtGG">
+                <source>label.guided_step_social_posts_series</source>
+                <target>Generate a series</target>
             </trans-unit>
-            <trans-unit id="W8GFw1R">
-                <source>label.guided_step_social_schedules_networks</source>
-                <target>Tick the networks</target>
+            <trans-unit id="auA9NI7">
+                <source>label.guided_step_social_series_frequency</source>
+                <target>Choose the pace</target>
             </trans-unit>
-            <trans-unit id="jlfPArt">
-                <source>label.guided_step_social_schedules_open</source>
-                <target>Open the slots</target>
+            <trans-unit id="2T0pkTO">
+                <source>label.guided_step_social_series_generate</source>
+                <target>Generate the drafts</target>
             </trans-unit>
-            <trans-unit id="Dd5k9GT">
-                <source>label.guided_step_social_schedules_save</source>
-                <target>Save the slot</target>
+            <trans-unit id="7D1JXLf">
+                <source>label.guided_step_social_series_media</source>
+                <target>Add a photo or a video</target>
             </trans-unit>
-            <trans-unit id="IDN.aXf">
-                <source>label.guided_step_social_schedules_sources</source>
-                <target>Choose the contents</target>
+            <trans-unit id="_PTnfm9">
+                <source>label.guided_step_social_series_mode</source>
+                <target>Choose the texts</target>
             </trans-unit>
-            <trans-unit id="sdaB.QU">
-                <source>label.guided_step_social_schedules_text</source>
-                <target>Write the slot text</target>
-            </trans-unit>
-            <trans-unit id="QzrhwtQ">
-                <source>label.guided_step_social_schedules_time</source>
-                <target>Choose the time</target>
+            <trans-unit id="MrMnSQv">
+                <source>label.guided_step_social_series_open</source>
+                <target>Open the generation</target>
             </trans-unit>
             <trans-unit id="GHatm_S">
                 <source>label.guided_step_social_share_buttons_anchor</source>
@@ -780,7 +772,7 @@
             </trans-unit>
             <trans-unit id="k1q7HYe">
                 <source>label.info_social_calendar</source>
-                <target>The calendar of publications: what went out, and where each approved post will fall among the coming slots. Click a post to open it.</target>
+                <target>The posts calendar: what went out, and every coming post at its date and time. Click a post to open it.</target>
             </trans-unit>
             <trans-unit id="G03WcyU">
                 <source>label.info_social_connections</source>
@@ -790,17 +782,21 @@
                 <source>label.info_social_links</source>
                 <target>Site-wide social links shown in the footer - a singleton, one set of links. Edit the list to add, remove or reorder a social network.</target>
             </trans-unit>
+            <trans-unit id="LYuSraW">
+                <source>label.info_social_media_pick</source>
+                <target>Tick the site's photos or videos to add to "%title%", after its medias. A photo is copied as a JPEG for the post, a video stays the site's own. Save the post first: its unsaved changes are not carried over.</target>
+            </trans-unit>
             <trans-unit id="td4VA3T">
                 <source>label.info_social_post_prepare_url</source>
                 <target>The address of a page, of this site or another one: its title, summary and sharing image become a post, to review before publishing.</target>
             </trans-unit>
             <trans-unit id="ehHeI2l">
                 <source>label.info_social_posts</source>
-                <target>The posts prepared for your networks, one text per network. Drafts wait for your review: correct the texts, save, then click "Publish", or "Approve for the next slot" for it to go out with the slots. Deleting a post cancels it.</target>
+                <target>The posts prepared for your networks, one text per network, each at its date. Those in draft wait for your reading: correct the texts, save, then click "Approve" for it to go out at its date, or "Publish" to send it at once. Deleting a post cancels it.</target>
             </trans-unit>
-            <trans-unit id="w4NSFiG">
-                <source>label.info_social_schedules</source>
-                <target>Each slot posts once a day, at its time, on its networks, drawing from its contents. While a slot is enabled, the publication interval of the configuration is no longer used.</target>
+            <trans-unit id="68T_uBv">
+                <source>label.info_social_series</source>
+                <target>Prepares a series of drafts at once, at a steady pace. They show in red on the calendar: read them, correct them, then approve them one by one or together from the list. Once the series has gone out, generate a new one.</target>
             </trans-unit>
             <trans-unit id="YtqDGiK">
                 <source>label.intro</source>
@@ -898,41 +894,17 @@
                 <source>label.social_calendar</source>
                 <target>Calendar</target>
             </trans-unit>
-            <trans-unit id="vqvZ3s4">
-                <source>label.social_calendar_approve_plan</source>
-                <target>Approve and plan at this time</target>
-            </trans-unit>
-            <trans-unit id="cm2xUra">
-                <source>label.social_calendar_back_to_queue</source>
-                <target>Back to the queue</target>
-            </trans-unit>
             <trans-unit id="bSspzgN">
                 <source>label.social_calendar_close</source>
                 <target>Close</target>
             </trans-unit>
-            <trans-unit id="GaE3Zmi">
-                <source>label.social_calendar_draft_waits</source>
-                <target>It goes out only once approved.</target>
-            </trans-unit>
-            <trans-unit id="AzY0WvY">
-                <source>label.social_calendar_drafts</source>
-                <target>To approve</target>
-            </trans-unit>
             <trans-unit id="l0Dqa_D">
                 <source>label.social_calendar_drag_hint</source>
-                <target>Drag a post onto a slot to plan it there, onto "Queue" for it to go out at the next free slot, onto "To approve" to take it out of the queue.</target>
+                <target>Double-click a coming time, or a day in the month view, to write a post there; drag a post onto another time, or another day, to move it, its approval unchanged.</target>
             </trans-unit>
             <trans-unit id="6zf3y2m">
                 <source>label.social_calendar_edit_texts</source>
                 <target>Edit the texts and networks</target>
-            </trans-unit>
-            <trans-unit id="WuPZbRF">
-                <source>label.social_calendar_goes_out</source>
-                <target>Goes out on %date%.</target>
-            </trans-unit>
-            <trans-unit id="wFpSXs5">
-                <source>label.social_calendar_goes_out_next</source>
-                <target>Goes out on %date%, at the next free slot.</target>
             </trans-unit>
             <trans-unit id="quz2fN2">
                 <source>label.social_calendar_month</source>
@@ -942,53 +914,41 @@
                 <source>label.social_calendar_move_failed</source>
                 <target>The move was not saved. The page will reload.</target>
             </trans-unit>
+            <trans-unit id="kH3__25">
+                <source>label.social_calendar_new</source>
+                <target>New post</target>
+            </trans-unit>
             <trans-unit id="NUU5AmN">
                 <source>label.social_calendar_next</source>
                 <target>Next</target>
             </trans-unit>
-            <trans-unit id="QGFcEKz">
-                <source>label.social_calendar_no_slot</source>
-                <target>No publication slot is on: nothing goes out on its own. Create one in "Publication slots".</target>
-            </trans-unit>
-            <trans-unit id="vApxCIC">
-                <source>label.social_calendar_no_slot_ahead</source>
-                <target>no slot</target>
-            </trans-unit>
             <trans-unit id="oZ_OaKV">
                 <source>label.social_calendar_plan</source>
-                <target>Plan at this time</target>
+                <target>Move to this time</target>
             </trans-unit>
             <trans-unit id="mVWRLZ8">
                 <source>label.social_calendar_plan_at</source>
-                <target>Go out at a set time (to the quarter of an hour)</target>
-            </trans-unit>
-            <trans-unit id="yY2ALhD">
-                <source>label.social_calendar_prepare</source>
-                <target>Prepare for this slot</target>
+                <target>Date and time (to the quarter of an hour)</target>
             </trans-unit>
             <trans-unit id="x_A7kw0">
                 <source>label.social_calendar_previous</source>
                 <target>Previous</target>
             </trans-unit>
-            <trans-unit id="wy6rTY0">
-                <source>label.social_calendar_queue</source>
-                <target>Queue</target>
+            <trans-unit id="q59uuo1">
+                <source>label.social_calendar_state_approved</source>
+                <target>Approved</target>
             </trans-unit>
             <trans-unit id="XoPg4k5">
                 <source>label.social_calendar_state_draft</source>
                 <target>To approve</target>
             </trans-unit>
-            <trans-unit id="ZN6ftUq">
-                <source>label.social_calendar_state_planned</source>
-                <target>Planned</target>
+            <trans-unit id="T6Xt2Wg">
+                <source>label.social_calendar_state_failed</source>
+                <target>Failed</target>
             </trans-unit>
             <trans-unit id="1FWwu6R">
                 <source>label.social_calendar_state_published</source>
                 <target>Published</target>
-            </trans-unit>
-            <trans-unit id="Nei6_Of">
-                <source>label.social_calendar_state_queued</source>
-                <target>In the queue</target>
             </trans-unit>
             <trans-unit id="zGk8.GX">
                 <source>label.social_calendar_today</source>
@@ -1006,13 +966,85 @@
                 <source>label.social_links</source>
                 <target>Social links</target>
             </trans-unit>
+            <trans-unit id="w1pJ779">
+                <source>label.social_media_alt</source>
+                <target>Description (alternative text)</target>
+            </trans-unit>
+            <trans-unit id="Z_lnag3">
+                <source>label.social_media_file</source>
+                <target>File</target>
+            </trans-unit>
+            <trans-unit id="CbaMOYf">
+                <source>label.social_media_image_too_big</source>
+                <target>a photo is over %max% MB</target>
+            </trans-unit>
+            <trans-unit id="f6SQAxN">
+                <source>label.social_media_no_mix</source>
+                <target>photos and a video do not go together in one post</target>
+            </trans-unit>
+            <trans-unit id="yL9PkO5">
+                <source>label.social_media_no_video</source>
+                <target>no video</target>
+            </trans-unit>
+            <trans-unit id="jAaAgEa">
+                <source>label.social_media_one_video</source>
+                <target>one video per post</target>
+            </trans-unit>
+            <trans-unit id="dEEIWOF">
+                <source>label.social_media_pick</source>
+                <target>Add from the site</target>
+            </trans-unit>
+            <trans-unit id="feTTKlo">
+                <source>label.social_media_pick_none</source>
+                <target>No media.</target>
+            </trans-unit>
+            <trans-unit id="t3sCURf">
+                <source>label.social_media_pick_search</source>
+                <target>Search by title</target>
+            </trans-unit>
+            <trans-unit id="4iYsdqL">
+                <source>label.social_media_pick_submit</source>
+                <target>Add to the post</target>
+            </trans-unit>
+            <trans-unit id="wtfHnvu">
+                <source>label.social_media_position</source>
+                <target>Order</target>
+            </trans-unit>
+            <trans-unit id="R0yQQrM">
+                <source>label.social_media_required</source>
+                <target>a photo or a video is required</target>
+            </trans-unit>
+            <trans-unit id="QH5X4ep">
+                <source>label.social_media_too_many</source>
+                <target>%max% photos at most</target>
+            </trans-unit>
+            <trans-unit id="kXejKxZ">
+                <source>label.social_media_video_too_big</source>
+                <target>the video is over %max% MB</target>
+            </trans-unit>
+            <trans-unit id="U70TJeB">
+                <source>label.social_media_video_too_long</source>
+                <target>the video lasts over %max% min</target>
+            </trans-unit>
+            <trans-unit id="aFKhq.k">
+                <source>label.social_media_video_too_short</source>
+                <target>the video lasts under %min% s</target>
+            </trans-unit>
+            <trans-unit id="Ehl11pZ">
+                <source>label.social_media_video_type</source>
+                <target>video taken as %types% only</target>
+            </trans-unit>
             <trans-unit id="tiqhi.Y">
                 <source>label.social_post</source>
                 <target>Post</target>
             </trans-unit>
             <trans-unit id="cCYS3xz">
                 <source>label.social_post_approve</source>
-                <target>Approve for the next slot</target>
+                <target>Approve</target>
+            </trans-unit>
+            <trans-unit id="qx31nDf">
+                <source>label.social_post_approve_selection</source>
+                <target>Approve the selection</target>
             </trans-unit>
             <trans-unit id="BDnUgUx">
                 <source>label.social_post_created_at</source>
@@ -1021,6 +1053,10 @@
             <trans-unit id="SKEd7Fa">
                 <source>label.social_post_failed_help</source>
                 <target>Refused by the network: %error%</target>
+            </trans-unit>
+            <trans-unit id="3pF3BRH">
+                <source>label.social_post_medias</source>
+                <target>Photos and videos</target>
             </trans-unit>
             <trans-unit id="6O9YNYV">
                 <source>label.social_post_networks</source>
@@ -1033,14 +1069,6 @@
             <trans-unit id="1wEVf6X">
                 <source>label.social_post_prepare</source>
                 <target>Prepare</target>
-            </trans-unit>
-            <trans-unit id="exBTO_f">
-                <source>label.social_post_prepare_drafts</source>
-                <target>Prepare %count% drafts</target>
-            </trans-unit>
-            <trans-unit id="l_6rzpX">
-                <source>label.social_post_prepare_next</source>
-                <target>Prepare now</target>
             </trans-unit>
             <trans-unit id="Ajfb2GE">
                 <source>label.social_post_prepare_url</source>
@@ -1070,6 +1098,10 @@
                 <source>label.social_post_status_published</source>
                 <target>Published</target>
             </trans-unit>
+            <trans-unit id="dlGt4a2">
+                <source>label.social_post_text</source>
+                <target>Text</target>
+            </trans-unit>
             <trans-unit id="HcZTdf9">
                 <source>label.social_post_text_help</source>
                 <target>%max% characters at most.</target>
@@ -1080,7 +1112,7 @@
             </trans-unit>
             <trans-unit id="3.CrzT8">
                 <source>label.social_post_unapprove</source>
-                <target>Take out of the queue</target>
+                <target>Back to draft</target>
             </trans-unit>
             <trans-unit id="L40zOCk">
                 <source>label.social_post_url</source>
@@ -1110,53 +1142,69 @@
                 <source>label.social_sample_review_waiting_comment</source>
                 <target>The work is serious, nothing to say about that. Parking out front is another matter on a Saturday.</target>
             </trans-unit>
-            <trans-unit id="rlK4OIJ">
-                <source>label.social_schedule</source>
-                <target>Publication slot</target>
+            <trans-unit id="_olmR8R">
+                <source>label.social_series_count</source>
+                <target>Number of posts</target>
             </trans-unit>
-            <trans-unit id="BzuSan4">
-                <source>label.social_schedule_enabled</source>
-                <target>Enabled</target>
+            <trans-unit id="NMEQBct">
+                <source>label.social_series_frequency</source>
+                <target>Pace</target>
             </trans-unit>
-            <trans-unit id="FNyzeCo">
-                <source>label.social_schedule_name</source>
-                <target>Name</target>
+            <trans-unit id="sEUAbo7">
+                <source>label.social_series_frequency_day</source>
+                <target>Every day</target>
             </trans-unit>
-            <trans-unit id="5Q3tqnL">
-                <source>label.social_schedule_networks</source>
-                <target>Networks</target>
+            <trans-unit id="rNFxPxN">
+                <source>label.social_series_frequency_month</source>
+                <target>Every month</target>
             </trans-unit>
-            <trans-unit id="M77AEJr">
-                <source>label.social_schedule_networks_help</source>
-                <target>The networks this slot posts on, among the connected ones. None ticked, all of them. A content already posted on a network does not go there again, but may go on another one.</target>
+            <trans-unit id="24KvQMW">
+                <source>label.social_series_frequency_week</source>
+                <target>Every week</target>
             </trans-unit>
-            <trans-unit id="K.tSG3K">
-                <source>label.social_schedule_sources</source>
+            <trans-unit id="LZyHW4t">
+                <source>label.social_series_generate</source>
+                <target>Generate a series</target>
+            </trans-unit>
+            <trans-unit id="7rBrUdC">
+                <source>label.social_series_media</source>
+                <target>Photo or video</target>
+            </trans-unit>
+            <trans-unit id="Iq_6JNH">
+                <source>label.social_series_mode</source>
+                <target>Texts</target>
+            </trans-unit>
+            <trans-unit id="W_3Bcge">
+                <source>label.social_series_mode_ai</source>
+                <target>Written by the AI from an instruction</target>
+            </trans-unit>
+            <trans-unit id="HFEEXZa">
+                <source>label.social_series_mode_source</source>
+                <target>The site's next contents (gallery, pages…)</target>
+            </trans-unit>
+            <trans-unit id="Sm7UvXD">
+                <source>label.social_series_mode_text</source>
+                <target>One text for all</target>
+            </trans-unit>
+            <trans-unit id="qCi9qFI">
+                <source>label.social_series_sources</source>
                 <target>Contents</target>
             </trans-unit>
-            <trans-unit id="B5_UFAm">
-                <source>label.social_schedule_sources_help</source>
-                <target>Where to take what is posted from: a whole content, or only some of its galleries. Empty, every content in turn.</target>
+            <trans-unit id="IfcRk0.">
+                <source>label.social_series_start</source>
+                <target>First post</target>
             </trans-unit>
-            <trans-unit id="Xr8Qgzn">
-                <source>label.social_schedule_text</source>
-                <target>Slot text</target>
+            <trans-unit id="UKWcsrC">
+                <source>label.social_series_submit</source>
+                <target>Generate the drafts</target>
             </trans-unit>
-            <trans-unit id="xbXmd_x">
-                <source>label.social_schedule_text_help</source>
-                <target>Put where the common post template holds {slot}. The common template is set in the configuration (social-publish-template).</target>
+            <trans-unit id="i7_9dBk">
+                <source>label.social_series_text</source>
+                <target>Text or instruction</target>
             </trans-unit>
-            <trans-unit id="L9x10.g">
-                <source>label.social_schedule_time</source>
-                <target>Time</target>
-            </trans-unit>
-            <trans-unit id="axzipJt">
-                <source>label.social_schedule_time_help</source>
-                <target>Every day at this time, one post is prepared. A slot added or changed is taken into account within the hour.</target>
-            </trans-unit>
-            <trans-unit id="gQdm7IR">
-                <source>label.social_schedules</source>
-                <target>Publication slots</target>
+            <trans-unit id="tZ0rqIs">
+                <source>label.social_series_text_required</source>
+                <target>Write the text or the instruction.</target>
             </trans-unit>
             <trans-unit id="XWMpUxP">
                 <source>label.style</source>

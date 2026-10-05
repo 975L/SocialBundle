@@ -10,29 +10,21 @@
                 <source>narration.guided_step_social_bluesky_handle</source>
                 <target>Enfin, si vous le souhaitez, cherchez « social-bluesky-handle » dans la configuration et indiquez le compte relié : la prochaine connexion le proposera d'emblée. Laissé vide, vous le choisirez sur la page de Bluesky.</target>
             </trans-unit>
-            <trans-unit id=".hfIUWY">
-                <source>narration.guided_step_social_bluesky_mode</source>
-                <target>Reste à choisir si une publication attend votre relecture ou part d'elle-même : c'est le réglage « social-bluesky-publish-mode ».</target>
+            <trans-unit id="2tNlQez">
+                <source>narration.guided_step_social_calendar_move</source>
+                <target>Pour changer la date d'une publication, glissez-la sur une heure à venir de la semaine, ou sur un jour du mois où elle garde son heure : elle y est prévue, validée ou non comme avant.</target>
             </trans-unit>
-            <trans-unit id="d1zkKea">
-                <source>narration.guided_step_social_calendar_drafts</source>
-                <target>À droite, « À valider » rassemble les brouillons : un clic en ouvre un, et le glisser sur un créneau le valide et le prévoit à ce moment.</target>
+            <trans-unit id="Zx3lCKG">
+                <source>narration.guided_step_social_calendar_new</source>
+                <target>Pour écrire une publication, cliquez « Nouvelle publication », ou double-cliquez directement l'heure ou le jour où elle doit partir : l'écran de la publication s'ouvre avec ce moment déjà rempli.</target>
             </trans-unit>
             <trans-unit id=".Jk8anA">
                 <source>narration.guided_step_social_calendar_open</source>
-                <target>Le panneau vous emmène sur le calendrier : la semaine de vos publications, celles parties et celles validées à la place du créneau qui les enverra. Ses heures de début et de fin se règlent dans la configuration.</target>
+                <target>Le panneau vous emmène sur le calendrier : la semaine de vos publications, celles parties et toutes celles à venir à leur date et heure, en rouge à valider, en vert validées. Ses heures de début et de fin se règlent dans la configuration.</target>
             </trans-unit>
             <trans-unit id="eg9BzH0">
                 <source>narration.guided_step_social_calendar_panel</source>
-                <target>Cliquez une publication du calendrier : son panneau la prévoit à une heure précise, la remet dans la file ou ouvre ses textes pour les modifier.</target>
-            </trans-unit>
-            <trans-unit id="txGnEBN">
-                <source>narration.guided_step_social_calendar_queue</source>
-                <target>Au-dessus, « File » garde les publications validées sans date : elles partent, dans l'ordre, au prochain créneau libre qui publie sur leurs réseaux.</target>
-            </trans-unit>
-            <trans-unit id="qdz7h.H">
-                <source>narration.guided_step_social_calendar_slot</source>
-                <target>Chaque créneau à venir accepte une publication glissée dessus, qui partira à ce moment précis. Un créneau libre propose aussi « Préparer pour ce créneau ».</target>
+                <target>Cliquez une publication du calendrier : son panneau change sa date et son heure, la valide ou la remet en brouillon, ou ouvre ses textes pour les modifier.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>
@@ -73,10 +65,6 @@
             <trans-unit id="zUH7tGI">
                 <source>narration.guided_step_social_linkedin_credentials</source>
                 <target>Cherchez « social-linkedin-client-id » et « social-linkedin-client-secret » dans la liste des réglages, et collez-y les deux valeurs de l'application.</target>
-            </trans-unit>
-            <trans-unit id="h_A4fIC">
-                <source>narration.guided_step_social_linkedin_mode</source>
-                <target>Reste à choisir si une publication attend votre relecture ou part d'elle-même : c'est le réglage « social-linkedin-publish-mode ». Et l'accès dure soixante jours : reconnectez-vous depuis la tuile avant qu'il expire.</target>
             </trans-unit>
             <trans-unit id="ocfaM9d">
                 <source>narration.guided_step_social_linkedin_prerequisites</source>
@@ -122,21 +110,21 @@
                 <source>narration.guided_step_social_meta_credentials</source>
                 <target>Cherchez « social-meta-app-id » et « social-meta-app-secret » dans la liste des réglages, et collez-y les deux valeurs de l'application. Si le compte gère plusieurs Pages, renseignez aussi « social-meta-page-id », sinon la première sera prise.</target>
             </trans-unit>
-            <trans-unit id="7XOUZrd">
-                <source>narration.guided_step_social_meta_mode</source>
-                <target>Reste à choisir, réseau par réseau, si une publication attend votre relecture ou part d'elle-même : ce sont les réglages « social-facebook-publish-mode » et « social-instagram-publish-mode ».</target>
-            </trans-unit>
             <trans-unit id="NauQ5Sa">
                 <source>narration.guided_step_social_meta_prerequisites</source>
                 <target>Cette première partie se passe chez Meta, sur developers.facebook.com : créez une application, ajoutez-lui la connexion Facebook avec l'adresse de retour du site, et laissez-la en mode développement. Vérifiez aussi que la Page est reliée au compte Instagram professionnel. Revenez ici avec l'identifiant et la clé secrète.</target>
             </trans-unit>
             <trans-unit id="vcZmc00">
                 <source>narration.guided_step_social_posts_approve</source>
-                <target>De retour sur la liste, si des créneaux sont actifs, « Valider pour le prochain créneau » confie la publication au prochain créneau qui publie sur ses réseaux, ou à sa date prévue, au lieu de l'envoyer tout de suite.</target>
+                <target>De retour sur la liste, « Valider » confie la publication à sa date prévue : elle partira d'elle-même, au lieu d'être envoyée tout de suite.</target>
             </trans-unit>
             <trans-unit id="4cJ._fk">
                 <source>narration.guided_step_social_posts_edit</source>
-                <target>Le bouton de modification ouvre la publication : un texte par réseau, chacun à la longueur que ce réseau accepte, sous l'image qui partira avec. Corrigez ce qui doit l'être.</target>
+                <target>Le bouton de modification ouvre la publication : un texte par réseau, chacun à la longueur que ce réseau accepte, sous les photos ou la vidéo qui partiront avec. Corrigez ce qui doit l'être.</target>
+            </trans-unit>
+            <trans-unit id="HRyz2B3">
+                <source>narration.guided_step_social_posts_medias</source>
+                <target>Ajoutez ici des photos ou une vidéo, dans l'ordre où elles partent, ou reprenez-en de la galerie avec « Ajouter depuis le site ». Les règles de chaque réseau coché sont vérifiées à l'enregistrement.</target>
             </trans-unit>
             <trans-unit id="kNA4Y5N">
                 <source>narration.guided_step_social_posts_networks</source>
@@ -144,15 +132,15 @@
             </trans-unit>
             <trans-unit id="EhIZhRa">
                 <source>narration.guided_step_social_posts_open</source>
-                <target>Le panneau vous emmène sur l'écran des publications. Elles se préparent d'elles-mêmes, aux heures des créneaux de publication, ou à défaut au rythme que fixe le réglage de l'intervalle ; celles en brouillon attendent ici votre relecture.</target>
+                <target>Le panneau vous emmène sur l'écran des publications. Chacune a sa date et son heure ; celles en brouillon attendent ici votre relecture, puis votre validation.</target>
             </trans-unit>
             <trans-unit id="RyKdiUj">
                 <source>narration.guided_step_social_posts_planned_at</source>
-                <target>Le champ « Prévue le » est facultatif : vide, la publication validée part au prochain créneau libre ; rempli, elle part à cette date et heure précises, au quart d'heure près.</target>
+                <target>Le champ « Prévue le » fixe la date et l'heure où la publication part une fois validée, au quart d'heure près.</target>
             </trans-unit>
             <trans-unit id="kE9wnJX">
                 <source>narration.guided_step_social_posts_prepare</source>
-                <target>Pour ne pas attendre, « Préparer maintenant » prend le prochain contenu, et « Depuis une adresse » prépare n'importe quelle page, de ce site ou d'un autre. Et « Préparer 7 brouillons » en prépare une semaine d'avance, que vous validerez ensuite une par une.</target>
+                <target>« Depuis une adresse » prépare un brouillon de n'importe quelle page, de ce site ou d'un autre, à la date que vous choisissez.</target>
             </trans-unit>
             <trans-unit id="nuTQi3q">
                 <source>narration.guided_step_social_posts_publish</source>
@@ -162,33 +150,29 @@
                 <source>narration.guided_step_social_posts_save</source>
                 <target>Enregistrez avec le bouton en bas du formulaire.</target>
             </trans-unit>
-            <trans-unit id="6Dywe6l">
-                <source>narration.guided_step_social_schedules_edit</source>
-                <target>Cliquez sur le bouton pour ajouter un créneau, ou sur la ligne d'un créneau existant pour le modifier.</target>
+            <trans-unit id="CxfcrdE">
+                <source>narration.guided_step_social_posts_series</source>
+                <target>« Générer une série » prépare plusieurs brouillons d'un coup, à intervalle régulier, que vous relisez puis validez ensemble.</target>
             </trans-unit>
-            <trans-unit id="w7ckofR">
-                <source>narration.guided_step_social_schedules_networks</source>
-                <target>Cochez les réseaux sur lesquels ce créneau publie ; sans rien cocher, il publie sur tous ceux qui sont connectés.</target>
+            <trans-unit id="fl_JIU5">
+                <source>narration.guided_step_social_series_frequency</source>
+                <target>Choisissez le rythme : un brouillon par jour, par semaine ou par mois.</target>
             </trans-unit>
-            <trans-unit id="FrNIZFb">
-                <source>narration.guided_step_social_schedules_open</source>
-                <target>Le panneau vous emmène sur l'écran des créneaux de publication. Chacun prépare une publication par jour, à son heure ; dès qu'un créneau est actif, l'intervalle n'est plus utilisé.</target>
+            <trans-unit id="I6Q3TO3">
+                <source>narration.guided_step_social_series_generate</source>
+                <target>Cliquez sur « Générer les brouillons » : le calendrier s'ouvre sur le premier, il ne reste qu'à relire et valider.</target>
             </trans-unit>
-            <trans-unit id="FKs.IOq">
-                <source>narration.guided_step_social_schedules_save</source>
-                <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            <trans-unit id="CVYlOoX">
+                <source>narration.guided_step_social_series_media</source>
+                <target>Si vous le souhaitez, ajoutez une photo ou une vidéo : elle partira avec chaque publication écrite ici.</target>
             </trans-unit>
-            <trans-unit id="1VpRy8b">
-                <source>narration.guided_step_social_schedules_sources</source>
-                <target>Choisissez les contenus où puiser : un contenu entier, ou seulement certaines de ses galeries. Laissé vide, tous les contenus passent à tour de rôle.</target>
+            <trans-unit id="rPawNlG">
+                <source>narration.guided_step_social_series_mode</source>
+                <target>Choisissez d'où viennent les textes : un même texte, une consigne que l'IA décline, ou les prochains contenus du site.</target>
             </trans-unit>
-            <trans-unit id="LMuUJQ_">
-                <source>narration.guided_step_social_schedules_text</source>
-                <target>Si vous le souhaitez, écrivez un texte propre à ce créneau : il prend la place de l'étiquette « slot » du modèle de publication commun.</target>
-            </trans-unit>
-            <trans-unit id="0uawAGt">
-                <source>narration.guided_step_social_schedules_time</source>
-                <target>Choisissez l'heure à laquelle la publication sera préparée, chaque jour.</target>
+            <trans-unit id="yIyQYG.">
+                <source>narration.guided_step_social_series_open</source>
+                <target>Le panneau vous emmène sur la génération d'une série : plusieurs brouillons d'un coup, que vous relirez ensuite. Indiquez combien, à partir de quand et sur quels réseaux.</target>
             </trans-unit>
             <trans-unit id="DrMJai5">
                 <source>narration.guided_step_social_share_buttons_anchor</source>
@@ -232,7 +216,7 @@
             </trans-unit>
             <trans-unit id="dugZDEg">
                 <source>narration.social_calendar</source>
-                <target>« Calendrier » montre le calendrier de vos publications : celles parties, et celles validées à la place où elles partiront. Glissez-en une sur un créneau pour la prévoir.</target>
+                <target>« Calendrier » montre le calendrier de vos publications : celles parties, et toutes celles à venir à leur date. Glissez-en une sur une autre heure pour la déplacer.</target>
             </trans-unit>
             <trans-unit id="Yn0vUBO">
                 <source>narration.social_connections</source>
@@ -244,11 +228,7 @@
             </trans-unit>
             <trans-unit id="m6sfKEB">
                 <source>narration.social_posts</source>
-                <target>« Publications » rassemble ce qui est préparé pour vos réseaux : vous relisez chaque texte, puis vous publiez.</target>
-            </trans-unit>
-            <trans-unit id="16Jj3bI">
-                <source>narration.social_schedules</source>
-                <target>« Créneaux de publication » fixe les heures auxquelles vos réseaux reçoivent une publication, et ce que chaque créneau publie.</target>
+                <target>« Publications » rassemble vos publications, écrites ici ou préparées : vous relisez chaque texte, puis vous validez ou publiez.</target>
             </trans-unit>
         </body>
     </file>

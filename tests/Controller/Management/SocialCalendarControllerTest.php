@@ -16,95 +16,113 @@ use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Repository\SocialPostRepository;
-use c975L\SocialBundle\Repository\SocialScheduleRepository;
+use c975L\SocialBundle\Service\SocialMediaChecker;
 use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Translation\TranslatableMessage;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-// What a card dropped on the calendar does to its post: the move is the one thing this screen writes
+// What a card dropped on the calendar, or the panel's buttons, do to its post: the move is the one thing this screen writes
 class SocialCalendarControllerTest extends TestCase
 {
+    // The media checker the next controller built is given, a stub answering no problem otherwise
+    private ?SocialMediaChecker $mediaChecker = null;
+
     private SocialPost $post;
+
+    private \DateTimeImmutable $plannedAt;
 
     private int $flushes = 0;
 
     protected function setUp(): void
     {
-        $this->post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null);
+        $this->plannedAt = new \DateTimeImmutable('+1 day 09:30');
+        $this->post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, $this->plannedAt);
         new SocialPostTarget($this->post, 'bluesky', 'Text');
     }
 
     private function controller(): SocialCalendarController
     {
-        $postRepository = $this->createStub(SocialPostRepository::class);
-        $scheduleRepository = $this->createStub(SocialScheduleRepository::class);
-
         return new SocialCalendarController(
             $this->createStub(ConfigServiceInterface::class),
-            new SocialPlanner($postRepository, $scheduleRepository),
+            new SocialPlanner(),
             $this->createStub(SocialPublisher::class),
-            $postRepository,
-            $scheduleRepository,
+            $this->createStub(SocialPostRepository::class),
             $this->createStub(EntityManagerInterface::class),
             $this->createStub(AdminUrlGeneratorInterface::class),
+            $this->mediaChecker ?? $this->createStub(SocialMediaChecker::class),
+            $this->createStub(TranslatorInterface::class),
         );
     }
 
-    // A card is taller than a quarter of an hour: items whose heights overlap go side by side, the next one free again taking the first lane back
+    // A card covers two quarters of an hour: items whose heights overlap go side by side, the next one free again taking the first lane back
     public function testOverlappingItemsOfTheWeekGoSideBySide(): void
     {
         $item = static fn (string $kind, string $at): array => ['kind' => $kind, 'at' => new \DateTimeImmutable('2026-10-04 ' . $at)];
         $rows = new \ReflectionMethod(SocialCalendarController::class, 'rows')->invoke($this->controller(), [
-            $item('slot', '19:00'), $item('planned', '19:15'), $item('planned', '19:30'), $item('planned', '21:00'),
+            $item('published', '19:00'), $item('planned', '19:15'), $item('planned', '19:30'), $item('planned', '21:00'),
         ]);
 
         // From 06:00, 19:00 is the 52nd quarter of an hour
-        $this->assertSame([[52, 0], [53, 1], [54, 2], [60, 0]], array_map(static fn (array $group): array => [$group['row'], $group['lane']], $rows));
-        $this->assertSame([3], array_values(array_unique(array_column($rows, 'lanes'))));
+        $this->assertSame([[52, 0], [53, 1], [54, 0], [60, 0]], array_map(static fn (array $group): array => [$group['row'], $group['lane']], $rows));
+        $this->assertSame([2], array_values(array_unique(array_column($rows, 'lanes'))));
     }
 
-    // Same seam as the OAuth controllers' tests: AbstractController resolves security, the csrf check and the flash bag through its container
-    private function createController(Request $request, ?SocialPublisher $publisher = null): SocialCalendarController
+    // The card's colour: a draft, an approved post, one refused somewhere, one gone out on every network
+    public function testTheStateOfAPostSaysWhereItStands(): void
+    {
+        $state = fn (): string => new \ReflectionMethod(SocialCalendarController::class, 'state')->invoke($this->controller(), $this->post);
+
+        $this->assertSame('draft', $state());
+        $this->post->approve();
+        $this->assertSame('approved', $state());
+        $this->target()->markFailed('Refused');
+        $this->assertSame('failed', $state());
+        $this->target()->markPublished('ext-1');
+        $this->assertSame('published', $state());
+    }
+
+    // A post with no network has gone nowhere: a draft, still shown and still moved
+    public function testAPostWithNoNetworkIsADraft(): void
+    {
+        $post = new SocialPost(SocialPost::SOURCE_MANUAL, 'none', 'None', '', null, new \DateTimeImmutable('+1 day'));
+
+        $this->assertSame('draft', new \ReflectionMethod(SocialCalendarController::class, 'state')->invoke($this->controller(), $post));
+    }
+
+    // Same seam as the OAuth controllers' tests: AbstractController resolves security and the csrf check through its container
+    private function createController(Request $request): SocialCalendarController
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $key) => 'site-role-editor' === $key ? 'ROLE_EDITOR' : null);
 
         $postRepository = $this->createStub(SocialPostRepository::class);
         $postRepository->method('find')->willReturnCallback(fn (mixed $id): ?SocialPost => 42 === $id ? $this->post : null);
-        $postRepository->method('findDrafts')->willReturnCallback(fn (): array => [$this->post]);
 
         $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('flush')->willReturnCallback(function (): void {
             ++$this->flushes;
         });
 
-        $scheduleRepository = $this->createStub(SocialScheduleRepository::class);
-        $adminUrlGenerator = $this->createStub(AdminUrlGeneratorInterface::class);
-        $adminUrlGenerator->method('unsetAll')->willReturnSelf();
-        $adminUrlGenerator->method('setController')->willReturnSelf();
-        $adminUrlGenerator->method('setAction')->willReturnSelf();
-        $adminUrlGenerator->method('setEntityId')->willReturnSelf();
-        $adminUrlGenerator->method('generateUrl')->willReturn('/edit');
         $controller = new SocialCalendarController(
             $configService,
-            new SocialPlanner($postRepository, $scheduleRepository),
-            $publisher ?? $this->createStub(SocialPublisher::class),
+            new SocialPlanner(),
+            $this->createStub(SocialPublisher::class),
             $postRepository,
-            $scheduleRepository,
             $entityManager,
-            $adminUrlGenerator,
+            $this->createStub(AdminUrlGeneratorInterface::class),
+            $this->mediaChecker ?? $this->createStub(SocialMediaChecker::class),
+            $this->createStub(TranslatorInterface::class),
         );
 
         $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
@@ -128,25 +146,54 @@ class SocialCalendarControllerTest extends TestCase
         return $this->createController($request)->move($request);
     }
 
-    private function targetStatus(): SocialPostStatus
+    private function target(): SocialPostTarget
     {
         $target = $this->post->getTargets()->first();
+        \assert($target instanceof SocialPostTarget);
 
-        return $target instanceof SocialPostTarget ? $target->getStatus() : SocialPostStatus::Failed;
+        return $target;
     }
 
-    // A draft dropped on a slot is approved and planned there, the moment brought to the server's own time zone
-    public function testADraftDroppedOnASlotIsApprovedAndPlannedThere(): void
+    // A draft dropped on a quarter of an hour is planned there, the moment brought to the server's own time zone, and stays a draft
+    public function testADraftDroppedOnAMomentIsPlannedThereAndStaysADraft(): void
     {
         $at = new \DateTimeImmutable('+2 days 19:00');
 
         $this->assertSame(Response::HTTP_NO_CONTENT, $this->move($at->format('c'))->getStatusCode());
-        $this->assertSame(SocialPostStatus::Approved, $this->targetStatus());
+        $this->assertSame(SocialPostStatus::Draft, $this->target()->getStatus());
         $this->assertEquals($at, $this->post->getPlannedAt());
         $this->assertSame(1, $this->flushes);
     }
 
-    // The panel's field, typed in the server's time zone, is read there and brought to the nearest quarter of an hour; a drop on a slot stays exact
+    // An approved post moved elsewhere keeps its approval: only the panel's button takes it back
+    public function testAnApprovedPostMovedStaysApproved(): void
+    {
+        $this->post->approve();
+
+        $this->move(new \DateTimeImmutable('+3 days 08:00')->format('c'));
+
+        $this->assertSame(SocialPostStatus::Approved, $this->target()->getStatus());
+    }
+
+    // Dropped on a day of the month, a post keeps its time of day
+    public function testADayOnlyDropKeepsTheTimeOfDay(): void
+    {
+        $day = new \DateTimeImmutable('+5 days');
+
+        $this->assertSame(Response::HTTP_NO_CONTENT, $this->move($day->format('Y-m-d'))->getStatusCode());
+        $this->assertEquals($day->setTime(9, 30), $this->post->getPlannedAt());
+    }
+
+    // Today dropped on with the post's time of day already gone by would only send it at once
+    public function testADayOnlyDropOnTodayWhenItsTimeIsGoneIsRefused(): void
+    {
+        $this->post->setPlannedAt(new \DateTimeImmutable('today 00:00'));
+
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->move(new \DateTimeImmutable('today')->format('Y-m-d'))->getStatusCode());
+        $this->assertSame(0, $this->flushes);
+    }
+
+    // The panel's field, typed in the server's time zone, is read there and brought to the nearest quarter of an hour; a drop on a quarter stays exact
     public function testAMomentTypedInThePanelIsReadInTheServerTimeZoneToTheQuarter(): void
     {
         $day = new \DateTimeImmutable('+2 days');
@@ -158,61 +205,68 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertEquals($day->setTime(10, 7), $this->post->getPlannedAt());
     }
 
-    // Dropped on the queue, a planned post goes back to the next slot free
-    public function testAPostDroppedOnTheQueueIsUnplanned(): void
+    // A media a network does not take refuses the approval, the reason said in the answer for the calendar to show
+    public function testAnApprovalTheMediasDoNotSuitIsRefusedWithItsReason(): void
     {
-        $this->post->setPlannedAt(new \DateTimeImmutable('+2 days'));
+        $this->mediaChecker = $this->createStub(SocialMediaChecker::class);
+        $this->mediaChecker->method('check')->willReturn(['instagram' => [new TranslatableMessage('label.social_media_required')]]);
 
-        $this->move('queue');
+        $response = $this->move('approve');
 
-        $this->assertSame(SocialPostStatus::Approved, $this->targetStatus());
-        $this->assertNull($this->post->getPlannedAt());
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        $this->assertStringStartsWith('Instagram : ', (string) $response->getContent());
+        $this->assertSame(SocialPostStatus::Draft, $this->target()->getStatus());
+        $this->assertSame(0, $this->flushes);
     }
 
-    // Dropped on the drafts, a post leaves the queue and waits for a reading again
-    public function testAPostDroppedOnTheDraftsLeavesTheQueue(): void
+    // The panel's approval goes through the move, the post keeping its moment
+    public function testApproveAndUnapproveGoThroughTheMove(): void
     {
-        $this->post->approve();
-        $this->post->setPlannedAt(new \DateTimeImmutable('+2 days'));
+        $this->assertSame(Response::HTTP_NO_CONTENT, $this->move('approve')->getStatusCode());
+        $this->assertSame(SocialPostStatus::Approved, $this->target()->getStatus());
 
-        $this->move('drafts');
-
-        $this->assertSame(SocialPostStatus::Draft, $this->targetStatus());
-        $this->assertNull($this->post->getPlannedAt());
+        $this->assertSame(Response::HTTP_NO_CONTENT, $this->move('unapprove')->getStatusCode());
+        $this->assertSame(SocialPostStatus::Draft, $this->target()->getStatus());
+        $this->assertEquals($this->plannedAt, $this->post->getPlannedAt());
+        $this->assertSame(2, $this->flushes);
     }
 
-    // A slot already gone would send nothing: the post would only wait for the next one, somewhere it was not dropped
-    public function testASlotGoneOrAnUnknownPlaceIsRefused(): void
+    // A moment already gone would only be sent at once, somewhere it was not dropped; an unknown place plans nothing
+    public function testAMomentGoneOrAnUnknownPlaceIsRefused(): void
     {
         $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->move(new \DateTimeImmutable('-1 hour')->format('c'))->getStatusCode());
         $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->move('nowhere')->getStatusCode());
-        $this->assertSame(SocialPostStatus::Draft, $this->targetStatus());
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->move('')->getStatusCode());
+        $this->assertEquals($this->plannedAt, $this->post->getPlannedAt());
         $this->assertSame(0, $this->flushes);
+    }
+
+    // A post gone out on every network moves no more
+    public function testAPublishedPostIsRefused(): void
+    {
+        $this->target()->markPublished('ext-1');
+
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->move(new \DateTimeImmutable('+3 days 08:00')->format('c'))->getStatusCode());
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->move('unapprove')->getStatusCode());
+        $this->assertEquals($this->plannedAt, $this->post->getPlannedAt());
+        $this->assertSame(0, $this->flushes);
+    }
+
+    // A post refused somewhere is still moved, to be tried again at its new moment
+    public function testAFailedPostCanBeMoved(): void
+    {
+        $this->target()->markFailed('Refused');
+        $at = new \DateTimeImmutable('+3 days 08:00');
+
+        $this->assertSame(Response::HTTP_NO_CONTENT, $this->move($at->format('c'))->getStatusCode());
+        $this->assertEquals($at, $this->post->getPlannedAt());
+        $this->assertSame(SocialPostStatus::Failed, $this->target()->getStatus());
     }
 
     // The move plans a post that goes out under the site's name: no token, nothing changes
     public function testAMoveWithoutTheTokenIsRefused(): void
     {
-        $this->assertSame(Response::HTTP_FORBIDDEN, $this->move('queue', 'forged')->getStatusCode());
-        $this->assertSame(SocialPostStatus::Draft, $this->targetStatus());
-    }
-
-    // A slot already holding a draft, from a second click or another tab, opens it rather than preparing a second post for the same moment
-    public function testASlotAlreadyPreparedIsNotPreparedTwice(): void
-    {
-        $at = new \DateTimeImmutable('+1 day')->setTime(9, 0);
-        $this->post->setPlannedAt($at);
-        $publisher = $this->createMock(SocialPublisher::class);
-        $publisher->expects($this->never())->method('prepareForSlot');
-        $request = Request::create('/', 'POST', ['slot' => '3', 'at' => $at->format('c'), '_token' => 'valid']);
-        $request->setSession(new Session(new MockArraySessionStorage()));
-
-        $response = $this->createController($request, $publisher)->prepare($request);
-
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertSame('/edit', $response->getTargetUrl());
-        $session = $request->getSession();
-        \assert($session instanceof Session);
-        $this->assertArrayHasKey('warning', $session->getFlashBag()->all());
+        $this->assertSame(Response::HTTP_FORBIDDEN, $this->move('approve', 'forged')->getStatusCode());
+        $this->assertSame(SocialPostStatus::Draft, $this->target()->getStatus());
     }
 }

@@ -18,7 +18,6 @@ use c975L\SocialBundle\Controller\Management\SocialCalendarController;
 use c975L\SocialBundle\Controller\Management\SocialConnectionsController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use c975L\SocialBundle\Controller\Management\SocialPostCrudController;
-use c975L\SocialBundle\Controller\Management\SocialScheduleCrudController;
 use c975L\UiBundle\Controller\Management\ReviewCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
@@ -42,7 +41,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->shareButtonsProject(),
             $this->googleConnectProject(),
             $this->googleReviewsProject(),
-            $this->socialSchedulesProject(),
+            $this->seriesProject(),
             $this->metaConnectProject(),
             $this->socialPostsProject(),
             $this->blueskyConnectProject(),
@@ -147,7 +146,58 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
         ];
     }
 
-    // What the editor does with the posts the hourly run prepares: read them, correct them, send them - saving before sending, "Publish" being offered on the list alone
+    // A series of drafts at a steady pace, walked down its form - the screen also opened from the posts' list and from the calendar
+    private function seriesProject(): array
+    {
+        return [
+            'slug' => 'social-series',
+            'label' => 'label.guided_project_social_series',
+            'description' => 'description.guided_project_social_series',
+            'translation_domain' => 'social',
+            'order' => 4050,
+            // The bar SocialPostCrudController::generateSeries() states
+            'role' => $this->configService->get('site-role-editor'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_social_series_open',
+                    'description' => 'description.guided_step_social_series_open',
+                    'narration' => 'narration.guided_step_social_series_open',
+                    'url' => $this->adminUrlGenerator
+                        ->unsetAll()
+                        ->setController(SocialPostCrudController::class)
+                        ->setAction('generateSeries')
+                        ->generateUrl(),
+                ],
+                [
+                    // The fields' own ids, the form being named after SocialSeriesType
+                    'label' => 'label.guided_step_social_series_frequency',
+                    'description' => 'description.guided_step_social_series_frequency',
+                    'narration' => 'narration.guided_step_social_series_frequency',
+                    'highlight' => '#social_series_frequency',
+                ],
+                [
+                    'label' => 'label.guided_step_social_series_mode',
+                    'description' => 'description.guided_step_social_series_mode',
+                    'narration' => 'narration.guided_step_social_series_mode',
+                    'highlight' => '#social_series_mode',
+                ],
+                [
+                    'label' => 'label.guided_step_social_series_media',
+                    'description' => 'help.social_series_media',
+                    'narration' => 'narration.guided_step_social_series_media',
+                    'highlight' => '#social_series_media',
+                ],
+                [
+                    'label' => 'label.guided_step_social_series_generate',
+                    'description' => 'description.guided_step_social_series_generate',
+                    'narration' => 'narration.guided_step_social_series_generate',
+                    'highlight' => 'form[name="social_series"] button[type="submit"]',
+                ],
+            ],
+        ];
+    }
+
+    // What the editor does with the posts: prepare them, read them, correct them, approve or send them - saving before sending, "Publish" being offered on the list alone
     private function socialPostsProject(): array
     {
         return [
@@ -155,7 +205,6 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_social_posts',
             'description' => 'description.guided_project_social_posts',
             'translation_domain' => 'social',
-            // After the slots, the "Approve" button it points at being offered once one is on
             'order' => 4070,
             // The bar SocialPostCrudController states on its own rows
             'role' => $this->configService->get('site-role-editor'),
@@ -167,11 +216,18 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'url' => $this->indexUrl(SocialPostCrudController::class),
                 ],
                 [
-                    // All at once, the three global actions preparing posts: the next content, a week of drafts, or any page by its address
+                    // A series of drafts at a steady pace, from one text, the AI or the sources
+                    'label' => 'label.guided_step_social_posts_series',
+                    'description' => 'description.guided_step_social_posts_series',
+                    'narration' => 'narration.guided_step_social_posts_series',
+                    'highlight' => '.action-generateSeries',
+                ],
+                [
+                    // The global action preparing a draft of any page by its address
                     'label' => 'label.guided_step_social_posts_prepare',
                     'description' => 'description.guided_step_social_posts_prepare',
                     'narration' => 'narration.guided_step_social_posts_prepare',
-                    'highlight' => '.action-prepareNextPost, .action-prepareDrafts, .action-prepareUrlPost',
+                    'highlight' => '.action-prepareUrlPost',
                 ],
                 [
                     'label' => 'label.guided_step_social_posts_edit',
@@ -187,6 +243,12 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '#SocialPost_plannedAt',
                 ],
                 [
+                    'label' => 'label.guided_step_social_posts_medias',
+                    'description' => 'help.social_post_medias',
+                    'narration' => 'narration.guided_step_social_posts_medias',
+                    'highlight' => '#SocialPost_medias',
+                ],
+                [
                     'label' => 'label.guided_step_social_posts_networks',
                     'description' => 'help.social_post_send_on',
                     'narration' => 'narration.guided_step_social_posts_networks',
@@ -198,7 +260,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '.action-saveAndReturn',
                 ],
                 [
-                    // The way a post goes out once a slot is on, before "Publish" sending it at once
+                    // The way a post goes out at its moment, before "Publish" sending it at once
                     'label' => 'label.guided_step_social_posts_approve',
                     'description' => 'description.guided_step_social_posts_approve',
                     'narration' => 'narration.guided_step_social_posts_approve',
@@ -245,72 +307,6 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'narration' => 'narration.guided_step_social_meta_connect',
                     'highlight' => 'a[href*="/social/meta/connect"]',
                 ],
-                [
-                    // No highlight: consenting leaves the site, and the two modes are configs found with the screen's own search
-                    'label' => 'label.guided_step_social_meta_mode',
-                    'description' => 'description.guided_step_social_meta_mode',
-                    'narration' => 'narration.guided_step_social_meta_mode',
-                ],
-            ],
-        ];
-    }
-
-    // The slots pacing the posts: a time of day, what it draws from, where it posts - the interval standing aside as soon as one is on
-    private function socialSchedulesProject(): array
-    {
-        return [
-            'slug' => 'social-schedules',
-            'label' => 'label.guided_project_social_schedules',
-            'description' => 'description.guided_project_social_schedules',
-            'translation_domain' => 'social',
-            'order' => 4050,
-            // The bar SocialScheduleCrudController states on its own rows
-            'role' => $this->configService->get('site-role-editor'),
-            'steps' => [
-                [
-                    'label' => 'label.guided_step_social_schedules_open',
-                    'description' => 'description.guided_step_social_schedules_open',
-                    'narration' => 'narration.guided_step_social_schedules_open',
-                    'url' => $this->indexUrl(SocialScheduleCrudController::class),
-                ],
-                [
-                    'label' => 'label.guided_step_social_schedules_edit',
-                    'description' => 'description.guided_step_social_schedules_edit',
-                    'narration' => 'narration.guided_step_social_schedules_edit',
-                    'highlight' => '.action-new, .action-edit',
-                ],
-                // The fields' own ids, EasyAdmin naming the form after the entity - in the order the form renders them
-                [
-                    'label' => 'label.guided_step_social_schedules_time',
-                    'description' => 'description.guided_step_social_schedules_time',
-                    'narration' => 'narration.guided_step_social_schedules_time',
-                    'highlight' => '#SocialSchedule_time',
-                ],
-                [
-                    // The TomSelect box following the select, which autocomplete() hides
-                    'label' => 'label.guided_step_social_schedules_sources',
-                    'description' => 'description.guided_step_social_schedules_sources',
-                    'narration' => 'narration.guided_step_social_schedules_sources',
-                    'highlight' => '#SocialSchedule_sources + .ts-wrapper',
-                ],
-                [
-                    'label' => 'label.guided_step_social_schedules_networks',
-                    // Described by the help its screen shows
-                    'description' => 'label.social_schedule_networks_help',
-                    'narration' => 'narration.guided_step_social_schedules_networks',
-                    'highlight' => '#SocialSchedule_networks',
-                ],
-                [
-                    'label' => 'label.guided_step_social_schedules_text',
-                    'description' => 'description.guided_step_social_schedules_text',
-                    'narration' => 'narration.guided_step_social_schedules_text',
-                    'highlight' => '#SocialSchedule_text',
-                ],
-                [
-                    'label' => 'label.guided_step_social_schedules_save',
-                    'narration' => 'narration.guided_step_social_schedules_save',
-                    'highlight' => '.action-saveAndReturn',
-                ],
             ],
         ];
     }
@@ -341,12 +337,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => 'a[href*="/social/bluesky/connect"]',
                 ],
                 [
-                    // No highlight: consenting leaves the site, and the mode and the handle are configs found with the screen's own search
-                    'label' => 'label.guided_step_social_bluesky_mode',
-                    'description' => 'description.guided_step_social_bluesky_mode',
-                    'narration' => 'narration.guided_step_social_bluesky_mode',
-                ],
-                [
+                    // No highlight: consenting leaves the site, and the handle is a config found with the screen's own search
                     'label' => 'label.guided_step_social_bluesky_handle',
                     'description' => 'description.guided_step_social_bluesky_handle',
                     'narration' => 'narration.guided_step_social_bluesky_handle',
@@ -385,17 +376,11 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'narration' => 'narration.guided_step_social_linkedin_connect',
                     'highlight' => 'a[href*="/social/linkedin/connect"]',
                 ],
-                [
-                    // No highlight: consenting leaves the site, and the mode is a config found with the screen's own search
-                    'label' => 'label.guided_step_social_linkedin_mode',
-                    'description' => 'description.guided_step_social_linkedin_mode',
-                    'narration' => 'narration.guided_step_social_linkedin_mode',
-                ],
             ],
         ];
     }
 
-    // Where each approved post falls among the coming slots, moved with a drag - the screen is a route of its own, not a CRUD index
+    // Every post at its moment, moved with a drag - the screen is a route of its own, not a CRUD index
     private function socialCalendarProject(): array
     {
         return [
@@ -414,23 +399,18 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'url' => $this->urlGenerator->generate(SocialCalendarController::ROUTE),
                 ],
                 [
-                    'label' => 'label.guided_step_social_calendar_drafts',
-                    'description' => 'description.guided_step_social_calendar_drafts',
-                    'narration' => 'narration.guided_step_social_calendar_drafts',
-                    'highlight' => '[data-to="drafts"]',
+                    // The button and the double click both open the screen of a new post, the double click planning it where it was made
+                    'label' => 'label.guided_step_social_calendar_new',
+                    'description' => 'description.guided_step_social_calendar_new',
+                    'narration' => 'narration.guided_step_social_calendar_new',
+                    'highlight' => '.social-calendar-new',
                 ],
                 [
-                    'label' => 'label.guided_step_social_calendar_queue',
-                    'description' => 'description.guided_step_social_calendar_queue',
-                    'narration' => 'narration.guided_step_social_calendar_queue',
-                    'highlight' => '[data-to="queue"]',
-                ],
-                [
-                    // The coming slots only, the drafts and the queue being drop zones too
-                    'label' => 'label.guided_step_social_calendar_slot',
-                    'description' => 'description.guided_step_social_calendar_slot',
-                    'narration' => 'narration.guided_step_social_calendar_slot',
-                    'highlight' => '.social-calendar-slot',
+                    // The coming quarters of an hour of the week, or days of the month, a card is dropped on
+                    'label' => 'label.guided_step_social_calendar_move',
+                    'description' => 'description.guided_step_social_calendar_move',
+                    'narration' => 'narration.guided_step_social_calendar_move',
+                    'highlight' => '[data-social-calendar-target="zone"]',
                 ],
                 [
                     // No highlight: the calendar may hold no post to point at

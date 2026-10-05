@@ -13,8 +13,9 @@ namespace c975L\SocialBundle\Controller\Management;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
+use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Repository\SocialPostRepository;
-use c975L\SocialBundle\Repository\SocialScheduleRepository;
+use c975L\SocialBundle\Service\SocialMediaChecker;
 use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPublisher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,13 +23,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Translation\TranslatableMessage;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-use function Symfony\Component\Translation\t;
-
-// The week - or the month - of publications: what went out, and where each approved post falls among the coming slots - computed by SocialPlanner, the very rule the slots send by, so nothing is stored here. A post is dragged onto a slot to plan it there, onto the queue to unplan it, onto the drafts to take it out of the queue; a click opens it
+// The week - or the month - of publications: what went out, and every post still to go out at its planned moment, a draft as well as an approved one. A post is dragged onto another moment to plan it there, its approval untouched; a click opens it, a double click on a coming moment writes a new one there
 class SocialCalendarController extends AbstractController
 {
     // The dashboard prefixes the AdminRoute name with its own route name (see SocialConnectionsController::ROUTE)
@@ -36,59 +36,23 @@ class SocialCalendarController extends AbstractController
 
     private const string MOVE_ROUTE = 'management_social_calendar_move';
 
-    private const string PREPARE_ROUTE = 'management_social_calendar_prepare';
-
     private const string PANEL_ROUTE = 'management_social_calendar_post';
 
     // A drag plans a post that goes out under the site's name: checked against a token, like "Publish"
     private const string CSRF_TOKEN = 'social_calendar';
 
-    // Where a post dragged off the slots lands: the queue keeps it approved, the drafts take it back for a reading
-    private const string TO_QUEUE = 'queue';
+    // The panel's two other gestures, sent through the same move as a drag
+    private const string TO_APPROVE = 'approve';
 
-    private const string TO_DRAFTS = 'drafts';
+    private const string TO_UNAPPROVE = 'unapprove';
 
     // The two views: a week of tall days, opened first, or a month of short ones
     private const string WEEK = 'week';
 
     private const string MONTH = 'month';
 
-    // What is still to go out between the two days, by day: the drafts planned for a moment, the approved posts planned for theirs, and the coming slots with the post each will send
-    /**
-     * @param list<SocialPost> $drafts
-     *
-     * @return array<string, list<array<string, mixed>>>
-     */
-    private function comingItems(\DateTimeImmutable $start, \DateTimeImmutable $end, array $drafts): array
-    {
-        // A draft planned for a moment goes out only once approved, but holds that moment already: shown there, and its slot not offered for preparing twice
-        $plannedDrafts = array_values(array_filter($drafts, static fn (SocialPost $draft): bool => null !== $draft->getPlannedAt()));
-
-        $items = [];
-        foreach ($plannedDrafts as $draft) {
-            $at = $draft->getPlannedAt();
-            if (null !== $at && $at >= $start && $at < $end) {
-                $items[$at->format('Y-m-d')][] = ['kind' => 'planned', 'at' => $at, 'slot' => null, 'slot_networks' => [], 'post' => ['sent' => [], 'pinned' => true, 'draft' => true] + $this->card($draft)];
-            }
-        }
-
-        foreach ($this->planner->project($start, $end, $this->publisher->getConnectedNetworkNames()) as $occurrence) {
-            // A slot a planned post stands in for shows that post alone
-            if ($occurrence['taken'] || (null !== $occurrence['slot'] && $this->planner->isTaken($plannedDrafts, $occurrence['networks'], $occurrence['at']))) {
-                continue;
-            }
-
-            $items[$occurrence['at']->format('Y-m-d')][] = [
-                'kind' => null === $occurrence['slot'] ? 'planned' : 'slot',
-                'at' => $occurrence['at'],
-                'slot' => $occurrence['slot'],
-                'slot_networks' => $occurrence['networks'],
-                'post' => null === $occurrence['post'] ? null : ['sent' => $occurrence['sent'], 'pinned' => null !== $occurrence['post']->getPlannedAt(), 'draft' => false] + $this->card($occurrence['post']),
-            ];
-        }
-
-        return $items;
-    }
+    // How many quarters of an hour a card covers on the grid (a quarter being .75rem, a card 22px)
+    private const int CARD_HEIGHT = 2;
 
     // The hours the week's grid shows when the site sets none
     private const int HOUR_START = 6;
@@ -100,9 +64,10 @@ class SocialCalendarController extends AbstractController
         private readonly SocialPlanner $planner,
         private readonly SocialPublisher $publisher,
         private readonly SocialPostRepository $postRepository,
-        private readonly SocialScheduleRepository $scheduleRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
+        private readonly SocialMediaChecker $mediaChecker,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -129,8 +94,6 @@ class SocialCalendarController extends AbstractController
         }
 
         $connected = $this->publisher->getConnectedNetworkNames();
-        $drafts = $this->postRepository->findDrafts();
-        $moments = $this->planner->nextMoments($connected);
 
         return $this->render('@c975LSocial/management/social_calendar.html.twig', [
             'view' => $month ? self::MONTH : self::WEEK,
@@ -138,25 +101,23 @@ class SocialCalendarController extends AbstractController
             // Kept when switching between the two views
             'date' => $anchor->format('Y-m-d'),
             'weekdays' => array_map(fn (int $day): string => $this->format($start->modify('+' . $day . ' days'), 'EEE', $locale), range(0, 6)),
-            'weeks' => array_chunk($this->days($start, $end, $month ? $anchor : null, $drafts), 7),
+            'weeks' => array_chunk($this->days($start, $end, $month ? $anchor : null), 7),
             'hours' => $month ? [] : $this->hours(),
-            'drafts' => array_map($this->card(...), $drafts),
-            // Each post of the queue with the moment it goes out, the projection's own
-            'queue' => array_map(fn (SocialPost $post): array => ['next_at' => $moments[(int) $post->getId()] ?? null] + $this->card($post), array_values(array_filter($this->postRepository->findApproved(), static fn (SocialPost $post): bool => null === $post->getPlannedAt()))),
             'networks' => array_map(static fn (string $network): array => ['name' => $network, 'connected' => \in_array($network, $connected, true)], $this->publisher->getNetworkNames()),
             'connected' => $connected,
-            'has_slot' => $this->scheduleRepository->hasEnabled(),
             'previous' => $previous->format('Y-m-d'),
             'next' => $next->format('Y-m-d'),
             'move_url' => $this->generateUrl(self::MOVE_ROUTE),
-            'prepare_url' => $this->generateUrl(self::PREPARE_ROUTE),
             'panel_url' => $this->generateUrl(self::PANEL_ROUTE),
+            // A double click on a coming moment writes a post there, the screen of a new post opening on it
+            'new_url' => $this->adminUrlGenerator->unsetAll()->setController(SocialPostCrudController::class)->setAction(Action::NEW)->generateUrl(),
+            'series_url' => $this->adminUrlGenerator->unsetAll()->setController(SocialPostCrudController::class)->setAction('generateSeries')->generateUrl(),
             'connections_route' => SocialConnectionsController::ROUTE,
             'token' => self::CSRF_TOKEN,
         ]);
     }
 
-    // The panel a card opens beside the calendar: when the post goes out, the moment to set it to, its texts - the screen of the post a link away, where they are corrected and rephrased
+    // The panel a card opens beside the calendar: when the post goes out, the moment to set it to, its approval, its texts - the screen of the post a link away, where they are corrected and rephrased
     #[AdminRoute(path: '/social-calendar/post', name: 'social_calendar_post')]
     public function panel(Request $request): Response
     {
@@ -167,27 +128,17 @@ class SocialCalendarController extends AbstractController
             return new Response(null, Response::HTTP_NOT_FOUND);
         }
 
-        $connected = $this->publisher->getConnectedNetworkNames();
-        $next = $post->isApproved() && null === $post->getPlannedAt() ? $this->planner->nextMoments($connected)[(int) $post->getId()] ?? null : null;
-        $published = !$post->isApproved() && !$post->isApprovable();
+        $card = $this->card($post);
 
         return $this->render('@c975LSocial/management/_social_calendar_panel.html.twig', [
-            'post' => $this->card($post),
-            'state' => match (true) {
-                $published => 'published',
-                null !== $post->getPlannedAt() && $post->isApproved() => 'planned',
-                $post->isApproved() => 'queued',
-                default => 'draft',
-            },
-            'next' => $next,
-            // The moment the field opens on: the one set, the one the queue gives, or the next quarter of an hour
-            'plan_at' => $post->getPlannedAt() ?? $next ?? $this->planner->nextQuarter(new \DateTimeImmutable()),
+            'post' => $card,
+            'state' => $card['state'],
             'targets' => $post->getTargets(),
-            'connected' => $connected,
+            'connected' => $this->publisher->getConnectedNetworkNames(),
         ]);
     }
 
-    // A post dropped somewhere: onto a moment - a quarter of an hour of the week, a slot of the month - planned and approved, onto the queue approved and unplanned, onto the drafts back to a reading
+    // A post dropped on a moment - a quarter of an hour of the week, or a day of the month, keeping its time there - planned at it, its approval untouched; or the panel's approval and its withdrawal. A post gone out on every network moves no more
     #[AdminRoute(path: '/social-calendar/move', name: 'social_calendar_move', options: ['methods' => ['POST']])]
     public function move(Request $request): Response
     {
@@ -198,48 +149,44 @@ class SocialCalendarController extends AbstractController
         }
 
         $post = $this->postRepository->find($request->request->getInt('post'));
-        $to = $request->request->getString('to');
-        $plannedAt = \in_array($to, [self::TO_QUEUE, self::TO_DRAFTS], true) ? null : $this->moment($to);
-        // A slot already gone would send nothing: the post would only wait for the next one, somewhere the editor did not drop it
-        if (!$post instanceof SocialPost || (null === $plannedAt && !\in_array($to, [self::TO_QUEUE, self::TO_DRAFTS], true)) || (null !== $plannedAt && $plannedAt <= new \DateTimeImmutable())) {
+        if (!$post instanceof SocialPost || 'published' === $this->state($post)) {
             return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        self::TO_DRAFTS === $to ? $post->unapprove() : $post->approve();
-        $post->setPlannedAt($plannedAt);
+        $to = $request->request->getString('to');
+        // A media a network does not take refuses the approval, its reasons said in the answer
+        $problems = self::TO_APPROVE === $to ? $this->mediaChecker->check($post) : [];
+        if ([] !== $problems) {
+            return new Response($this->problemsText($problems), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        if (\in_array($to, [self::TO_APPROVE, self::TO_UNAPPROVE], true)) {
+            self::TO_APPROVE === $to ? $post->approve() : $post->unapprove();
+        } else {
+            // A moment already gone would only be sent at once, somewhere the editor did not drop it
+            $plannedAt = $this->moment($to, $post->getPlannedAt());
+            if (null === $plannedAt || $plannedAt <= new \DateTimeImmutable()) {
+                return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+            $post->setPlannedAt($plannedAt);
+        }
         $this->entityManager->flush();
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
-    // A free slot clicked: its next content, prepared as a draft planned there, opened for its reading
-    #[AdminRoute(path: '/social-calendar/prepare', name: 'social_calendar_prepare', options: ['methods' => ['POST']])]
-    public function prepare(Request $request): RedirectResponse
+    // One line per network and problem, the way the post's screen says them
+    /** @param array<string, list<TranslatableMessage>> $problems */
+    private function problemsText(array $problems): string
     {
-        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
-
-        $slot = $this->scheduleRepository->find($request->request->getInt('slot'));
-        $at = $this->moment($request->request->getString('at'));
-
-        // A slot already holding a post, from another tab or a second click, opens that one rather than preparing a second for the same moment
-        $planned = null === $at ? null : array_find([...$this->postRepository->findDrafts(), ...$this->postRepository->findApproved()], static fn (SocialPost $post): bool => $post->getPlannedAt() == $at);
-        if (null !== $planned) {
-            $this->addFlash('warning', t('flash.social_calendar_slot_taken', [], 'social'));
-
-            return $this->redirect($this->editUrl($planned));
+        $lines = [];
+        foreach ($problems as $network => $messages) {
+            foreach ($messages as $message) {
+                $lines[] = ucfirst($network) . ' : ' . $message->trans($this->translator);
+            }
         }
 
-        $post = null !== $slot && null !== $at && $this->isCsrfTokenValid(self::CSRF_TOKEN, $request->request->getString('_token'))
-            ? $this->publisher->prepareForSlot($slot, $at)
-            : null;
-
-        if (null === $post) {
-            $this->addFlash('warning', t('flash.social_post_nothing', [], 'social'));
-
-            return $this->redirectToRoute(self::ROUTE, ['date' => $at?->format('Y-m-d')]);
-        }
-
-        return $this->redirect($this->editUrl($post));
+        return implode("\n", $lines);
     }
 
     // The day asked for, today for anything else
@@ -256,9 +203,14 @@ class SocialCalendarController extends AbstractController
         return $day->modify('-' . ((int) $day->format('N') - 1) . ' days');
     }
 
-    // An ISO 8601 moment brought to the server's own time zone, the one the database stores and the slots run in. One with no offset is the panel's field, typed in that time zone and brought to the nearest quarter of an hour - a drop's moment, a slot's included, staying exact
-    private function moment(string $value): ?\DateTimeImmutable
+    // An ISO 8601 moment brought to the server's own time zone, the one the database stores and the planned run goes by. A day alone is a day of the month, the post keeping its time of day there; one with no offset is the panel's field, typed in that time zone and brought to the nearest quarter of an hour - a drop's moment staying exact
+    private function moment(string $value, \DateTimeImmutable $current): ?\DateTimeImmutable
     {
+        $day = \DateTimeImmutable::createFromFormat('!Y-m-d', $value);
+        if (false !== $day) {
+            return $day->setTime((int) $current->format('G'), (int) $current->format('i'));
+        }
+
         try {
             $moment = '' === $value ? null : new \DateTimeImmutable($value)->setTimezone(new \DateTimeZone(date_default_timezone_get()));
         } catch (\Exception) {
@@ -266,22 +218,18 @@ class SocialCalendarController extends AbstractController
         }
 
         if (null !== $moment && false !== \DateTimeImmutable::createFromFormat('!Y-m-d\\TH:i', $value)) {
-            $moment = $moment->setTimestamp((int) round($moment->getTimestamp() / SocialPlanner::QUARTER) * SocialPlanner::QUARTER);
+            $moment = $this->planner->round($moment);
         }
 
         return $moment;
     }
 
-    // Every day of the grid with what it holds, in time order: the posts that went out, the planned ones at their moment, then the coming slots with the post each will send - $month the month shown, the days around it faded, null for a week, which also gets its quarters of an hour
-    /**
-     * @param list<SocialPost> $drafts
-     *
-     * @return list<array<string, mixed>>
-     */
-    private function days(\DateTimeImmutable $start, \DateTimeImmutable $end, ?\DateTimeImmutable $month, array $drafts): array
+    // Every day of the grid with what it holds, in time order: the posts that went out, and the ones still to go out at their moment - $month the month shown, the days around it faded, null for a week, which also gets its quarters of an hour
+    /** @return list<array<string, mixed>> */
+    private function days(\DateTimeImmutable $start, \DateTimeImmutable $end, ?\DateTimeImmutable $month): array
     {
         $items = $this->publishedItems($start, $end);
-        foreach ($this->comingItems($start, $end, $drafts) as $day => $dayItems) {
+        foreach ($this->comingItems($start, $end) as $day => $dayItems) {
             $items[$day] = [...$items[$day] ?? [], ...$dayItems];
         }
 
@@ -292,6 +240,8 @@ class SocialCalendarController extends AbstractController
             usort($dayItems, static fn (array $a, array $b): int => $a['at'] <=> $b['at']);
             $days[] = [
                 'date' => $day,
+                // A day of the month still ahead takes a card dropped on it
+                'open' => $day >= $today,
                 'in_month' => null === $month || $day->format('m') === $month->format('m'),
                 'today' => $day == $today,
                 'items' => $dayItems,
@@ -302,6 +252,21 @@ class SocialCalendarController extends AbstractController
         }
 
         return $days;
+    }
+
+    // What is still to go out between the two days, by day: every post not published yet, at its planned moment
+    /** @return array<string, list<array<string, mixed>>> */
+    private function comingItems(\DateTimeImmutable $start, \DateTimeImmutable $end): array
+    {
+        $items = [];
+        foreach ($this->postRepository->findPlannedBetween($start, $end) as $post) {
+            if (!$post->isPublished()) {
+                $at = $post->getPlannedAt();
+                $items[$at->format('Y-m-d')][] = ['kind' => 'planned', 'at' => $at] + $this->card($post);
+            }
+        }
+
+        return $items;
     }
 
     // The posts that went out between the two days, by day: one card per post and day, its networks gathered on it
@@ -317,7 +282,7 @@ class SocialCalendarController extends AbstractController
                 }
 
                 $key = $publishedAt->format('Y-m-d') . '#' . $post->getId();
-                $items[$publishedAt->format('Y-m-d')][$key] ??= ['kind' => 'published', 'at' => $publishedAt, 'networks' => []] + $this->card($post);
+                $items[$publishedAt->format('Y-m-d')][$key] ??= ['kind' => 'published', 'at' => $publishedAt, 'networks' => [], 'state' => 'published'] + $this->card($post);
                 $items[$publishedAt->format('Y-m-d')][$key]['networks'][] = $target->getNetwork();
             }
         }
@@ -385,19 +350,12 @@ class SocialCalendarController extends AbstractController
             while (($lanes[$lane] ?? 0) > $row) {
                 ++$lane;
             }
-            $lanes[$lane] = $row + max(array_map($this->height(...), $rowItems));
+            $lanes[$lane] = $row + self::CARD_HEIGHT;
             $groups[] = ['row' => $row, 'lane' => $lane, 'lanes' => 1, 'items' => $rowItems];
         }
 
         // Every group as wide as the lanes the day needs, kept simple rather than widened where it is alone
         return array_map(static fn (array $group): array => ['lanes' => max(1, \count($lanes))] + $group, $groups);
-    }
-
-    // How many quarters of an hour an item covers on the grid (a quarter being .75rem, a card 22px): a slot shows its heading and its networks above its card
-    /** @param array<string, mixed> $item */
-    private function height(array $item): int
-    {
-        return 'slot' === $item['kind'] ? 5 : 2;
     }
 
     // What a post shows on the calendar, wherever it sits
@@ -407,12 +365,24 @@ class SocialCalendarController extends AbstractController
         return [
             'id' => $post->getId(),
             'title' => $post->getTitle(),
-            'image' => $post->getImageUrl(),
-            // What a drop may approve: a slot only takes a post waiting on one of its networks
+            'image' => $post->getThumbnailUrl(),
+            // The networks it still goes out on
             'networks' => $post->getTargets()->filter(static fn (SocialPostTarget $target): bool => $target->isPending())->map(static fn (SocialPostTarget $target): string => $target->getNetwork())->getValues(),
             'planned_at' => $post->getPlannedAt(),
+            'state' => $this->state($post),
             'edit_url' => $this->editUrl($post),
         ];
+    }
+
+    // What the card's colour says: gone out everywhere, refused somewhere, waiting for its moment, or for a reading
+    private function state(SocialPost $post): string
+    {
+        return match (true) {
+            $post->isPublished() => 'published',
+            $post->getTargets()->exists(static fn (int $key, SocialPostTarget $target): bool => SocialPostStatus::Failed === $target->getStatus()) => 'failed',
+            $post->isApproved() => 'approved',
+            default => 'draft',
+        };
     }
 
     private function editUrl(SocialPost $post): string

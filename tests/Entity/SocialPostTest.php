@@ -19,7 +19,7 @@ class SocialPostTest extends TestCase
 {
     private function post(): SocialPost
     {
-        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null);
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable('2026-10-05 10:00'));
         new SocialPostTarget($post, 'bluesky', 'Text');
         new SocialPostTarget($post, 'facebook', 'Text')->markFailed('Refused');
         new SocialPostTarget($post, 'instagram', 'Text')->markPublished('id');
@@ -27,8 +27,8 @@ class SocialPostTest extends TestCase
         return $post;
     }
 
-    // A draft and a failed target join the queue, a published one is never sent twice
-    public function testApprovingQueuesWhatIsNotOutYet(): void
+    // A draft and a failed target wait for the post's moment, a published one is never sent twice
+    public function testApprovingHandsWhatIsNotOutYetToItsMoment(): void
     {
         $post = $this->post();
 
@@ -42,8 +42,8 @@ class SocialPostTest extends TestCase
         $this->assertFalse($post->isApprovable());
     }
 
-    // Taken out of the queue, the approved targets wait for a reading again, the published one untouched
-    public function testUnapprovingPutsTheQueuedTargetsBackToDraft(): void
+    // Back to a draft, the approved targets wait for a reading again, the published one untouched
+    public function testUnapprovingPutsTheApprovedTargetsBackToDraft(): void
     {
         $post = $this->post();
         $post->approve();
@@ -61,7 +61,7 @@ class SocialPostTest extends TestCase
     // A post out everywhere has nothing left to approve
     public function testAPostPublishedEverywhereIsNotApprovable(): void
     {
-        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null);
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable('2026-10-05 10:00'));
         new SocialPostTarget($post, 'bluesky', 'Text')->markPublished('id');
 
         $this->assertFalse($post->isApprovable());
@@ -77,5 +77,39 @@ class SocialPostTest extends TestCase
         $this->assertSame(['instagram'], $post->getNetworks());
         $this->assertSame(['linkedin'], $post->takeAddedNetworks());
         $this->assertSame([], $post->takeAddedNetworks());
+    }
+
+    // An emptied field on the post's screen never leaves it without a moment
+    public function testAPostKeepsItsMomentWhenTheFieldIsEmptied(): void
+    {
+        $post = $this->post();
+
+        $post->setPlannedAt(null);
+        $this->assertEquals(new \DateTimeImmutable('2026-10-05 10:00'), $post->getPlannedAt());
+
+        $post->setPlannedAt(new \DateTimeImmutable('2026-10-06 09:15'));
+        $this->assertEquals(new \DateTimeImmutable('2026-10-06 09:15'), $post->getPlannedAt());
+    }
+
+    // A post written on its screen is named by the first line of its text, cut, and says once that its text changed
+    public function testAWrittenPostIsNamedByItsText(): void
+    {
+        $post = new SocialPost(SocialPost::SOURCE_MANUAL, 'abc', '', '', null, new \DateTimeImmutable('2026-10-05 10:00'));
+
+        $post->setText("  Première ligne\nla suite  ");
+        $this->assertTrue($post->isManual());
+        $this->assertSame("Première ligne\nla suite", $post->getText());
+        $this->assertSame('Première ligne', $post->getTitle());
+        $this->assertTrue($post->takeTextChanged());
+        $this->assertFalse($post->takeTextChanged());
+
+        $post->setText("Première ligne\nla suite");
+        $this->assertFalse($post->takeTextChanged());
+
+        $post->setText(str_repeat('a', 100));
+        $this->assertSame(str_repeat('a', 79) . '…', $post->getTitle());
+
+        $post->setUrl(null);
+        $this->assertSame('', $post->getUrl());
     }
 }

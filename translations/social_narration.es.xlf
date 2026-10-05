@@ -10,29 +10,21 @@
                 <source>narration.guided_step_social_bluesky_handle</source>
                 <target>Por último, si lo desea, busque «social-bluesky-handle» en la configuración e indique la cuenta vinculada: la próxima conexión la propondrá directamente. Vacío, la elegirá en la página de Bluesky.</target>
             </trans-unit>
-            <trans-unit id=".hfIUWY">
-                <source>narration.guided_step_social_bluesky_mode</source>
-                <target>Queda elegir si una publicación espera su revisión o sale sola: es el ajuste «social-bluesky-publish-mode».</target>
+            <trans-unit id="2tNlQez">
+                <source>narration.guided_step_social_calendar_move</source>
+                <target>Para cambiar la fecha de una publicación, arrástrela a una hora próxima de la semana, o a un día del mes donde conserva su hora: queda prevista allí, validada o no como antes.</target>
             </trans-unit>
-            <trans-unit id="d1zkKea">
-                <source>narration.guided_step_social_calendar_drafts</source>
-                <target>A la derecha, «Por validar» reúne los borradores: un clic abre uno, y arrastrarlo a una franja lo valida y lo prevé en ese momento.</target>
+            <trans-unit id="Zx3lCKG">
+                <source>narration.guided_step_social_calendar_new</source>
+                <target>Para escribir una publicación, haga clic en «Nueva publicación», o haga doble clic directamente en la hora o el día en que debe salir: la pantalla de la publicación se abre con ese momento ya rellenado.</target>
             </trans-unit>
             <trans-unit id=".Jk8anA">
                 <source>narration.guided_step_social_calendar_open</source>
-                <target>El panel le lleva al calendario: la semana de sus publicaciones, las que ya salieron y las validadas en la franja que las enviará. Sus horas de inicio y fin se ajustan en la configuración.</target>
+                <target>El panel le lleva al calendario: la semana de sus publicaciones, las enviadas y todas las próximas en su fecha y hora, en rojo por validar, en verde validadas. Sus horas de inicio y fin se ajustan en la configuración.</target>
             </trans-unit>
             <trans-unit id="eg9BzH0">
                 <source>narration.guided_step_social_calendar_panel</source>
-                <target>Haga clic en una publicación del calendario: su panel la prevé a una hora precisa, la devuelve a la cola o abre sus textos para modificarlos.</target>
-            </trans-unit>
-            <trans-unit id="txGnEBN">
-                <source>narration.guided_step_social_calendar_queue</source>
-                <target>Encima, «Cola» guarda las publicaciones validadas sin fecha: salen, en orden, en la próxima franja libre que publica en sus redes.</target>
-            </trans-unit>
-            <trans-unit id="qdz7h.H">
-                <source>narration.guided_step_social_calendar_slot</source>
-                <target>Cada franja por venir acepta una publicación arrastrada encima, que saldrá en ese momento preciso. Una franja libre también propone «Preparar para esta franja».</target>
+                <target>Haga clic en una publicación del calendario: su panel cambia su fecha y hora, la valida o la devuelve a borrador, o abre sus textos para editarlos.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>
@@ -73,10 +65,6 @@
             <trans-unit id="zUH7tGI">
                 <source>narration.guided_step_social_linkedin_credentials</source>
                 <target>Busque «social-linkedin-client-id» y «social-linkedin-client-secret» en la lista de ajustes, y pegue allí los dos valores de la aplicación.</target>
-            </trans-unit>
-            <trans-unit id="h_A4fIC">
-                <source>narration.guided_step_social_linkedin_mode</source>
-                <target>Queda elegir si una publicación espera su revisión o sale sola: es el ajuste «social-linkedin-publish-mode». Y el acceso dura sesenta días: vuelva a conectarse desde la ficha antes de que caduque.</target>
             </trans-unit>
             <trans-unit id="ocfaM9d">
                 <source>narration.guided_step_social_linkedin_prerequisites</source>
@@ -122,21 +110,21 @@
                 <source>narration.guided_step_social_meta_credentials</source>
                 <target>Busque «social-meta-app-id» y «social-meta-app-secret» en la lista de ajustes, y pegue allí los dos valores de la aplicación. Si la cuenta gestiona varias Páginas, rellene también «social-meta-page-id», o se tomará la primera.</target>
             </trans-unit>
-            <trans-unit id="7XOUZrd">
-                <source>narration.guided_step_social_meta_mode</source>
-                <target>Queda elegir, red por red, si una publicación espera su revisión o sale sola: son los ajustes «social-facebook-publish-mode» y «social-instagram-publish-mode».</target>
-            </trans-unit>
             <trans-unit id="NauQ5Sa">
                 <source>narration.guided_step_social_meta_prerequisites</source>
                 <target>Esta primera parte se hace en Meta, en developers.facebook.com: cree una aplicación, añádale el inicio de sesión con Facebook con la dirección de retorno del sitio, y déjela en modo de desarrollo. Compruebe también que la Página está vinculada a la cuenta profesional de Instagram. Vuelva aquí con el identificador y la clave secreta.</target>
             </trans-unit>
             <trans-unit id="vcZmc00">
                 <source>narration.guided_step_social_posts_approve</source>
-                <target>De vuelta en la lista, con franjas activas, «Validar para la próxima franja» confía la publicación a la próxima franja que publica en sus redes, o a su fecha prevista, en lugar de enviarla de inmediato.</target>
+                <target>De vuelta en la lista, «Validar» confía la publicación a su fecha prevista: saldrá sola, en lugar de enviarse enseguida.</target>
             </trans-unit>
             <trans-unit id="4cJ._fk">
                 <source>narration.guided_step_social_posts_edit</source>
-                <target>El botón de edición abre la publicación: un texto por red, cada uno con la longitud que acepta esa red, bajo la imagen que saldrá con ella. Corrija lo que haga falta.</target>
+                <target>El botón de edición abre la publicación: un texto por red, cada uno con la longitud que acepta esa red, bajo las fotos o el vídeo que saldrán con ella. Corrija lo que haga falta.</target>
+            </trans-unit>
+            <trans-unit id="HRyz2B3">
+                <source>narration.guided_step_social_posts_medias</source>
+                <target>Añada aquí fotos o un vídeo, en el orden en que salen, o tómelos de la galería con «Añadir desde el sitio». Las reglas de cada red marcada se comprueban al guardar.</target>
             </trans-unit>
             <trans-unit id="kNA4Y5N">
                 <source>narration.guided_step_social_posts_networks</source>
@@ -144,15 +132,15 @@
             </trans-unit>
             <trans-unit id="EhIZhRa">
                 <source>narration.guided_step_social_posts_open</source>
-                <target>El panel le lleva a la pantalla de publicaciones. Se preparan solas, a las horas de las franjas de publicación o, en su defecto, al ritmo que fija el ajuste del intervalo; los borradores esperan aquí su revisión.</target>
+                <target>El panel le lleva a la pantalla de publicaciones. Cada una tiene su fecha y hora; las que están en borrador esperan aquí su revisión y luego su validación.</target>
             </trans-unit>
             <trans-unit id="RyKdiUj">
                 <source>narration.guided_step_social_posts_planned_at</source>
-                <target>El campo «Prevista para» es opcional: vacío, la publicación validada sale en la próxima franja libre; rellenado, sale en esa fecha y hora precisas, al cuarto de hora.</target>
+                <target>El campo «Prevista el» fija la fecha y hora en que sale la publicación una vez validada, al cuarto de hora.</target>
             </trans-unit>
             <trans-unit id="kE9wnJX">
                 <source>narration.guided_step_social_posts_prepare</source>
-                <target>Para no esperar, «Preparar ahora» toma el siguiente contenido, y «Desde una dirección» prepara cualquier página, de este sitio o de otro. Y «Preparar 7 borradores» prepara una semana por adelantado, que luego validará una a una.</target>
+                <target>«Desde una dirección» prepara un borrador de cualquier página, de este sitio u otro, en la fecha que elija.</target>
             </trans-unit>
             <trans-unit id="nuTQi3q">
                 <source>narration.guided_step_social_posts_publish</source>
@@ -162,33 +150,29 @@
                 <source>narration.guided_step_social_posts_save</source>
                 <target>Guarde con el botón situado en la parte inferior del formulario.</target>
             </trans-unit>
-            <trans-unit id="6Dywe6l">
-                <source>narration.guided_step_social_schedules_edit</source>
-                <target>Haga clic en el botón para añadir una franja, o en la fila de una franja existente para modificarla.</target>
+            <trans-unit id="CxfcrdE">
+                <source>narration.guided_step_social_posts_series</source>
+                <target>«Generar una serie» prepara varios borradores de una vez, a intervalo regular, que revisa y luego valida juntos.</target>
             </trans-unit>
-            <trans-unit id="w7ckofR">
-                <source>narration.guided_step_social_schedules_networks</source>
-                <target>Marque las redes en las que publica esta franja; sin marcar ninguna, publica en todas las conectadas.</target>
+            <trans-unit id="fl_JIU5">
+                <source>narration.guided_step_social_series_frequency</source>
+                <target>Elija el ritmo: un borrador al día, a la semana o al mes.</target>
             </trans-unit>
-            <trans-unit id="FrNIZFb">
-                <source>narration.guided_step_social_schedules_open</source>
-                <target>El panel le lleva a la pantalla de las franjas de publicación. Cada una prepara una publicación al día, a su hora; en cuanto una franja está activa, ya no se usa el intervalo.</target>
+            <trans-unit id="I6Q3TO3">
+                <source>narration.guided_step_social_series_generate</source>
+                <target>Haga clic en «Generar los borradores»: el calendario se abre en el primero, solo queda revisar y validar.</target>
             </trans-unit>
-            <trans-unit id="FKs.IOq">
-                <source>narration.guided_step_social_schedules_save</source>
-                <target>Guarde con el botón situado en la parte inferior del formulario.</target>
+            <trans-unit id="CVYlOoX">
+                <source>narration.guided_step_social_series_media</source>
+                <target>Si lo desea, añada una foto o un vídeo: saldrá con cada publicación escrita aquí.</target>
             </trans-unit>
-            <trans-unit id="1VpRy8b">
-                <source>narration.guided_step_social_schedules_sources</source>
-                <target>Elija los contenidos de los que tomar: un contenido entero, o solo algunas de sus galerías. Vacío, todos los contenidos pasan por turnos.</target>
+            <trans-unit id="rPawNlG">
+                <source>narration.guided_step_social_series_mode</source>
+                <target>Elija de dónde vienen los textos: un mismo texto, una consigna que la IA declina, o los próximos contenidos del sitio.</target>
             </trans-unit>
-            <trans-unit id="LMuUJQ_">
-                <source>narration.guided_step_social_schedules_text</source>
-                <target>Si lo desea, escriba un texto propio de esta franja: ocupa el lugar de la etiqueta «slot» de la plantilla común de publicación.</target>
-            </trans-unit>
-            <trans-unit id="0uawAGt">
-                <source>narration.guided_step_social_schedules_time</source>
-                <target>Elija la hora a la que se preparará la publicación, cada día.</target>
+            <trans-unit id="yIyQYG.">
+                <source>narration.guided_step_social_series_open</source>
+                <target>El panel le lleva a la generación de una serie: varios borradores de una vez, que revisará después. Indique cuántos, desde cuándo y en qué redes.</target>
             </trans-unit>
             <trans-unit id="DrMJai5">
                 <source>narration.guided_step_social_share_buttons_anchor</source>
@@ -232,7 +216,7 @@
             </trans-unit>
             <trans-unit id="dugZDEg">
                 <source>narration.social_calendar</source>
-                <target>«Calendario» muestra el calendario de sus publicaciones: las que ya salieron y las validadas donde saldrán. Arrastre una a una franja para preverla allí.</target>
+                <target>«Calendario» muestra el calendario de sus publicaciones: las enviadas, y todas las próximas en su fecha. Arrastre una a otra hora para moverla.</target>
             </trans-unit>
             <trans-unit id="Yn0vUBO">
                 <source>narration.social_connections</source>
@@ -244,11 +228,7 @@
             </trans-unit>
             <trans-unit id="m6sfKEB">
                 <source>narration.social_posts</source>
-                <target>«Publicaciones» reúne lo que se prepara para sus redes: revisa cada texto y luego publica.</target>
-            </trans-unit>
-            <trans-unit id="16Jj3bI">
-                <source>narration.social_schedules</source>
-                <target>«Franjas de publicación» fija las horas a las que sus redes reciben una publicación, y lo que publica cada franja.</target>
+                <target>«Publicaciones» reúne sus publicaciones, escritas aquí o preparadas: revisa cada texto y luego valida o publica.</target>
             </trans-unit>
         </body>
     </file>

@@ -12,7 +12,6 @@ namespace c975L\SocialBundle\Tests\Templates;
 
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
-use c975L\SocialBundle\Entity\SocialSchedule;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
@@ -42,18 +41,18 @@ class SocialCalendarTemplateTest extends TestCase
     {
         $twig = $this->twig();
 
-        $post = ['id' => 7, 'title' => 'La sieste', 'image' => null, 'networks' => ['bluesky'], 'planned_at' => null, 'edit_url' => '/edit/7'];
-        $at = new \DateTimeImmutable('2026-10-04 19:00');
+        $card = static fn (int $id, string $state, \DateTimeImmutable $at): array => ['id' => $id, 'title' => 'La sieste', 'image' => null, 'networks' => ['bluesky'], 'planned_at' => $at, 'state' => $state, 'edit_url' => '/edit/' . $id];
+        $evening = new \DateTimeImmutable('2026-10-04 19:00');
         $planned = new \DateTimeImmutable('2026-10-04 14:15');
         $items = [
-            ['kind' => 'planned', 'at' => $planned, 'slot' => null, 'slot_networks' => [], 'post' => ['sent' => ['bluesky'], 'pinned' => true, 'draft' => false] + ['id' => 8] + $post],
-            ['kind' => 'slot', 'at' => $at, 'slot' => new SocialSchedule()->setName('Soir'), 'slot_networks' => ['bluesky'], 'post' => ['sent' => ['bluesky'], 'pinned' => false, 'draft' => false] + $post],
-            ['kind' => 'slot', 'at' => $at->modify('+1 day'), 'slot' => new SocialSchedule()->setName('Soir'), 'slot_networks' => ['bluesky'], 'post' => null],
+            ['kind' => 'planned', 'at' => $planned] + $card(8, 'approved', $planned),
+            ['kind' => 'planned', 'at' => $evening] + $card(9, 'draft', $evening),
+            ['kind' => 'planned', 'at' => $evening] + $card(10, 'failed', $evening),
         ];
-        $published = [['kind' => 'published', 'at' => $at->modify('-1 day'), 'networks' => ['facebook']] + $post];
+        $published = [['kind' => 'published', 'at' => $evening->modify('-1 day')] + ['networks' => ['facebook']] + $card(7, 'published', $evening->modify('-2 days'))];
         // The week's two quarters of an hour around the planned post, the first one gone by
         $cells = [['at' => $planned->modify('-15 minutes'), 'open' => false], ['at' => $planned, 'open' => true]];
-        $day = static fn (string $date, array $dayItems, array $rows): array => ['date' => new \DateTimeImmutable($date), 'in_month' => true, 'today' => false, 'items' => $dayItems, 'cells' => 'week' === $view ? $cells : [], 'rows' => 'week' === $view ? $rows : []];
+        $day = static fn (string $date, bool $open, array $dayItems, array $rows): array => ['date' => new \DateTimeImmutable($date), 'open' => $open, 'in_month' => true, 'today' => false, 'items' => $dayItems, 'cells' => 'week' === $view ? $cells : [], 'rows' => 'week' === $view ? $rows : []];
 
         return $twig->render('@c975LSocial/management/social_calendar.html.twig', [
             'view' => $view,
@@ -65,18 +64,30 @@ class SocialCalendarTemplateTest extends TestCase
             'connections_route' => 'management_social_connections',
             'weekdays' => ['lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.', 'dim.'],
             'weeks' => [[
-                $day('2026-10-03', $published, [['row' => 52, 'lane' => 0, 'lanes' => 1, 'items' => $published]]),
-                $day('2026-10-04', $items, [['row' => 33, 'lane' => 0, 'lanes' => 2, 'items' => [$items[0]]], ['row' => 34, 'lane' => 1, 'lanes' => 2, 'items' => [$items[1]]]]),
+                $day('2026-10-03', false, $published, [['row' => 52, 'lane' => 0, 'lanes' => 1, 'items' => $published]]),
+                $day('2026-10-04', true, $items, [['row' => 33, 'lane' => 0, 'lanes' => 2, 'items' => [$items[0]]], ['row' => 52, 'lane' => 1, 'lanes' => 2, 'items' => [$items[1], $items[2]]]]),
             ]],
-            'drafts' => [$post],
-            'queue' => [],
-            'has_slot' => false,
             'previous' => '2026-09-21',
             'next' => '2026-10-05',
             'move_url' => '/move',
-            'prepare_url' => '/prepare',
             'panel_url' => '/panel',
+            'new_url' => '/new',
+            'series_url' => '/series',
             'token' => 'social_calendar',
+        ]);
+    }
+
+    // The panel of a post in the given state, its approval being what the state offers
+    private function panel(string $state): string
+    {
+        $post = new SocialPost('gallery_media', '42', 'La sieste', 'https://example.org/42', null, new \DateTimeImmutable('2026-10-04 19:00'));
+        new SocialPostTarget($post, 'bluesky', 'Le texte de Bluesky');
+
+        return $this->twig()->render('@c975LSocial/management/_social_calendar_panel.html.twig', [
+            'post' => ['id' => 7, 'title' => 'La sieste', 'image' => null, 'networks' => ['bluesky'], 'planned_at' => $post->getPlannedAt(), 'state' => $state, 'edit_url' => '/edit/7'],
+            'state' => $state,
+            'targets' => $post->getTargets(),
+            'connected' => ['bluesky'],
         ]);
     }
 
@@ -88,30 +99,44 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertSame(2, substr_count($html, 'data-to="' . new \DateTimeImmutable('2026-10-04 14:15')->format('c') . '"'));
         $this->assertStringContainsString('social-week-cell is-past', $html);
         $this->assertStringContainsString('style="--row: 33; --lane: 0; --lanes: 2"', $html);
-        $this->assertStringContainsString('style="--row: 34; --lane: 1; --lanes: 2"', $html);
+        $this->assertStringContainsString('style="--row: 52; --lane: 1; --lanes: 2"', $html);
         $this->assertStringContainsString('data-at="' . new \DateTimeImmutable('2026-10-04 14:15')->format('c') . '"', $html);
         $this->assertStringContainsString('class="social-week-hour">06:00', $html);
     }
 
-    // A coming slot is a drop zone at its very moment, carrying the networks it posts on
-    public function testEveryComingSlotIsADropZoneAtItsMoment(): void
+    // The month: a day from today on is a drop zone at its date alone, the post keeping its time there; a day gone by takes nothing
+    public function testEveryOpenDayOfTheMonthIsADropZoneAtItsDate(): void
     {
         $html = $this->render();
 
-        $this->assertStringContainsString('data-to="' . new \DateTimeImmutable('2026-10-04 19:00')->format('c') . '"', $html);
-        $this->assertStringContainsString('data-networks="bluesky"', $html);
-        $this->assertStringContainsString('class="social-calendar-card is-pinned"', $html);
+        $this->assertStringContainsString('data-social-calendar-target="zone" data-to="2026-10-04"', $html);
+        $this->assertStringNotContainsString('data-to="2026-10-03"', $html);
     }
 
-    // A free slot offers its preparation, a published card is not draggable, the drafts are
-    public function testAFreeSlotOffersItsPreparationAndOnlyWaitingCardsDrag(): void
+    // A coming moment double-clicked writes a post there, the button writing one at the next quarter of an hour; a moment gone by offers neither
+    public function testAComingMomentIsDoubleClickedToWriteAPost(): void
+    {
+        $week = $this->render('week');
+        $month = $this->render();
+
+        $this->assertStringContainsString('data-to="' . new \DateTimeImmutable('2026-10-04 14:15')->format('c') . '" data-action="dblclick->social-calendar#create"', $week);
+        $this->assertStringContainsString('data-to="2026-10-04" data-action="dblclick->social-calendar#create"', $month);
+        $this->assertSame(1, substr_count($month, 'dblclick->social-calendar#create'));
+        $this->assertStringContainsString('class="btn btn-primary social-calendar-new" href="/new"', $month);
+        $this->assertStringContainsString('data-social-calendar-new-url-value="/new"', $month);
+    }
+
+    // Each card is coloured by its state, and only one gone out everywhere does not drag
+    public function testCardsShowTheirStateAndOnlyWaitingOnesDrag(): void
     {
         $html = $this->render();
 
-        $this->assertStringContainsString('label.social_calendar_prepare', $html);
-        $this->assertStringContainsString('class="social-calendar-card is-published"', $html);
+        foreach (['published', 'approved', 'draft', 'failed'] as $state) {
+            $this->assertStringContainsString('class="social-calendar-card is-' . $state . '"', $html);
+        }
         $this->assertSame(3, substr_count($html, 'data-social-calendar-target="item"'));
-        $this->assertStringContainsString('label.social_calendar_no_slot', $html);
+        $this->assertStringNotContainsString('data-post-id="7"', $html);
+        $this->assertStringContainsString('data-post-id="9" data-at="' . new \DateTimeImmutable('2026-10-04 19:00')->format('c') . '"', $html);
     }
 
     // Each network shows as its own glyph on its colour, greyed while the site is not connected to it - one without a glyph keeps its initial
@@ -124,27 +149,38 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringContainsString('/management_social_connections', $html);
     }
 
-    // The panel of a post of the queue: when it goes out, the field set to that moment, its texts, and the post's screen a link away
-    public function testThePanelSaysWhenThePostGoesOutAndLetsItBePlanned(): void
+    // The panel of a draft: its state, the field set to its moment, the approval offered, its texts, and the post's screen a link away
+    public function testThePanelOfADraftLetsItBePlannedAndApproved(): void
     {
-        $post = new SocialPost('gallery_media', '42', 'La sieste', 'https://example.org/42', null);
-        new SocialPostTarget($post, 'bluesky', 'Le texte de Bluesky');
-        $next = new \DateTimeImmutable('2026-10-04 19:00');
+        $html = $this->panel('draft');
 
-        $html = $this->twig()->render('@c975LSocial/management/_social_calendar_panel.html.twig', [
-            'post' => ['id' => 7, 'title' => 'La sieste', 'image' => null, 'networks' => ['bluesky'], 'planned_at' => null, 'edit_url' => '/edit/7'],
-            'state' => 'queued',
-            'next' => $next,
-            'plan_at' => $next,
-            'targets' => $post->getTargets(),
-            'connected' => ['bluesky'],
-        ]);
-
-        $this->assertStringContainsString('label.social_calendar_goes_out_next', $html);
+        $this->assertStringContainsString('label.social_calendar_state_draft', $html);
         $this->assertStringContainsString('value="2026-10-04T19:00"', $html);
         $this->assertStringContainsString('data-action="social-calendar#plan" data-post-id="7"', $html);
-        $this->assertStringContainsString('data-to="drafts"', $html);
+        $this->assertStringContainsString('data-to="approve"', $html);
+        $this->assertStringNotContainsString('data-to="unapprove"', $html);
         $this->assertStringContainsString('Le texte de Bluesky', $html);
         $this->assertStringContainsString('href="/edit/7"', $html);
+    }
+
+    // The panel of an approved post offers to take it back to a draft instead
+    public function testThePanelOfAnApprovedPostOffersItsWithdrawal(): void
+    {
+        $html = $this->panel('approved');
+
+        $this->assertStringContainsString('label.social_calendar_state_approved', $html);
+        $this->assertStringContainsString('data-to="unapprove"', $html);
+        $this->assertStringNotContainsString('data-to="approve"', $html);
+    }
+
+    // A post gone out everywhere is only read: no moment to set, no approval to change
+    public function testThePanelOfAPublishedPostOnlyShowsIt(): void
+    {
+        $html = $this->panel('published');
+
+        $this->assertStringContainsString('label.social_calendar_state_published', $html);
+        $this->assertStringNotContainsString('social-calendar#plan', $html);
+        $this->assertStringNotContainsString('data-to=', $html);
+        $this->assertStringContainsString('Le texte de Bluesky', $html);
     }
 }

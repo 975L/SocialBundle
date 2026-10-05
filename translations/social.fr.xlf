@@ -32,7 +32,7 @@
             </trans-unit>
             <trans-unit id="DmlLCtb">
                 <source>description.guided_project_social_calendar</source>
-                <target>Voir où chaque publication validée tombera parmi les créneaux, et la déplacer d'un glisser-déposer.</target>
+                <target>Voir chaque publication à sa date et à son heure, et la déplacer d'un glisser-déposer.</target>
             </trans-unit>
             <trans-unit id="Z4mtym8">
                 <source>description.guided_project_social_google_connect</source>
@@ -56,11 +56,11 @@
             </trans-unit>
             <trans-unit id="osYKEjU">
                 <source>description.guided_project_social_posts</source>
-                <target>Les publications préparées pour vos réseaux : en préparer une, relire son texte réseau par réseau, puis l'envoyer.</target>
+                <target>Vos publications pour les réseaux : en générer une série ou en préparer une, relire ses textes et ses médias, puis la valider ou l'envoyer.</target>
             </trans-unit>
-            <trans-unit id="4BPt5dm">
-                <source>description.guided_project_social_schedules</source>
-                <target>Choisir chaque jour à quelle heure publier, quoi et sur quels réseaux, à la place de l'intervalle.</target>
+            <trans-unit id="eIR76HP">
+                <source>description.guided_project_social_series</source>
+                <target>Plusieurs brouillons d'un coup, à rythme régulier : choisir le rythme, d'où viennent les textes et le média, puis générer les brouillons à relire.</target>
             </trans-unit>
             <trans-unit id="GjyFwm5">
                 <source>description.guided_project_social_share_buttons</source>
@@ -74,29 +74,21 @@
                 <source>description.guided_step_social_bluesky_handle</source>
                 <target>Facultatif, dans la configuration : chercher « social-bluesky-handle » et y mettre l'identifiant du compte, par exemple exemple.bsky.social, pour que la prochaine connexion le propose d'emblée. Laissé vide, le compte se choisit sur la page de Bluesky.</target>
             </trans-unit>
-            <trans-unit id="82P_F59">
-                <source>description.guided_step_social_bluesky_mode</source>
-                <target>« social-bluesky-publish-mode » vaut « review » : chaque publication attend la relecture sur l'écran Publications. « auto » l'envoie dès qu'elle est préparée.</target>
+            <trans-unit id="y3lKM_7">
+                <source>description.guided_step_social_calendar_move</source>
+                <target>Glissez une publication sur une heure à venir de la semaine, ou sur un jour à venir du mois où elle garde son heure : elle y est prévue, sa validation ne change pas.</target>
             </trans-unit>
-            <trans-unit id="L8sqUEj">
-                <source>description.guided_step_social_calendar_drafts</source>
-                <target>Les brouillons attendent ici leur relecture : un clic en ouvre un, et le glisser sur un créneau le valide et le prévoit à ce moment.</target>
+            <trans-unit id="QikFj7G">
+                <source>description.guided_step_social_calendar_new</source>
+                <target>« Nouvelle publication » ouvre une publication à écrire, prévue au prochain quart d'heure. Un double-clic sur une heure à venir de la semaine, ou sur un jour du mois, l'ouvre directement à ce moment-là.</target>
             </trans-unit>
             <trans-unit id="17dUjo3">
                 <source>description.guided_step_social_calendar_open</source>
-                <target>La semaine des publications : celles parties, et chaque publication validée à la place du créneau qui l'enverra. « Mois » montre le mois entier. Les heures affichées se règlent dans la configuration.</target>
+                <target>La semaine des publications : celles parties, et toutes celles à venir à leur date et heure, en rouge à valider, en vert validées. « Mois » montre le mois entier. Les heures affichées se règlent dans la configuration.</target>
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Cliquez une publication : son panneau la prévoit à une heure précise, la remet dans la file ou ouvre ses textes pour les modifier.</target>
-            </trans-unit>
-            <trans-unit id="rqDkuRv">
-                <source>description.guided_step_social_calendar_queue</source>
-                <target>Les publications validées sans date : elles partent, dans l'ordre, au prochain créneau libre qui publie sur leurs réseaux.</target>
-            </trans-unit>
-            <trans-unit id="4CAagYG">
-                <source>description.guided_step_social_calendar_slot</source>
-                <target>Glissez une publication sur un créneau pour l'y prévoir, dans « File » pour qu'elle parte au prochain créneau libre, dans « À valider » pour la retirer de la file. Un créneau libre propose aussi « Préparer pour ce créneau ».</target>
+                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, ou ouvre ses textes pour les modifier.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
@@ -138,10 +130,6 @@
                 <source>description.guided_step_social_linkedin_credentials</source>
                 <target>Chercher « social-linkedin-client-id » et « social-linkedin-client-secret » dans la liste, et y coller les deux valeurs de l'application. Le secret ne s'affiche qu'avec le bouton « Voir données sensibles ». Le jeton et le profil se remplissent tout seuls à l'étape suivante.</target>
             </trans-unit>
-            <trans-unit id="wF5Oo9b">
-                <source>description.guided_step_social_linkedin_mode</source>
-                <target>« social-linkedin-publish-mode » vaut « review » : chaque publication attend la relecture sur l'écran Publications. « auto » l'envoie dès qu'elle est préparée. L'accès dure 60 jours : se reconnecter depuis la tuile avant qu'il expire.</target>
-            </trans-unit>
             <trans-unit id="h8ze_vb">
                 <source>description.guided_step_social_linkedin_prerequisites</source>
                 <target>Cette partie se passe sur linkedin.com/developers : créer une application rattachée à une Page LinkedIn que vous administrez, lui ajouter les produits « Share on LinkedIn » et « Sign In with LinkedIn using OpenID Connect », et y déclarer comme adresse de redirection celle du site suivie de « /social/linkedin/callback ». Revenir ici avec l'identifiant et la clé secrète de l'application.</target>
@@ -182,53 +170,49 @@
                 <source>description.guided_step_social_meta_credentials</source>
                 <target>Chercher « social-meta-app-id » et « social-meta-app-secret » dans la liste, et y coller les deux valeurs de l'application. Le secret ne s'affiche qu'avec le bouton « Voir données sensibles ». Pour un compte gérant plusieurs Pages, renseigner aussi « social-meta-page-id », sinon la première est prise. Le jeton et le compte Instagram se remplissent tout seuls à l'étape suivante.</target>
             </trans-unit>
-            <trans-unit id="s_VRZkJ">
-                <source>description.guided_step_social_meta_mode</source>
-                <target>« social-facebook-publish-mode » et « social-instagram-publish-mode » valent « review » : chaque publication attend la relecture sur l'écran Publications. « auto » l'envoie dès qu'elle est préparée.</target>
-            </trans-unit>
             <trans-unit id="JCFGCmV">
                 <source>description.guided_step_social_meta_prerequisites</source>
                 <target>Cette partie se passe sur developers.facebook.com : créer une application, y ajouter la connexion Facebook avec pour adresse de redirection celle du site suivie de « /social/meta/callback », et la laisser en mode développement. La Page doit être reliée au compte Instagram professionnel. Revenir ici avec l'identifiant et la clé secrète de l'application.</target>
             </trans-unit>
             <trans-unit id="2_2asy8">
                 <source>description.guided_step_social_posts_approve</source>
-                <target>Avec des créneaux actifs, ce bouton confie la publication au prochain créneau qui publie sur ses réseaux, ou à sa date prévue, au lieu de l'envoyer tout de suite.</target>
+                <target>Ce bouton valide la publication : elle partira d'elle-même à sa date prévue, au lieu d'être envoyée tout de suite. Cochez plusieurs brouillons pour les valider ensemble avec « Valider la sélection ».</target>
             </trans-unit>
             <trans-unit id="hq1t6co">
                 <source>description.guided_step_social_posts_edit</source>
-                <target>Le bouton de modification ouvre la publication : un texte par réseau, chacun limité à la longueur que ce réseau accepte, sous l'image qui partira avec.</target>
+                <target>Le bouton de modification ouvre la publication : un texte par réseau, chacun limité à la longueur que ce réseau accepte, sous les photos ou la vidéo qui partiront avec.</target>
             </trans-unit>
             <trans-unit id="xXIWC.O">
                 <source>description.guided_step_social_posts_open</source>
-                <target>Les publications se préparent d'elles-mêmes, aux heures des créneaux de publication, ou à défaut au rythme réglé par « social-publish-interval-hours ». Celles en brouillon attendent ici votre relecture.</target>
+                <target>Chaque publication a sa date et son heure. Celles en brouillon attendent ici votre relecture, puis votre validation.</target>
             </trans-unit>
             <trans-unit id="hc6ecvb">
                 <source>description.guided_step_social_posts_prepare</source>
-                <target>« Préparer maintenant » prend le prochain contenu sans attendre ; « Depuis une adresse » prépare n'importe quelle page, de ce site ou d'un autre, à partir de ses balises Open Graph. « Préparer 7 brouillons » en prépare une semaine d'avance, à valider ensuite une par une.</target>
+                <target>« Depuis une adresse » prépare un brouillon de n'importe quelle page, de ce site ou d'un autre, à partir de ses balises Open Graph, à la date choisie.</target>
             </trans-unit>
             <trans-unit id="SvQRq5R">
                 <source>description.guided_step_social_posts_publish</source>
                 <target>De retour sur la liste, le bouton en forme d'avion en papier envoie la publication sur chaque réseau qui ne l'a pas encore reçue. Un réseau qui refuse garde son message d'erreur, et « Publier » le retente.</target>
             </trans-unit>
-            <trans-unit id="lw9Mjxv">
-                <source>description.guided_step_social_schedules_edit</source>
-                <target>Ajouter un créneau, ou reprendre un créneau existant.</target>
+            <trans-unit id="QWFdKJe">
+                <source>description.guided_step_social_posts_series</source>
+                <target>Prépare plusieurs brouillons d'un coup, chaque jour, semaine ou mois : un même texte, des textes écrits par l'IA à partir d'une consigne, ou les prochains contenus du site. Ils sont ensuite relus et validés, un par un ou ensemble.</target>
             </trans-unit>
-            <trans-unit id="YvE_dVx">
-                <source>description.guided_step_social_schedules_open</source>
-                <target>Chaque créneau prépare une publication par jour, à son heure. Dès qu'un créneau est actif, « social-publish-interval-hours » n'est plus utilisé.</target>
+            <trans-unit id="Sr07Dp3">
+                <source>description.guided_step_social_series_frequency</source>
+                <target>Un brouillon tous les jours, toutes les semaines ou tous les mois, à partir du moment choisi.</target>
             </trans-unit>
-            <trans-unit id="QMpKFbt">
-                <source>description.guided_step_social_schedules_sources</source>
-                <target>Un contenu entier, ou seulement certaines de ses galeries. Laissé vide, tous les contenus à tour de rôle.</target>
+            <trans-unit id="lAe7DDv">
+                <source>description.guided_step_social_series_generate</source>
+                <target>Les brouillons sont créés et le calendrier s'ouvre sur le premier : relisez-les, puis validez-les un par un ou ensemble.</target>
             </trans-unit>
-            <trans-unit id="kNO7LNL">
-                <source>description.guided_step_social_schedules_text</source>
-                <target>Facultatif : inséré là où le modèle commun « social-publish-template » contient {slot}.</target>
+            <trans-unit id="3sBXLnS">
+                <source>description.guided_step_social_series_mode</source>
+                <target>Un même texte pour toutes, des textes écrits par l'IA à partir d'une consigne, ou les prochains contenus du site, chacun avec son propre texte.</target>
             </trans-unit>
-            <trans-unit id="5365y9u">
-                <source>description.guided_step_social_schedules_time</source>
-                <target>L'heure à laquelle la publication est préparée, chaque jour. Un changement est pris en compte dans l'heure.</target>
+            <trans-unit id="9.bO7zc">
+                <source>description.guided_step_social_series_open</source>
+                <target>L'écran de série, que « Générer une série » ouvre aussi depuis les publications et le calendrier : combien de brouillons, à partir de quand, sur quels réseaux.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -302,21 +286,17 @@
                 <source>flash.meta_refused</source>
                 <target>La connexion à Meta a été refusée ou interrompue.</target>
             </trans-unit>
-            <trans-unit id="H7BmV19">
-                <source>flash.social_calendar_slot_taken</source>
-                <target>Ce créneau a déjà sa publication : la voici, plutôt que d'en préparer une seconde.</target>
+            <trans-unit id="IAy1Rxc">
+                <source>flash.social_media_picked</source>
+                <target>%count% média(s) ajouté(s).</target>
             </trans-unit>
             <trans-unit id="i2TxptH">
                 <source>flash.social_post_approved</source>
-                <target>« %title% » est validée : elle partira au prochain créneau de ses réseaux.</target>
+                <target>« %title% » est validée : elle partira à sa date prévue.</target>
             </trans-unit>
             <trans-unit id="87Pcbcr">
                 <source>flash.social_post_draft</source>
                 <target>Préparée pour %network%, en attente de votre relecture.</target>
-            </trans-unit>
-            <trans-unit id="QqaXATm">
-                <source>flash.social_post_drafts</source>
-                <target>%count% brouillon(s) préparé(s), à relire et valider un par un.</target>
             </trans-unit>
             <trans-unit id="k5cHJcN">
                 <source>flash.social_post_failed</source>
@@ -336,19 +316,47 @@
             </trans-unit>
             <trans-unit id="52E_8Ux">
                 <source>flash.social_post_unapproved</source>
-                <target>« %title% » est retirée de la file et attend de nouveau votre relecture.</target>
+                <target>« %title% » est remise en brouillon et attend de nouveau votre relecture.</target>
             </trans-unit>
-            <trans-unit id="HF4A7I.">
-                <source>help.social_post_next_slot</source>
-                <target>Partira le %date%, au prochain créneau libre. Renseignez une date et une heure pour la faire partir à ce moment-là, au quart d'heure près.</target>
+            <trans-unit id="TbRULOl">
+                <source>flash.social_posts_approved</source>
+                <target>%count% publication(s) validée(s) : elles partiront à leur date.</target>
+            </trans-unit>
+            <trans-unit id="BmODYyf">
+                <source>flash.social_series_generated</source>
+                <target>%count% brouillon(s) créé(s), à relire et valider.</target>
+            </trans-unit>
+            <trans-unit id="TRKXywk">
+                <source>help.social_media_reference</source>
+                <target>Fichier de la galerie : il se modifie dans la galerie, et n'est jamais supprimé avec la publication.</target>
+            </trans-unit>
+            <trans-unit id="MzBnBYd">
+                <source>help.social_post_medias</source>
+                <target>Dans l'ordre où elles partent. Une photo est enregistrée en JPEG, le seul format que tous les réseaux acceptent. Quand le site a une galerie, « Ajouter depuis le site » y reprend une photo ou une vidéo. Sans photo ni vidéo, une publication préparée depuis un contenu part avec l'image de ce contenu. Les règles de chaque réseau coché sont vérifiées à l'enregistrement, et la validation est refusée tant qu'un réseau n'accepte pas les médias.</target>
             </trans-unit>
             <trans-unit id="6dpEFVs">
                 <source>help.social_post_planned_at</source>
-                <target>Vide : une publication validée part au prochain créneau libre, dans l'ordre de préparation. Remplie : elle part à cette date et heure, au quart d'heure près.</target>
+                <target>La date et l'heure où la publication part une fois validée, au quart d'heure près.</target>
             </trans-unit>
             <trans-unit id="PoY.WA0">
                 <source>help.social_post_send_on</source>
                 <target>Décochez un réseau pour ne pas y publier ce post ; cochez-en un pour lui écrire un texte, qui apparaîtra à la prochaine ouverture. Un réseau grisé n'est pas connecté : voir « Connexions ».</target>
+            </trans-unit>
+            <trans-unit id="BPzQBuz">
+                <source>help.social_post_text</source>
+                <target>Le texte de la publication, reformulé ou traduit avec Donovan. Chaque réseau en reçoit une copie coupée à sa longueur, modifiable ensuite réseau par réseau ; changer ce texte les réécrit toutes.</target>
+            </trans-unit>
+            <trans-unit id="OixUWN1">
+                <source>help.social_series_media</source>
+                <target>Facultative : jointe à chaque publication écrite ici, enregistrée une seule fois.</target>
+            </trans-unit>
+            <trans-unit id="a1xocww">
+                <source>help.social_series_sources</source>
+                <target>Pour les contenus du site : rien de coché les prend tous, à tour de rôle.</target>
+            </trans-unit>
+            <trans-unit id="4h1xjIz">
+                <source>help.social_series_text</source>
+                <target>Le texte de chaque publication, ou, avec l'IA, ce dont elles parlent : l'IA en écrit une version différente pour chacune, à la longueur du réseau coché le plus court. Inutile pour les contenus du site.</target>
             </trans-unit>
             <trans-unit id="PmT6SQr">
                 <source>label.anchor</source>
@@ -482,9 +490,9 @@
                 <source>label.guided_project_social_posts</source>
                 <target>Relire et publier sur vos réseaux</target>
             </trans-unit>
-            <trans-unit id="vcYJZKP">
-                <source>label.guided_project_social_schedules</source>
-                <target>Régler les créneaux de publication</target>
+            <trans-unit id="xnZAeX8">
+                <source>label.guided_project_social_series</source>
+                <target>Générer une série de publications</target>
             </trans-unit>
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
@@ -498,13 +506,13 @@
                 <source>label.guided_step_social_bluesky_handle</source>
                 <target>Indiquer le compte</target>
             </trans-unit>
-            <trans-unit id="WZJUH3w">
-                <source>label.guided_step_social_bluesky_mode</source>
-                <target>Choisir ce qui part sans relecture</target>
+            <trans-unit id="CF6D8_T">
+                <source>label.guided_step_social_calendar_move</source>
+                <target>Déplacer une publication</target>
             </trans-unit>
-            <trans-unit id="lfXvHb6">
-                <source>label.guided_step_social_calendar_drafts</source>
-                <target>Les publications à valider</target>
+            <trans-unit id="k.rSJli">
+                <source>label.guided_step_social_calendar_new</source>
+                <target>Écrire une publication</target>
             </trans-unit>
             <trans-unit id="a8cneSW">
                 <source>label.guided_step_social_calendar_open</source>
@@ -513,14 +521,6 @@
             <trans-unit id="9fHDZ.c">
                 <source>label.guided_step_social_calendar_panel</source>
                 <target>Ouvrir une publication</target>
-            </trans-unit>
-            <trans-unit id="Je4Sg4x">
-                <source>label.guided_step_social_calendar_queue</source>
-                <target>La file</target>
-            </trans-unit>
-            <trans-unit id="grdVdjR">
-                <source>label.guided_step_social_calendar_slot</source>
-                <target>Glisser sur un créneau</target>
             </trans-unit>
             <trans-unit id="tVdTpfQ">
                 <source>label.guided_step_social_connections_open</source>
@@ -561,10 +561,6 @@
             <trans-unit id="vKAjE7P">
                 <source>label.guided_step_social_linkedin_credentials</source>
                 <target>Renseigner les deux clés de l'application</target>
-            </trans-unit>
-            <trans-unit id="5gjF6SQ">
-                <source>label.guided_step_social_linkedin_mode</source>
-                <target>Choisir ce qui part sans relecture, et penser à se reconnecter</target>
             </trans-unit>
             <trans-unit id="n1.S19b">
                 <source>label.guided_step_social_linkedin_prerequisites</source>
@@ -610,21 +606,21 @@
                 <source>label.guided_step_social_meta_credentials</source>
                 <target>Renseigner les deux clés de l'application</target>
             </trans-unit>
-            <trans-unit id="DrOhv0h">
-                <source>label.guided_step_social_meta_mode</source>
-                <target>Choisir ce qui part sans relecture</target>
-            </trans-unit>
             <trans-unit id="BzznW61">
                 <source>label.guided_step_social_meta_prerequisites</source>
                 <target>Créer l'application Meta</target>
             </trans-unit>
             <trans-unit id="bIP872E">
                 <source>label.guided_step_social_posts_approve</source>
-                <target>Valider pour le prochain créneau</target>
+                <target>Valider</target>
             </trans-unit>
             <trans-unit id="9zRMIWa">
                 <source>label.guided_step_social_posts_edit</source>
                 <target>Relire les textes</target>
+            </trans-unit>
+            <trans-unit id="fvKKV3M">
+                <source>label.guided_step_social_posts_medias</source>
+                <target>Ajouter des photos ou une vidéo</target>
             </trans-unit>
             <trans-unit id="P_m5tZm">
                 <source>label.guided_step_social_posts_networks</source>
@@ -636,11 +632,11 @@
             </trans-unit>
             <trans-unit id="P0gG9kM">
                 <source>label.guided_step_social_posts_planned_at</source>
-                <target>Choisir la date (facultatif)</target>
+                <target>Choisir la date</target>
             </trans-unit>
             <trans-unit id="2IN5mPN">
                 <source>label.guided_step_social_posts_prepare</source>
-                <target>En préparer une maintenant</target>
+                <target>Préparer depuis une adresse</target>
             </trans-unit>
             <trans-unit id="SPmUXau">
                 <source>label.guided_step_social_posts_publish</source>
@@ -650,33 +646,29 @@
                 <source>label.guided_step_social_posts_save</source>
                 <target>Enregistrer</target>
             </trans-unit>
-            <trans-unit id="OB5pxdE">
-                <source>label.guided_step_social_schedules_edit</source>
-                <target>Créer ou modifier un créneau</target>
+            <trans-unit id="IhPZtGG">
+                <source>label.guided_step_social_posts_series</source>
+                <target>Générer une série</target>
             </trans-unit>
-            <trans-unit id="W8GFw1R">
-                <source>label.guided_step_social_schedules_networks</source>
-                <target>Cocher les réseaux</target>
+            <trans-unit id="auA9NI7">
+                <source>label.guided_step_social_series_frequency</source>
+                <target>Choisir le rythme</target>
             </trans-unit>
-            <trans-unit id="jlfPArt">
-                <source>label.guided_step_social_schedules_open</source>
-                <target>Ouvrir les créneaux</target>
+            <trans-unit id="2T0pkTO">
+                <source>label.guided_step_social_series_generate</source>
+                <target>Générer les brouillons</target>
             </trans-unit>
-            <trans-unit id="Dd5k9GT">
-                <source>label.guided_step_social_schedules_save</source>
-                <target>Enregistrer le créneau</target>
+            <trans-unit id="7D1JXLf">
+                <source>label.guided_step_social_series_media</source>
+                <target>Ajouter une photo ou une vidéo</target>
             </trans-unit>
-            <trans-unit id="IDN.aXf">
-                <source>label.guided_step_social_schedules_sources</source>
-                <target>Choisir les contenus</target>
+            <trans-unit id="_PTnfm9">
+                <source>label.guided_step_social_series_mode</source>
+                <target>Choisir les textes</target>
             </trans-unit>
-            <trans-unit id="sdaB.QU">
-                <source>label.guided_step_social_schedules_text</source>
-                <target>Écrire le texte du créneau</target>
-            </trans-unit>
-            <trans-unit id="QzrhwtQ">
-                <source>label.guided_step_social_schedules_time</source>
-                <target>Choisir l'heure</target>
+            <trans-unit id="MrMnSQv">
+                <source>label.guided_step_social_series_open</source>
+                <target>Ouvrir la génération</target>
             </trans-unit>
             <trans-unit id="GHatm_S">
                 <source>label.guided_step_social_share_buttons_anchor</source>
@@ -780,7 +772,7 @@
             </trans-unit>
             <trans-unit id="k1q7HYe">
                 <source>label.info_social_calendar</source>
-                <target>Le calendrier des publications : ce qui est parti, et où chaque publication validée tombera parmi les prochains créneaux. Cliquez sur une publication pour l'ouvrir.</target>
+                <target>Le calendrier des publications : ce qui est parti, et chaque publication à venir à sa date et heure. Cliquez sur une publication pour l'ouvrir.</target>
             </trans-unit>
             <trans-unit id="G03WcyU">
                 <source>label.info_social_connections</source>
@@ -790,17 +782,21 @@
                 <source>label.info_social_links</source>
                 <target>Liens sociaux affichés en pied de page - singleton, un seul jeu de liens. Modifiez la liste pour ajouter, retirer ou réordonner un réseau social.</target>
             </trans-unit>
+            <trans-unit id="LYuSraW">
+                <source>label.info_social_media_pick</source>
+                <target>Cochez les photos ou vidéos du site à ajouter à « %title% », après ses médias. Une photo est copiée en JPEG pour le post, une vidéo reste celle du site. Enregistrez d'abord le post : ses modifications en cours ne sont pas reprises.</target>
+            </trans-unit>
             <trans-unit id="td4VA3T">
                 <source>label.info_social_post_prepare_url</source>
                 <target>L'adresse d'une page, de ce site ou d'un autre : son titre, son résumé et son image de partage deviennent une publication, à relire avant de publier.</target>
             </trans-unit>
             <trans-unit id="ehHeI2l">
                 <source>label.info_social_posts</source>
-                <target>Les publications préparées pour vos réseaux, un texte par réseau. Celles en brouillon attendent votre relecture : corrigez les textes, enregistrez, puis cliquez sur « Publier », ou sur « Valider pour le prochain créneau » pour qu'elle parte avec les créneaux. Supprimer une publication l'annule.</target>
+                <target>Les publications préparées pour vos réseaux, un texte par réseau, chacune à sa date. Celles en brouillon attendent votre relecture : corrigez les textes, enregistrez, puis cliquez sur « Valider » pour qu'elle parte à sa date, ou sur « Publier » pour l'envoyer tout de suite. Supprimer une publication l'annule.</target>
             </trans-unit>
-            <trans-unit id="w4NSFiG">
-                <source>label.info_social_schedules</source>
-                <target>Chaque créneau publie une fois par jour, à son heure, sur ses réseaux, en puisant dans ses contenus. Tant qu'un créneau est actif, l'intervalle de publication de la configuration n'est plus utilisé.</target>
+            <trans-unit id="68T_uBv">
+                <source>label.info_social_series</source>
+                <target>Prépare d'un coup une série de brouillons, à intervalle régulier. Ils apparaissent en rouge sur le calendrier : relisez-les, corrigez-les, puis validez-les un par un ou ensemble depuis la liste. Une fois la série partie, générez-en une nouvelle.</target>
             </trans-unit>
             <trans-unit id="YtqDGiK">
                 <source>label.intro</source>
@@ -898,41 +894,17 @@
                 <source>label.social_calendar</source>
                 <target>Calendrier</target>
             </trans-unit>
-            <trans-unit id="vqvZ3s4">
-                <source>label.social_calendar_approve_plan</source>
-                <target>Valider et prévoir à cette heure</target>
-            </trans-unit>
-            <trans-unit id="cm2xUra">
-                <source>label.social_calendar_back_to_queue</source>
-                <target>Remettre dans la file</target>
-            </trans-unit>
             <trans-unit id="bSspzgN">
                 <source>label.social_calendar_close</source>
                 <target>Fermer</target>
             </trans-unit>
-            <trans-unit id="GaE3Zmi">
-                <source>label.social_calendar_draft_waits</source>
-                <target>Elle ne partira qu'une fois validée.</target>
-            </trans-unit>
-            <trans-unit id="AzY0WvY">
-                <source>label.social_calendar_drafts</source>
-                <target>À valider</target>
-            </trans-unit>
             <trans-unit id="l0Dqa_D">
                 <source>label.social_calendar_drag_hint</source>
-                <target>Glissez une publication sur un créneau pour l'y prévoir, dans « File » pour qu'elle parte au prochain créneau libre, dans « À valider » pour la retirer de la file.</target>
+                <target>Double-cliquez une heure à venir, ou un jour en vue mois, pour y écrire une publication ; glissez une publication sur une autre heure, ou un autre jour, pour la déplacer, sa validation ne change pas.</target>
             </trans-unit>
             <trans-unit id="6zf3y2m">
                 <source>label.social_calendar_edit_texts</source>
                 <target>Modifier les textes et les réseaux</target>
-            </trans-unit>
-            <trans-unit id="WuPZbRF">
-                <source>label.social_calendar_goes_out</source>
-                <target>Partira le %date%.</target>
-            </trans-unit>
-            <trans-unit id="wFpSXs5">
-                <source>label.social_calendar_goes_out_next</source>
-                <target>Partira le %date%, au prochain créneau libre.</target>
             </trans-unit>
             <trans-unit id="quz2fN2">
                 <source>label.social_calendar_month</source>
@@ -942,53 +914,41 @@
                 <source>label.social_calendar_move_failed</source>
                 <target>Le déplacement n'a pas été enregistré. La page va se recharger.</target>
             </trans-unit>
+            <trans-unit id="kH3__25">
+                <source>label.social_calendar_new</source>
+                <target>Nouvelle publication</target>
+            </trans-unit>
             <trans-unit id="NUU5AmN">
                 <source>label.social_calendar_next</source>
                 <target>Suivant</target>
             </trans-unit>
-            <trans-unit id="QGFcEKz">
-                <source>label.social_calendar_no_slot</source>
-                <target>Aucun créneau de publication n'est actif : rien ne part tout seul. Créez-en un dans « Créneaux de publication ».</target>
-            </trans-unit>
-            <trans-unit id="vApxCIC">
-                <source>label.social_calendar_no_slot_ahead</source>
-                <target>aucun créneau</target>
-            </trans-unit>
             <trans-unit id="oZ_OaKV">
                 <source>label.social_calendar_plan</source>
-                <target>Prévoir à cette heure</target>
+                <target>Déplacer à cette heure</target>
             </trans-unit>
             <trans-unit id="mVWRLZ8">
                 <source>label.social_calendar_plan_at</source>
-                <target>Partir à une heure précise (au quart d'heure)</target>
-            </trans-unit>
-            <trans-unit id="yY2ALhD">
-                <source>label.social_calendar_prepare</source>
-                <target>Préparer pour ce créneau</target>
+                <target>Date et heure (au quart d'heure)</target>
             </trans-unit>
             <trans-unit id="x_A7kw0">
                 <source>label.social_calendar_previous</source>
                 <target>Précédent</target>
             </trans-unit>
-            <trans-unit id="wy6rTY0">
-                <source>label.social_calendar_queue</source>
-                <target>File</target>
+            <trans-unit id="q59uuo1">
+                <source>label.social_calendar_state_approved</source>
+                <target>Validée</target>
             </trans-unit>
             <trans-unit id="XoPg4k5">
                 <source>label.social_calendar_state_draft</source>
                 <target>À valider</target>
             </trans-unit>
-            <trans-unit id="ZN6ftUq">
-                <source>label.social_calendar_state_planned</source>
-                <target>Prévue</target>
+            <trans-unit id="T6Xt2Wg">
+                <source>label.social_calendar_state_failed</source>
+                <target>En échec</target>
             </trans-unit>
             <trans-unit id="1FWwu6R">
                 <source>label.social_calendar_state_published</source>
                 <target>Publiée</target>
-            </trans-unit>
-            <trans-unit id="Nei6_Of">
-                <source>label.social_calendar_state_queued</source>
-                <target>Dans la file</target>
             </trans-unit>
             <trans-unit id="zGk8.GX">
                 <source>label.social_calendar_today</source>
@@ -1006,13 +966,85 @@
                 <source>label.social_links</source>
                 <target>Réseaux sociaux</target>
             </trans-unit>
+            <trans-unit id="w1pJ779">
+                <source>label.social_media_alt</source>
+                <target>Description (texte alternatif)</target>
+            </trans-unit>
+            <trans-unit id="Z_lnag3">
+                <source>label.social_media_file</source>
+                <target>Fichier</target>
+            </trans-unit>
+            <trans-unit id="CbaMOYf">
+                <source>label.social_media_image_too_big</source>
+                <target>une photo dépasse %max% Mo</target>
+            </trans-unit>
+            <trans-unit id="f6SQAxN">
+                <source>label.social_media_no_mix</source>
+                <target>photos et vidéo ne vont pas ensemble dans une publication</target>
+            </trans-unit>
+            <trans-unit id="yL9PkO5">
+                <source>label.social_media_no_video</source>
+                <target>pas de vidéo</target>
+            </trans-unit>
+            <trans-unit id="jAaAgEa">
+                <source>label.social_media_one_video</source>
+                <target>une seule vidéo par publication</target>
+            </trans-unit>
+            <trans-unit id="dEEIWOF">
+                <source>label.social_media_pick</source>
+                <target>Ajouter depuis le site</target>
+            </trans-unit>
+            <trans-unit id="feTTKlo">
+                <source>label.social_media_pick_none</source>
+                <target>Aucun média.</target>
+            </trans-unit>
+            <trans-unit id="t3sCURf">
+                <source>label.social_media_pick_search</source>
+                <target>Rechercher par titre</target>
+            </trans-unit>
+            <trans-unit id="4iYsdqL">
+                <source>label.social_media_pick_submit</source>
+                <target>Ajouter au post</target>
+            </trans-unit>
+            <trans-unit id="wtfHnvu">
+                <source>label.social_media_position</source>
+                <target>Ordre</target>
+            </trans-unit>
+            <trans-unit id="R0yQQrM">
+                <source>label.social_media_required</source>
+                <target>une photo ou une vidéo est obligatoire</target>
+            </trans-unit>
+            <trans-unit id="QH5X4ep">
+                <source>label.social_media_too_many</source>
+                <target>%max% photos au plus</target>
+            </trans-unit>
+            <trans-unit id="kXejKxZ">
+                <source>label.social_media_video_too_big</source>
+                <target>la vidéo dépasse %max% Mo</target>
+            </trans-unit>
+            <trans-unit id="U70TJeB">
+                <source>label.social_media_video_too_long</source>
+                <target>la vidéo dure plus de %max% min</target>
+            </trans-unit>
+            <trans-unit id="aFKhq.k">
+                <source>label.social_media_video_too_short</source>
+                <target>la vidéo dure moins de %min% s</target>
+            </trans-unit>
+            <trans-unit id="Ehl11pZ">
+                <source>label.social_media_video_type</source>
+                <target>vidéo acceptée en %types% seulement</target>
+            </trans-unit>
             <trans-unit id="tiqhi.Y">
                 <source>label.social_post</source>
                 <target>Publication</target>
             </trans-unit>
             <trans-unit id="cCYS3xz">
                 <source>label.social_post_approve</source>
-                <target>Valider pour le prochain créneau</target>
+                <target>Valider</target>
+            </trans-unit>
+            <trans-unit id="qx31nDf">
+                <source>label.social_post_approve_selection</source>
+                <target>Valider la sélection</target>
             </trans-unit>
             <trans-unit id="BDnUgUx">
                 <source>label.social_post_created_at</source>
@@ -1021,6 +1053,10 @@
             <trans-unit id="SKEd7Fa">
                 <source>label.social_post_failed_help</source>
                 <target>Refusée par le réseau : %error%</target>
+            </trans-unit>
+            <trans-unit id="3pF3BRH">
+                <source>label.social_post_medias</source>
+                <target>Photos et vidéos</target>
             </trans-unit>
             <trans-unit id="6O9YNYV">
                 <source>label.social_post_networks</source>
@@ -1033,14 +1069,6 @@
             <trans-unit id="1wEVf6X">
                 <source>label.social_post_prepare</source>
                 <target>Préparer</target>
-            </trans-unit>
-            <trans-unit id="exBTO_f">
-                <source>label.social_post_prepare_drafts</source>
-                <target>Préparer %count% brouillons</target>
-            </trans-unit>
-            <trans-unit id="l_6rzpX">
-                <source>label.social_post_prepare_next</source>
-                <target>Préparer maintenant</target>
             </trans-unit>
             <trans-unit id="Ajfb2GE">
                 <source>label.social_post_prepare_url</source>
@@ -1070,6 +1098,10 @@
                 <source>label.social_post_status_published</source>
                 <target>Publiée</target>
             </trans-unit>
+            <trans-unit id="dlGt4a2">
+                <source>label.social_post_text</source>
+                <target>Texte</target>
+            </trans-unit>
             <trans-unit id="HcZTdf9">
                 <source>label.social_post_text_help</source>
                 <target>%max% caractères au plus.</target>
@@ -1080,7 +1112,7 @@
             </trans-unit>
             <trans-unit id="3.CrzT8">
                 <source>label.social_post_unapprove</source>
-                <target>Retirer de la file</target>
+                <target>Remettre en brouillon</target>
             </trans-unit>
             <trans-unit id="L40zOCk">
                 <source>label.social_post_url</source>
@@ -1110,53 +1142,69 @@
                 <source>label.social_sample_review_waiting_comment</source>
                 <target>Le travail est sérieux, rien à dire là-dessus. Le stationnement devant est en revanche compliqué le samedi.</target>
             </trans-unit>
-            <trans-unit id="rlK4OIJ">
-                <source>label.social_schedule</source>
-                <target>Créneau de publication</target>
+            <trans-unit id="_olmR8R">
+                <source>label.social_series_count</source>
+                <target>Nombre de publications</target>
             </trans-unit>
-            <trans-unit id="BzuSan4">
-                <source>label.social_schedule_enabled</source>
-                <target>Actif</target>
+            <trans-unit id="NMEQBct">
+                <source>label.social_series_frequency</source>
+                <target>Rythme</target>
             </trans-unit>
-            <trans-unit id="FNyzeCo">
-                <source>label.social_schedule_name</source>
-                <target>Nom</target>
+            <trans-unit id="sEUAbo7">
+                <source>label.social_series_frequency_day</source>
+                <target>Tous les jours</target>
             </trans-unit>
-            <trans-unit id="5Q3tqnL">
-                <source>label.social_schedule_networks</source>
-                <target>Réseaux</target>
+            <trans-unit id="rNFxPxN">
+                <source>label.social_series_frequency_month</source>
+                <target>Tous les mois</target>
             </trans-unit>
-            <trans-unit id="M77AEJr">
-                <source>label.social_schedule_networks_help</source>
-                <target>Les réseaux sur lesquels ce créneau publie, parmi ceux connectés. Aucun coché, tous. Un contenu déjà publié sur un réseau n'y repart pas, mais peut partir sur un autre.</target>
+            <trans-unit id="24KvQMW">
+                <source>label.social_series_frequency_week</source>
+                <target>Toutes les semaines</target>
             </trans-unit>
-            <trans-unit id="K.tSG3K">
-                <source>label.social_schedule_sources</source>
+            <trans-unit id="LZyHW4t">
+                <source>label.social_series_generate</source>
+                <target>Générer une série</target>
+            </trans-unit>
+            <trans-unit id="7rBrUdC">
+                <source>label.social_series_media</source>
+                <target>Photo ou vidéo</target>
+            </trans-unit>
+            <trans-unit id="Iq_6JNH">
+                <source>label.social_series_mode</source>
+                <target>Textes</target>
+            </trans-unit>
+            <trans-unit id="W_3Bcge">
+                <source>label.social_series_mode_ai</source>
+                <target>Écrits par l'IA à partir d'une consigne</target>
+            </trans-unit>
+            <trans-unit id="HFEEXZa">
+                <source>label.social_series_mode_source</source>
+                <target>Les prochains contenus du site (galerie, pages…)</target>
+            </trans-unit>
+            <trans-unit id="Sm7UvXD">
+                <source>label.social_series_mode_text</source>
+                <target>Un même texte pour toutes</target>
+            </trans-unit>
+            <trans-unit id="qCi9qFI">
+                <source>label.social_series_sources</source>
                 <target>Contenus</target>
             </trans-unit>
-            <trans-unit id="B5_UFAm">
-                <source>label.social_schedule_sources_help</source>
-                <target>Où prendre ce qui est publié : un contenu entier, ou seulement certaines de ses galeries. Vide, tous les contenus à tour de rôle.</target>
+            <trans-unit id="IfcRk0.">
+                <source>label.social_series_start</source>
+                <target>Première publication</target>
             </trans-unit>
-            <trans-unit id="Xr8Qgzn">
-                <source>label.social_schedule_text</source>
-                <target>Texte du créneau</target>
+            <trans-unit id="UKWcsrC">
+                <source>label.social_series_submit</source>
+                <target>Générer les brouillons</target>
             </trans-unit>
-            <trans-unit id="xbXmd_x">
-                <source>label.social_schedule_text_help</source>
-                <target>Inséré là où le modèle de publication commun contient {slot}. Le modèle commun se règle dans la configuration (social-publish-template).</target>
+            <trans-unit id="i7_9dBk">
+                <source>label.social_series_text</source>
+                <target>Texte ou consigne</target>
             </trans-unit>
-            <trans-unit id="L9x10.g">
-                <source>label.social_schedule_time</source>
-                <target>Heure</target>
-            </trans-unit>
-            <trans-unit id="axzipJt">
-                <source>label.social_schedule_time_help</source>
-                <target>Chaque jour à cette heure, une publication est préparée. Un créneau ajouté ou modifié est pris en compte dans l'heure.</target>
-            </trans-unit>
-            <trans-unit id="gQdm7IR">
-                <source>label.social_schedules</source>
-                <target>Créneaux de publication</target>
+            <trans-unit id="tZ0rqIs">
+                <source>label.social_series_text_required</source>
+                <target>Écrivez le texte ou la consigne.</target>
             </trans-unit>
             <trans-unit id="XWMpUxP">
                 <source>label.style</source>

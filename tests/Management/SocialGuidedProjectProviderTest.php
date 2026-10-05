@@ -64,7 +64,7 @@ class SocialGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider()->getGuidedProjects();
 
-        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-connect', 'social-google-reviews', 'social-schedules', 'social-meta-connect', 'social-posts', 'social-bluesky-connect', 'social-linkedin-connect', 'social-calendar'], array_column($projects, 'slug'));
+        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-connect', 'social-google-reviews', 'social-series', 'social-meta-connect', 'social-posts', 'social-bluesky-connect', 'social-linkedin-connect', 'social-calendar'], array_column($projects, 'slug'));
         $this->assertSame([4010, 4020, 4030, 4040, 4050, 4060, 4070, 4080, 4090, 4100], array_column($projects, 'order'));
     }
 
@@ -89,7 +89,7 @@ class SocialGuidedProjectProviderTest extends TestCase
             'social-share-buttons' => 'ROLE_EDITOR',
             'social-google-connect' => ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR'],
             'social-google-reviews' => 'ROLE_EDITOR',
-            'social-schedules' => 'ROLE_EDITOR',
+            'social-series' => 'ROLE_EDITOR',
             'social-meta-connect' => ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR'],
             'social-posts' => 'ROLE_EDITOR',
             'social-bluesky-connect' => ['ROLE_ADMIN', 'ROLE_EDITOR'],
@@ -140,7 +140,7 @@ class SocialGuidedProjectProviderTest extends TestCase
 
         // The connection parcours needing keys and the reviews one open on another bundle's screen: the keys are configs, and the reviews are UiBundle's entity whatever platform brought them in
         $this->assertSame(
-            ['SocialLinksCrudController', 'ShareButtonsSettingsCrudController', 'ConfigCrudController', 'ReviewCrudController', 'SocialScheduleCrudController', 'ConfigCrudController', 'SocialPostCrudController', 'ConfigCrudController'],
+            ['SocialLinksCrudController', 'ShareButtonsSettingsCrudController', 'ConfigCrudController', 'ReviewCrudController', 'SocialPostCrudController', 'ConfigCrudController', 'SocialPostCrudController', 'ConfigCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
 
@@ -161,7 +161,7 @@ class SocialGuidedProjectProviderTest extends TestCase
             }
         }
 
-        $this->assertCount(4, $saveSteps, 'Each project walks the user to the save button once');
+        $this->assertCount(3, $saveSteps, 'Each project walks the user to the save button once');
 
         foreach ($saveSteps as $step) {
             $this->assertSame('.action-saveAndReturn', $step['highlight']);
