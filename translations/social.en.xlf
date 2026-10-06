@@ -670,6 +670,10 @@
                 <source>label.guided_step_social_series_open</source>
                 <target>Open the generation</target>
             </trans-unit>
+            <trans-unit id="G5A1L8U">
+                <source>label.guided_step_social_series_text</source>
+                <target>Write the text</target>
+            </trans-unit>
             <trans-unit id="GHatm_S">
                 <source>label.guided_step_social_share_buttons_anchor</source>
                 <target>Name the band</target>

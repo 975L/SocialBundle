@@ -182,6 +182,13 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '#social_series_mode',
                 ],
                 [
+                    // Required unless the site's contents write the posts, so walked through rather than left for the generation to refuse
+                    'label' => 'label.guided_step_social_series_text',
+                    'description' => 'help.social_series_text',
+                    'narration' => 'narration.guided_step_social_series_text',
+                    'highlight' => '#social_series_text',
+                ],
+                [
                     'label' => 'label.guided_step_social_series_media',
                     'description' => 'help.social_series_media',
                     'narration' => 'narration.guided_step_social_series_media',

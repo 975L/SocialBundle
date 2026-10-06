@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.11.1
+
+Series guided project walks through the text step
+
+- "Générer une série" guided project: a step for the text (06/10/2026)
+
 ## v2.11.0
 
 Every post planned on the calendar, slots and hourly run removed

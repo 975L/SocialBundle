@@ -670,6 +670,10 @@
                 <source>label.guided_step_social_series_open</source>
                 <target>Abrir la generación</target>
             </trans-unit>
+            <trans-unit id="G5A1L8U">
+                <source>label.guided_step_social_series_text</source>
+                <target>Escribir el texto</target>
+            </trans-unit>
             <trans-unit id="GHatm_S">
                 <source>label.guided_step_social_share_buttons_anchor</source>
                 <target>Nombrar la banda</target>

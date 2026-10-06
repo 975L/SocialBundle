@@ -174,6 +174,10 @@
                 <source>narration.guided_step_social_series_open</source>
                 <target>El panel le lleva a la generación de una serie: varios borradores de una vez, que revisará después. Indique cuántos, desde cuándo y en qué redes.</target>
             </trans-unit>
+            <trans-unit id="F.zSd24">
+                <source>narration.guided_step_social_series_text</source>
+                <target>Escriba el texto de cada publicación o, con la IA, la consigna de la que parte.</target>
+            </trans-unit>
             <trans-unit id="DrMJai5">
                 <source>narration.guided_step_social_share_buttons_anchor</source>
                 <target>El campo de ancla es opcional. Un identificador corto, «compartir» por ejemplo, permite que una entrada de menú apunte directamente a la banda. Sin ancla, se llega igualmente desplazando la página.</target>

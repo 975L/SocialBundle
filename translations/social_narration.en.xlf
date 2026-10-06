@@ -174,6 +174,10 @@
                 <source>narration.guided_step_social_series_open</source>
                 <target>The panel takes you to the generation of a series: several drafts at once, which you will proofread afterwards. Say how many, from when and on which networks.</target>
             </trans-unit>
+            <trans-unit id="F.zSd24">
+                <source>narration.guided_step_social_series_text</source>
+                <target>Write the text of each post or, with the AI, the instruction it works from.</target>
+            </trans-unit>
             <trans-unit id="DrMJai5">
                 <source>narration.guided_step_social_share_buttons_anchor</source>
                 <target>The anchor field is optional. A short id, "share" for instance, lets a menu entry point straight at the band. Without an anchor, it is still reached by scrolling the page.</target>
