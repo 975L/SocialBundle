@@ -26,6 +26,10 @@
                 <source>description.social_calendar_hour_start</source>
                 <target>La hora en lo alto de la cuadrícula de la vista semanal (6 por defecto).</target>
             </trans-unit>
+            <trans-unit id="qEOm5mf">
+                <source>description.social_calendar_ics_token</source>
+                <target>Parte secreta de la dirección del flujo iCal de las publicaciones, creada o renovada desde el calendario. Vacía: sin flujo.</target>
+            </trans-unit>
             <trans-unit id="qi3JaGX">
                 <source>description.social_enable_share_buttons</source>
                 <target>Muestra automáticamente los botones de compartir en cada página (ajustes en "Botones para compartir").</target>
@@ -106,6 +110,10 @@
                 <source>description.social_publish_template</source>
                 <target>Plantilla del texto publicado. Variables: {title}, {url}, y las del contenido ({category}, {description}...). Una variable sin valor se elimina.</target>
             </trans-unit>
+            <trans-unit id="CNtk6sR">
+                <source>description.social_series_ending_days</source>
+                <target>Días antes de la última publicación de una serie en que se envía un correo a «email-to» para prolongarla. 0 no envía nada.</target>
+            </trans-unit>
             <trans-unit id="cqh6P23">
                 <source>label.social_ai_guidelines</source>
                 <target>Tono de las publicaciones (IA)</target>
@@ -129,6 +137,10 @@
             <trans-unit id="ijmz2OX">
                 <source>label.social_calendar_hour_start</source>
                 <target>Calendario: primera hora</target>
+            </trans-unit>
+            <trans-unit id="zo6BSQn">
+                <source>label.social_calendar_ics_token</source>
+                <target>Calendario: clave de la suscripción iCal</target>
             </trans-unit>
             <trans-unit id="Dfr17Uy">
                 <source>label.social_enable_share_buttons</source>
@@ -209,6 +221,10 @@
             <trans-unit id="XYTOV4b">
                 <source>label.social_publish_template</source>
                 <target>Texto de las publicaciones</target>
+            </trans-unit>
+            <trans-unit id="icVmnRG">
+                <source>label.social_series_ending_days</source>
+                <target>Fin de una serie: avisar (días antes)</target>
             </trans-unit>
         </body>
     </file>

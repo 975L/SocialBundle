@@ -1,5 +1,28 @@
 # Changelog
 
+## v2.12.0
+
+Series prolonged, calendar feed and post content changed
+
+- Series kept and prolonged (`SocialSeries`), each post linked to it (09/10/2026) [Needs db update]
+- "Prolonger la série" makes as many drafts again after its last post (09/10/2026)
+- `c975l:social:series:ending`, nightly, emails the series ending soon (09/10/2026)
+- New config `social-series-ending-days` (09/10/2026)
+- Series: every N days, some days of the week or every month, a month keeping its day (09/10/2026)
+- Series: no draft made keeps neither the series nor its media (09/10/2026)
+- "Changer le contenu" moves a draft to another free content and writes its texts again (09/10/2026)
+- `SocialContentStatusProvider` tells the owning bundle which contents are reserved or published (09/10/2026)
+- Refusals emailed to `email-to` with a retry page sending the failed targets only (09/10/2026)
+- Calendar iCal feed at a secret address (09/10/2026)
+- New config `social-calendar-ics-token` (09/10/2026)
+- Calendar cards laid out without style attributes (CSP) (09/10/2026)
+- Share buttons: Mastodon (Share₂Fedi) and a "copy link" button (09/10/2026)
+- Share buttons: Blogger, Buffer, Delicious, Evernote, Skype, StumbleUpon, VK, WordPress and Xing removed (09/10/2026) [BC-Break]
+- Social links: Buffer, Delicious, Evernote, Skype and StumbleUpon removed, to delete from existing blocks (09/10/2026) [BC-Break]
+- Meta login asks `business_management`, for Pages held through a business portfolio (09/10/2026)
+- Guided projects: calendar feed, prolonging a series and changing a post's content (09/10/2026)
+- Requires c975l/core-bundle 1.60.2 (09/10/2026)
+
 ## v2.11.1
 
 Series guided project walks through the text step

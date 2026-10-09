@@ -21,8 +21,8 @@ class MetaGraphClient
 
     public const string DIALOG = 'https://www.facebook.com/v26.0/dialog/oauth';
 
-    // Posting on the Page, and on the Instagram account linked to it
-    public const string SCOPES = 'pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish';
+    // Posting on the Page, and on the Instagram account linked to it - business_management lists the Pages held through a business portfolio
+    public const string SCOPES = 'business_management,pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -110,7 +110,10 @@ class MetaGraphClient
             }
         }
 
-        throw new \RuntimeException('' === $pageId ? 'This Facebook account manages no Page: the posts need one to go out under.' : sprintf('This Facebook account does not manage the Page "%s" set in "social-meta-page-id".', $pageId));
+        // Names the Pages Meta did return, so a wrong id or a Page left out of the login can be told apart
+        $returned = implode(', ', array_map(static fn ($page): string => \is_array($page) ? (string) ($page['id'] ?? '') : '', $pages));
+
+        throw new \RuntimeException('' === $pageId ? 'This Facebook account manages no Page: the posts need one to go out under.' : sprintf('This Facebook account does not manage the Page "%s" set in "social-meta-page-id" (Pages returned: %s).', $pageId, '' === $returned ? 'none' : $returned));
     }
 
     private function config(string $slug): string

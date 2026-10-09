@@ -10,6 +10,10 @@
                 <source>narration.guided_step_social_bluesky_handle</source>
                 <target>Enfin, si vous le souhaitez, cherchez « social-bluesky-handle » dans la configuration et indiquez le compte relié : la prochaine connexion le proposera d'emblée. Laissé vide, vous le choisirez sur la page de Bluesky.</target>
             </trans-unit>
+            <trans-unit id="ba1QolF">
+                <source>narration.guided_step_social_calendar_feed</source>
+                <target>Pour retrouver vos publications dans votre propre agenda, dépliez « S'abonner depuis un agenda », créez l'adresse et collez-la dans Outlook, Evolution ou Google Agenda. Gardez-la secrète : la renouveler coupe l'ancienne.</target>
+            </trans-unit>
             <trans-unit id="2tNlQez">
                 <source>narration.guided_step_social_calendar_move</source>
                 <target>Pour changer la date d'une publication, glissez-la sur une heure à venir de la semaine, ou sur un jour du mois où elle garde son heure : elle y est prévue, validée ou non comme avant.</target>
@@ -118,6 +122,10 @@
                 <source>narration.guided_step_social_posts_approve</source>
                 <target>De retour sur la liste, « Valider » confie la publication à sa date prévue : elle partira d'elle-même, au lieu d'être envoyée tout de suite.</target>
             </trans-unit>
+            <trans-unit id="l7IZ8AF">
+                <source>narration.guided_step_social_posts_change_content</source>
+                <target>Si la photo ne convient pas, « Changer le contenu » en prend une autre, tirée à nouveau dans la même galerie ou choisie parmi celles encore libres, et réécrit les textes pour elle.</target>
+            </trans-unit>
             <trans-unit id="4cJ._fk">
                 <source>narration.guided_step_social_posts_edit</source>
                 <target>Le bouton de modification ouvre la publication : un texte par réseau, chacun à la longueur que ce réseau accepte, sous les photos ou la vidéo qui partiront avec. Corrigez ce qui doit l'être.</target>
@@ -156,7 +164,7 @@
             </trans-unit>
             <trans-unit id="fl_JIU5">
                 <source>narration.guided_step_social_series_frequency</source>
-                <target>Choisissez le rythme : un brouillon par jour, par semaine ou par mois.</target>
+                <target>Choisissez le rythme : tous les N jours, certains jours de la semaine, ou tous les mois.</target>
             </trans-unit>
             <trans-unit id="I6Q3TO3">
                 <source>narration.guided_step_social_series_generate</source>
@@ -173,6 +181,10 @@
             <trans-unit id="yIyQYG.">
                 <source>narration.guided_step_social_series_open</source>
                 <target>Le panneau vous emmène sur la génération d'une série : plusieurs brouillons d'un coup, que vous relirez ensuite. Indiquez combien, à partir de quand et sur quels réseaux.</target>
+            </trans-unit>
+            <trans-unit id="njw9jnA">
+                <source>narration.guided_step_social_series_prolong</source>
+                <target>Quand la série approche de sa fin, un e-mail vous prévient. Ouvrez l'un de ses posts : « Prolonger la série » en crée autant à la suite, au même rythme.</target>
             </trans-unit>
             <trans-unit id="F.zSd24">
                 <source>narration.guided_step_social_series_text</source>

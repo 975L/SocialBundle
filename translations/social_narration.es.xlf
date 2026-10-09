@@ -10,6 +10,10 @@
                 <source>narration.guided_step_social_bluesky_handle</source>
                 <target>Por último, si lo desea, busque «social-bluesky-handle» en la configuración e indique la cuenta vinculada: la próxima conexión la propondrá directamente. Vacío, la elegirá en la página de Bluesky.</target>
             </trans-unit>
+            <trans-unit id="ba1QolF">
+                <source>narration.guided_step_social_calendar_feed</source>
+                <target>Para ver sus publicaciones en su propia agenda, despliegue «Suscribirse desde una agenda», cree la dirección y péguela en Outlook, Evolution o Google Calendar. Manténgala secreta: renovarla anula la anterior.</target>
+            </trans-unit>
             <trans-unit id="2tNlQez">
                 <source>narration.guided_step_social_calendar_move</source>
                 <target>Para cambiar la fecha de una publicación, arrástrela a una hora próxima de la semana, o a un día del mes donde conserva su hora: queda prevista allí, validada o no como antes.</target>
@@ -118,6 +122,10 @@
                 <source>narration.guided_step_social_posts_approve</source>
                 <target>De vuelta en la lista, «Validar» confía la publicación a su fecha prevista: saldrá sola, en lugar de enviarse enseguida.</target>
             </trans-unit>
+            <trans-unit id="l7IZ8AF">
+                <source>narration.guided_step_social_posts_change_content</source>
+                <target>Si la foto no conviene, «Cambiar el contenido» toma otra, sorteada de nuevo en la misma galería o elegida entre las aún libres, y reescribe los textos para ella.</target>
+            </trans-unit>
             <trans-unit id="4cJ._fk">
                 <source>narration.guided_step_social_posts_edit</source>
                 <target>El botón de edición abre la publicación: un texto por red, cada uno con la longitud que acepta esa red, bajo las fotos o el vídeo que saldrán con ella. Corrija lo que haga falta.</target>
@@ -156,7 +164,7 @@
             </trans-unit>
             <trans-unit id="fl_JIU5">
                 <source>narration.guided_step_social_series_frequency</source>
-                <target>Elija el ritmo: un borrador al día, a la semana o al mes.</target>
+                <target>Elija el ritmo: cada N días, algunos días de la semana, o cada mes.</target>
             </trans-unit>
             <trans-unit id="I6Q3TO3">
                 <source>narration.guided_step_social_series_generate</source>
@@ -173,6 +181,10 @@
             <trans-unit id="yIyQYG.">
                 <source>narration.guided_step_social_series_open</source>
                 <target>El panel le lleva a la generación de una serie: varios borradores de una vez, que revisará después. Indique cuántos, desde cuándo y en qué redes.</target>
+            </trans-unit>
+            <trans-unit id="njw9jnA">
+                <source>narration.guided_step_social_series_prolong</source>
+                <target>Cuando la serie se acerca a su fin, un correo le avisa. Abra una de sus publicaciones: «Prolongar la serie» crea otras tantas a continuación, al mismo ritmo.</target>
             </trans-unit>
             <trans-unit id="F.zSd24">
                 <source>narration.guided_step_social_series_text</source>

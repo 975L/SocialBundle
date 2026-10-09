@@ -1,0 +1,14 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{# A series prolonged with its own settings (see SocialPostCrudController::prolongSeries()), confirmed before its drafts are made #}
+{% block main %}
+    <h1>{{ 'label.social_series_prolong'|trans({}, 'social') }}</h1>
+
+    <p>{{ 'label.info_social_series_prolong'|trans({'%title%': series.title, '%count%': series.count, '%date%': last ? last|date('d/m/Y H:i') : '-'}, 'social') }}</p>
+
+    <form method="post">
+        <input type="hidden" name="token" value="{{ csrf_token('social_post_publish') }}">
+        <button type="submit" name="prolong" class="btn btn-primary"><i class="fa fa-forward"></i> {{ 'label.social_series_prolong'|trans({}, 'social') }}</button>
+        <a href="{{ back_url }}" class="btn btn-link">{{ 'action.cancel'|trans({}, 'EasyAdminBundle') }}</a>
+    </form>
+{% endblock main %}

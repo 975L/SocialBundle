@@ -81,7 +81,7 @@ class SocialCalendarControllerTest extends TestCase
     // The card's colour: a draft, an approved post, one refused somewhere, one gone out on every network
     public function testTheStateOfAPostSaysWhereItStands(): void
     {
-        $state = fn (): string => new \ReflectionMethod(SocialCalendarController::class, 'state')->invoke($this->controller(), $this->post);
+        $state = fn (): string => $this->post->getState();
 
         $this->assertSame('draft', $state());
         $this->post->approve();
@@ -97,7 +97,7 @@ class SocialCalendarControllerTest extends TestCase
     {
         $post = new SocialPost(SocialPost::SOURCE_MANUAL, 'none', 'None', '', null, new \DateTimeImmutable('+1 day'));
 
-        $this->assertSame('draft', new \ReflectionMethod(SocialCalendarController::class, 'state')->invoke($this->controller(), $post));
+        $this->assertSame('draft', $post->getState());
     }
 
     // Same seam as the OAuth controllers' tests: AbstractController resolves security and the csrf check through its container

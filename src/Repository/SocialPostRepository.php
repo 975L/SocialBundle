@@ -26,6 +26,30 @@ class SocialPostRepository extends ServiceEntityRepository
         parent::__construct($registry, SocialPost::class);
     }
 
+    // The posts holding some contents of a source, their targets with them, the latest planned last - what tells the owning bundle which of its contents are reserved or gone out
+    /**
+     * @param list<string> $sourceIds
+     *
+     * @return list<SocialPost>
+     */
+    public function findBySourceIds(string $sourceType, array $sourceIds): array
+    {
+        if ([] === $sourceIds) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.targets', 't')
+            ->addSelect('t')
+            ->where('p.sourceType = :sourceType')
+            ->andWhere('p.sourceId IN (:sourceIds)')
+            ->setParameter('sourceType', $sourceType)
+            ->setParameter('sourceIds', $sourceIds)
+            ->orderBy('p.plannedAt', \SortDirection::Ascending)
+            ->getQuery()
+            ->getResult();
+    }
+
     // The ids of a source already taken for a post, since a date or ever - a post prepared counts whatever its networks made of it, a draft nobody published included
     /** @return list<string> */
     public function findSourceIds(string $sourceType, ?\DateTimeImmutable $since): array

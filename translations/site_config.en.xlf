@@ -26,6 +26,10 @@
                 <source>description.social_calendar_hour_start</source>
                 <target>The hour at the top of the week view's grid (6 by default).</target>
             </trans-unit>
+            <trans-unit id="qEOm5mf">
+                <source>description.social_calendar_ics_token</source>
+                <target>Secret part of the posts' iCal feed address, created or renewed from the calendar. Empty: no feed.</target>
+            </trans-unit>
             <trans-unit id="qi3JaGX">
                 <source>description.social_enable_share_buttons</source>
                 <target>Automatically displays the share buttons on every page (settings under "Share buttons").</target>
@@ -106,6 +110,10 @@
                 <source>description.social_publish_template</source>
                 <target>Template of the posted text. Variables: {title}, {url}, and the content's own ({category}, {description}...). A variable with no value is removed.</target>
             </trans-unit>
+            <trans-unit id="CNtk6sR">
+                <source>description.social_series_ending_days</source>
+                <target>Days before a series' last post when an email is sent to "email-to" to prolong it. 0 sends nothing.</target>
+            </trans-unit>
             <trans-unit id="cqh6P23">
                 <source>label.social_ai_guidelines</source>
                 <target>Tone of the posts (AI)</target>
@@ -129,6 +137,10 @@
             <trans-unit id="ijmz2OX">
                 <source>label.social_calendar_hour_start</source>
                 <target>Calendar: first hour</target>
+            </trans-unit>
+            <trans-unit id="zo6BSQn">
+                <source>label.social_calendar_ics_token</source>
+                <target>Calendar: iCal subscription key</target>
             </trans-unit>
             <trans-unit id="Dfr17Uy">
                 <source>label.social_enable_share_buttons</source>
@@ -209,6 +221,10 @@
             <trans-unit id="XYTOV4b">
                 <source>label.social_publish_template</source>
                 <target>Post text</target>
+            </trans-unit>
+            <trans-unit id="icVmnRG">
+                <source>label.social_series_ending_days</source>
+                <target>Series ending: warn (days before)</target>
             </trans-unit>
         </body>
     </file>

@@ -74,6 +74,10 @@
                 <source>description.guided_step_social_bluesky_handle</source>
                 <target>Optional, in the configuration: search for "social-bluesky-handle" and put the account's handle in it, for instance example.bsky.social, for the next connection to offer it at once. Left empty, the account is picked on Bluesky's page.</target>
             </trans-unit>
+            <trans-unit id="6i891bK">
+                <source>description.guided_step_social_calendar_feed</source>
+                <target>Unfold "Subscribe from a calendar" and create the secret address: pasted into Outlook, Evolution or Google Calendar, it shows the planned posts there. Renewing it cuts the former one.</target>
+            </trans-unit>
             <trans-unit id="y3lKM_7">
                 <source>description.guided_step_social_calendar_move</source>
                 <target>Drag a post onto a coming time of the week, or onto a coming day of the month where it keeps its time: it is planned there, its approval unchanged.</target>
@@ -178,6 +182,10 @@
                 <source>description.guided_step_social_posts_approve</source>
                 <target>This button approves the post: it goes out on its own at its planned date, instead of being sent at once. Tick several drafts to approve them together with "Approve the selection".</target>
             </trans-unit>
+            <trans-unit id="cJ_J6x4">
+                <source>description.guided_step_social_posts_change_content</source>
+                <target>For a post prepared from the site, "Change the content" takes another photo: drawn again in the same gallery, or chosen among those still free. Its texts are written again for it.</target>
+            </trans-unit>
             <trans-unit id="hq1t6co">
                 <source>description.guided_step_social_posts_edit</source>
                 <target>The edit button opens the post: one text per network, each limited to the length that network accepts, under the photos or the video going out with it.</target>
@@ -200,7 +208,7 @@
             </trans-unit>
             <trans-unit id="Sr07Dp3">
                 <source>description.guided_step_social_series_frequency</source>
-                <target>One draft every day, every week or every month, from the moment chosen.</target>
+                <target>A draft every N days (1 every day, 2 every other day, 7 every week), on some days of the week or every month, from the moment chosen.</target>
             </trans-unit>
             <trans-unit id="lAe7DDv">
                 <source>description.guided_step_social_series_generate</source>
@@ -213,6 +221,10 @@
             <trans-unit id="9.bO7zc">
                 <source>description.guided_step_social_series_open</source>
                 <target>The series screen, which "Generate a series" also opens from the posts and the calendar: how many drafts, from when, on which networks.</target>
+            </trans-unit>
+            <trans-unit id="YQtvut9">
+                <source>description.guided_step_social_series_prolong</source>
+                <target>An email warns when the series comes near its end. "Prolong the series", on the screen of one of its posts, makes as many again after it, at the same pace.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -245,6 +257,22 @@
             <trans-unit id="bRoisnG">
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Wide, square or round button: that is the room the buttons take under your pages.</target>
+            </trans-unit>
+            <trans-unit id="nVJ6Jbx">
+                <source>email.social_post_failed_body</source>
+                <target>A network refused these posts at their moment. Open the link to see why and send it again, or correct it first:</target>
+            </trans-unit>
+            <trans-unit id="fKPJ625">
+                <source>email.social_post_failed_subject</source>
+                <target>%count% post(s) refused by a network</target>
+            </trans-unit>
+            <trans-unit id="fFRxt4W">
+                <source>email.social_series_ending_body</source>
+                <target>These series are reaching their last post. Open one of their posts, then "Prolong the series" to go on with the same settings:</target>
+            </trans-unit>
+            <trans-unit id="KWHHNzs">
+                <source>email.social_series_ending_subject</source>
+                <target>%count% post series coming to an end</target>
             </trans-unit>
             <trans-unit id="0h0NDdA">
                 <source>flash.bluesky_connected</source>
@@ -286,6 +314,18 @@
                 <source>flash.meta_refused</source>
                 <target>The connection to Meta was refused or interrupted.</target>
             </trans-unit>
+            <trans-unit id="sgZ4.jB">
+                <source>flash.social_calendar_feed_created</source>
+                <target>New subscription address created: the former one no longer works.</target>
+            </trans-unit>
+            <trans-unit id="iZFVnLR">
+                <source>flash.social_content_changed</source>
+                <target>The post now holds another content, the former one is free again.</target>
+            </trans-unit>
+            <trans-unit id="XKmpGCm">
+                <source>flash.social_content_unchanged</source>
+                <target>No other free content: the post keeps its own.</target>
+            </trans-unit>
             <trans-unit id="IAy1Rxc">
                 <source>flash.social_media_picked</source>
                 <target>%count% media(s) added.</target>
@@ -326,6 +366,14 @@
                 <source>flash.social_series_generated</source>
                 <target>%count% draft(s) created, to read and approve.</target>
             </trans-unit>
+            <trans-unit id="MtGVTQR">
+                <source>help.social_calendar_feed</source>
+                <target>Copy this address into your calendar: Evolution, New then "On the web" calendar; Google Calendar, Other calendars then "From URL" (then shown on Android); Outlook, Add calendar then "Subscribe from web". Read-only, refreshed by the calendar at its own pace. Keep it secret: renewing it cuts the former one.</target>
+            </trans-unit>
+            <trans-unit id="hs5kZPn">
+                <source>help.social_calendar_feed_none</source>
+                <target>Create a secret address to see the posts in your calendar, read-only.</target>
+            </trans-unit>
             <trans-unit id="TRKXywk">
                 <source>help.social_media_reference</source>
                 <target>A gallery file: it is changed in the gallery, and never deleted with the post.</target>
@@ -346,13 +394,17 @@
                 <source>help.social_post_text</source>
                 <target>The post's text, rephrased or translated with Donovan. Each network gets a copy cut to its length, editable afterwards network by network; changing this text writes them all again.</target>
             </trans-unit>
+            <trans-unit id="6EH5xQL">
+                <source>help.social_series_interval</source>
+                <target>In days, for "Every N days": 1 every day, 2 every other day, 7 every week.</target>
+            </trans-unit>
             <trans-unit id="OixUWN1">
                 <source>help.social_series_media</source>
-                <target>Optional: attached to every post written here, stored once.</target>
+                <target>Optional: attached to every post written here, stored once, instead of the pictures of the contents ticked.</target>
             </trans-unit>
             <trans-unit id="a1xocww">
                 <source>help.social_series_sources</source>
-                <target>For the site's contents: nothing ticked takes them all, in turn.</target>
+                <target>With the site's contents, nothing ticked takes them all, in turn. With a text or the AI, each post takes a picture at random among the ones ticked, reserved for it and changeable on its screen.</target>
             </trans-unit>
             <trans-unit id="4h1xjIz">
                 <source>help.social_series_text</source>
@@ -405,6 +457,10 @@
             <trans-unit id="JQ_3soN">
                 <source>label.connection_wrong_host</source>
                 <target>Bluesky only knows the site by its address: connect it from %url%.</target>
+            </trans-unit>
+            <trans-unit id="QVohPpC">
+                <source>label.copy_link</source>
+                <target>Copy link</target>
             </trans-unit>
             <trans-unit id="cnGpTz.">
                 <source>label.display_label</source>
@@ -505,6 +561,10 @@
             <trans-unit id="WAKi3s4">
                 <source>label.guided_step_social_bluesky_handle</source>
                 <target>Name the account</target>
+            </trans-unit>
+            <trans-unit id="TL21sYA">
+                <source>label.guided_step_social_calendar_feed</source>
+                <target>Subscribe from a calendar</target>
             </trans-unit>
             <trans-unit id="CF6D8_T">
                 <source>label.guided_step_social_calendar_move</source>
@@ -614,6 +674,10 @@
                 <source>label.guided_step_social_posts_approve</source>
                 <target>Approve</target>
             </trans-unit>
+            <trans-unit id="XkyAGQR">
+                <source>label.guided_step_social_posts_change_content</source>
+                <target>Change the content</target>
+            </trans-unit>
             <trans-unit id="9zRMIWa">
                 <source>label.guided_step_social_posts_edit</source>
                 <target>Proofread the texts</target>
@@ -669,6 +733,10 @@
             <trans-unit id="MrMnSQv">
                 <source>label.guided_step_social_series_open</source>
                 <target>Open the generation</target>
+            </trans-unit>
+            <trans-unit id="T2cR_XR">
+                <source>label.guided_step_social_series_prolong</source>
+                <target>Prolong the series</target>
             </trans-unit>
             <trans-unit id="G5A1L8U">
                 <source>label.guided_step_social_series_text</source>
@@ -782,6 +850,10 @@
                 <source>label.info_social_connections</source>
                 <target>The networks the site connects to. Facebook, Instagram, LinkedIn and Bluesky receive the posts prepared on the "Posts" screen: publishing starts as soon as one of them is connected, nothing else to turn on. Google gives access to the reviews of your Business Profile.</target>
             </trans-unit>
+            <trans-unit id="CJ1xpE7">
+                <source>label.info_social_content_change</source>
+                <target>"%title%": draw another content at random in the same group, or choose one among those neither reserved nor published. The former one is freed.</target>
+            </trans-unit>
             <trans-unit id="RKLGNte">
                 <source>label.info_social_links</source>
                 <target>Site-wide social links shown in the footer - a singleton, one set of links. Edit the list to add, remove or reorder a social network.</target>
@@ -802,6 +874,10 @@
                 <source>label.info_social_series</source>
                 <target>Prepares a series of drafts at once, at a steady pace. They show in red on the calendar: read them, correct them, then approve them one by one or together from the list. Once the series has gone out, generate a new one.</target>
             </trans-unit>
+            <trans-unit id="UQgKT5o">
+                <source>label.info_social_series_prolong</source>
+                <target>"%title%": %count% more draft(s), with the same settings, after the last post of %date%.</target>
+            </trans-unit>
             <trans-unit id="YtqDGiK">
                 <source>label.intro</source>
                 <target>Introduction text</target>
@@ -813,6 +889,10 @@
             <trans-unit id="y.9x3G.">
                 <source>label.label</source>
                 <target>Label</target>
+            </trans-unit>
+            <trans-unit id="FBmE4L8">
+                <source>label.link_copied</source>
+                <target>Link copied</target>
             </trans-unit>
             <trans-unit id="qW0z.EV">
                 <source>label.network</source>
@@ -910,6 +990,18 @@
                 <source>label.social_calendar_edit_texts</source>
                 <target>Edit the texts and networks</target>
             </trans-unit>
+            <trans-unit id="mGq6bLy">
+                <source>label.social_calendar_feed</source>
+                <target>Subscribe from a calendar (Outlook, Evolution, Google Calendar)</target>
+            </trans-unit>
+            <trans-unit id="xkmGyUz">
+                <source>label.social_calendar_feed_create</source>
+                <target>Create the address</target>
+            </trans-unit>
+            <trans-unit id="hK45uK1">
+                <source>label.social_calendar_feed_renew</source>
+                <target>Renew the address</target>
+            </trans-unit>
             <trans-unit id="quz2fN2">
                 <source>label.social_calendar_month</source>
                 <target>Month</target>
@@ -965,6 +1057,26 @@
             <trans-unit id="J4QK2iR">
                 <source>label.social_connections</source>
                 <target>Connections</target>
+            </trans-unit>
+            <trans-unit id="FPjmrw6">
+                <source>label.social_content_all_scopes</source>
+                <target>Every group</target>
+            </trans-unit>
+            <trans-unit id="hFURYrF">
+                <source>label.social_content_change</source>
+                <target>Change the content</target>
+            </trans-unit>
+            <trans-unit id="2RhuuI2">
+                <source>label.social_content_choose</source>
+                <target>Take this one</target>
+            </trans-unit>
+            <trans-unit id="uLb8Dsy">
+                <source>label.social_content_none</source>
+                <target>No free content here.</target>
+            </trans-unit>
+            <trans-unit id=".AP7YxM">
+                <source>label.social_content_redraw</source>
+                <target>Draw another</target>
             </trans-unit>
             <trans-unit id="Eyn1gXP">
                 <source>label.social_links</source>
@@ -1082,6 +1194,22 @@
                 <source>label.social_post_publish</source>
                 <target>Publish</target>
             </trans-unit>
+            <trans-unit id="k5F77xT">
+                <source>label.social_post_retry</source>
+                <target>Send the post again</target>
+            </trans-unit>
+            <trans-unit id="kOWAu6X">
+                <source>label.social_post_retry_edit</source>
+                <target>Open to correct</target>
+            </trans-unit>
+            <trans-unit id="Xl5hMfH">
+                <source>label.social_post_retry_none</source>
+                <target>No network refused it: nothing to send again.</target>
+            </trans-unit>
+            <trans-unit id="mOYoCdT">
+                <source>label.social_post_retry_submit</source>
+                <target>Send again now</target>
+            </trans-unit>
             <trans-unit id="bFuD5Vi">
                 <source>label.social_post_send_on</source>
                 <target>Post on</target>
@@ -1146,6 +1274,10 @@
                 <source>label.social_sample_review_waiting_comment</source>
                 <target>The work is serious, nothing to say about that. Parking out front is another matter on a Saturday.</target>
             </trans-unit>
+            <trans-unit id="xyJjbQD">
+                <source>label.social_series_all_sources</source>
+                <target>Site contents</target>
+            </trans-unit>
             <trans-unit id="_olmR8R">
                 <source>label.social_series_count</source>
                 <target>Number of posts</target>
@@ -1154,21 +1286,25 @@
                 <source>label.social_series_frequency</source>
                 <target>Pace</target>
             </trans-unit>
-            <trans-unit id="sEUAbo7">
-                <source>label.social_series_frequency_day</source>
-                <target>Every day</target>
+            <trans-unit id="oCTC_nE">
+                <source>label.social_series_frequency_days</source>
+                <target>Every N days</target>
             </trans-unit>
             <trans-unit id="rNFxPxN">
                 <source>label.social_series_frequency_month</source>
                 <target>Every month</target>
             </trans-unit>
-            <trans-unit id="24KvQMW">
-                <source>label.social_series_frequency_week</source>
-                <target>Every week</target>
+            <trans-unit id="OA845Cz">
+                <source>label.social_series_frequency_weekdays</source>
+                <target>Some days of the week</target>
             </trans-unit>
             <trans-unit id="LZyHW4t">
                 <source>label.social_series_generate</source>
                 <target>Generate a series</target>
+            </trans-unit>
+            <trans-unit id="D1GuluD">
+                <source>label.social_series_interval</source>
+                <target>Every</target>
             </trans-unit>
             <trans-unit id="7rBrUdC">
                 <source>label.social_series_media</source>
@@ -1190,6 +1326,10 @@
                 <source>label.social_series_mode_text</source>
                 <target>One text for all</target>
             </trans-unit>
+            <trans-unit id="UI867RG">
+                <source>label.social_series_prolong</source>
+                <target>Prolong the series</target>
+            </trans-unit>
             <trans-unit id="qCi9qFI">
                 <source>label.social_series_sources</source>
                 <target>Contents</target>
@@ -1209,6 +1349,42 @@
             <trans-unit id="tZ0rqIs">
                 <source>label.social_series_text_required</source>
                 <target>Write the text or the instruction.</target>
+            </trans-unit>
+            <trans-unit id="q8ovzU6">
+                <source>label.social_series_weekday_1</source>
+                <target>Monday</target>
+            </trans-unit>
+            <trans-unit id="SWNLeBx">
+                <source>label.social_series_weekday_2</source>
+                <target>Tuesday</target>
+            </trans-unit>
+            <trans-unit id="bt1UcVO">
+                <source>label.social_series_weekday_3</source>
+                <target>Wednesday</target>
+            </trans-unit>
+            <trans-unit id=".htUwlJ">
+                <source>label.social_series_weekday_4</source>
+                <target>Thursday</target>
+            </trans-unit>
+            <trans-unit id="mSnumel">
+                <source>label.social_series_weekday_5</source>
+                <target>Friday</target>
+            </trans-unit>
+            <trans-unit id="eoBgU68">
+                <source>label.social_series_weekday_6</source>
+                <target>Saturday</target>
+            </trans-unit>
+            <trans-unit id="OCRQTTx">
+                <source>label.social_series_weekday_7</source>
+                <target>Sunday</target>
+            </trans-unit>
+            <trans-unit id="ax51BiJ">
+                <source>label.social_series_weekdays</source>
+                <target>Days</target>
+            </trans-unit>
+            <trans-unit id="6prrGwu">
+                <source>label.social_series_weekdays_required</source>
+                <target>Tick at least one day of the week.</target>
             </trans-unit>
             <trans-unit id="XWMpUxP">
                 <source>label.style</source>

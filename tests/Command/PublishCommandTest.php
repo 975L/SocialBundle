@@ -11,16 +11,23 @@
 namespace c975L\SocialBundle\Tests\Command;
 
 use c975L\SocialBundle\Command\PublishCommand;
+use c975L\SocialBundle\Entity\SocialPost;
+use c975L\SocialBundle\Repository\SocialPostRepository;
+use c975L\SocialBundle\Service\SocialAdminMailer;
 use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPublisher;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PublishCommandTest extends TestCase
 {
     /** @var array<string, mixed> */
     private array $called = [];
+
+    /** @var list<string> */
+    private array $mailed = [];
 
     /**
      * @param array<string, array<string, mixed>> $report
@@ -42,7 +49,20 @@ class PublishCommandTest extends TestCase
             return $report;
         });
 
-        return new CommandTester(new PublishCommand($socialPublisher, new SocialPlanner()));
+        $post = new SocialPost(SocialPost::SOURCE_MANUAL, 'abc', 'Photo du soir', '', null, new \DateTimeImmutable());
+        $repository = $this->createStub(SocialPostRepository::class);
+        $repository->method('find')->willReturn($post);
+        $mailer = $this->createStub(SocialAdminMailer::class);
+        $mailer->method('url')->willReturnCallback(static fn (string $route, array $parameters): string => 'https://example.org/management/social-post/' . $parameters['entityId'] . '/retry-post');
+        $mailer->method('send')->willReturnCallback(function (string $subject, string $body): ?string {
+            $this->mailed[] = $body;
+
+            return null;
+        });
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnArgument(0);
+
+        return new CommandTester(new PublishCommand($socialPublisher, new SocialPlanner(), $repository, $mailer, $translator));
     }
 
     // Most quarter-hourly runs have nothing due, which a cron must not read as a failure
@@ -132,5 +152,16 @@ class PublishCommandTest extends TestCase
 
         $this->assertSame(Command::FAILURE, $tester->execute(['--url' => 'https://example.org/page']));
         $this->assertStringContainsString('answered 404', $tester->getDisplay());
+    }
+
+    // A refusal of the run is emailed with the address sending the post again; a run where every network took its post emails nothing
+    public function testARefusalIsEmailedWithTheAddressToSendItAgain(): void
+    {
+        $this->createTester(['#7 bluesky' => ['status' => 'published', 'message' => 'at://1']])->execute([]);
+        $this->assertSame([], $this->mailed);
+
+        $this->createTester(['#7 facebook' => ['status' => 'failed', 'message' => 'Token expired', 'post' => 7, 'network' => 'facebook']])->execute([]);
+        $this->assertCount(1, $this->mailed);
+        $this->assertStringContainsString("- Photo du soir - Facebook : Token expired\n  https://example.org/management/social-post/7/retry-post", $this->mailed[0]);
     }
 }

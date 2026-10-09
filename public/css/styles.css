@@ -106,32 +106,6 @@ footer .social-links-block {
   background-color: rgb(5.202559685%, 58.0285503323%, 90.4444991386%);
 }
 
-.social-links--colored .social-link--buffer a {
-  background-color: #168eea;
-  color: #fff;
-}
-
-.social-links--colored .social-link--buffer .social-link-icon {
-  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
-}
-
-.social-links--colored .social-link--buffer a:hover {
-  background-color: rgb(7.4701250579%, 50.1565539602%, 82.8828161186%);
-}
-
-.social-links--colored .social-link--delicious a {
-  background-color: #3399ff;
-  color: #fff;
-}
-
-.social-links--colored .social-link--delicious .social-link-icon {
-  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
-}
-
-.social-links--colored .social-link--delicious a:hover {
-  background-color: rgb(8%, 54%, 100%);
-}
-
 .social-links--colored .social-link--discord a {
   background-color: #5865f2;
   color: #fff;
@@ -169,19 +143,6 @@ footer .social-links-block {
 
 .social-links--colored .social-link--email a:hover {
   background-color: rgb(16.5882352941%, 27.8823529412%, 27.8823529412%);
-}
-
-.social-links--colored .social-link--evernote a {
-  background-color: #2dbe60;
-  color: #fff;
-}
-
-.social-links--colored .social-link--evernote .social-link-icon {
-  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
-}
-
-.social-links--colored .social-link--evernote a:hover {
-  background-color: rgb(15.8823529412%, 67.0588235294%, 33.8823529412%);
 }
 
 .social-links--colored .social-link--facebook a {
@@ -247,6 +208,19 @@ footer .social-links-block {
 
 .social-links--colored .social-link--line a:hover {
   background-color: rgb(0%, 68.8235294118%, 0%);
+}
+
+.social-links--colored .social-link--link a {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.social-links--colored .social-link--link .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--link a:hover {
+  background-color: rgb(38.1176470588%, 41.2941176471%, 44.1176470588%);
 }
 
 .social-links--colored .social-link--linkedin a {
@@ -327,19 +301,6 @@ footer .social-links-block {
   background-color: rgb(90%, 24.3529411765%, 0%);
 }
 
-.social-links--colored .social-link--skype a {
-  background-color: #00aff0;
-  color: #fff;
-}
-
-.social-links--colored .social-link--skype .social-link-icon {
-  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
-}
-
-.social-links--colored .social-link--skype a:hover {
-  background-color: rgb(0%, 61.7647058824%, 84.7058823529%);
-}
-
 .social-links--colored .social-link--snapchat a {
   background-color: #fffc00;
   color: #000;
@@ -377,19 +338,6 @@ footer .social-links-block {
 
 .social-links--colored .social-link--spotify a:hover {
   background-color: rgb(10.2352941176%, 65.2941176471%, 29.6470588235%);
-}
-
-.social-links--colored .social-link--stumbleupon a {
-  background-color: #eb4924;
-  color: #fff;
-}
-
-.social-links--colored .social-link--stumbleupon .social-link-icon {
-  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
-}
-
-.social-links--colored .social-link--stumbleupon a:hover {
-  background-color: rgb(87.6431208467%, 22.8112232341%, 8.0039379769%);
 }
 
 .social-links--colored .social-link--telegram a {
@@ -593,36 +541,6 @@ footer .social-links-block {
   filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
 }
 
-.social-links--outline .social-link--buffer a {
-  background-color: transparent;
-  border: 3px solid #168eea;
-  color: #168eea;
-}
-
-.social-links--outline .social-link--buffer a:hover {
-  background-color: #168eea;
-  color: #fff;
-}
-
-.social-links--outline .social-link--buffer a:hover .social-link-icon {
-  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
-}
-
-.social-links--outline .social-link--delicious a {
-  background-color: transparent;
-  border: 3px solid #3399ff;
-  color: #3399ff;
-}
-
-.social-links--outline .social-link--delicious a:hover {
-  background-color: #3399ff;
-  color: #fff;
-}
-
-.social-links--outline .social-link--delicious a:hover .social-link-icon {
-  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
-}
-
 .social-links--outline .social-link--discord a {
   background-color: transparent;
   border: 3px solid #5865f2;
@@ -665,21 +583,6 @@ footer .social-links-block {
 }
 
 .social-links--outline .social-link--email a:hover .social-link-icon {
-  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
-}
-
-.social-links--outline .social-link--evernote a {
-  background-color: transparent;
-  border: 3px solid #2dbe60;
-  color: #2dbe60;
-}
-
-.social-links--outline .social-link--evernote a:hover {
-  background-color: #2dbe60;
-  color: #fff;
-}
-
-.social-links--outline .social-link--evernote a:hover .social-link-icon {
   filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
 }
 
@@ -755,6 +658,21 @@ footer .social-links-block {
 }
 
 .social-links--outline .social-link--line a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--link a {
+  background-color: transparent;
+  border: 3px solid #6c757d;
+  color: #6c757d;
+}
+
+.social-links--outline .social-link--link a:hover {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.social-links--outline .social-link--link a:hover .social-link-icon {
   filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
 }
 
@@ -848,21 +766,6 @@ footer .social-links-block {
   filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
 }
 
-.social-links--outline .social-link--skype a {
-  background-color: transparent;
-  border: 3px solid #00aff0;
-  color: #00aff0;
-}
-
-.social-links--outline .social-link--skype a:hover {
-  background-color: #00aff0;
-  color: #fff;
-}
-
-.social-links--outline .social-link--skype a:hover .social-link-icon {
-  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
-}
-
 .social-links--outline .social-link--snapchat a {
   background-color: transparent;
   border: 3px solid #fffc00;
@@ -905,21 +808,6 @@ footer .social-links-block {
 }
 
 .social-links--outline .social-link--spotify a:hover .social-link-icon {
-  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
-}
-
-.social-links--outline .social-link--stumbleupon a {
-  background-color: transparent;
-  border: 3px solid #eb4924;
-  color: #eb4924;
-}
-
-.social-links--outline .social-link--stumbleupon a:hover {
-  background-color: #eb4924;
-  color: #fff;
-}
-
-.social-links--outline .social-link--stumbleupon a:hover .social-link-icon {
   filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
 }
 
@@ -1156,8 +1044,24 @@ footer .social-link a:hover {
   justify-content: center;
   margin: var(--social-share-btn-margin, 0.2em);
   border-radius: var(--social-share-btn-radius, 0);
+  position: relative;
   text-decoration: none;
   color: #fff;
+}
+
+.social-share-btn.is-copied::after {
+  content: attr(data-copied-label);
+  position: absolute;
+  bottom: calc(100% + 0.4em);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.2em 0.6em;
+  border-radius: 0.3em;
+  background: #212529;
+  color: #fff;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .social-share-btn img,
@@ -1287,24 +1191,6 @@ footer .social-link a:hover {
   background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
 }
 
-.social-share-btn--buffer {
-  --network-color: #168eea;
-  background-color: var(--social-share-btn-background, var(--network-color));
-}
-
-.social-share-btn--buffer:hover {
-  background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
-}
-
-.social-share-btn--delicious {
-  --network-color: #3399ff;
-  background-color: var(--social-share-btn-background, var(--network-color));
-}
-
-.social-share-btn--delicious:hover {
-  background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
-}
-
 .social-share-btn--discord {
   --network-color: #5865f2;
   background-color: var(--social-share-btn-background, var(--network-color));
@@ -1329,15 +1215,6 @@ footer .social-link a:hover {
 }
 
 .social-share-btn--email:hover {
-  background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
-}
-
-.social-share-btn--evernote {
-  --network-color: #2dbe60;
-  background-color: var(--social-share-btn-background, var(--network-color));
-}
-
-.social-share-btn--evernote:hover {
   background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
 }
 
@@ -1383,6 +1260,15 @@ footer .social-link a:hover {
 }
 
 .social-share-btn--line:hover {
+  background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
+}
+
+.social-share-btn--link {
+  --network-color: #6c757d;
+  background-color: var(--social-share-btn-background, var(--network-color));
+}
+
+.social-share-btn--link:hover {
   background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
 }
 
@@ -1440,15 +1326,6 @@ footer .social-link a:hover {
   background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
 }
 
-.social-share-btn--skype {
-  --network-color: #00aff0;
-  background-color: var(--social-share-btn-background, var(--network-color));
-}
-
-.social-share-btn--skype:hover {
-  background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
-}
-
 .social-share-btn--snapchat {
   --network-color: #fffc00;
   background-color: var(--social-share-btn-background, var(--network-color));
@@ -1473,15 +1350,6 @@ footer .social-link a:hover {
 }
 
 .social-share-btn--spotify:hover {
-  background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
-}
-
-.social-share-btn--stumbleupon {
-  --network-color: #eb4924;
-  background-color: var(--social-share-btn-background, var(--network-color));
-}
-
-.social-share-btn--stumbleupon:hover {
   background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
 }
 

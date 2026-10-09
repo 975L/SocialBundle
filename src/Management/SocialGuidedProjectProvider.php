@@ -200,6 +200,12 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'narration' => 'narration.guided_step_social_series_generate',
                     'highlight' => 'form[name="social_series"] button[type="submit"]',
                 ],
+                [
+                    // No highlight: the screen after generating is the calendar, and the button only shows on a post of a series
+                    'label' => 'label.guided_step_social_series_prolong',
+                    'description' => 'description.guided_step_social_series_prolong',
+                    'narration' => 'narration.guided_step_social_series_prolong',
+                ],
             ],
         ];
     }
@@ -241,6 +247,13 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'description' => 'description.guided_step_social_posts_edit',
                     'narration' => 'narration.guided_step_social_posts_edit',
                     'highlight' => '.action-edit',
+                ],
+                [
+                    // Matches nothing on a post written by hand, the same as publishPost on a post gone out
+                    'label' => 'label.guided_step_social_posts_change_content',
+                    'description' => 'description.guided_step_social_posts_change_content',
+                    'narration' => 'narration.guided_step_social_posts_change_content',
+                    'highlight' => '.action-changeContent',
                 ],
                 [
                     // The fields' own ids, EasyAdmin naming the form after the entity - each described by the help its screen shows
@@ -424,6 +437,12 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_social_calendar_panel',
                     'description' => 'description.guided_step_social_calendar_panel',
                     'narration' => 'narration.guided_step_social_calendar_panel',
+                ],
+                [
+                    'label' => 'label.guided_step_social_calendar_feed',
+                    'description' => 'description.guided_step_social_calendar_feed',
+                    'narration' => 'narration.guided_step_social_calendar_feed',
+                    'highlight' => '.social-calendar-feed',
                 ],
             ],
         ];

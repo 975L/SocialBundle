@@ -25,6 +25,8 @@ class SocialMaintenanceTaskProvider implements MaintenanceTaskProviderInterface
             new MaintenanceTask('*/15 * * * *', 'c975l:social:publish'),
             // The medias of the posts gone out, nightly, once their retention has passed - the command reads it, so changing it needs no new schedule
             new MaintenanceTask('# #(2-5) * * *', 'c975l:social:media:purge'),
+            // The series coming to their end announced by email, nightly - the command reads the delay, so changing it needs no new schedule
+            new MaintenanceTask('# #(2-5) * * *', 'c975l:social:series:ending'),
         ];
     }
 }

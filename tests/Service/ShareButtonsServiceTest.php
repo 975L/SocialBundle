@@ -43,7 +43,9 @@ class ShareButtonsServiceTest extends TestCase
         }
         $this->assertContains('telegram', $networks);
         $this->assertContains('whatsapp', $networks);
-        $this->assertCount(20, $networks);
+        $this->assertContains('mastodon', $networks);
+        $this->assertContains('link', $networks);
+        $this->assertCount(13, $networks);
     }
 
     // Shapes must match the ".social-share--shape-{shape}" variants defined in sass/_share-buttons.scss
@@ -88,6 +90,26 @@ class ShareButtonsServiceTest extends TestCase
             'mailto:?body=' . urlencode('https://example.com/article'),
             $service->getShareUrl('email', 'https://example.com/article')
         );
+    }
+
+    // wa.me opens the app on a phone and WhatsApp Web on a computer, where web.whatsapp.com only served the latter
+    public function testGetShareUrlBuildsWhatsappLinkThroughWaMe(): void
+    {
+        $service = $this->createService();
+
+        $this->assertSame('https://wa.me/?text=' . urlencode('https://example.com/article'), $service->getShareUrl('whatsapp', 'https://example.com/article'));
+    }
+
+    // A network removed from the list (skype, stumbleupon...) and still saved in a site's settings is skipped rather than rendered as a dead link
+    public function testGetShareUrlReturnsNullForARemovedNetwork(): void
+    {
+        $this->assertNull($this->createService()->getShareUrl('skype', 'https://example.com'));
+    }
+
+    // The copy button's link is the page itself, the address it copies
+    public function testGetShareUrlOfTheCopyButtonIsThePageItself(): void
+    {
+        $this->assertSame('https://example.com/article?a=1', $this->createService()->getShareUrl('link', 'https://example.com/article?a=1'));
     }
 
     // An unsupported network name (e.g. a typo, or a removed network) must not produce a broken link

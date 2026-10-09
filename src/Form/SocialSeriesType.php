@@ -33,7 +33,7 @@ use function Symfony\Component\Translation\t;
 // What a series of drafts is (see SocialSeriesGenerator): how many, from when, at which pace, on which networks, and its texts - one text, an instruction for the site's AI, or the sources' next contents - a picture or a video going with every draft written here
 class SocialSeriesType extends AbstractType
 {
-    // A series is generated again once it has gone out, rather than planned for a year
+    // A series is prolonged as it comes to its end, rather than planned for a year
     private const int MAX_COUNT = 31;
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -54,8 +54,26 @@ class SocialSeriesType extends AbstractType
             ])
             ->add('frequency', ChoiceType::class, [
                 'label' => t('label.social_series_frequency', [], 'social'),
-                'choices' => array_combine(array_map(static fn (string $frequency): string => 'label.social_series_frequency_' . $frequency, array_keys(SocialSeriesGenerator::FREQUENCIES)), array_keys(SocialSeriesGenerator::FREQUENCIES)),
+                'choices' => array_combine(array_map(static fn (string $frequency): string => 'label.social_series_frequency_' . $frequency, SocialSeriesGenerator::FREQUENCIES), SocialSeriesGenerator::FREQUENCIES),
                 'choice_translation_domain' => 'social',
+                'data' => 'days',
+            ])
+            // Every how many days, for "every N days"
+            ->add('interval', IntegerType::class, [
+                'label' => t('label.social_series_interval', [], 'social'),
+                'help' => t('help.social_series_interval', [], 'social'),
+                'data' => 1,
+                'constraints' => [new NotBlank(), new Range(min: 1, max: SocialSeriesGenerator::MAX_INTERVAL)],
+            ])
+            // Which days, for "some days of the week" - ISO numbers, Monday first
+            ->add('weekdays', ChoiceType::class, [
+                'label' => t('label.social_series_weekdays', [], 'social'),
+                'choices' => array_combine(array_map(static fn (int $day): string => 'label.social_series_weekday_' . $day, range(1, 7)), range(1, 7)),
+                'choice_translation_domain' => 'social',
+                'multiple' => true,
+                'expanded' => true,
+                'required' => false,
+                'attr' => ['class' => 'social-series-inline'],
             ])
             ->add('networks', ChoiceType::class, [
                 'label' => t('label.social_post_send_on', [], 'social'),
@@ -86,7 +104,10 @@ class SocialSeriesType extends AbstractType
             ->add('sources', ChoiceType::class, [
                 'label' => t('label.social_series_sources', [], 'social'),
                 'help' => t('help.social_series_sources', [], 'social'),
-                'choices' => array_flip($options['sources']),
+                'choices' => array_flip($this->sourceLabels($options['sources'])),
+                // A whole source heads the groups that follow it (see sass/management.scss)
+                'choice_attr' => static fn (string $value): array => str_contains($value, ':') ? [] : ['class' => 'social-series-source'],
+                'attr' => ['class' => 'social-series-columns'],
                 'multiple' => true,
                 'expanded' => true,
                 'required' => false,
@@ -99,20 +120,47 @@ class SocialSeriesType extends AbstractType
             ]);
     }
 
+    // A group named alone under the source heading it, rather than "Gallery media - Animaux" over and over
+    /**
+     * @param array<string, string> $sources
+     *
+     * @return array<string, string>
+     */
+    private function sourceLabels(array $sources): array
+    {
+        foreach ($sources as $value => $label) {
+            if (str_contains($value, ':')) {
+                $sources[$value] = explode(' - ', $label, 2)[1] ?? $label;
+            }
+        }
+
+        return $sources;
+    }
+
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'networks' => [],
             'sources' => [],
             'start' => null,
-            // What each mode needs: a text for one text or the AI, nothing more for the sources
-            'constraints' => [new Callback(static function (mixed $data, ExecutionContextInterface $context): void {
-                if (\is_array($data) && SocialSeriesGenerator::MODE_SOURCE !== ($data['mode'] ?? null) && '' === trim((string) ($data['text'] ?? ''))) {
-                    $context->buildViolation('label.social_series_text_required')->setTranslationDomain('social')->atPath('[text]')->addViolation();
-                }
-            })],
+            'constraints' => [new Callback(self::validate(...))],
         ]);
         $resolver->setAllowedTypes('networks', 'array');
         $resolver->setAllowedTypes('sources', 'array');
+    }
+
+    // What each mode needs: a text for one text or the AI, nothing more for the sources - and some days ticked for some days of the week
+    public static function validate(mixed $data, ExecutionContextInterface $context): void
+    {
+        if (!\is_array($data)) {
+            return;
+        }
+
+        if (SocialSeriesGenerator::MODE_SOURCE !== ($data['mode'] ?? null) && '' === trim((string) ($data['text'] ?? ''))) {
+            $context->buildViolation('label.social_series_text_required')->setTranslationDomain('social')->atPath('[text]')->addViolation();
+        }
+        if ('weekdays' === ($data['frequency'] ?? null) && [] === ($data['weekdays'] ?? [])) {
+            $context->buildViolation('label.social_series_weekdays_required')->setTranslationDomain('social')->atPath('[weekdays]')->addViolation();
+        }
     }
 }

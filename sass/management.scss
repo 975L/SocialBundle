@@ -148,7 +148,7 @@
 }
 
 /* The week: a column of hours, then seven days of quarters of an hour, the items laid over the quarter they stand at */
-$quarter: .75rem;
+$quarter: 1rem;
 
 .social-week {
     display: grid;
@@ -360,4 +360,26 @@ $quarter: .75rem;
     right: .35rem;
     color: #fff;
     text-shadow: 0 0 3px #000;
+}
+
+/* The series form: the days of the week on one line, the contents in columns, each source heading the groups that follow it */
+.social-series-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem 1rem;
+}
+
+.social-series-columns {
+    columns: 12rem;
+    column-gap: 1.5rem;
+
+    .form-check {
+        break-inside: avoid;
+    }
+
+    .form-check:has(> .social-series-source) {
+        column-span: all;
+        margin-top: .5rem;
+        font-weight: 600;
+    }
 }

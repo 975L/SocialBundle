@@ -24,13 +24,14 @@ class SocialMaintenanceTaskProviderTest extends TestCase
         $this->assertSame('# #(2-5) * * *', $tasks[0]->expression);
     }
 
-    // The planned posts are sent every quarter of an hour, the calendar's grid, and the medias of the posts gone out purged nightly
+    // The planned posts are sent every quarter of an hour, the calendar's grid, the medias of the posts gone out purged nightly, and the series coming to their end announced nightly
     public function testThePlannedPostsAreSentEveryQuarterAndTheMediasPurgedNightly(): void
     {
         $tasks = new SocialMaintenanceTaskProvider()->getMaintenanceTasks();
 
-        $this->assertCount(3, $tasks);
+        $this->assertCount(4, $tasks);
         $this->assertSame(['*/15 * * * *', 'c975l:social:publish'], [$tasks[1]->expression, $tasks[1]->command]);
         $this->assertSame(['# #(2-5) * * *', 'c975l:social:media:purge'], [$tasks[2]->expression, $tasks[2]->command]);
+        $this->assertSame(['# #(2-5) * * *', 'c975l:social:series:ending'], [$tasks[3]->expression, $tasks[3]->command]);
     }
 }

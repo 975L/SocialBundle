@@ -41,14 +41,6 @@
   background-color: #1da1f2;
 }
 
-.social-network-badge--buffer:not(.is-off) {
-  background-color: #168eea;
-}
-
-.social-network-badge--delicious:not(.is-off) {
-  background-color: #3399ff;
-}
-
 .social-network-badge--discord:not(.is-off) {
   background-color: #5865f2;
 }
@@ -59,10 +51,6 @@
 
 .social-network-badge--email:not(.is-off) {
   background-color: #2f4f4f;
-}
-
-.social-network-badge--evernote:not(.is-off) {
-  background-color: #2dbe60;
 }
 
 .social-network-badge--facebook:not(.is-off) {
@@ -83,6 +71,10 @@
 
 .social-network-badge--line:not(.is-off) {
   background-color: #00c300;
+}
+
+.social-network-badge--link:not(.is-off) {
+  background-color: #6c757d;
 }
 
 .social-network-badge--linkedin:not(.is-off) {
@@ -109,10 +101,6 @@
   background-color: #ff4500;
 }
 
-.social-network-badge--skype:not(.is-off) {
-  background-color: #00aff0;
-}
-
 .social-network-badge--snapchat:not(.is-off) {
   background-color: #fffc00;
 }
@@ -123,10 +111,6 @@
 
 .social-network-badge--spotify:not(.is-off) {
   background-color: #1db954;
-}
-
-.social-network-badge--stumbleupon:not(.is-off) {
-  background-color: #eb4924;
 }
 
 .social-network-badge--telegram:not(.is-off) {
@@ -301,7 +285,7 @@
 }
 
 .social-week-hour {
-  height: 3rem;
+  height: 4rem;
   font-size: 0.75rem;
   color: var(--bs-secondary-color, #6c757d);
   font-variant-numeric: tabular-nums;
@@ -322,7 +306,7 @@
 }
 
 .social-week-cell {
-  height: 0.75rem;
+  height: 1rem;
   border-top: 1px dotted var(--bs-border-color, #ccc);
 }
 .social-week-cell:nth-child(4n+1) {
@@ -337,7 +321,7 @@
 
 .social-week-items {
   position: absolute;
-  top: calc(var(--row) * 0.75rem);
+  top: calc(var(--row) * 1rem);
   left: calc(2px + var(--lane, 0) * (100% - 4px) / var(--lanes, 1));
   width: calc((100% - 4px) / var(--lanes, 1) - 2px);
   z-index: 1;
@@ -471,6 +455,26 @@
   right: 0.35rem;
   color: #fff;
   text-shadow: 0 0 3px #000;
+}
+
+/* The series form: the days of the week on one line, the contents in columns, each source heading the groups that follow it */
+.social-series-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+}
+
+.social-series-columns {
+  columns: 12rem;
+  column-gap: 1.5rem;
+}
+.social-series-columns .form-check {
+  break-inside: avoid;
+}
+.social-series-columns .form-check:has(> .social-series-source) {
+  column-span: all;
+  margin-top: 0.5rem;
+  font-weight: 600;
 }
 
 /*# sourceMappingURL=management.css.map */

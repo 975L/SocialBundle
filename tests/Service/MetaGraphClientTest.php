@@ -79,7 +79,7 @@ class MetaGraphClientTest extends TestCase
 
     public function testAPageTheAccountDoesNotManageCannotBeConnected(): void
     {
-        $this->expectExceptionMessage('does not manage the Page "99"');
+        $this->expectExceptionMessage('does not manage the Page "99" set in "social-meta-page-id" (Pages returned: 55)');
 
         $this->client([new MockResponse('{"access_token":"s"}'), new MockResponse('{"access_token":"l"}'), new MockResponse('{"data":[{"id":"55","access_token":"t"}]}')], pageId: '99')->connect('code', 'https://example.org/callback');
     }

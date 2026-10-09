@@ -1,0 +1,48 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{# Another content for a post prepared from one (see SocialPostCrudController::changeContent()): one drawn again in its group, or one chosen among those still free - the group switched with a plain GET #}
+{% block main %}
+    <h1>{{ 'label.social_content_change'|trans({}, 'social') }}</h1>
+
+    <p>{{ 'label.info_social_content_change'|trans({'%title%': post.title}, 'social') }}</p>
+
+    {% if post.thumbnailUrl %}<img src="{{ post.thumbnailUrl }}" alt="" width="200" class="d-block mb-3 rounded">{% endif %}
+
+    <form method="post" class="mb-4">
+        <input type="hidden" name="token" value="{{ csrf_token('social_post_publish') }}">
+        <button type="submit" name="redraw" class="btn btn-secondary"><i class="fa fa-shuffle"></i> {{ 'label.social_content_redraw'|trans({}, 'social') }}</button>
+    </form>
+
+    {% if scopes is not empty %}
+        <form method="get" class="d-flex gap-2 mb-3">
+            {% for name, value in app.request.query.all|filter((value, name) => name != 'scope') %}
+                <input type="hidden" name="{{ name }}" value="{{ value }}">
+            {% endfor %}
+            <select name="scope" class="form-select w-auto">
+                <option value="">{{ 'label.social_content_all_scopes'|trans({}, 'social') }}</option>
+                {% for id, label in scopes %}
+                    <option value="{{ id }}"{{ id == scope ? ' selected' : '' }}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-secondary"><i class="fa fa-filter"></i></button>
+        </form>
+    {% endif %}
+
+    <form method="post" class="social-media-pick">
+        <input type="hidden" name="token" value="{{ csrf_token('social_post_publish') }}">
+        {% for content in contents %}
+            {% if loop.first %}<div class="social-media-pick-grid mb-3">{% endif %}
+            <label class="social-media-pick-item" title="{{ content.title }}">
+                <input type="radio" name="sourceId" value="{{ content.sourceId }}" class="form-check-input" required>
+                {% if content.imageUrl %}<img src="{{ content.imageUrl }}" alt="{{ content.imageAlt ?? content.title }}" loading="lazy">{% endif %}
+                <span>{{ content.title }}</span>
+            </label>
+            {% if loop.last %}</div>{% endif %}
+        {% else %}
+            <p class="text-muted">{{ 'label.social_content_none'|trans({}, 'social') }}</p>
+        {% endfor %}
+
+        {% if contents is not empty %}<button type="submit" name="choose" class="btn btn-primary">{{ 'label.social_content_choose'|trans({}, 'social') }}</button>{% endif %}
+        <a href="{{ back_url }}" class="btn btn-link">{{ 'action.cancel'|trans({}, 'EasyAdminBundle') }}</a>
+    </form>
+{% endblock main %}

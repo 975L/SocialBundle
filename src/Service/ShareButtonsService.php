@@ -13,27 +13,24 @@ namespace c975L\SocialBundle\Service;
 // Networks supported by the "share_buttons()" Twig function
 class ShareButtonsService implements ShareButtonsServiceInterface
 {
+    public const string COPY_NETWORK = 'link';
+
     private const array NETWORKS = [
         'facebook' => 'https://www.facebook.com/sharer/sharer.php?u=',
         'bluesky' => 'https://bsky.app/intent/compose?text=',
         'linkedin' => 'https://www.linkedin.com/shareArticle?url=',
         'pinterest' => 'https://pinterest.com/pin/create/button/?url=',
         'email' => 'mailto:?body=',
-        'blogger' => 'https://www.blogger.com/start?successUrl=/blog-this.g?t&passive=true&u=',
-        'buffer' => 'https://bufferapp.com/add?url=',
-        'delicious' => 'https://delicious.com/save?v=5&noui&jump=close&url=',
-        'evernote' => 'https://www.evernote.com/clip.action?url=',
         'line' => 'https://social-plugins.line.me/lineit/share?url=',
         'reddit' => 'https://reddit.com/submit?url=',
-        'skype' => 'https://web.skype.com/share?url=',
-        'stumbleupon' => 'https://www.stumbleupon.com/submit?url=',
         'telegram' => 'https://t.me/share/url?url=',
         'threads' => 'https://www.threads.net/intent/post?text=',
         'tumblr' => 'https://www.tumblr.com/share?u=',
-        'vk' => 'https://vk.com/share.php?url=',
-        'whatsapp' => 'https://web.whatsapp.com/send?text=',
-        'wordpress' => 'https://wordpress.com/press-this.php?u=',
-        'xing' => 'https://www.xing.com/spi/shares/new?url=',
+        'whatsapp' => 'https://wa.me/?text=',
+        // Share₂Fedi asks the reader for their own instance, a fediverse network having no single address to post to
+        'mastodon' => 'https://s2f.kytta.dev/?text=',
+        // No network: the button copies the page's address (see share-buttons-popup.js), the link itself being what a click without JavaScript opens
+        self::COPY_NETWORK => '',
     ];
 
     private const array MAIN_NETWORKS = ['facebook', 'bluesky', 'linkedin', 'pinterest', 'email'];
@@ -70,6 +67,6 @@ class ShareButtonsService implements ShareButtonsServiceInterface
             return null;
         }
 
-        return self::NETWORKS[$network] . urlencode($pageUrl);
+        return self::COPY_NETWORK === $network ? $pageUrl : self::NETWORKS[$network] . urlencode($pageUrl);
     }
 }

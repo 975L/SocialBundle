@@ -127,6 +127,28 @@
         "description": "description.social_media_retention_days"
     },
     {
+        "label": "label.social_calendar_ics_token",
+        "slug": "social-calendar-ics-token",
+        "sensitive": true,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_calendar_ics_token"
+    },
+    {
+        "label": "label.social_series_ending_days",
+        "slug": "social-series-ending-days",
+        "sensitive": false,
+        "restricted": false,
+        "value": "3",
+        "kind": "int",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_series_ending_days"
+    },
+    {
         "label": "label.social_calendar_hour_start",
         "slug": "social-calendar-hour-start",
         "sensitive": false,

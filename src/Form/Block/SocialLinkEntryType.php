@@ -22,11 +22,10 @@ class SocialLinkEntryType extends AbstractType
 {
     // Curated on purpose, not the full IconServiceInterface::getIcons(): that also serves UiBundle's generic UI glyphs (alerts, faces, arrows...), which have no business showing up as a "network" choice. Every key here is expected to have a public/icons/{key}.svg (see README).
     private const array NETWORKS = [
-        'behance', 'blogger', 'bluesky', 'buffer', 'delicious', 'discord', 'dribbble', 'email',
-        'evernote', 'facebook', 'flickr', 'github', 'instagram', 'line', 'linkedin', 'mastodon',
-        'medium', 'messenger', 'pinterest', 'reddit', 'skype', 'snapchat', 'soundcloud', 'spotify',
-        'stumbleupon', 'telegram', 'threads', 'tiktok', 'tumblr', 'twitch', 'vimeo', 'vk', 'wechat',
-        'whatsapp', 'wordpress', 'xing', 'youtube',
+        'behance', 'blogger', 'bluesky', 'discord', 'dribbble', 'email', 'facebook', 'flickr',
+        'github', 'instagram', 'line', 'linkedin', 'mastodon', 'medium', 'messenger', 'pinterest',
+        'reddit', 'snapchat', 'soundcloud', 'spotify', 'telegram', 'threads', 'tiktok', 'tumblr',
+        'twitch', 'vimeo', 'vk', 'wechat', 'whatsapp', 'wordpress', 'xing', 'youtube',
     ];
 
     public function buildForm(FormBuilderInterface $builder, array $options): void

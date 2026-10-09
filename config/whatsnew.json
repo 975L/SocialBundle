@@ -1,5 +1,40 @@
 [
     {
+        "date": "2026-10-09",
+        "description": [
+            {
+                "en": "Prolong a series in one click, and get an email when it is about to end",
+                "fr": "Prolongez une série en un clic, et recevez un e-mail quand elle approche de sa fin",
+                "es": "Prolongue una serie con un clic, y reciba un correo cuando se acerque a su fin"
+            },
+            {
+                "en": "A monthly series now keeps its day, even after a shorter month",
+                "fr": "Une série mensuelle garde désormais son jour, même après un mois plus court",
+                "es": "Una serie mensual conserva ahora su día, incluso después de un mes más corto"
+            },
+            {
+                "en": "Change the photo of a draft for another one of the gallery, its texts written again for it",
+                "fr": "Changez la photo d'un brouillon pour une autre de la galerie, ses textes réécrits pour elle",
+                "es": "Cambie la foto de un borrador por otra de la galería, con sus textos reescritos para ella"
+            },
+            {
+                "en": "A refused post is emailed to you, and sent again from the email on the networks that refused it only",
+                "fr": "Une publication refusée vous est signalée par e-mail, et renvoyée depuis l'e-mail sur les seuls réseaux qui l'ont refusée",
+                "es": "Una publicación rechazada se le avisa por correo, y se reenvía desde el correo solo en las redes que la rechazaron"
+            },
+            {
+                "en": "See your planned posts in Outlook, Evolution or Google Calendar",
+                "fr": "Retrouvez vos publications prévues dans Outlook, Evolution ou Google Agenda",
+                "es": "Vea sus publicaciones previstas en Outlook, Evolution o Google Calendar"
+            },
+            {
+                "en": "Share buttons gain Mastodon and a button copying the page's link",
+                "fr": "Les boutons de partage gagnent Mastodon et un bouton qui copie le lien de la page",
+                "es": "Los botones para compartir ganan Mastodon y un botón que copia el enlace de la página"
+            }
+        ]
+    },
+    {
         "date": "2026-10-05",
         "description": [
             {

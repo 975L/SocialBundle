@@ -11,8 +11,15 @@ import { addSortGesture } from "@c975l/ui-bundle/pointer-sort.js";
 
 // The publications calendar (see management/social_calendar.html.twig): a card dragged onto a quarter of an hour of the week is planned at that moment, onto a day of the month at its own time that day, its approval untouched; a coming moment double-clicked writes a new post there. The gesture is UiBundle's (pointer-sort.js), this controller owning only where a card lands, saved on the spot then the page reloaded, the server computing where every other post falls
 export default class extends Controller {
-    static targets = ["item", "zone", "panel", "planAt"];
+    static targets = ["item", "zone", "panel", "planAt", "group"];
     static values = { url: String, token: String, panelUrl: String, newUrl: String, failedLabel: String };
+
+    // Laid at its quarter of an hour and in its lane from its data, a style attribute being refused by a Content-Security-Policy without 'unsafe-inline'
+    groupTargetConnected(group) {
+        for (const name of ["row", "lane", "lanes"]) {
+            group.style.setProperty(`--${name}`, group.dataset[name]);
+        }
+    }
 
     // Armed per card as it appears; a plain click still opens the post, only a real drag being taken over
     itemTargetConnected(item) {

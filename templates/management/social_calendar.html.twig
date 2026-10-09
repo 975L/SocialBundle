@@ -62,6 +62,19 @@
 
         <p class="small text-muted">{{ 'label.social_calendar_drag_hint'|trans({}, 'social') }}</p>
 
+        {# The calendar subscribed to from Outlook, Evolution or Google Calendar by its secret address (see SocialCalendarFeed) #}
+        <details class="social-calendar-feed mb-3">
+            <summary class="small">{{ 'label.social_calendar_feed'|trans({}, 'social') }}</summary>
+            {% if feed_url %}
+                <input type="text" class="form-control form-control-sm mt-2" value="{{ feed_url }}" readonly aria-label="{{ 'label.social_calendar_feed'|trans({}, 'social') }}">
+            {% endif %}
+            <p class="small text-muted mt-2 mb-2">{{ (feed_url ? 'help.social_calendar_feed' : 'help.social_calendar_feed_none')|trans({}, 'social') }}</p>
+            <form method="post" action="{{ feed_token_url }}">
+                <input type="hidden" name="token" value="{{ csrf_token(token) }}">
+                <button type="submit" class="btn btn-sm btn-secondary"><i class="fa fa-calendar-plus"></i> {{ (feed_url ? 'label.social_calendar_feed_renew' : 'label.social_calendar_feed_create')|trans({}, 'social') }}</button>
+            </form>
+        </details>
+
         {% if view == 'week' %}
                     {# A week of quarters of an hour: each coming one a drop zone planning the card at that very moment, the items laid over them at the quarter they stand at #}
                     <div class="social-week-scroll"><div class="social-week">
@@ -77,7 +90,7 @@
                                         <div class="social-week-cell{{ cell.open ? '' : ' is-past' }}"{% if cell.open %} data-social-calendar-target="zone" data-to="{{ cell.at|date('c') }}" data-action="dblclick->social-calendar#create"{% endif %}></div>
                                     {% endfor %}
                                     {% for group in day.rows %}
-                                        <div class="social-week-items" style="--row: {{ group.row }}; --lane: {{ group.lane }}; --lanes: {{ group.lanes }}">
+                                        <div class="social-week-items" data-social-calendar-target="group" data-row="{{ group.row }}" data-lane="{{ group.lane }}" data-lanes="{{ group.lanes }}">
                                             {% for item in group.items %}{{ _self.card(item, connected) }}{% endfor %}
                                         </div>
                                     {% endfor %}

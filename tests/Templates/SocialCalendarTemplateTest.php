@@ -37,7 +37,7 @@ class SocialCalendarTemplateTest extends TestCase
         return $twig;
     }
 
-    private function render(string $view = 'month'): string
+    private function render(string $view = 'month', ?string $feedUrl = null): string
     {
         $twig = $this->twig();
 
@@ -74,6 +74,8 @@ class SocialCalendarTemplateTest extends TestCase
             'new_url' => '/new',
             'series_url' => '/series',
             'token' => 'social_calendar',
+            'feed_url' => $feedUrl,
+            'feed_token_url' => '/management/social-calendar/feed',
         ]);
     }
 
@@ -98,8 +100,8 @@ class SocialCalendarTemplateTest extends TestCase
 
         $this->assertSame(2, substr_count($html, 'data-to="' . new \DateTimeImmutable('2026-10-04 14:15')->format('c') . '"'));
         $this->assertStringContainsString('social-week-cell is-past', $html);
-        $this->assertStringContainsString('style="--row: 33; --lane: 0; --lanes: 2"', $html);
-        $this->assertStringContainsString('style="--row: 52; --lane: 1; --lanes: 2"', $html);
+        $this->assertStringContainsString('data-row="33" data-lane="0" data-lanes="2"', $html);
+        $this->assertStringContainsString('data-row="52" data-lane="1" data-lanes="2"', $html);
         $this->assertStringContainsString('data-at="' . new \DateTimeImmutable('2026-10-04 14:15')->format('c') . '"', $html);
         $this->assertStringContainsString('class="social-week-hour">06:00', $html);
     }
@@ -182,5 +184,17 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringNotContainsString('social-calendar#plan', $html);
         $this->assertStringNotContainsString('data-to=', $html);
         $this->assertStringContainsString('Le texte de Bluesky', $html);
+    }
+
+    // Its secret address offered to copy once created, a button creating it otherwise - renewing it once it exists
+    public function testTheFeedAddressIsOfferedOnceCreated(): void
+    {
+        $none = $this->render('week');
+        $this->assertStringContainsString('label.social_calendar_feed_create', $none);
+        $this->assertStringNotContainsString('.ics', $none);
+
+        $created = $this->render('week', 'https://example.org/social/calendar/' . str_repeat('a', 64) . '.ics');
+        $this->assertStringContainsString('value="https://example.org/social/calendar/' . str_repeat('a', 64) . '.ics" readonly', $created);
+        $this->assertStringContainsString('label.social_calendar_feed_renew', $created);
     }
 }

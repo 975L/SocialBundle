@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Tests\Entity;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Enum\SocialPostStatus;
+use c975L\UiBundle\Model\SocialContent;
 use PHPUnit\Framework\TestCase;
 
 class SocialPostTest extends TestCase
@@ -111,5 +112,49 @@ class SocialPostTest extends TestCase
 
         $post->setUrl(null);
         $this->assertSame('', $post->getUrl());
+    }
+
+    // The calendar's colour: a refusal anywhere shows before the approval, a post gone out everywhere is published
+    public function testTheStateSaysWhereThePostStands(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable('+1 day'));
+        $target = new SocialPostTarget($post, 'bluesky', 'Text');
+        $this->assertSame('draft', $post->getState());
+
+        $target->approve();
+        $this->assertSame('approved', $post->getState());
+
+        $target->markFailed('Down');
+        $this->assertSame('failed', $post->getState());
+
+        $target->markPublished('id');
+        $this->assertSame('published', $post->getState());
+    }
+
+    // Moved to another content while nothing went out, a post keeps the one it went out with afterwards
+    public function testTheContentChangesOnlyUntilThePostGoesOut(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Photo 42', 'https://example.org/42', null, new \DateTimeImmutable('+1 day'));
+        $target = new SocialPostTarget($post, 'bluesky', 'Text');
+
+        $this->assertFalse($post->hasGoneOut());
+        $this->assertTrue($post->changeContent(new SocialContent('43', 'Photo 43', 'https://example.org/43', imageUrl: 'https://example.org/43.jpg')));
+        $this->assertSame(['43', 'Photo 43', 'https://example.org/43.jpg'], [$post->getSourceId(), $post->getTitle(), $post->getImageUrl()]);
+
+        $target->markPublished('id');
+        $this->assertTrue($post->hasGoneOut());
+        $this->assertFalse($post->changeContent(new SocialContent('44', 'Photo 44', 'https://example.org/44')));
+        $this->assertSame('43', $post->getSourceId());
+    }
+
+    // A post taken from a content and given its own text keeps the content's title
+    public function testAPostFromAContentKeepsItsTitleWhenGivenAText(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Fox', 'https://example.org/42', null, new \DateTimeImmutable('+1 day'));
+
+        $post->setText('Photo du jour');
+
+        $this->assertSame('Fox', $post->getTitle());
+        $this->assertTrue($post->hasOwnText());
     }
 }

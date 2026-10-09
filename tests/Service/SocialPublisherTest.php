@@ -23,6 +23,7 @@ use c975L\SocialBundle\Service\SocialPageReader;
 use c975L\SocialBundle\Service\SocialPostTextBuilder;
 use c975L\SocialBundle\Service\SocialPostWriter;
 use c975L\SocialBundle\Service\SocialPublisher;
+use c975L\UiBundle\Contract\BrowsableSocialContentSourceInterface;
 use c975L\UiBundle\Contract\ScopedSocialContentSourceInterface;
 use c975L\UiBundle\Contract\SocialContentSourceInterface;
 use c975L\UiBundle\Model\SocialContent;
@@ -78,6 +79,23 @@ class SocialPublisherTest extends TestCase
             $this->asked[$type]['scopes'] = $scopeIds;
 
             return new SocialContent($nextId, 'Title ' . $nextId, 'https://example.org/' . $nextId);
+        });
+
+        return $source;
+    }
+
+    // A gallery whose contents may be changed on a post's screen: '42' in the group '3', the next one drawn there '43'
+    private function createBrowsableSource(): BrowsableSocialContentSourceInterface
+    {
+        $source = $this->createStub(BrowsableSocialContentSourceInterface::class);
+        $source->method('getSourceType')->willReturn('gallery_media');
+        $source->method('getContentScope')->willReturn('3');
+        $source->method('getContent')->willReturnCallback(static fn (string $id): SocialContent => new SocialContent($id, 'Photo ' . $id, 'https://example.org/' . $id, imageUrl: 'https://example.org/' . $id . '.jpg'));
+        $source->method('getNextContent')->willReturn(new SocialContent('43', 'Photo 43', 'https://example.org/43'));
+        $source->method('findContents')->willReturnCallback(function (array $excludedIds, array $scopeIds, int $limit): array {
+            $this->asked['gallery_media'] = ['excluded' => $excludedIds, 'scopes' => $scopeIds];
+
+            return [new SocialContent('44', 'Photo 44', 'https://example.org/44')];
         });
 
         return $source;
@@ -363,7 +381,7 @@ class SocialPublisherTest extends TestCase
 
         $report = $publisher->publishPlanned();
 
-        $this->assertSame(['# bluesky' => ['status' => 'published', 'message' => 'bluesky-post-id']], $report);
+        $this->assertSame(['# bluesky' => ['status' => 'published', 'message' => 'bluesky-post-id', 'post' => null, 'network' => 'bluesky']], $report);
         $this->assertSame(['bluesky:/moved.webp'], $this->published);
         $this->assertSame(SocialPostStatus::Draft, $post->getTargets()->last()->getStatus());
     }
@@ -419,6 +437,21 @@ class SocialPublisherTest extends TestCase
 
         $this->assertSame(['status' => 'failed', 'message' => 'Down'], $report['bluesky']);
         $this->assertSame('published', $report['other']['status']);
+    }
+
+    // Sent again from the refusal email, only the refused targets go out, a draft never reviewed staying a draft
+    public function testRetryingSendsOnlyTheFailedTargets(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'bluesky', 'Text')->markFailed('Down');
+        new SocialPostTarget($post, 'other', 'Text');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createNetwork('bluesky'), $this->createNetwork('other')]);
+
+        $report = $publisher->retryFailed($post);
+
+        $this->assertSame(['bluesky'], array_keys((array) $report));
+        $this->assertSame(['bluesky:/moved.webp'], $this->published);
+        $this->assertSame(SocialPostStatus::Draft, $post->getTargets()->last()->getStatus());
     }
 
     // A second click while the first "Publish" still waits on the networks sends nothing: the targets are still pending, and would go out twice
@@ -523,6 +556,71 @@ class SocialPublisherTest extends TestCase
         $publisher->addTargets($post, ['bluesky']);
 
         $this->assertSame(str_repeat('a', 299) . '…', $post->getTargets()->first()->getText());
+        $this->assertArrayNotHasKey('writer', $this->asked);
+    }
+
+    // Drawn again, the post takes another content of its source, the one it held freed with it
+    public function testARedrawTiesThePostToAnotherContent(): void
+    {
+        $publisher = $this->createPublisher([$this->createBrowsableSource()], [$this->createNetwork('bluesky')]);
+        $post = new SocialPost('gallery_media', '42', 'Photo 42', 'https://example.org/42', null, new \DateTimeImmutable('+1 day'));
+
+        $this->assertTrue($publisher->redraw($post));
+        $this->assertSame(['43', 'Photo 43'], [$post->getSourceId(), $post->getTitle()]);
+    }
+
+    // Moved to another content, a post writes its texts not out yet from it again; one with its own text keeps it
+    public function testAChangedContentWritesTheTextsAgain(): void
+    {
+        $publisher = $this->createPublisher([$this->createBrowsableSource()], [$this->createNetwork('bluesky')], written: ['bluesky' => 'Written for 43']);
+        $post = new SocialPost('gallery_media', '42', 'Photo 42', 'https://example.org/42', null, new \DateTimeImmutable('+1 day'));
+        new SocialPostTarget($post, 'bluesky', 'Written for 42');
+
+        $publisher->redraw($post);
+        $this->assertSame('Written for 43', $post->getTargets()->first()->getText());
+
+        $post->setText('Mine');
+        $post->getTargets()->first()->setText('Mine');
+        $publisher->changeContent($post, '44');
+        $this->assertSame('Mine', $post->getTargets()->first()->getText());
+    }
+
+    // Chosen, only a content still free is taken; the choices are those still free in the group asked
+    public function testAChosenContentMustStillBeFree(): void
+    {
+        $publisher = $this->createPublisher([$this->createBrowsableSource()], [$this->createNetwork('bluesky')]);
+        $post = new SocialPost('gallery_media', '42', 'Photo 42', 'https://example.org/42', null, new \DateTimeImmutable('+1 day'));
+
+        $this->assertFalse($publisher->changeContent($post, '7'));
+        $this->assertTrue($publisher->changeContent($post, '44'));
+        $this->assertSame(['44', 'https://example.org/44.jpg'], [$post->getSourceId(), $post->getImageUrl()]);
+
+        $publisher->contentChoices($post, '3', 10);
+        $this->assertSame(['excluded' => ['7'], 'scopes' => ['3']], $this->asked['gallery_media']);
+    }
+
+    // Gone out on a network, a post keeps the content it went out with
+    public function testAPostGoneOutKeepsItsContent(): void
+    {
+        $publisher = $this->createPublisher([$this->createBrowsableSource()], [$this->createNetwork('bluesky')]);
+        $post = new SocialPost('gallery_media', '42', 'Photo 42', 'https://example.org/42', null, new \DateTimeImmutable('+1 day'));
+        new SocialPostTarget($post, 'bluesky', 'Text')->markPublished('id');
+
+        $this->assertNull($publisher->browsableSourceOf($post));
+        $this->assertFalse($publisher->redraw($post));
+        $this->assertSame('42', $post->getSourceId());
+    }
+
+    // A content given a text of its own, as a series does: each network gets that text cut, the AI never asked, the content keeping its title
+    public function testAContentGivenItsOwnTextGivesEachNetworkThatTextCut(): void
+    {
+        $publisher = $this->createPublisher([], [$this->createNetwork('bluesky')], written: ['bluesky' => 'Written']);
+        $post = new SocialPost('gallery_media', '42', 'Fox', 'https://example.org/fox', 'https://example.org/fox.jpg', new \DateTimeImmutable('+1 day'));
+        $post->setText('Photo du jour');
+
+        $publisher->addTargets($post, ['bluesky']);
+
+        $this->assertSame(['Photo du jour', 'Fox'], [$post->getTargets()->first()->getText(), $post->getTitle()]);
         $this->assertArrayNotHasKey('writer', $this->asked);
     }
 

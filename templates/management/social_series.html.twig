@@ -1,15 +1,27 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
-{# A series of drafts to generate (see SocialPostCrudController::generateSeries()) - UiBundle's form theme putting Donovan under its text, a page of its own not getting the dashboard's #}
-{% form_theme form '@c975LUi/form/block_theme.html.twig' %}
+{# A series of drafts to generate (see SocialPostCrudController::generateSeries()) - EasyAdmin's form theme for the layout, UiBundle's putting Donovan under its text, a page of its own not getting the dashboard's. A field only one pace or one mode reads is shown with it alone (see assets/js/social-series.js) #}
+{% form_theme form with ['@EasyAdmin/crud/form_theme.html.twig', '@c975LUi/form/block_theme.html.twig'] %}
 
 {% block main %}
     <h1>{{ 'label.social_series_generate'|trans({}, 'social') }}</h1>
 
     <p>{{ 'label.info_social_series'|trans({}, 'social') }}</p>
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
+    {{ form_start(form, {attr: {'data-controller': 'social-series', 'data-action': 'change->social-series#toggle'}}) }}
+        <div class="row">
+            <div class="col-md-4">{{ form_row(form.count) }}</div>
+            <div class="col-md-4">{{ form_row(form.start) }}</div>
+            <div class="col-md-4">{{ form_row(form.frequency) }}</div>
+        </div>
+        <div data-social-series-when="frequency:days">{{ form_row(form.interval) }}</div>
+        <div data-social-series-when="frequency:weekdays">{{ form_row(form.weekdays) }}</div>
+        {{ form_row(form.networks) }}
+        {{ form_row(form.mode) }}
+        <div data-social-series-when="mode:text,ai">{{ form_row(form.text) }}</div>
+        {{ form_row(form.sources) }}
+        <div data-social-series-when="mode:text,ai">{{ form_row(form.media) }}</div>
+        {{ form_rest(form) }}
         <button type="submit" class="btn btn-primary">{{ 'label.social_series_submit'|trans({}, 'social') }}</button>
     {{ form_end(form) }}
 {% endblock main %}

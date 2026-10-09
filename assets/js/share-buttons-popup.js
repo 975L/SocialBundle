@@ -31,4 +31,31 @@ export default class extends Controller {
             `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
         );
     }
+
+    // Copies the address the other buttons share - moved on with the page as open() does - and says so on the button for two seconds; offered to copy by hand where the clipboard is refused
+    async copy(event) {
+        event.preventDefault();
+        const button = event.currentTarget;
+        // Read once: a second click within the two seconds would otherwise keep "copied" for good
+        button.dataset.label ??= button.title;
+        const label = button.dataset.label;
+        const url = button.href === this.renderedUrl ? window.location.href : button.href;
+
+        try {
+            await navigator.clipboard.writeText(url);
+        } catch {
+            window.prompt(label, url);
+
+            return;
+        }
+
+        button.title = button.dataset.copiedLabel;
+        button.setAttribute("aria-label", button.dataset.copiedLabel);
+        button.classList.add("is-copied");
+        setTimeout(() => {
+            button.title = label;
+            button.setAttribute("aria-label", label);
+            button.classList.remove("is-copied");
+        }, 2000);
+    }
 }

@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Tests\Repository;
 use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
+use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Repository\SocialPostRepository;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
@@ -43,6 +44,7 @@ class SocialPostRepositoryTest extends TestCase
             $this->entityManager->getClassMetadata(SocialPost::class),
             $this->entityManager->getClassMetadata(SocialPostTarget::class),
             $this->entityManager->getClassMetadata(SocialMedia::class),
+            $this->entityManager->getClassMetadata(SocialSeries::class),
         ]);
 
         $registry = $this->createStub(ManagerRegistry::class);
@@ -98,6 +100,19 @@ class SocialPostRepositoryTest extends TestCase
         $this->entityManager->clear();
 
         $this->assertSame(['1' => 2, '2' => 2], $this->targetCounts($this->repository->findPlannedBetween(new \DateTimeImmutable(), new \DateTimeImmutable('+3 days'))));
+    }
+
+    // The posts holding some contents of a source, their targets with them, another source's left out
+    public function testThePostsOfSomeContentsAreReadWithTheirTargets(): void
+    {
+        $this->post('1');
+        $this->post('2');
+        $this->post('3');
+        $this->entityManager->clear();
+
+        $this->assertSame(['1' => 2, '3' => 2], $this->targetCounts($this->repository->findBySourceIds('gallery_media', ['1', '3'])));
+        $this->assertSame([], $this->repository->findBySourceIds('book', ['1']));
+        $this->assertSame([], $this->repository->findBySourceIds('gallery_media', []));
     }
 
     // A source's content already taken is not offered again, since the date given only

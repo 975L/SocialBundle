@@ -11,10 +11,12 @@
 namespace c975L\SocialBundle\Controller\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\SocialBundle\Controller\SocialCalendarFeedController;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
-use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Repository\SocialPostRepository;
+use c975L\SocialBundle\Service\ConfigValueWriter;
+use c975L\SocialBundle\Service\SocialCalendarFeed;
 use c975L\SocialBundle\Service\SocialMediaChecker;
 use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPublisher;
@@ -25,6 +27,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatableMessage;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -37,6 +40,8 @@ class SocialCalendarController extends AbstractController
     private const string MOVE_ROUTE = 'management_social_calendar_move';
 
     private const string PANEL_ROUTE = 'management_social_calendar_post';
+
+    private const string FEED_TOKEN_ROUTE = 'management_social_calendar_feed_token';
 
     // A drag plans a post that goes out under the site's name: checked against a token, like "Publish"
     private const string CSRF_TOKEN = 'social_calendar';
@@ -51,7 +56,7 @@ class SocialCalendarController extends AbstractController
 
     private const string MONTH = 'month';
 
-    // How many quarters of an hour a card covers on the grid (a quarter being .75rem, a card 22px)
+    // How many quarters of an hour a card covers on the grid (a quarter being 1rem, a card 22px)
     private const int CARD_HEIGHT = 2;
 
     // The hours the week's grid shows when the site sets none
@@ -114,7 +119,31 @@ class SocialCalendarController extends AbstractController
             'series_url' => $this->adminUrlGenerator->unsetAll()->setController(SocialPostCrudController::class)->setAction('generateSeries')->generateUrl(),
             'connections_route' => SocialConnectionsController::ROUTE,
             'token' => self::CSRF_TOKEN,
+            'feed_url' => $this->feedUrl(),
+            'feed_token_url' => $this->generateUrl(self::FEED_TOKEN_ROUTE),
         ]);
+    }
+
+    // Creates the feed's secret address, or replaces it - the former one then answering nothing, for whoever it was given to
+    #[AdminRoute(path: '/social-calendar/feed', name: 'social_calendar_feed_token', options: ['methods' => ['POST']])]
+    public function feedToken(Request $request, ConfigValueWriter $configWriter): Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
+
+        if ($this->isCsrfTokenValid(self::CSRF_TOKEN, $request->request->getString('token'))) {
+            $configWriter->write([SocialCalendarFeed::TOKEN => bin2hex(random_bytes(32))]);
+            $this->addFlash('success', new TranslatableMessage('flash.social_calendar_feed_created', [], 'social'));
+        }
+
+        return $this->redirectToRoute(self::ROUTE);
+    }
+
+    // The feed's address to subscribe to, null until it is created
+    private function feedUrl(): ?string
+    {
+        $token = (string) $this->configService->get(SocialCalendarFeed::TOKEN);
+
+        return '' === $token ? null : $this->generateUrl(SocialCalendarFeedController::ROUTE, ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
     // The panel a card opens beside the calendar: when the post goes out, the moment to set it to, its approval, its texts - the screen of the post a link away, where they are corrected and rephrased
@@ -149,7 +178,7 @@ class SocialCalendarController extends AbstractController
         }
 
         $post = $this->postRepository->find($request->request->getInt('post'));
-        if (!$post instanceof SocialPost || 'published' === $this->state($post)) {
+        if (!$post instanceof SocialPost || 'published' === $post->getState()) {
             return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -369,20 +398,9 @@ class SocialCalendarController extends AbstractController
             // The networks it still goes out on
             'networks' => $post->getTargets()->filter(static fn (SocialPostTarget $target): bool => $target->isPending())->map(static fn (SocialPostTarget $target): string => $target->getNetwork())->getValues(),
             'planned_at' => $post->getPlannedAt(),
-            'state' => $this->state($post),
+            'state' => $post->getState(),
             'edit_url' => $this->editUrl($post),
         ];
-    }
-
-    // What the card's colour says: gone out everywhere, refused somewhere, waiting for its moment, or for a reading
-    private function state(SocialPost $post): string
-    {
-        return match (true) {
-            $post->isPublished() => 'published',
-            $post->getTargets()->exists(static fn (int $key, SocialPostTarget $target): bool => SocialPostStatus::Failed === $target->getStatus()) => 'failed',
-            $post->isApproved() => 'approved',
-            default => 'draft',
-        };
     }
 
     private function editUrl(SocialPost $post): string

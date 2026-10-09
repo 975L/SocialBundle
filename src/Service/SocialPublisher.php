@@ -18,6 +18,7 @@ use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Model\MediaRules;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\SocialBundle\Repository\SocialPostRepository;
+use c975L\UiBundle\Contract\BrowsableSocialContentSourceInterface;
 use c975L\UiBundle\Contract\ScopedSocialContentSourceInterface;
 use c975L\UiBundle\Contract\SocialContentSourceInterface;
 use c975L\UiBundle\Model\SocialContent;
@@ -87,7 +88,7 @@ class SocialPublisher
         return array_keys($this->allNetworks());
     }
 
-    // The planned run, every quarter of an hour: every approved post whose moment has come, sent on all its approved networks, keyed "#<post id> <network>"
+    // The planned run, every quarter of an hour: every approved post whose moment has come, sent on all its approved networks, keyed "#<post id> <network>" - each result carrying its post's id and its network, the key being only what is printed
     /** @return array<string, array<string, mixed>> */
     public function publishPlanned(bool $dryRun = false): array
     {
@@ -98,15 +99,15 @@ class SocialPublisher
                 continue;
             }
 
-            foreach ($this->sendApproved($post, $post->getApprovedNetworks(), $dryRun) ?? [] as $network => $result) {
-                $report['#' . $post->getId() . ' ' . $network] = $result;
+            foreach ($this->sendTargets($post, $post->getApprovedNetworks(), SocialPostStatus::Approved, $dryRun) ?? [] as $network => $result) {
+                $report['#' . $post->getId() . ' ' . $network] = $result + ['post' => $post->getId(), 'network' => $network];
             }
         }
 
         return $report;
     }
 
-    // One draft per moment, the next content each time, $sources narrowing them to some sources or groups of them (the keys of getSourceChoices()) - never sent, even on a network set to publish automatically. Fewer when the contents run out, none while no network is connected
+    // One draft per moment, the next content each time, $sources narrowing them to some sources or groups of them (the keys of getSourceChoices()) - never sent until approved. Fewer when the contents run out, none while no network is connected
     /**
      * @param list<\DateTimeImmutable> $moments
      * @param list<string>             $sources
@@ -178,13 +179,20 @@ class SocialPublisher
         }
     }
 
-    // Sends the post's approved targets on the given networks - null while a "Publish" of the same post is sending it
+    // The refusal email's "Send again": only the targets a network refused, a draft never reviewed staying a draft - null while a "Publish" of the same post is sending it
+    /** @return ?array<string, array<string, mixed>> */
+    public function retryFailed(SocialPost $post): ?array
+    {
+        return $this->sendTargets($post, array_values(array_map(static fn (SocialPostTarget $target): string => $target->getNetwork(), $post->getTargets()->toArray())), SocialPostStatus::Failed, false);
+    }
+
+    // Sends the post's targets in $status on the given networks - null while a "Publish" of the same post is sending it
     /**
      * @param list<string> $networks
      *
      * @return ?array<string, array<string, mixed>>
      */
-    private function sendApproved(SocialPost $post, array $networks, bool $dryRun): ?array
+    private function sendTargets(SocialPost $post, array $networks, SocialPostStatus $status, bool $dryRun): ?array
     {
         $lock = $this->lockFactory->createLock('social_post_publish_' . $post->getId());
         if (!$lock->acquire()) {
@@ -202,14 +210,14 @@ class SocialPublisher
 
             $report = [];
             foreach ($post->getTargets() as $target) {
-                if (SocialPostStatus::Approved !== $target->getStatus() || !\in_array($target->getNetwork(), $networks, true)) {
+                if ($status !== $target->getStatus() || !\in_array($target->getNetwork(), $networks, true)) {
                     continue;
                 }
 
                 $network = $all[$target->getNetwork()] ?? null;
                 if ($dryRun) {
                     $report[$target->getNetwork()] = null === $network || null === $content
-                        ? ['status' => self::DRY_RUN, 'message' => 'approved', 'payload' => ['error' => 'Nothing to send it with.']]
+                        ? ['status' => self::DRY_RUN, 'message' => $status->value, 'payload' => ['error' => 'Nothing to send it with.']]
                         : $this->preview($network, $target->getText(), $content, $this->mediasOf($post));
                     continue;
                 }
@@ -239,6 +247,96 @@ class SocialPublisher
         return $post;
     }
 
+    // A post planned at $at from the next content of $sources (see prepareDrafts()), with no network yet: its text and its networks are its caller's - null when no network is connected or the sources ran out
+    /** @param list<string> $sources */
+    public function createFromSources(\DateTimeImmutable $at, array $sources): ?SocialPost
+    {
+        [$sourceType, $content] = $this->hasConnectedNetwork() ? $this->nextContent($this->scopesOf($sources)) : ['', null];
+
+        return null === $content ? null : new SocialPost($sourceType, $content->sourceId, $content->title, $content->url, $content->imageUrl, $at);
+    }
+
+    // The source of a post whose content may be changed on its screen, null for one written there, read from a page, gone out already, or whose source lists nothing
+    public function browsableSourceOf(SocialPost $post): ?BrowsableSocialContentSourceInterface
+    {
+        if ($post->hasGoneOut()) {
+            return null;
+        }
+
+        foreach ($this->sources as $source) {
+            if ($source instanceof BrowsableSocialContentSourceInterface && $source->getSourceType() === $post->getSourceType()) {
+                return $source;
+            }
+        }
+
+        return null;
+    }
+
+    // The contents a post may change to, still free, within $scope - an empty one meaning every group
+    /** @return list<SocialContent> */
+    public function contentChoices(SocialPost $post, string $scope, int $limit): array
+    {
+        $source = $this->browsableSourceOf($post);
+
+        return $source?->findContents($this->excludedIds($source), '' === $scope ? [] : [$scope], $limit) ?? [];
+    }
+
+    // Another content drawn for the post in the group of the one it holds, its texts written again from it - false when none is left there
+    public function redraw(SocialPost $post): bool
+    {
+        $source = $this->browsableSourceOf($post);
+        if (null === $source) {
+            return false;
+        }
+
+        $scope = $source->getContentScope($post->getSourceId());
+        $content = $source instanceof ScopedSocialContentSourceInterface && null !== $scope
+            ? $source->getNextScopedContent($this->excludedIds($source), [$scope])
+            : $source->getNextContent($this->excludedIds($source));
+
+        return $this->switchContent($post, $content);
+    }
+
+    // The content chosen for the post, only among those still free, its texts written again from it - an id typed by hand, or taken meanwhile, changing nothing
+    public function changeContent(SocialPost $post, string $sourceId): bool
+    {
+        $source = $this->browsableSourceOf($post);
+        if (null === $source || \in_array($sourceId, $this->excludedIds($source), true)) {
+            return false;
+        }
+
+        return $this->switchContent($post, $source->getContent($sourceId));
+    }
+
+    // The post moved to $content, every text not out yet written from it the way addTargets() writes them - a post with its own text keeps it, only its image changing
+    private function switchContent(SocialPost $post, ?SocialContent $content): bool
+    {
+        if (null === $content || !$post->changeContent($content)) {
+            return false;
+        }
+
+        if ($post->hasOwnText()) {
+            return true;
+        }
+
+        $maxLengths = [];
+        foreach ($post->getTargets() as $target) {
+            $maxLength = $this->getMaxLength($target->getNetwork());
+            if ($target->isPending() && null !== $maxLength) {
+                $maxLengths[$target->getNetwork()] = $maxLength;
+            }
+        }
+
+        $written = $this->writer->write($content, $maxLengths);
+        foreach ($post->getTargets() as $target) {
+            if (isset($maxLengths[$target->getNetwork()])) {
+                $target->setText($written[$target->getNetwork()] ?? $this->textBuilder->build($content, $maxLengths[$target->getNetwork()]));
+            }
+        }
+
+        return true;
+    }
+
     // Writes a text for each network ticked on a post that had none, the way prepare() does - approved along with the rest of the post when it was; a post written on its screen gets its own text, cut to each network. A network not connected gets no text: it could not send it
     /** @param list<string> $networks */
     public function addTargets(SocialPost $post, array $networks): void
@@ -249,9 +347,9 @@ class SocialPublisher
             return;
         }
 
-        $written = $post->isManual() ? [] : $this->writer->write($content, array_map(static fn (NetworkPublisherInterface $network): int => $network->getMaxLength(), $targets));
+        $written = $post->hasOwnText() ? [] : $this->writer->write($content, array_map(static fn (NetworkPublisherInterface $network): int => $network->getMaxLength(), $targets));
         foreach ($targets as $name => $network) {
-            $text = $post->isManual() ? $this->textBuilder->cut((string) $post->getText(), $network->getMaxLength()) : ($written[$name] ?? $this->textBuilder->build($content, $network->getMaxLength()));
+            $text = $post->hasOwnText() ? $this->textBuilder->cut((string) $post->getText(), $network->getMaxLength()) : ($written[$name] ?? $this->textBuilder->build($content, $network->getMaxLength()));
             $target = new SocialPostTarget($post, $name, $text);
             if ($post->isApproved()) {
                 $target->approve();
@@ -262,7 +360,7 @@ class SocialPublisher
     // A post written on its screen whose text changed: every text not out yet written from it again, cut to its network - a text corrected on its own stays as long as the post's text does not change
     public function rewriteTargets(SocialPost $post): void
     {
-        if (!$post->isManual() || !$post->takeTextChanged()) {
+        if (!$post->hasOwnText() || !$post->takeTextChanged()) {
             return;
         }
 
@@ -337,9 +435,7 @@ class SocialPublisher
                 continue;
             }
 
-            $repeatAfterDays = $source->getRepeatAfterDays();
-            $since = null === $repeatAfterDays ? null : new \DateTimeImmutable(sprintf('-%d days', $repeatAfterDays));
-            $excludedIds = $this->postRepository->findSourceIds($type, $since);
+            $excludedIds = $this->excludedIds($source);
             $content = $source instanceof ScopedSocialContentSourceInterface && [] !== ($scopes[$type] ?? [])
                 ? $source->getNextScopedContent($excludedIds, $scopes[$type])
                 : $source->getNextContent($excludedIds);
@@ -349,6 +445,16 @@ class SocialPublisher
         }
 
         return ['', null];
+    }
+
+    // The ids of a source a post holds, the ones past its repeat delay offered again
+    /** @return list<string> */
+    private function excludedIds(SocialContentSourceInterface $source): array
+    {
+        $repeatAfterDays = $source->getRepeatAfterDays();
+        $since = null === $repeatAfterDays ? null : new \DateTimeImmutable(sprintf('-%d days', $repeatAfterDays));
+
+        return $this->postRepository->findSourceIds($source->getSourceType(), $since);
     }
 
     // The sources picked as the sources read them: the scope ids of each source type, an empty list for a whole source - none at all for every source. A whole source picked beside some of its groups takes it whole

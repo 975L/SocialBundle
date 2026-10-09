@@ -12,6 +12,7 @@ namespace c975L\SocialBundle\Entity;
 
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Repository\SocialPostRepository;
+use c975L\UiBundle\Model\SocialContent;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -55,6 +56,11 @@ class SocialPost implements \Stringable
     // The networks ticked on the post's screen that it has no text for yet, written by SocialPublisher::addTargets() once the screen is saved - never stored
     /** @var list<string> */
     private array $addedNetworks = [];
+
+    // The series it was generated in, prolonged from its last post - none for a post prepared on its own, or once its series is deleted
+    #[ORM\ManyToOne(targetEntity: SocialSeries::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?SocialSeries $series = null;
 
     /** @var Collection<int, SocialMedia> */
     #[ORM\OneToMany(targetEntity: SocialMedia::class, mappedBy: 'post', cascade: ['persist', 'remove'], orphanRemoval: true)]
@@ -130,12 +136,18 @@ class SocialPost implements \Stringable
         return self::SOURCE_MANUAL === $this->sourceType;
     }
 
+    // Its networks' texts cut from its own text rather than written from its content: a post written on its screen, or one of a series given its text and a content's picture
+    public function hasOwnText(): bool
+    {
+        return $this->isManual() || null !== $this->text;
+    }
+
     public function getText(): ?string
     {
         return $this->text;
     }
 
-    // The post named by the first line of its text, cut, the list and the calendar reading it there
+    // A post written on its screen named by the first line of its text, cut, the list and the calendar reading it there - one taken from a content keeps that content's title
     public function setText(?string $text): self
     {
         $text = null === $text || '' === trim($text) ? null : trim($text);
@@ -143,7 +155,7 @@ class SocialPost implements \Stringable
         $this->text = $text;
 
         $firstLine = trim(strtok((string) $text, "\n") ?: '');
-        if ('' !== $firstLine) {
+        if ('' !== $firstLine && $this->isManual()) {
             $this->title = mb_strlen($firstLine) > self::TITLE_LENGTH ? mb_substr($firstLine, 0, self::TITLE_LENGTH - 1) . '…' : $firstLine;
         }
 
@@ -196,6 +208,50 @@ class SocialPost implements \Stringable
         foreach ($this->targets as $target) {
             $target->unapprove();
         }
+    }
+
+    // Ties the post to another content of its source, the one it held freed as soon as it is saved - refused once it went out anywhere, the networks showing the picture it went out with
+    public function changeContent(SocialContent $content): bool
+    {
+        if ($this->hasGoneOut()) {
+            return false;
+        }
+
+        $this->sourceId = $content->sourceId;
+        $this->title = mb_substr($content->title, 0, 255);
+        $this->url = $content->url;
+        $this->imageUrl = $content->imageUrl;
+
+        return true;
+    }
+
+    public function getSeries(): ?SocialSeries
+    {
+        return $this->series;
+    }
+
+    public function setSeries(?SocialSeries $series): self
+    {
+        $this->series = $series;
+
+        return $this;
+    }
+
+    // What the calendar's colour says: gone out everywhere, refused somewhere, waiting for its moment, or for a reading
+    public function getState(): string
+    {
+        return match (true) {
+            $this->isPublished() => 'published',
+            $this->targets->exists(static fn (int $key, SocialPostTarget $target): bool => SocialPostStatus::Failed === $target->getStatus()) => 'failed',
+            $this->isApproved() => 'approved',
+            default => 'draft',
+        };
+    }
+
+    // Whether it went out on any of its networks
+    public function hasGoneOut(): bool
+    {
+        return $this->targets->exists(static fn (int $key, SocialPostTarget $target): bool => null !== $target->getPublishedAt());
     }
 
     // Whether a target still waits for a reading or a retry - what "Approve" is offered on

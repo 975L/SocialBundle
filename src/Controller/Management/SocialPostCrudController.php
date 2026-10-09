@@ -13,15 +13,19 @@ namespace c975L\SocialBundle\Controller\Management;
 use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Entity\SocialPost;
+use c975L\SocialBundle\Entity\SocialPostTarget;
+use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Form\SocialMediaType;
 use c975L\SocialBundle\Form\SocialPostTargetType;
 use c975L\SocialBundle\Form\SocialSeriesType;
+use c975L\SocialBundle\Repository\SocialSeriesRepository;
 use c975L\SocialBundle\Service\SocialMediaChecker;
 use c975L\SocialBundle\Service\SocialMediaPicker;
 use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPublisher;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
+use c975L\UiBundle\Contract\ScopedSocialContentSourceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -70,6 +74,7 @@ class SocialPostCrudController extends AbstractCrudController
         private readonly SocialPlanner $planner,
         private readonly SocialMediaChecker $mediaChecker,
         private readonly SocialSeriesGenerator $seriesGenerator,
+        private readonly SocialSeriesRepository $seriesRepository,
         private readonly SocialMediaPicker $mediaPicker,
     ) {
     }
@@ -138,6 +143,16 @@ class SocialPostCrudController extends AbstractCrudController
             ->linkToUrl(fn (SocialPost $post): string => $this->entityActionUrl('pickMedia', $post))
             ->displayIf(fn (): bool => $this->mediaPicker->hasLibraries())
         ;
+        // As many drafts again for the series the post belongs to, with its settings
+        $prolongSeries = Action::new('prolongSeries', t('label.social_series_prolong', [], 'social'), 'fa fa-forward')
+            ->linkToUrl(fn (SocialPost $post): string => $this->entityActionUrl('prolongSeries', $post))
+            ->displayIf(static fn (SocialPost $post): bool => null !== $post->getSeries())
+        ;
+        // Another content of its source for a post prepared from one - another photograph of the gallery, chosen or drawn again - while it has not gone out
+        $changeContent = Action::new('changeContent', t('label.social_content_change', [], 'social'), 'fa fa-shuffle')
+            ->linkToUrl(fn (SocialPost $post): string => $this->entityActionUrl('changeContent', $post))
+            ->displayIf(fn (SocialPost $post): bool => null !== $this->socialPublisher->browsableSourceOf($post))
+        ;
         // Any page, of this site or another one, read from its Open Graph tags
         $prepareUrl = Action::new('prepareUrlPost', t('label.social_post_prepare_url', [], 'social'), 'fa fa-link')
             ->linkToUrl(fn (): string => $this->actionUrl('prepareUrlPost'))
@@ -156,10 +171,14 @@ class SocialPostCrudController extends AbstractCrudController
             ->setPermission('generateSeries', $role)
             ->setPermission('approveSelection', $role)
             ->setPermission('pickMedia', $role)
+            ->setPermission('changeContent', $role)
+            ->setPermission('prolongSeries', $role)
             ->add(Crud::PAGE_INDEX, $generateSeries)
             ->add(Crud::PAGE_INDEX, $approveSelection)
             ->add(Crud::PAGE_INDEX, $prepareUrl)
             ->add(Crud::PAGE_EDIT, $pickMedia)
+            ->add(Crud::PAGE_EDIT, $changeContent)
+            ->add(Crud::PAGE_EDIT, $prolongSeries)
             ->disable(Action::DETAIL)
             // From the list only: on the post's page, a link would send the text as saved, not as just corrected
             ->add(Crud::PAGE_INDEX, $approve)
@@ -176,6 +195,7 @@ class SocialPostCrudController extends AbstractCrudController
     {
         $post = $this->getContext()?->getEntity()->getInstance();
         $manual = $post instanceof SocialPost && $post->isManual();
+        $ownText = $post instanceof SocialPost && $post->hasOwnText();
 
         yield DateTimeField::new('createdAt', t('label.social_post_created_at', [], 'social'))->setDisabled()->hideWhenCreating();
         // A post written here is named by its text, one prepared from a content by that content
@@ -189,7 +209,7 @@ class SocialPostCrudController extends AbstractCrudController
             ->onlyOnIndex()
         ;
         // The text every network's own is cut from, Donovan's marker putting the rephrase and the translation under it
-        if ($manual) {
+        if ($ownText) {
             yield TextareaField::new('text', t('label.social_post_text', [], 'social'))
                 ->setRequired(true)
                 ->setFormTypeOption('constraints', [new NotBlank()])
@@ -347,6 +367,31 @@ class SocialPostCrudController extends AbstractCrudController
         return $this->redirect($this->indexUrl());
     }
 
+    // The address a refusal's email leads to (see PublishCommand): the networks that refused the post and why, then those targets sent again once confirmed - or the post opened, to correct it first
+    #[AdminRoute('/{entityId}/retry-post')]
+    public function retryPost(AdminContext $context, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
+
+        $post = $context->getEntity()->getInstance();
+        if (!$post instanceof SocialPost) {
+            return $this->redirect($this->indexUrl());
+        }
+
+        if ($request->request->has('retry') && $this->isCsrfTokenValid(self::PUBLISH_CSRF_TOKEN, $request->request->getString('token'))) {
+            $report = $this->socialPublisher->retryFailed($post);
+            null === $report ? $this->addFlash('warning', t('flash.social_post_publishing', [], 'social')) : $this->flashReport($report);
+
+            return $this->redirect($this->editUrl($post));
+        }
+
+        return $this->render('@c975LSocial/management/social_post_retry.html.twig', [
+            'post' => $post,
+            'failed' => $post->getTargets()->filter(static fn (SocialPostTarget $target): bool => SocialPostStatus::Failed === $target->getStatus()),
+            'edit_url' => $this->editUrl($post),
+        ]);
+    }
+
     // Lets the post go out at its planned moment
     #[AdminRoute('/{entityId}/approve-post')]
     public function approvePost(AdminContext $context, Request $request): RedirectResponse
@@ -375,8 +420,19 @@ class SocialPostCrudController extends AbstractCrudController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            $moments = $this->seriesGenerator->moments($this->planner->round($data['start']), (int) $data['count'], (string) $data['frequency']);
-            $posts = $this->seriesGenerator->generate($moments, (string) $data['mode'], $data['networks'], (string) $data['text'], $data['sources'] ?? [], $data['media']);
+            $start = $this->planner->round($data['start']);
+            $series = new SocialSeries(
+                $this->seriesTitle((string) $data['text'], $data['sources'] ?? []),
+                (int) $data['count'],
+                (string) $data['frequency'],
+                (int) $data['interval'],
+                array_map(intval(...), $data['weekdays'] ?? []),
+                (string) $data['mode'],
+                (string) $data['text'],
+                $data['sources'] ?? [],
+                $data['networks'],
+            );
+            $posts = $this->seriesGenerator->generate($series, $start, $data['media']);
 
             if ([] === $posts) {
                 $this->addFlash('warning', t('flash.social_post_nothing', [], 'social'));
@@ -386,7 +442,7 @@ class SocialPostCrudController extends AbstractCrudController
 
             $this->addFlash('success', t('flash.social_series_generated', ['%count%' => \count($posts)], 'social'));
 
-            return $this->redirectToRoute(SocialCalendarController::ROUTE, ['date' => $moments[0]->format('Y-m-d')]);
+            return $this->redirectToRoute(SocialCalendarController::ROUTE, ['date' => $posts[0]->getPlannedAt()->format('Y-m-d')]);
         }
 
         return $this->render('@c975LSocial/management/social_series.html.twig', ['form' => $form]);
@@ -443,6 +499,71 @@ class SocialPostCrudController extends AbstractCrudController
             'post' => $post,
             'search' => $search,
             'libraries' => $this->mediaPicker->libraries($search),
+            'back_url' => $this->editUrl($post),
+        ]);
+    }
+
+    // Confirms, then makes as many drafts again after the series' last post, with its settings, and shows them on the calendar
+    #[AdminRoute('/{entityId}/prolong-series')]
+    public function prolongSeries(AdminContext $context, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
+
+        $post = $context->getEntity()->getInstance();
+        $series = $post instanceof SocialPost ? $post->getSeries() : null;
+        if (!$post instanceof SocialPost || null === $series) {
+            return $this->redirect($post instanceof SocialPost ? $this->editUrl($post) : $this->indexUrl());
+        }
+
+        if ($request->request->has('prolong') && $this->isCsrfTokenValid(self::PUBLISH_CSRF_TOKEN, $request->request->getString('token'))) {
+            $posts = $this->seriesGenerator->prolong($series);
+            if ([] === $posts) {
+                $this->addFlash('warning', t('flash.social_post_nothing', [], 'social'));
+
+                return $this->redirect($this->editUrl($post));
+            }
+
+            $this->addFlash('success', t('flash.social_series_generated', ['%count%' => \count($posts)], 'social'));
+
+            return $this->redirectToRoute(SocialCalendarController::ROUTE, ['date' => $posts[0]->getPlannedAt()->format('Y-m-d')]);
+        }
+
+        return $this->render('@c975LSocial/management/social_series_prolong.html.twig', [
+            'series' => $series,
+            'last' => $this->seriesRepository->findLastPlannedAt($series),
+            'back_url' => $this->editUrl($post),
+        ]);
+    }
+
+    // Lists the contents still free in a group - the post's own by default - then ties the post to the one chosen, or to one drawn again in its group, and goes back to it
+    #[AdminRoute('/{entityId}/change-content')]
+    public function changeContent(AdminContext $context, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
+
+        $post = $context->getEntity()->getInstance();
+        $source = $post instanceof SocialPost ? $this->socialPublisher->browsableSourceOf($post) : null;
+        if (!$post instanceof SocialPost || null === $source) {
+            return $this->redirect($post instanceof SocialPost ? $this->editUrl($post) : $this->indexUrl());
+        }
+
+        if (($request->request->has('redraw') || $request->request->has('choose')) && $this->isCsrfTokenValid(self::PUBLISH_CSRF_TOKEN, $request->request->getString('token'))) {
+            $changed = $request->request->has('redraw')
+                ? $this->socialPublisher->redraw($post)
+                : $this->socialPublisher->changeContent($post, $request->request->getString('sourceId'));
+            $this->entityManager->flush();
+            $this->addFlash($changed ? 'success' : 'warning', t($changed ? 'flash.social_content_changed' : 'flash.social_content_unchanged', [], 'social'));
+
+            return $this->redirect($this->editUrl($post));
+        }
+
+        $scope = $request->query->has('scope') ? $request->query->getString('scope') : (string) $source->getContentScope($post->getSourceId());
+
+        return $this->render('@c975LSocial/management/social_content_change.html.twig', [
+            'post' => $post,
+            'scope' => $scope,
+            'scopes' => $source instanceof ScopedSocialContentSourceInterface ? $source->getScopes() : [],
+            'contents' => $this->socialPublisher->contentChoices($post, $scope, SocialMediaPicker::LIMIT),
             'back_url' => $this->editUrl($post),
         ]);
     }
@@ -522,6 +643,20 @@ class SocialPostCrudController extends AbstractCrudController
                 default => $this->addFlash('danger', t('flash.social_post_failed', $parameters, 'social')),
             };
         }
+    }
+
+    // A series named by the first line of its text, or by the contents it takes - every source when none was ticked
+    /** @param list<string> $sources */
+    private function seriesTitle(string $text, array $sources): string
+    {
+        $firstLine = trim(strtok($text, "\n") ?: '');
+        if ('' !== $firstLine) {
+            return $firstLine;
+        }
+
+        $labels = array_intersect_key($this->socialPublisher->getSourceChoices(), array_flip($sources));
+
+        return [] === $labels ? $this->translator->trans('label.social_series_all_sources', [], 'social') : implode(', ', $labels);
     }
 
     // The image the post goes out with, at the given width - nothing for a post without one

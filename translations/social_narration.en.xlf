@@ -10,6 +10,10 @@
                 <source>narration.guided_step_social_bluesky_handle</source>
                 <target>Last, if you wish, search for "social-bluesky-handle" in the configuration and name the linked account: the next connection will offer it at once. Left empty, you will pick it on Bluesky's page.</target>
             </trans-unit>
+            <trans-unit id="ba1QolF">
+                <source>narration.guided_step_social_calendar_feed</source>
+                <target>To see your posts in your own calendar, unfold "Subscribe from a calendar", create the address and paste it into Outlook, Evolution or Google Calendar. Keep it secret: renewing it cuts the former one.</target>
+            </trans-unit>
             <trans-unit id="2tNlQez">
                 <source>narration.guided_step_social_calendar_move</source>
                 <target>To change a post's date, drag it onto a coming time of the week, or onto a day of the month where it keeps its time: it is planned there, approved or not as before.</target>
@@ -118,6 +122,10 @@
                 <source>narration.guided_step_social_posts_approve</source>
                 <target>Back on the list, "Approve" hands the post over to its planned date: it goes out on its own, instead of being sent at once.</target>
             </trans-unit>
+            <trans-unit id="l7IZ8AF">
+                <source>narration.guided_step_social_posts_change_content</source>
+                <target>If the photo does not suit, "Change the content" takes another one, drawn again in the same gallery or chosen among those still free, and writes the texts again for it.</target>
+            </trans-unit>
             <trans-unit id="4cJ._fk">
                 <source>narration.guided_step_social_posts_edit</source>
                 <target>The edit button opens the post: one text per network, each at the length that network accepts, under the photos or the video going out with it. Correct what needs to be.</target>
@@ -156,7 +164,7 @@
             </trans-unit>
             <trans-unit id="fl_JIU5">
                 <source>narration.guided_step_social_series_frequency</source>
-                <target>Choose the pace: one draft a day, a week or a month.</target>
+                <target>Choose the pace: every N days, some days of the week, or every month.</target>
             </trans-unit>
             <trans-unit id="I6Q3TO3">
                 <source>narration.guided_step_social_series_generate</source>
@@ -173,6 +181,10 @@
             <trans-unit id="yIyQYG.">
                 <source>narration.guided_step_social_series_open</source>
                 <target>The panel takes you to the generation of a series: several drafts at once, which you will proofread afterwards. Say how many, from when and on which networks.</target>
+            </trans-unit>
+            <trans-unit id="njw9jnA">
+                <source>narration.guided_step_social_series_prolong</source>
+                <target>When the series comes near its end, an email warns you. Open one of its posts: "Prolong the series" makes as many again after it, at the same pace.</target>
             </trans-unit>
             <trans-unit id="F.zSd24">
                 <source>narration.guided_step_social_series_text</source>

@@ -1,7 +1,7 @@
 {
     "name": "c975l/social-bundle",
     "type": "symfony-bundle",
-    "description": "Symfony bundle for the social side of a c975L site — social links managed in one single place and share buttons for 20 networks, placed anywhere as blocks. Replaces the former ShareButtonsBundle.",
+    "description": "Symfony bundle for the social side of a c975L site — social links managed in one single place, share buttons for several networks, and posts to Bluesky, Facebook, Instagram and LinkedIn, prepared as drafts, approved, then scheduled on a calendar.",
     "keywords": ["symfony", "bundle", "social"],
     "homepage": "https://github.com/975L/SocialBundle",
     "license": "MIT",
@@ -20,7 +20,7 @@
     "require": {
         "php": ">=8.4",
         "ext-gd": "*",
-        "c975l/core-bundle": "^1.53.0",
+        "c975l/core-bundle": "^1.60.2",
         "doctrine/doctrine-bundle": "^3.3",
         "doctrine/orm": "^3.7",
         "easycorp/easyadmin-bundle": "^5.1",

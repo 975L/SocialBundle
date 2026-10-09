@@ -74,6 +74,10 @@
                 <source>description.guided_step_social_bluesky_handle</source>
                 <target>Opcional, en la configuración: buscar «social-bluesky-handle» y poner el identificador de la cuenta, por ejemplo ejemplo.bsky.social, para que la próxima conexión lo proponga directamente. Vacío, la cuenta se elige en la página de Bluesky.</target>
             </trans-unit>
+            <trans-unit id="6i891bK">
+                <source>description.guided_step_social_calendar_feed</source>
+                <target>Despliegue «Suscribirse desde una agenda» y cree la dirección secreta: pegada en Outlook, Evolution o Google Calendar, muestra allí las publicaciones previstas. Renovarla anula la anterior.</target>
+            </trans-unit>
             <trans-unit id="y3lKM_7">
                 <source>description.guided_step_social_calendar_move</source>
                 <target>Arrastre una publicación a una hora próxima de la semana, o a un día próximo del mes donde conserva su hora: queda prevista allí, su validación no cambia.</target>
@@ -178,6 +182,10 @@
                 <source>description.guided_step_social_posts_approve</source>
                 <target>Este botón valida la publicación: saldrá sola en su fecha prevista, en lugar de enviarse enseguida. Marque varios borradores para validarlos juntos con «Validar la selección».</target>
             </trans-unit>
+            <trans-unit id="cJ_J6x4">
+                <source>description.guided_step_social_posts_change_content</source>
+                <target>Para una publicación preparada desde el sitio, «Cambiar el contenido» toma otra foto: sorteada de nuevo en la misma galería, o elegida entre las aún libres. Sus textos se reescriben para ella.</target>
+            </trans-unit>
             <trans-unit id="hq1t6co">
                 <source>description.guided_step_social_posts_edit</source>
                 <target>El botón de edición abre la publicación: un texto por red, cada uno limitado a la longitud que acepta esa red, bajo las fotos o el vídeo que saldrán con ella.</target>
@@ -200,7 +208,7 @@
             </trans-unit>
             <trans-unit id="Sr07Dp3">
                 <source>description.guided_step_social_series_frequency</source>
-                <target>Un borrador cada día, cada semana o cada mes, a partir del momento elegido.</target>
+                <target>Un borrador cada N días (1 cada día, 2 un día de cada dos, 7 cada semana), algunos días de la semana o cada mes, desde el momento elegido.</target>
             </trans-unit>
             <trans-unit id="lAe7DDv">
                 <source>description.guided_step_social_series_generate</source>
@@ -213,6 +221,10 @@
             <trans-unit id="9.bO7zc">
                 <source>description.guided_step_social_series_open</source>
                 <target>La pantalla de serie, que «Generar una serie» abre también desde las publicaciones y el calendario: cuántos borradores, desde cuándo, en qué redes.</target>
+            </trans-unit>
+            <trans-unit id="YQtvut9">
+                <source>description.guided_step_social_series_prolong</source>
+                <target>Un correo avisa cuando la serie se acerca a su fin. «Prolongar la serie», en la pantalla de una de sus publicaciones, crea otras tantas a continuación, al mismo ritmo.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -245,6 +257,22 @@
             <trans-unit id="bRoisnG">
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Botón ancho, cuadrado o redondo: es el espacio que ocupan los botones bajo sus páginas.</target>
+            </trans-unit>
+            <trans-unit id="nVJ6Jbx">
+                <source>email.social_post_failed_body</source>
+                <target>Una red rechazó estas publicaciones a su hora. Abra el enlace para ver el motivo y relanzarla, o corregirla antes:</target>
+            </trans-unit>
+            <trans-unit id="fKPJ625">
+                <source>email.social_post_failed_subject</source>
+                <target>%count% publicación(es) rechazada(s) por una red</target>
+            </trans-unit>
+            <trans-unit id="fFRxt4W">
+                <source>email.social_series_ending_body</source>
+                <target>Estas series llegan a su última publicación. Abra una de sus publicaciones y luego «Prolongar la serie» para continuar con los mismos ajustes:</target>
+            </trans-unit>
+            <trans-unit id="KWHHNzs">
+                <source>email.social_series_ending_subject</source>
+                <target>%count% serie(s) de publicaciones a punto de terminar</target>
             </trans-unit>
             <trans-unit id="0h0NDdA">
                 <source>flash.bluesky_connected</source>
@@ -286,6 +314,18 @@
                 <source>flash.meta_refused</source>
                 <target>La conexión con Meta fue rechazada o interrumpida.</target>
             </trans-unit>
+            <trans-unit id="sgZ4.jB">
+                <source>flash.social_calendar_feed_created</source>
+                <target>Nueva dirección de suscripción creada: la anterior ya no funciona.</target>
+            </trans-unit>
+            <trans-unit id="iZFVnLR">
+                <source>flash.social_content_changed</source>
+                <target>La publicación tiene ahora otro contenido, el anterior queda libre.</target>
+            </trans-unit>
+            <trans-unit id="XKmpGCm">
+                <source>flash.social_content_unchanged</source>
+                <target>Ningún otro contenido libre: la publicación conserva el suyo.</target>
+            </trans-unit>
             <trans-unit id="IAy1Rxc">
                 <source>flash.social_media_picked</source>
                 <target>%count% medio(s) añadido(s).</target>
@@ -326,6 +366,14 @@
                 <source>flash.social_series_generated</source>
                 <target>%count% borrador(es) creado(s), por revisar y validar.</target>
             </trans-unit>
+            <trans-unit id="MtGVTQR">
+                <source>help.social_calendar_feed</source>
+                <target>Copie esta dirección en su agenda: Evolution, Nuevo y luego agenda «En la web»; Google Calendar, Otros calendarios y luego «Desde URL» (visible después en Android); Outlook, Agregar calendario y luego «Suscribirse desde la web». Solo lectura, actualizada por la agenda a su ritmo. Manténgala secreta: renovarla anula la anterior.</target>
+            </trans-unit>
+            <trans-unit id="hs5kZPn">
+                <source>help.social_calendar_feed_none</source>
+                <target>Cree una dirección secreta para ver las publicaciones en su agenda, en solo lectura.</target>
+            </trans-unit>
             <trans-unit id="TRKXywk">
                 <source>help.social_media_reference</source>
                 <target>Archivo de la galería: se modifica en la galería, y nunca se borra con la publicación.</target>
@@ -346,13 +394,17 @@
                 <source>help.social_post_text</source>
                 <target>El texto de la publicación, reformulado o traducido con Donovan. Cada red recibe una copia cortada a su longitud, editable después red por red; cambiar este texto las reescribe todas.</target>
             </trans-unit>
+            <trans-unit id="6EH5xQL">
+                <source>help.social_series_interval</source>
+                <target>En días, para «Cada N días»: 1 cada día, 2 un día de cada dos, 7 cada semana.</target>
+            </trans-unit>
             <trans-unit id="OixUWN1">
                 <source>help.social_series_media</source>
-                <target>Opcional: adjunta a cada publicación escrita aquí, guardada una sola vez.</target>
+                <target>Opcional: adjunta a cada publicación escrita aquí, guardada una sola vez, en lugar de las fotos de los contenidos marcados.</target>
             </trans-unit>
             <trans-unit id="a1xocww">
                 <source>help.social_series_sources</source>
-                <target>Para los contenidos del sitio: nada marcado los toma todos, por turnos.</target>
+                <target>Con los contenidos del sitio, nada marcado los toma todos, por turnos. Con un texto o la IA, cada publicación toma una foto al azar entre los marcados, reservada para ella y modificable en su ficha.</target>
             </trans-unit>
             <trans-unit id="4h1xjIz">
                 <source>help.social_series_text</source>
@@ -405,6 +457,10 @@
             <trans-unit id="JQ_3soN">
                 <source>label.connection_wrong_host</source>
                 <target>Bluesky solo conoce el sitio por su dirección: conéctelo desde %url%.</target>
+            </trans-unit>
+            <trans-unit id="QVohPpC">
+                <source>label.copy_link</source>
+                <target>Copiar el enlace</target>
             </trans-unit>
             <trans-unit id="cnGpTz.">
                 <source>label.display_label</source>
@@ -505,6 +561,10 @@
             <trans-unit id="WAKi3s4">
                 <source>label.guided_step_social_bluesky_handle</source>
                 <target>Indicar la cuenta</target>
+            </trans-unit>
+            <trans-unit id="TL21sYA">
+                <source>label.guided_step_social_calendar_feed</source>
+                <target>Suscribirse desde una agenda</target>
             </trans-unit>
             <trans-unit id="CF6D8_T">
                 <source>label.guided_step_social_calendar_move</source>
@@ -614,6 +674,10 @@
                 <source>label.guided_step_social_posts_approve</source>
                 <target>Validar</target>
             </trans-unit>
+            <trans-unit id="XkyAGQR">
+                <source>label.guided_step_social_posts_change_content</source>
+                <target>Cambiar el contenido</target>
+            </trans-unit>
             <trans-unit id="9zRMIWa">
                 <source>label.guided_step_social_posts_edit</source>
                 <target>Revisar los textos</target>
@@ -669,6 +733,10 @@
             <trans-unit id="MrMnSQv">
                 <source>label.guided_step_social_series_open</source>
                 <target>Abrir la generación</target>
+            </trans-unit>
+            <trans-unit id="T2cR_XR">
+                <source>label.guided_step_social_series_prolong</source>
+                <target>Prolongar la serie</target>
             </trans-unit>
             <trans-unit id="G5A1L8U">
                 <source>label.guided_step_social_series_text</source>
@@ -782,6 +850,10 @@
                 <source>label.info_social_connections</source>
                 <target>Las redes a las que se conecta el sitio. Facebook, Instagram, LinkedIn y Bluesky reciben las publicaciones preparadas en la pantalla «Publicaciones»: la publicación empieza en cuanto una de ellas está conectada, sin nada más que activar. Google da acceso a las reseñas de su ficha de empresa.</target>
             </trans-unit>
+            <trans-unit id="CJ1xpE7">
+                <source>label.info_social_content_change</source>
+                <target>«%title%»: sacar otro contenido al azar en la misma categoría, o elegir uno entre los que no están reservados ni publicados. El anterior queda libre.</target>
+            </trans-unit>
             <trans-unit id="RKLGNte">
                 <source>label.info_social_links</source>
                 <target>Enlaces sociales del pie de página - singleton, un único conjunto de enlaces. Modifique la lista para añadir, quitar o reordenar una red social.</target>
@@ -802,6 +874,10 @@
                 <source>label.info_social_series</source>
                 <target>Prepara de una vez una serie de borradores, a intervalo regular. Aparecen en rojo en el calendario: reléalos, corríjalos y valídelos uno a uno o juntos desde la lista. Una vez enviada la serie, genere otra.</target>
             </trans-unit>
+            <trans-unit id="UQgKT5o">
+                <source>label.info_social_series_prolong</source>
+                <target>«%title%»: %count% borrador(es) más, con los mismos ajustes, tras la última publicación del %date%.</target>
+            </trans-unit>
             <trans-unit id="YtqDGiK">
                 <source>label.intro</source>
                 <target>Texto de introducción</target>
@@ -813,6 +889,10 @@
             <trans-unit id="y.9x3G.">
                 <source>label.label</source>
                 <target>Etiqueta</target>
+            </trans-unit>
+            <trans-unit id="FBmE4L8">
+                <source>label.link_copied</source>
+                <target>Enlace copiado</target>
             </trans-unit>
             <trans-unit id="qW0z.EV">
                 <source>label.network</source>
@@ -910,6 +990,18 @@
                 <source>label.social_calendar_edit_texts</source>
                 <target>Editar los textos y las redes</target>
             </trans-unit>
+            <trans-unit id="mGq6bLy">
+                <source>label.social_calendar_feed</source>
+                <target>Suscribirse desde una agenda (Outlook, Evolution, Google Calendar)</target>
+            </trans-unit>
+            <trans-unit id="xkmGyUz">
+                <source>label.social_calendar_feed_create</source>
+                <target>Crear la dirección</target>
+            </trans-unit>
+            <trans-unit id="hK45uK1">
+                <source>label.social_calendar_feed_renew</source>
+                <target>Renovar la dirección</target>
+            </trans-unit>
             <trans-unit id="quz2fN2">
                 <source>label.social_calendar_month</source>
                 <target>Mes</target>
@@ -965,6 +1057,26 @@
             <trans-unit id="J4QK2iR">
                 <source>label.social_connections</source>
                 <target>Conexiones</target>
+            </trans-unit>
+            <trans-unit id="FPjmrw6">
+                <source>label.social_content_all_scopes</source>
+                <target>Todas las categorías</target>
+            </trans-unit>
+            <trans-unit id="hFURYrF">
+                <source>label.social_content_change</source>
+                <target>Cambiar el contenido</target>
+            </trans-unit>
+            <trans-unit id="2RhuuI2">
+                <source>label.social_content_choose</source>
+                <target>Tomar esta</target>
+            </trans-unit>
+            <trans-unit id="uLb8Dsy">
+                <source>label.social_content_none</source>
+                <target>Ningún contenido libre aquí.</target>
+            </trans-unit>
+            <trans-unit id=".AP7YxM">
+                <source>label.social_content_redraw</source>
+                <target>Sacar otra</target>
             </trans-unit>
             <trans-unit id="Eyn1gXP">
                 <source>label.social_links</source>
@@ -1082,6 +1194,22 @@
                 <source>label.social_post_publish</source>
                 <target>Publicar</target>
             </trans-unit>
+            <trans-unit id="k5F77xT">
+                <source>label.social_post_retry</source>
+                <target>Relanzar la publicación</target>
+            </trans-unit>
+            <trans-unit id="kOWAu6X">
+                <source>label.social_post_retry_edit</source>
+                <target>Abrir para corregir</target>
+            </trans-unit>
+            <trans-unit id="Xl5hMfH">
+                <source>label.social_post_retry_none</source>
+                <target>Ninguna red la rechazó: nada que relanzar.</target>
+            </trans-unit>
+            <trans-unit id="mOYoCdT">
+                <source>label.social_post_retry_submit</source>
+                <target>Relanzar ahora</target>
+            </trans-unit>
             <trans-unit id="bFuD5Vi">
                 <source>label.social_post_send_on</source>
                 <target>Publicar en</target>
@@ -1146,6 +1274,10 @@
                 <source>label.social_sample_review_waiting_comment</source>
                 <target>El trabajo es serio, nada que decir. Aparcar delante, en cambio, es complicado los sábados.</target>
             </trans-unit>
+            <trans-unit id="xyJjbQD">
+                <source>label.social_series_all_sources</source>
+                <target>Contenidos del sitio</target>
+            </trans-unit>
             <trans-unit id="_olmR8R">
                 <source>label.social_series_count</source>
                 <target>Número de publicaciones</target>
@@ -1154,21 +1286,25 @@
                 <source>label.social_series_frequency</source>
                 <target>Ritmo</target>
             </trans-unit>
-            <trans-unit id="sEUAbo7">
-                <source>label.social_series_frequency_day</source>
-                <target>Cada día</target>
+            <trans-unit id="oCTC_nE">
+                <source>label.social_series_frequency_days</source>
+                <target>Cada N días</target>
             </trans-unit>
             <trans-unit id="rNFxPxN">
                 <source>label.social_series_frequency_month</source>
                 <target>Cada mes</target>
             </trans-unit>
-            <trans-unit id="24KvQMW">
-                <source>label.social_series_frequency_week</source>
-                <target>Cada semana</target>
+            <trans-unit id="OA845Cz">
+                <source>label.social_series_frequency_weekdays</source>
+                <target>Algunos días de la semana</target>
             </trans-unit>
             <trans-unit id="LZyHW4t">
                 <source>label.social_series_generate</source>
                 <target>Generar una serie</target>
+            </trans-unit>
+            <trans-unit id="D1GuluD">
+                <source>label.social_series_interval</source>
+                <target>Cada</target>
             </trans-unit>
             <trans-unit id="7rBrUdC">
                 <source>label.social_series_media</source>
@@ -1190,6 +1326,10 @@
                 <source>label.social_series_mode_text</source>
                 <target>Un mismo texto para todas</target>
             </trans-unit>
+            <trans-unit id="UI867RG">
+                <source>label.social_series_prolong</source>
+                <target>Prolongar la serie</target>
+            </trans-unit>
             <trans-unit id="qCi9qFI">
                 <source>label.social_series_sources</source>
                 <target>Contenidos</target>
@@ -1209,6 +1349,42 @@
             <trans-unit id="tZ0rqIs">
                 <source>label.social_series_text_required</source>
                 <target>Escriba el texto o la consigna.</target>
+            </trans-unit>
+            <trans-unit id="q8ovzU6">
+                <source>label.social_series_weekday_1</source>
+                <target>lunes</target>
+            </trans-unit>
+            <trans-unit id="SWNLeBx">
+                <source>label.social_series_weekday_2</source>
+                <target>martes</target>
+            </trans-unit>
+            <trans-unit id="bt1UcVO">
+                <source>label.social_series_weekday_3</source>
+                <target>miércoles</target>
+            </trans-unit>
+            <trans-unit id=".htUwlJ">
+                <source>label.social_series_weekday_4</source>
+                <target>jueves</target>
+            </trans-unit>
+            <trans-unit id="mSnumel">
+                <source>label.social_series_weekday_5</source>
+                <target>viernes</target>
+            </trans-unit>
+            <trans-unit id="eoBgU68">
+                <source>label.social_series_weekday_6</source>
+                <target>sábado</target>
+            </trans-unit>
+            <trans-unit id="OCRQTTx">
+                <source>label.social_series_weekday_7</source>
+                <target>domingo</target>
+            </trans-unit>
+            <trans-unit id="ax51BiJ">
+                <source>label.social_series_weekdays</source>
+                <target>Días</target>
+            </trans-unit>
+            <trans-unit id="6prrGwu">
+                <source>label.social_series_weekdays_required</source>
+                <target>Marque al menos un día de la semana.</target>
             </trans-unit>
             <trans-unit id="XWMpUxP">
                 <source>label.style</source>

@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 origin = item.nextElementSibling;
                 item.classList.add("ss-dragging");
             },
-            onMove: (dragged, x, y) => {
+            onMove: (dragged, _x, y) => {
                 const after = dragAfter(container, y);
                 if (!after) container.appendChild(dragged);
                 else container.insertBefore(dragged, after);
