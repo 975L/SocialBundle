@@ -92,7 +92,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, ou ouvre ses textes pour les modifier.</target>
+                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, réordonne ou retire ses médias, ou ouvre ses textes pour les modifier.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
@@ -373,6 +373,10 @@
             <trans-unit id="hs5kZPn">
                 <source>help.social_calendar_feed_none</source>
                 <target>Créez une adresse secrète pour voir les publications dans votre agenda, en lecture seule.</target>
+            </trans-unit>
+            <trans-unit id="8ZHKXrI">
+                <source>help.social_calendar_medias</source>
+                <target>Glissez un média sur un autre pour changer leur ordre.</target>
             </trans-unit>
             <trans-unit id="TRKXywk">
                 <source>help.social_media_reference</source>
@@ -988,7 +992,7 @@
             </trans-unit>
             <trans-unit id="6zf3y2m">
                 <source>label.social_calendar_edit_texts</source>
-                <target>Modifier les textes et les réseaux</target>
+                <target>Modifier les textes, les médias et les réseaux</target>
             </trans-unit>
             <trans-unit id="mGq6bLy">
                 <source>label.social_calendar_feed</source>
@@ -1001,6 +1005,14 @@
             <trans-unit id="hK45uK1">
                 <source>label.social_calendar_feed_renew</source>
                 <target>Renouveler l'adresse</target>
+            </trans-unit>
+            <trans-unit id="ok5Kn2u">
+                <source>label.social_calendar_media_remove</source>
+                <target>Retirer ce média</target>
+            </trans-unit>
+            <trans-unit id="8DF.bv2">
+                <source>label.social_calendar_media_remove_confirm</source>
+                <target>Retirer ce média de la publication ?</target>
             </trans-unit>
             <trans-unit id="quz2fN2">
                 <source>label.social_calendar_month</source>

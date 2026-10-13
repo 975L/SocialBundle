@@ -18,6 +18,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 // A picture or a video a post goes out with, in the order given: uploaded here (one JPEG for a picture, hashed and downscaled, see SocialMediaUploadListener), or a file of the site's own taken as it is (a gallery's, by its path) - nothing copied then
 #[ORM\Entity]
 #[ORM\Table(name: 'social_media')]
+#[ORM\Index(name: 'social_media_source', columns: ['source_type', 'source_id'])]
 #[Vich\Uploadable]
 class SocialMedia
 {
@@ -60,6 +61,13 @@ class SocialMedia
     // What a network reading it aloud says of it
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $alt = null;
+
+    // The content of the site it was picked from (a gallery's photograph), held by the post as long as the media is - null for an upload
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $sourceType = null;
+
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $sourceId = null;
 
     #[ORM\Column(options: ['default' => 0])]
     private int $position = 0;
@@ -109,12 +117,13 @@ class SocialMedia
         return $this->file;
     }
 
-    // A new upload replaces the file, under a name of its own: a reference stays one until Vich has left its file alone (see SocialMediaUploadListener)
+    // A new upload replaces the file, under a name of its own: a reference stays one until Vich has left its file alone (see SocialMediaUploadListener), and the content it was picked from is held no more
     public function setFile(?File $file): self
     {
         $this->file = $file;
         if (null !== $file) {
             $this->updatedAt = new \DateTimeImmutable();
+            $this->setSource(null, null);
         }
 
         return $this;
@@ -218,6 +227,26 @@ class SocialMedia
     public function setAlt(?string $alt): self
     {
         $this->alt = null === $alt || '' === trim($alt) ? null : trim($alt);
+
+        return $this;
+    }
+
+    public function getSourceType(): ?string
+    {
+        return $this->sourceType;
+    }
+
+    public function getSourceId(): ?string
+    {
+        return $this->sourceId;
+    }
+
+    // Both or neither: a content is named by its type and its id together
+    public function setSource(?string $sourceType, ?string $sourceId): self
+    {
+        $held = null !== $sourceType && null !== $sourceId;
+        $this->sourceType = $held ? $sourceType : null;
+        $this->sourceId = $held ? $sourceId : null;
 
         return $this;
     }

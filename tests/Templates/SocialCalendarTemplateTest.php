@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Tests\Templates;
 
+use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use PHPUnit\Framework\TestCase;
@@ -71,6 +72,7 @@ class SocialCalendarTemplateTest extends TestCase
             'next' => '2026-10-05',
             'move_url' => '/move',
             'panel_url' => '/panel',
+            'medias_url' => '/medias',
             'new_url' => '/new',
             'series_url' => '/series',
             'token' => 'social_calendar',
@@ -79,15 +81,20 @@ class SocialCalendarTemplateTest extends TestCase
         ]);
     }
 
-    // The panel of a post in the given state, its approval being what the state offers
-    private function panel(string $state): string
+    // The panel of a post in the given state, its approval being what the state offers - with the medias given, the content's picture otherwise
+    /** @param list<SocialMedia> $medias */
+    private function panel(string $state, array $medias = [], ?string $image = null, bool $editable = true): string
     {
         $post = new SocialPost('gallery_media', '42', 'La sieste', 'https://example.org/42', null, new \DateTimeImmutable('2026-10-04 19:00'));
         new SocialPostTarget($post, 'bluesky', 'Le texte de Bluesky');
 
         return $this->twig()->render('@c975LSocial/management/_social_calendar_panel.html.twig', [
-            'post' => ['id' => 7, 'title' => 'La sieste', 'image' => null, 'networks' => ['bluesky'], 'planned_at' => $post->getPlannedAt(), 'state' => $state, 'edit_url' => '/edit/7'],
+            'post' => ['id' => 7, 'title' => 'La sieste', 'image' => $image, 'networks' => ['bluesky'], 'planned_at' => $post->getPlannedAt(), 'state' => $state, 'edit_url' => '/edit/7'],
             'state' => $state,
+            'medias' => $medias,
+            'editable' => $editable,
+            'pick_media_url' => '/pick/7',
+            'change_content_url' => '/change/7',
             'targets' => $post->getTargets(),
             'connected' => ['bluesky'],
         ]);
@@ -184,6 +191,38 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringNotContainsString('social-calendar#plan', $html);
         $this->assertStringNotContainsString('data-to=', $html);
         $this->assertStringContainsString('Le texte de Bluesky', $html);
+    }
+
+    // Every media of the post is shown in its order, each dragged and taken off while the post waits; a post gone out on a network only shows them
+    public function testThePanelShowsEveryMediaAndLetsThemBeOrderedAndTakenOff(): void
+    {
+        $medias = [
+            new SocialMedia()->setFilename('social/a.jpg')->setMimeType('image/jpeg')->setAlt('Le lac'),
+            new SocialMedia()->setFilename('social/b.mp4')->setMimeType('video/mp4'),
+        ];
+
+        $draft = $this->panel('draft', $medias, '/social/a.jpg');
+        $this->assertLessThan(strpos($draft, '<video src="/social/b.mp4"'), strpos($draft, '<img src="/social/a.jpg" alt="Le lac"'));
+        $this->assertSame(2, substr_count($draft, 'data-social-calendar-target="media" data-post-id="7"'));
+        $this->assertSame(2, substr_count($draft, 'data-action="social-calendar#removeMedia" data-post-id="7"'));
+        $this->assertStringContainsString('data-social-calendar-target="thumbnail" data-post-id="7" data-image="/social/a.jpg"', $draft);
+        $this->assertStringContainsString('href="/pick/7"', $draft);
+        $this->assertStringContainsString('href="/change/7"', $draft);
+
+        $published = $this->panel('failed', $medias, '/social/a.jpg', false);
+        $this->assertStringContainsString('<img src="/social/a.jpg"', $published);
+        $this->assertStringNotContainsString('data-social-calendar-target="media"', $published);
+        $this->assertStringNotContainsString('social-calendar#removeMedia', $published);
+        $this->assertStringNotContainsString('href="/pick/7"', $published);
+    }
+
+    // A post with no media of its own shows the picture of its content
+    public function testThePanelShowsTheContentsPictureWhenThePostHasNoMedia(): void
+    {
+        $html = $this->panel('draft', [], '/medias/gallery/lac.webp');
+
+        $this->assertStringContainsString('<img src="/medias/gallery/lac.webp" alt="" loading="lazy" class="social-calendar-panel-content">', $html);
+        $this->assertStringNotContainsString('social-calendar#removeMedia', $html);
     }
 
     // Its secret address offered to copy once created, a button creating it otherwise - renewing it once it exists

@@ -115,6 +115,42 @@ class SocialPostRepositoryTest extends TestCase
         $this->assertSame([], $this->repository->findBySourceIds('gallery_media', []));
     }
 
+    // A content picked as a media of a post counts as held and as taken, the post read whole and once
+    public function testAContentPickedAsAMediaIsReadAsHeldAndTaken(): void
+    {
+        $post = new SocialPost(SocialPost::SOURCE_MANUAL, 'abc', 'Hello', '', null, new \DateTimeImmutable('+1 day'));
+        new SocialPostTarget($post, 'bluesky', 'Text');
+        new SocialPostTarget($post, 'facebook', 'Text');
+        $post->addMedia(new SocialMedia($post)->setFilename('social/a.jpg')->setSource('gallery_media', '5'));
+        $post->addMedia(new SocialMedia($post)->setFilename('social/b.jpg')->setSource('gallery_media', '6')->setPosition(1));
+        $post->addMedia(new SocialMedia($post)->setFilename('social/c.jpg')->setPosition(2));
+        $this->entityManager->persist($post);
+        $this->entityManager->flush();
+        $this->post('5');
+        $this->entityManager->clear();
+
+        $posts = $this->repository->findBySourceIds('gallery_media', ['5', '6']);
+
+        $this->assertSame(['abc' => 2, '5' => 2], $this->targetCounts($posts));
+        $this->assertCount(3, $posts[0]->getMedias());
+        $this->assertSame(['5', '6'], $this->repository->findSourceIds('gallery_media', null));
+        $this->assertSame([], $this->repository->findSourceIds('gallery_media', new \DateTimeImmutable('+2 days')));
+    }
+
+    // A media picked on a post prepared long ago counts since the date while that post is planned after it, the post's own content following its preparation alone
+    public function testAMediaPickedOnAnOldPostStillPlannedCountsAsTaken(): void
+    {
+        foreach (['coming' => '+1 day', 'gone' => '-80 days'] as $id => $plannedAt) {
+            $post = new SocialPost('gallery_media', $id, 'Hello', '', null, new \DateTimeImmutable($plannedAt));
+            new \ReflectionProperty(SocialPost::class, 'createdAt')->setValue($post, new \DateTimeImmutable('-90 days'));
+            $post->addMedia(new SocialMedia($post)->setFilename('social/' . $id . '.jpg')->setSource('gallery_media', 'media-' . $id));
+            $this->entityManager->persist($post);
+        }
+        $this->entityManager->flush();
+
+        $this->assertSame(['media-coming'], $this->repository->findSourceIds('gallery_media', new \DateTimeImmutable('-30 days')));
+    }
+
     // A source's content already taken is not offered again, since the date given only
     public function testTheSourceIdsTakenAreReadSinceTheirDate(): void
     {

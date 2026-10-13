@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Tests\Entity;
 
+use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Enum\SocialPostStatus;
@@ -156,5 +157,24 @@ class SocialPostTest extends TestCase
 
         $this->assertSame('Fox', $post->getTitle());
         $this->assertTrue($post->hasOwnText());
+    }
+
+    // Medias given new positions are read in that order, the post's picture being the first of them - a gap left by one taken off changing nothing
+    public function testTheMediasAreReadInTheOrderOfTheirPositions(): void
+    {
+        $post = $this->post();
+        $medias = [];
+        foreach (['a', 'b', 'c'] as $position => $name) {
+            $medias[$name] = new SocialMedia($post)->setFilename('social/' . $name . '.jpg')->setMimeType('image/jpeg')->setPosition($position);
+            $post->addMedia($medias[$name]);
+        }
+
+        $post->removeMedia($medias['b']);
+        $medias['c']->setPosition(0);
+        $medias['a']->setPosition(1);
+
+        $this->assertSame($post, $post->sortMedias());
+        $this->assertSame([$medias['c'], $medias['a']], $post->getMedias()->getValues());
+        $this->assertSame('/social/c.jpg', $post->getThumbnailUrl());
     }
 }

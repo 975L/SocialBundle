@@ -1,4 +1,4 @@
-{# The panel a card opens beside the calendar (see SocialCalendarController::panel()): its buttons go through the same move as a drag, so a post planned here and a post dropped there are one and the same thing #}
+{# The panel a card opens beside the calendar (see SocialCalendarController::renderPanel()): its buttons go through the same move as a drag, so a post planned here and a post dropped there are one and the same thing #}
 {% import '@c975LSocial/management/social_calendar.html.twig' as calendar %}
 <div class="social-calendar-panel-head">
     <span class="badge badge-{{ {published: 'secondary', approved: 'success', failed: 'warning', draft: 'danger'}[state] }}">{{ ('label.social_calendar_state_' ~ state)|trans({}, 'social') }}</span>
@@ -19,6 +19,38 @@
                 <button type="button" class="btn btn-success btn-sm" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve">{{ 'label.social_post_approve'|trans({}, 'social') }}</button>
             {% endif %}
         </div>
+    </div>
+{% endif %}
+
+{# The medias as they go out, in their order: dragged to another place, or taken off the post - the content's own picture shown while the post has none #}
+<div data-social-calendar-target="thumbnail" data-post-id="{{ post.id }}" data-image="{{ post.image }}">
+    {% if medias is not empty %}
+        <ul class="social-calendar-panel-medias">
+            {% for media in medias %}
+                <li {% if editable %}data-social-calendar-target="media" data-post-id="{{ post.id }}"{% endif %} data-media-id="{{ media.id }}">
+                    {% if media.video %}
+                        <video src="{{ media.publicPath }}" preload="metadata" muted></video>
+                    {% else %}
+                        <img src="{{ media.publicPath }}" alt="{{ media.alt }}" loading="lazy" draggable="false">
+                    {% endif %}
+                    {% if editable %}
+                        <button type="button" class="btn btn-sm btn-danger" data-action="social-calendar#removeMedia" data-post-id="{{ post.id }}" data-media-id="{{ media.id }}" data-confirm="{{ 'label.social_calendar_media_remove_confirm'|trans({}, 'social') }}" title="{{ 'label.social_calendar_media_remove'|trans({}, 'social') }}" aria-label="{{ 'label.social_calendar_media_remove'|trans({}, 'social') }}"><i class="fa fa-trash"></i></button>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+        {% if editable and medias|length > 1 %}
+            <p class="small text-muted mb-0">{{ 'help.social_calendar_medias'|trans({}, 'social') }}</p>
+        {% endif %}
+    {% elseif post.image %}
+        <img src="{{ post.image }}" alt="" loading="lazy" class="social-calendar-panel-content">
+    {% endif %}
+</div>
+
+{% if editable and (pick_media_url or change_content_url) %}
+    <div class="d-flex flex-wrap gap-2">
+        {% if pick_media_url %}<a href="{{ pick_media_url }}" class="btn btn-secondary btn-sm"><i class="fa fa-images"></i> {{ 'label.social_media_pick'|trans({}, 'social') }}</a>{% endif %}
+        {% if change_content_url %}<a href="{{ change_content_url }}" class="btn btn-secondary btn-sm"><i class="fa fa-shuffle"></i> {{ 'label.social_content_change'|trans({}, 'social') }}</a>{% endif %}
     </div>
 {% endif %}
 

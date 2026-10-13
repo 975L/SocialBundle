@@ -24,6 +24,9 @@ class SocialCalendarBehaviourTest extends JsCase
         .social-week-body { position: relative; width: 200px; margin: 10px; }
         .social-week-body [data-social-calendar-target=zone] { height: 30px; min-height: 0; margin: 0; }
         .social-week-items { position: absolute; top: 0; left: 0; z-index: 1; }
+        .medias { display: flex; margin: 0; padding: 0; list-style: none; }
+        .medias li { width: 60px; height: 60px; }
+        [data-name=draft] img { width: 5px; height: 5px; }
     ';
 
     // A card dropped on a day of the month sends that day alone, under the screen's token: the server keeps the post's time of day there
@@ -158,6 +161,103 @@ class SocialCalendarBehaviourTest extends JsCase
         $this->assertSame(['Instagram : une photo au moins', 'Echec'], $alerts, 'A refused move did not say why.');
     }
 
+    // A media dragged past another takes its place, the order as it now stands saved on the spot; the panel answered is shown, and the card takes the post's picture as it now is
+    public function testAMediaDraggedInThePanelSavesTheNewOrder(): void
+    {
+        $sent = $this->calendar(
+            '// Left set by a scenario refused before this one, the suite sharing its document
+             window.__refusal = undefined;
+             item("draft").click(); await frame(); await frame();
+             const from = item("m1").getBoundingClientRect();
+             const to = item("m3").getBoundingClientRect();
+             point(item("m1"), "pointerdown", from.left + 5, from.top + 5);
+             point(document, "pointermove", to.right - 5, to.top + 5);
+             await frame();
+             point(document, "pointerup", to.right - 5, to.top + 5);
+             await frame(); await frame();
+
+             return { ...window.__sent, saves: window.__saves, picture: item("draft").querySelector("img").getAttribute("src"), panel: item("panel").innerHTML };'
+        );
+
+        $this->assertSame('/management/social-calendar/medias', $sent['url'], 'The order was not saved where the screen said to save it.');
+        $this->assertSame('post=7&medias%5B%5D=2&medias%5B%5D=3&medias%5B%5D=1', $sent['body'], 'What was sent is not the order the medias were left in.');
+        $this->assertSame('jeton', $sent['token'], 'The order is saved without the token the screen was given.');
+        $this->assertSame(1, $sent['saves']);
+        $this->assertStringContainsString('data-image="/social/3.jpg"', $sent['panel'], 'The panel does not show what the server answered.');
+        $this->assertSame('/social/3.jpg', $sent['picture'], 'The card kept the picture the post no longer opens with.');
+    }
+
+    // A media's gesture cancelled - a call coming in, a palm rejected - puts the medias back in the order they stood, nothing saved
+    public function testACancelledMediaDragPutsTheMediasBack(): void
+    {
+        $cancelled = $this->calendar(
+            'item("draft").click(); await frame(); await frame();
+             const from = item("m1").getBoundingClientRect();
+             const to = item("m3").getBoundingClientRect();
+             point(item("m1"), "pointerdown", from.left + 5, from.top + 5);
+             point(document, "pointermove", to.right - 5, to.top + 5);
+             await frame();
+             const moved = [...item("m1").parentElement.children].map((media) => media.dataset.mediaId).join();
+             point(document, "pointercancel", to.right - 5, to.top + 5);
+             await frame(); await frame();
+
+             return { moved, order: [...item("m1").parentElement.children].map((media) => media.dataset.mediaId).join(), saves: window.__saves };'
+        );
+
+        $this->assertSame('2,3,1', $cancelled['moved'], 'The media did not follow the pointer, so the cancellation proves nothing.');
+        $this->assertSame('1,2,3', $cancelled['order'], 'A cancelled drag left the medias in an order that was never saved.');
+        $this->assertSame(0, $cancelled['saves'], 'A cancelled drag saved an order the user gave up on.');
+    }
+
+    // The card loses its picture with the post's last one and gains one when it had none, the icons of its networks left alone
+    public function testTheCardLosesAndGainsItsPicture(): void
+    {
+        $card = $this->calendar(
+            'window.__refusal = undefined;
+             window.confirm = () => true;
+             window.__image = "";
+             item("draft").click(); await frame(); await frame();
+             item("remove").click(); await frame(); await frame();
+             const lost = null === item("draft").querySelector(":scope > img");
+             const icon = null !== item("icon");
+             window.__image = "/social/9.jpg";
+             item("draft").click(); await frame(); await frame();
+             item("remove").click(); await frame(); await frame();
+             window.__image = undefined;
+             const picture = item("draft").firstElementChild;
+
+             return { lost, icon, tag: picture.tagName, src: picture.getAttribute("src"), alt: picture.getAttribute("alt"), loading: picture.getAttribute("loading"), iconSrc: item("icon").getAttribute("src") };'
+        );
+
+        $this->assertTrue($card['lost'], 'The card kept a picture whose file went with the last media.');
+        $this->assertTrue($card['icon'], 'The icon of a network went with the picture of the card.');
+        $this->assertSame(['IMG', '/social/9.jpg', '', 'lazy'], [$card['tag'], $card['src'], $card['alt'], $card['loading']], 'A card without a picture did not gain the one the post now opens with.');
+        $this->assertSame('data:,', $card['iconSrc'], 'The icon of a network was taken for the picture of the card.');
+    }
+
+    // A media put back where it was saves nothing, and one taken off is sent only once confirmed
+    public function testAMediaIsTakenOffOnlyOnceConfirmed(): void
+    {
+        $sent = $this->calendar(
+            'item("draft").click(); await frame(); await frame();
+             const box = item("m1").getBoundingClientRect();
+             point(item("m1"), "pointerdown", box.left + 5, box.top + 5);
+             point(document, "pointermove", box.left + 15, box.top + 15);
+             point(document, "pointerup", box.left + 15, box.top + 15);
+             await frame();
+             window.confirm = () => false;
+             item("remove").click(); await frame();
+             const refused = window.__saves;
+             window.confirm = () => true;
+             item("remove").click(); await frame();
+
+             return { refused, body: window.__sent.body };'
+        );
+
+        $this->assertSame(0, $sent['refused'], 'A media was saved without having moved, or taken off without being confirmed.');
+        $this->assertSame('post=7&remove=2', $sent['body'], 'The media taken off is not the one whose button was clicked.');
+    }
+
     private function calendar(string $probe): mixed
     {
         $preamble = 'const item = (name) => root.querySelector(`[data-name=${name}]`);
@@ -189,13 +289,13 @@ class SocialCalendarBehaviourTest extends JsCase
                         if (!options) {
                             window.__panel = String(url);
 
-                            return Promise.resolve({ ok: true, text: () => Promise.resolve(\'<input type="datetime-local" data-social-calendar-target="planAt" value="2026-10-05T14:20"><button data-name="plan" data-action="social-calendar#plan" data-post-id="7">Plan</button><button data-name="approve" data-action="social-calendar#place" data-post-id="7" data-to="approve">Approve</button><button data-name="unapprove" data-action="social-calendar#place" data-post-id="7" data-to="unapprove">Unapprove</button><button data-name="close" data-action="social-calendar#closePanel">Close</button>\') });
+                            return Promise.resolve({ ok: true, text: () => Promise.resolve(\'<input type="datetime-local" data-social-calendar-target="planAt" value="2026-10-05T14:20"><button data-name="plan" data-action="social-calendar#plan" data-post-id="7">Plan</button><button data-name="approve" data-action="social-calendar#place" data-post-id="7" data-to="approve">Approve</button><button data-name="unapprove" data-action="social-calendar#place" data-post-id="7" data-to="unapprove">Unapprove</button><button data-name="close" data-action="social-calendar#closePanel">Close</button><ul class="medias"><li data-name="m1" data-social-calendar-target="media" data-post-id="7" data-media-id="1"></li><li data-name="m2" data-social-calendar-target="media" data-post-id="7" data-media-id="2"></li><li data-name="m3" data-social-calendar-target="media" data-post-id="7" data-media-id="3"></li></ul><button data-name="remove" data-action="social-calendar#removeMedia" data-post-id="7" data-media-id="2" data-confirm="Retirer ?">Remove</button>\') });
                         }
                         window.__saves += 1;
                         window.__sent = { url, body: String(options.body), token: options.headers["X-CSRF-Token"] };
 
                         // A refusal when the scenario sets one, its reason as the body
-                        return Promise.resolve(undefined === window.__refusal ? { ok: true } : { ok: false, text: () => Promise.resolve(window.__refusal) });
+                        return Promise.resolve(undefined === window.__refusal ? { ok: true, text: () => Promise.resolve(\'<div data-social-calendar-target="thumbnail" data-post-id="7" data-image="\' + (window.__image ?? "/social/3.jpg") + \'"></div>\') } : { ok: false, text: () => Promise.resolve(window.__refusal) });
                     };
                     document.addEventListener("social-calendar:saved", (event) => event.preventDefault());',
             ]
@@ -205,9 +305,9 @@ class SocialCalendarBehaviourTest extends JsCase
     // Two days of the month and two quarters of an hour of the week, as social_calendar.html.twig renders them
     private function page(): string
     {
-        return '<div data-controller="social-calendar" data-social-calendar-panel-url-value="/management/social-calendar/post" data-social-calendar-url-value="' . self::URL . '" data-social-calendar-new-url-value="https://example.org/management/social-post/new" data-social-calendar-token-value="jeton" data-social-calendar-failed-label-value="Echec">
+        return '<div data-controller="social-calendar" data-social-calendar-panel-url-value="/management/social-calendar/post" data-social-calendar-url-value="' . self::URL . '" data-social-calendar-medias-url-value="/management/social-calendar/medias" data-social-calendar-new-url-value="https://example.org/management/social-post/new" data-social-calendar-token-value="jeton" data-social-calendar-failed-label-value="Echec">
                 <div data-name="d1004" data-social-calendar-target="zone" data-to="2026-10-04" data-action="dblclick->social-calendar#create">
-                    <a data-name="draft" href="#" draggable="false" data-social-calendar-target="item" data-action="social-calendar#open" data-panel-id="7" data-post-id="7" data-at="2026-10-04T19:00:00+02:00" class="social-calendar-card is-draft">Draft</a>
+                    <a data-name="draft" href="#" draggable="false" data-social-calendar-target="item" data-action="social-calendar#open" data-panel-id="7" data-post-id="7" data-at="2026-10-04T19:00:00+02:00" class="social-calendar-card is-draft"><img src="data:," alt="">Draft<span><img data-name="icon" src="data:," alt=""></span></a>
                 </div>
                 <div data-name="d1005" data-social-calendar-target="zone" data-to="2026-10-05" data-action="dblclick->social-calendar#create"></div>
                 <div class="social-week-body">

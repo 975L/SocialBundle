@@ -71,6 +71,21 @@ class SocialMediaPickerTest extends TestCase
         $this->assertSame('image/jpeg', mime_content_type($this->projectDir . '/public/' . $media->getFilename()));
     }
 
+    // The content a media was picked from is kept, what reserves it for its owner - a file that is no content keeps none
+    public function testAMediaKeepsTheContentItWasPickedFrom(): void
+    {
+        $post = $this->createPost();
+
+        $this->createPicker(
+            new PickableMedia('medias/gallery/lac.webp', 'Lac', 'image/webp', sourceType: 'gallery_media', sourceId: '97'),
+            new PickableMedia('medias/gallery/cascade.mp4', 'Cascade', 'video/mp4'),
+        )->attach($post, '', ['medias/gallery/lac.webp', 'medias/gallery/cascade.mp4']);
+
+        [$picture, $video] = $post->getMedias()->getValues();
+        $this->assertSame(['gallery_media', '97'], [$picture->getSourceType(), $picture->getSourceId()]);
+        $this->assertSame([null, null], [$video->getSourceType(), $video->getSourceId()]);
+    }
+
     // Too heavy to copy, a video stays the site's file, never purged
     public function testAVideoIsOnlyReferenced(): void
     {

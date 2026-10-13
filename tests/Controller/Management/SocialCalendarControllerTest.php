@@ -12,11 +12,13 @@ namespace c975L\SocialBundle\Tests\Controller\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\SocialCalendarController;
+use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Service\SocialMediaChecker;
+use c975L\SocialBundle\Service\SocialMediaPicker;
 use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPublisher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,6 +33,7 @@ use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Translation\TranslatableMessage;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 
 // What a card dropped on the calendar, or the panel's buttons, do to its post: the move is the one thing this screen writes
 class SocialCalendarControllerTest extends TestCase
@@ -43,6 +46,9 @@ class SocialCalendarControllerTest extends TestCase
     private \DateTimeImmutable $plannedAt;
 
     private int $flushes = 0;
+
+    /** @var array<string, mixed> */
+    private array $rendered = [];
 
     protected function setUp(): void
     {
@@ -62,6 +68,7 @@ class SocialCalendarControllerTest extends TestCase
             $this->createStub(AdminUrlGeneratorInterface::class),
             $this->mediaChecker ?? $this->createStub(SocialMediaChecker::class),
             $this->createStub(TranslatorInterface::class),
+            $this->createStub(SocialMediaPicker::class),
         );
     }
 
@@ -123,13 +130,21 @@ class SocialCalendarControllerTest extends TestCase
             $this->createStub(AdminUrlGeneratorInterface::class),
             $this->mediaChecker ?? $this->createStub(SocialMediaChecker::class),
             $this->createStub(TranslatorInterface::class),
+            $this->createStub(SocialMediaPicker::class),
         );
 
         $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
         $authorizationChecker->method('isGranted')->willReturn(true);
         $csrf = $this->createStub(CsrfTokenManagerInterface::class);
         $csrf->method('isTokenValid')->willReturnCallback(static fn (CsrfToken $csrfToken): bool => 'valid' === $csrfToken->getValue());
-        $services = ['request_stack' => new RequestStack([$request]), 'security.authorization_checker' => $authorizationChecker, 'security.csrf.token_manager' => $csrf];
+        // The panel answered is what the template was handed, kept to be read
+        $twig = $this->createStub(Environment::class);
+        $twig->method('render')->willReturnCallback(function (string $view, array $parameters): string {
+            $this->rendered = $parameters;
+
+            return 'panel';
+        });
+        $services = ['request_stack' => new RequestStack([$request]), 'security.authorization_checker' => $authorizationChecker, 'security.csrf.token_manager' => $csrf, 'twig' => $twig];
         $container = $this->createStub(ContainerInterface::class);
         $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
         $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
@@ -261,6 +276,87 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertSame(Response::HTTP_NO_CONTENT, $this->move($at->format('c'))->getStatusCode());
         $this->assertEquals($at, $this->post->getPlannedAt());
         $this->assertSame(SocialPostStatus::Failed, $this->target()->getStatus());
+    }
+
+    // The post's medias with the ids a saved post gives them, in the order given
+    private function addMedias(int ...$ids): void
+    {
+        foreach ($ids as $position => $id) {
+            $media = new SocialMedia($this->post)->setFilename('social/' . $id . '.jpg')->setMimeType('image/jpeg')->setPosition($position);
+            new \ReflectionProperty(SocialMedia::class, 'id')->setValue($media, $id);
+            $this->post->addMedia($media);
+        }
+    }
+
+    /** @param array<string, mixed> $parameters */
+    private function medias(array $parameters, string $token = 'valid'): Response
+    {
+        $request = Request::create('/', 'POST', ['post' => '42'] + $parameters);
+        $request->headers->set('X-CSRF-Token', $token);
+
+        return $this->createController($request)->medias($request);
+    }
+
+    /** @return list<int|null> */
+    private function renderedMediaIds(): array
+    {
+        return array_map(static fn (SocialMedia $media): ?int => $media->getId(), $this->rendered['medias']->getValues());
+    }
+
+    // The medias dragged in the panel take the order sent, one it did not name going last - the panel answered reading them so, its picture the first of them
+    public function testTheMediasTakeTheOrderSent(): void
+    {
+        $this->addMedias(1, 2, 3);
+
+        // The order alone is sent with "remove" left empty by a browser that names it
+        $this->assertSame(Response::HTTP_OK, $this->medias(['remove' => '', 'medias' => ['3', '1']])->getStatusCode());
+        $this->assertSame([3, 1, 2], $this->renderedMediaIds());
+        $this->assertSame([0, 1, 2], array_map(static fn (SocialMedia $media): int => $media->getPosition(), $this->rendered['medias']->getValues()));
+        $this->assertSame('/social/3.jpg', $this->rendered['post']['image']);
+        $this->assertTrue($this->rendered['editable']);
+        $this->assertSame(1, $this->flushes);
+    }
+
+    // A media taken off leaves the post, the others closing the gap
+    public function testAMediaIsTakenOffThePost(): void
+    {
+        $this->addMedias(1, 2, 3);
+
+        $this->medias(['remove' => '2']);
+
+        $this->assertSame([1, 3], $this->renderedMediaIds());
+        $this->assertCount(2, $this->post->getMedias());
+        $this->assertSame([0, 1], array_map(static fn (SocialMedia $media): int => $media->getPosition(), $this->rendered['medias']->getValues()));
+    }
+
+    // The networks show what the post went out with, and a forged request changes nothing
+    public function testThePublishedPostAndTheForgedRequestKeepTheirMedias(): void
+    {
+        $this->addMedias(1, 2);
+
+        $this->assertSame(Response::HTTP_FORBIDDEN, $this->medias(['remove' => '1'], 'forged')->getStatusCode());
+        $this->target()->markPublished('ext-1');
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->medias(['remove' => '1'])->getStatusCode());
+        $this->assertCount(2, $this->post->getMedias());
+        $this->assertSame(0, $this->flushes);
+    }
+
+    // Gone out on one network and still waited for on another, a post keeps the medias it went out with - its panel saying so
+    public function testAPostGoneOutOnOneNetworkKeepsItsMedias(): void
+    {
+        $this->addMedias(1, 2);
+        new SocialPostTarget($this->post, 'linkedin', 'Le texte de LinkedIn');
+        $this->target()->markPublished('ext-1');
+
+        $this->assertNotSame('published', $this->post->getState());
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->medias(['remove' => '1'])->getStatusCode());
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->medias(['medias' => ['2', '1']])->getStatusCode());
+        $this->assertCount(2, $this->post->getMedias());
+        $this->assertSame(0, $this->flushes);
+
+        $request = Request::create('/', 'GET', ['id' => '42']);
+        $this->createController($request)->panel($request);
+        $this->assertFalse($this->rendered['editable']);
     }
 
     // The move plans a post that goes out under the site's name: no token, nothing changes

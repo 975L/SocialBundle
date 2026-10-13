@@ -11,8 +11,8 @@ import { addSortGesture } from "@c975l/ui-bundle/pointer-sort.js";
 
 // The publications calendar (see management/social_calendar.html.twig): a card dragged onto a quarter of an hour of the week is planned at that moment, onto a day of the month at its own time that day, its approval untouched; a coming moment double-clicked writes a new post there. The gesture is UiBundle's (pointer-sort.js), this controller owning only where a card lands, saved on the spot then the page reloaded, the server computing where every other post falls
 export default class extends Controller {
-    static targets = ["item", "zone", "panel", "planAt", "group"];
-    static values = { url: String, token: String, panelUrl: String, newUrl: String, failedLabel: String };
+    static targets = ["item", "zone", "panel", "planAt", "group", "media", "thumbnail"];
+    static values = { url: String, token: String, panelUrl: String, mediasUrl: String, newUrl: String, failedLabel: String };
 
     // Laid at its quarter of an hour and in its lane from its data, a style attribute being refused by a Content-Security-Policy without 'unsafe-inline'
     groupTargetConnected(group) {
@@ -109,6 +109,75 @@ export default class extends Controller {
     // The panel's other buttons: approving the post, or taking it back to a draft
     place(event) {
         this.save(event.currentTarget.dataset.postId, event.currentTarget.dataset.to);
+    }
+
+    // Armed per media of the panel as it is read: dragged among the others, it takes the place of the one under the pointer - before it from its left half, after it from its right - the order saved once let go, and put back as it stood when the gesture is cancelled
+    mediaTargetConnected(media) {
+        addSortGesture(media, {
+            item: media,
+            ignore: "button",
+            onStart: () => {
+                this.mediaItems = [...media.parentElement.children];
+                this.mediaOrder = this.mediaIds(media).join();
+            },
+            onMove: (dragged, x, y) => {
+                const over = document.elementsFromPoint(x, y).find((element) => element !== dragged && element.parentElement === dragged.parentElement);
+                if (!over) return;
+
+                const box = over.getBoundingClientRect();
+                over.parentElement.insertBefore(dragged, x < box.left + box.width / 2 ? over : over.nextSibling);
+            },
+            onDrop: () => {
+                if (this.mediaIds(media).join() !== this.mediaOrder) this.saveMedias(media.dataset.postId, this.mediaIds(media));
+            },
+            onCancel: () => media.parentElement.append(...this.mediaItems),
+        });
+    }
+
+    // The ids of the panel's medias, in the order they now stand
+    mediaIds(media) {
+        return [...media.parentElement.children].map((sibling) => sibling.dataset.mediaId);
+    }
+
+    // A media taken off the post, once confirmed: its file goes with it
+    removeMedia(event) {
+        const button = event.currentTarget;
+        if (!window.confirm(button.dataset.confirm)) return;
+
+        this.saveMedias(button.dataset.postId, [], button.dataset.mediaId);
+    }
+
+    // The order of the medias, or the one taken off, saved on the spot: the server answers the panel as it now reads, the calendar staying where it is
+    saveMedias(post, medias, remove = "") {
+        const body = new URLSearchParams({ post });
+        if (remove) body.set("remove", remove);
+        for (const id of medias) body.append("medias[]", id);
+
+        fetch(this.mediasUrlValue, { method: "POST", headers: { "X-CSRF-Token": this.tokenValue }, body })
+            .then((response) => (response.ok ? response.text() : Promise.reject(new Error(String(response.status)))))
+            .then((html) => (this.panelTarget.innerHTML = html))
+            .catch(() => this.saved(false));
+    }
+
+    // The panel read again says the post's picture as it now is, which its card on the calendar takes: changed, gained when it had none, or lost with the last media
+    thumbnailTargetConnected(thumbnail) {
+        const card = this.element.querySelector(`[data-panel-id="${thumbnail.dataset.postId}"]`);
+        if (!card) return;
+
+        // The card's own picture, not the icon of one of its networks
+        const picture = card.querySelector(":scope > img");
+        if ("" === thumbnail.dataset.image) return picture?.remove();
+
+        if (picture) {
+            picture.src = thumbnail.dataset.image;
+            return;
+        }
+
+        const created = document.createElement("img");
+        created.alt = "";
+        created.loading = "lazy";
+        created.src = thumbnail.dataset.image;
+        card.prepend(created);
     }
 
     // A refusal said, then the page reloaded either way: it shows what was actually saved, and where every other post now falls

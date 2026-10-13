@@ -352,6 +352,18 @@ class SocialPost implements \Stringable
         return $this;
     }
 
+    // The medias put back in the order of their positions once these changed, the collection otherwise keeping the order it was loaded in
+    public function sortMedias(): self
+    {
+        $medias = $this->medias->toArray();
+        usort($medias, static fn (SocialMedia $a, SocialMedia $b): int => $a->getPosition() <=> $b->getPosition());
+        foreach (array_combine($this->medias->getKeys(), $medias) as $key => $media) {
+            $this->medias->set($key, $media);
+        }
+
+        return $this;
+    }
+
     public function addTarget(SocialPostTarget $target): self
     {
         if (!$this->targets->contains($target)) {

@@ -12,12 +12,14 @@ namespace c975L\SocialBundle\Controller\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\SocialCalendarFeedController;
+use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Service\ConfigValueWriter;
 use c975L\SocialBundle\Service\SocialCalendarFeed;
 use c975L\SocialBundle\Service\SocialMediaChecker;
+use c975L\SocialBundle\Service\SocialMediaPicker;
 use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPublisher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,6 +42,8 @@ class SocialCalendarController extends AbstractController
     private const string MOVE_ROUTE = 'management_social_calendar_move';
 
     private const string PANEL_ROUTE = 'management_social_calendar_post';
+
+    private const string MEDIAS_ROUTE = 'management_social_calendar_medias';
 
     private const string FEED_TOKEN_ROUTE = 'management_social_calendar_feed_token';
 
@@ -73,6 +77,7 @@ class SocialCalendarController extends AbstractController
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
         private readonly SocialMediaChecker $mediaChecker,
         private readonly TranslatorInterface $translator,
+        private readonly SocialMediaPicker $mediaPicker,
     ) {
     }
 
@@ -114,6 +119,7 @@ class SocialCalendarController extends AbstractController
             'next' => $next->format('Y-m-d'),
             'move_url' => $this->generateUrl(self::MOVE_ROUTE),
             'panel_url' => $this->generateUrl(self::PANEL_ROUTE),
+            'medias_url' => $this->generateUrl(self::MEDIAS_ROUTE),
             // A double click on a coming moment writes a post there, the screen of a new post opening on it
             'new_url' => $this->adminUrlGenerator->unsetAll()->setController(SocialPostCrudController::class)->setAction(Action::NEW)->generateUrl(),
             'series_url' => $this->adminUrlGenerator->unsetAll()->setController(SocialPostCrudController::class)->setAction('generateSeries')->generateUrl(),
@@ -146,7 +152,7 @@ class SocialCalendarController extends AbstractController
         return '' === $token ? null : $this->generateUrl(SocialCalendarFeedController::ROUTE, ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
-    // The panel a card opens beside the calendar: when the post goes out, the moment to set it to, its approval, its texts - the screen of the post a link away, where they are corrected and rephrased
+    // The panel a card opens beside the calendar: when the post goes out, the moment to set it to, its approval, its medias, its texts - the screen of the post a link away, where they are corrected and rephrased
     #[AdminRoute(path: '/social-calendar/post', name: 'social_calendar_post')]
     public function panel(Request $request): Response
     {
@@ -157,13 +163,60 @@ class SocialCalendarController extends AbstractController
             return new Response(null, Response::HTTP_NOT_FOUND);
         }
 
+        return $this->renderPanel($post);
+    }
+
+    // The panel's medias put in the order given, one of them taken off the post first when asked - its file going with it, and the content it was picked from freed. Answers the panel as it now reads; a post gone out on a network keeps what it went out with
+    #[AdminRoute(path: '/social-calendar/medias', name: 'social_calendar_medias', options: ['methods' => ['POST']])]
+    public function medias(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
+
+        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN, $request->headers->get('X-CSRF-Token'))) {
+            return new Response(null, Response::HTTP_FORBIDDEN);
+        }
+
+        $post = $this->postRepository->find($request->request->getInt('post'));
+        if (!$post instanceof SocialPost || $post->hasGoneOut()) {
+            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $remove = (int) $request->request->get('remove');
+        $order = array_flip(array_map(intval(...), $request->request->all('medias')));
+        $kept = [];
+        foreach ($post->getMedias()->toArray() as $media) {
+            if ($remove === $media->getId()) {
+                $post->removeMedia($media);
+            } else {
+                $kept[] = $media;
+            }
+        }
+
+        // A media the panel did not name - added since it was read - goes after the others, in the order it had
+        usort($kept, static fn (SocialMedia $a, SocialMedia $b): int => [$order[$a->getId()] ?? \PHP_INT_MAX, $a->getPosition()] <=> [$order[$b->getId()] ?? \PHP_INT_MAX, $b->getPosition()]);
+        foreach ($kept as $position => $media) {
+            $media->setPosition($position);
+        }
+        $post->sortMedias();
+        $this->entityManager->flush();
+
+        return $this->renderPanel($post);
+    }
+
+    // The panel as it now reads, answered to a card opened and to its medias changed alike
+    private function renderPanel(SocialPost $post): Response
+    {
         $card = $this->card($post);
 
         return $this->render('@c975LSocial/management/_social_calendar_panel.html.twig', [
             'post' => $card,
             'state' => $card['state'],
+            'medias' => $post->getMedias(),
+            'editable' => !$post->hasGoneOut(),
             'targets' => $post->getTargets(),
             'connected' => $this->publisher->getConnectedNetworkNames(),
+            'pick_media_url' => $this->mediaPicker->hasLibraries() ? $this->postUrl($post, 'pickMedia') : null,
+            'change_content_url' => null === $this->publisher->browsableSourceOf($post) ? null : $this->postUrl($post, 'changeContent'),
         ]);
     }
 
@@ -405,10 +458,16 @@ class SocialCalendarController extends AbstractController
 
     private function editUrl(SocialPost $post): string
     {
+        return $this->postUrl($post, Action::EDIT);
+    }
+
+    // A screen of the post: its own, or one of its actions'
+    private function postUrl(SocialPost $post, string $action): string
+    {
         return $this->adminUrlGenerator
             ->unsetAll()
             ->setController(SocialPostCrudController::class)
-            ->setAction(Action::EDIT)
+            ->setAction($action)
             ->setEntityId($post->getId())
             ->generateUrl();
     }

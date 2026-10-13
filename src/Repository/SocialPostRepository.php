@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Repository;
 
+use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Enum\SocialPostStatus;
@@ -26,7 +27,7 @@ class SocialPostRepository extends ServiceEntityRepository
         parent::__construct($registry, SocialPost::class);
     }
 
-    // The posts holding some contents of a source, their targets with them, the latest planned last - what tells the owning bundle which of its contents are reserved or gone out
+    // The posts holding some contents of a source - as their own content, or through a media picked from one - their targets with them, the latest planned last: what tells the owning bundle which of its contents are reserved or gone out. The medias are joined to filter only, never loaded half
     /**
      * @param list<string> $sourceIds
      *
@@ -41,8 +42,8 @@ class SocialPostRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('p')
             ->leftJoin('p.targets', 't')
             ->addSelect('t')
-            ->where('p.sourceType = :sourceType')
-            ->andWhere('p.sourceId IN (:sourceIds)')
+            ->leftJoin('p.medias', 'm')
+            ->where('(p.sourceType = :sourceType AND p.sourceId IN (:sourceIds)) OR (m.sourceType = :sourceType AND m.sourceId IN (:sourceIds))')
             ->setParameter('sourceType', $sourceType)
             ->setParameter('sourceIds', $sourceIds)
             ->orderBy('p.plannedAt', \SortDirection::Ascending)
@@ -50,7 +51,7 @@ class SocialPostRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    // The ids of a source already taken for a post, since a date or ever - a post prepared counts whatever its networks made of it, a draft nobody published included
+    // The ids of a source already taken for a post, as its content or as one of its medias, since a date or ever - a post prepared counts whatever its networks made of it, a draft nobody published included. A media may be picked long after its post was prepared, so it also counts while that post is planned since the date
     /** @return list<string> */
     public function findSourceIds(string $sourceType, ?\DateTimeImmutable $since): array
     {
@@ -59,11 +60,19 @@ class SocialPostRepository extends ServiceEntityRepository
             ->where('p.sourceType = :sourceType')
             ->setParameter('sourceType', $sourceType);
 
+        $medias = $this->getEntityManager()->createQueryBuilder()
+            ->select('DISTINCT m.sourceId')
+            ->from(SocialMedia::class, 'm')
+            ->innerJoin('m.post', 'p')
+            ->where('m.sourceType = :sourceType')
+            ->setParameter('sourceType', $sourceType);
+
         if (null !== $since) {
             $qb->andWhere('p.createdAt >= :since')->setParameter('since', $since);
+            $medias->andWhere('p.createdAt >= :since OR p.plannedAt >= :since')->setParameter('since', $since);
         }
 
-        return array_values(array_map(strval(...), $qb->getQuery()->getSingleColumnResult()));
+        return array_values(array_unique(array_map(strval(...), [...$qb->getQuery()->getSingleColumnResult(), ...$medias->getQuery()->getSingleColumnResult()])));
     }
 
     // When each source type last had a post prepared, the ones never taken being absent - so the sources take turns rather than the first declared one always winning

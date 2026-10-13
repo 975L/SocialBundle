@@ -28,7 +28,7 @@
             </trans-unit>
             <trans-unit id="eg9BzH0">
                 <source>narration.guided_step_social_calendar_panel</source>
-                <target>Haga clic en una publicación del calendario: su panel cambia su fecha y hora, la valida o la devuelve a borrador, o abre sus textos para editarlos.</target>
+                <target>Haga clic en una publicación del calendario: su panel cambia su fecha y hora, la valida o la devuelve a borrador, reordena o quita sus medios, o abre sus textos para editarlos.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>

@@ -40,6 +40,9 @@ class BlueskyOAuthClientTest extends TestCase
 
     private string $pdsAuthorizationServer = 'https://bsky.social';
 
+    // The nonce the account's server asks for, which it changes as time goes
+    private string $pdsNonce = 'n-pds';
+
     private function createClient(): BlueskyOAuthClient
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
@@ -86,10 +89,11 @@ class BlueskyOAuthClientTest extends TestCase
             'https://pds.example/.well-known/oauth-protected-resource' === $url => $this->json(['authorization_servers' => [$this->pdsAuthorizationServer]]),
             // The authorization server asks for its nonce in the body, the PDS in its WWW-Authenticate header
             str_starts_with($url, 'https://bsky.social/oauth/') && 'n-as' !== $nonce => $this->json(['error' => 'use_dpop_nonce'], 400, ['DPoP-Nonce' => 'n-as']),
-            str_starts_with($url, 'https://pds.example/xrpc/') && 'n-pds' !== $nonce => $this->json(['error' => 'use_dpop_nonce'], 401, ['DPoP-Nonce' => 'n-pds', 'WWW-Authenticate' => 'DPoP error="use_dpop_nonce"']),
+            str_starts_with($url, 'https://pds.example/xrpc/') && $this->pdsNonce !== $nonce => $this->json(['error' => 'use_dpop_nonce'], 401, ['DPoP-Nonce' => $this->pdsNonce, 'WWW-Authenticate' => 'DPoP error="use_dpop_nonce"']),
             'https://bsky.social/oauth/par' === $url => $this->json(['request_uri' => 'urn:ietf:params:oauth:request_uri:req-1', 'expires_in' => 300], 201),
             'https://bsky.social/oauth/token' === $url => $this->json(['access_token' => 'access-' . \count($this->requests), 'refresh_token' => 'refresh-' . \count($this->requests), 'expires_in' => 1800, 'sub' => 'did:plc:abc', 'token_type' => 'DPoP']),
             'https://pds.example/xrpc/com.atproto.repo.createRecord' === $url => $this->json(['uri' => 'at://did:plc:abc/app.bsky.feed.post/3k']),
+            'https://pds.example/xrpc/com.atproto.repo.uploadBlob' === $url => $this->json(['blob' => ['$type' => 'blob']]),
             default => new MockResponse('', ['http_code' => 404]),
         };
     }
@@ -232,5 +236,24 @@ class BlueskyOAuthClientTest extends TestCase
 
         $this->assertSame([], array_filter($this->requests, static fn (array $request): bool => 'https://bsky.social/oauth/token' === $request['url']));
         $this->assertSame('DPoP fresh', end($this->requests)['headers']['authorization']);
+    }
+
+    // A blob never travels before the server's nonce of the moment is known: a bodiless request reads it before each upload, which then goes once, signed with it - the nonce kept from an earlier call having expired meanwhile
+    public function testABlobWaitsForTheServerNonce(): void
+    {
+        $this->config[BlueskyOAuthClient::SESSION_SLUG] = (string) json_encode([...$this->pending(), 'did' => 'did:plc:abc', 'pds' => 'https://pds.example', 'accessToken' => 'fresh', 'refreshToken' => 'refresh-fresh', 'expiresAt' => time() + 1800]);
+        $client = $this->createClient();
+
+        $client->call('com.atproto.repo.uploadBlob', ['headers' => ['Content-Type' => 'image/webp'], 'body' => 'bytes']);
+        $this->pdsNonce = 'n-pds-later';
+        $client->call('com.atproto.repo.uploadBlob', ['headers' => ['Content-Type' => 'image/webp'], 'body' => 'bytes']);
+
+        $this->assertCount(4, $this->requests);
+        foreach (['n-pds', 'n-pds-later'] as $call => $nonce) {
+            [$read, $upload] = \array_slice($this->requests, 2 * $call, 2);
+            $this->assertSame(['GET', 'https://pds.example/xrpc/com.atproto.server.getSession', ''], [$read['method'], $read['url'], $read['body']]);
+            $this->assertSame(['https://pds.example/xrpc/com.atproto.repo.uploadBlob', 'bytes'], [$upload['url'], $upload['body']]);
+            $this->assertSame($nonce, $this->dpopClaims($upload['headers']['dpop'])['nonce']);
+        }
     }
 }

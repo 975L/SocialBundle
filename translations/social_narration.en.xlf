@@ -28,7 +28,7 @@
             </trans-unit>
             <trans-unit id="eg9BzH0">
                 <source>narration.guided_step_social_calendar_panel</source>
-                <target>Click a post on the calendar: its panel changes its date and time, approves it or takes it back to a draft, or opens its texts to edit them.</target>
+                <target>Click a post on the calendar: its panel changes its date and time, approves it or takes it back to a draft, reorders or removes its medias, or opens its texts to edit them.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>

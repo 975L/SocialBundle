@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.12.1
+
+Calendar panel shows the post's medias, reordered and removed
+
+- Calendar panel: the post's medias, dragged into another order or removed (13/10/2026)
+- Calendar panel: "Ajouter depuis le site" and "Changer le contenu" (13/10/2026)
+- A media picked from a content holds it (`SocialMedia::$sourceType`, `$sourceId`) (13/10/2026) [Needs db update]
+- A post gone out on a network keeps its medias (13/10/2026)
+- A content gone out stays published when a later post reserves it (13/10/2026)
+- Bluesky: the server's nonce read before every upload (13/10/2026)
+- Guided project: the calendar's panel step tells the medias (13/10/2026)
+- Requires c975l/core-bundle 1.64 (13/10/2026)
+
 ## v2.12.0
 
 Series prolonged, calendar feed and post content changed

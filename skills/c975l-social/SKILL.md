@@ -1,6 +1,6 @@
 ---
 name: c975l-social
-description: "Use this skill when working with social links, share buttons, customer reviews or the publication on the social networks in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, the Google Business Profile review import with its pluggable sources, and the scheduled posts on Bluesky, Facebook, Instagram and LinkedIn, the publications calendar and the AI-written texts. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, startStimulusApp, c975lStimulusApp, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile, c975l:social:publish, SocialPublisher, SocialPost, SocialPostTarget, SocialPostCrudController, NetworkPublisherInterface, SocialContentSourceInterface, SocialContent, social-publish-template, social-meta-app-id, social-bluesky-oauth-session, SocialConnectionsController, Connexions, BlueskyOAuthClient, Es256Signer, DPoP, MetaGraphClient, SocialImageExporter, post on Bluesky, post on Facebook, post on Instagram, LinkedInClient, LinkedInPublisher, social-linkedin-client-id, post on LinkedIn, SocialPlanner, plannedAt, SocialCalendarController, SocialPostWriter, social-ai-guidelines, social publishing, SocialSeries, prolong a series, c975l:social:series:ending, changeContent, retryFailed, SocialCalendarFeed, iCal feed."
+description: "Use this skill when working with social links, share buttons, customer reviews or the publication on the social networks in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, the Google Business Profile review import with its pluggable sources, and the scheduled posts on Bluesky, Facebook, Instagram and LinkedIn, the publications calendar and the AI-written texts. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, startStimulusApp, c975lStimulusApp, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile, c975l:social:publish, SocialPublisher, SocialPost, SocialPostTarget, SocialPostCrudController, NetworkPublisherInterface, SocialContentSourceInterface, SocialContent, social-publish-template, social-meta-app-id, social-bluesky-oauth-session, SocialConnectionsController, Connexions, BlueskyOAuthClient, Es256Signer, DPoP, MetaGraphClient, SocialImageExporter, post on Bluesky, post on Facebook, post on Instagram, LinkedInClient, LinkedInPublisher, social-linkedin-client-id, post on LinkedIn, SocialPlanner, plannedAt, SocialCalendarController, SocialPostWriter, social-ai-guidelines, social publishing, SocialSeries, prolong a series, c975l:social:series:ending, changeContent, retryFailed, SocialCalendarFeed, iCal feed, SocialMedia, SocialMediaPicker, social_calendar_medias, sortMedias, hasGoneOut."
 ---
 
 # c975L SocialBundle
@@ -247,19 +247,23 @@ changes. Its `url` may be empty. A post's own pictures and videos are `Entity\So
 reference included, `reference` cleared on `POST_UPLOAD` only); they reach the
 networks as `Model\PostMedia`, checked against `Model\MediaRules` by `Service\SocialMediaChecker` before
 approval. `Service\SocialMediaPicker` adds the medias of UiBundle's `PickableMediaProviderInterface` libraries
-(tag `social.pickable_media`, action `pickMedia`): a picture copied as the post's JPEG, a video referenced.
+(tag `social.pickable_media`, action `pickMedia`): a picture copied as the post's JPEG, a video referenced,
+each keeping the content it was picked from (`SocialMedia::setSource()`), which the post holds like its own.
 `Service\SocialSeriesGenerator` makes a series of drafts (one text, `SocialPostWriter::variants()`, or
 the sources), every N days, some weekdays or every month (counted from the first moment, the last day of a
 shorter month), keeping nothing when no draft is made; `prolong()` makes as many again after its last post,
 and `c975l:social:series:ending` emails the series ending soon, once per end. On a draft from a
 `BrowsableSocialContentSourceInterface` source, `SocialPublisher::redraw()`/`changeContent()` move it to
 another free content and write its texts again (a post with its own text keeps it);
-`Service\SocialContentStatusProvider` tells the owning bundle which contents are reserved or published.
+`Service\SocialContentStatusProvider` tells the owning bundle which contents are reserved or published,
+a post's own and its medias' alike, a published one never read as reserved again.
 A refused target is emailed with a retry address, which sends the failed targets only - a draft stays a
 draft. `c975l:social:media:purge` frees the uploads past `social-media-retention-days`. A post with no target is never published (`SocialPost::isPublished()`), and the CRUD requires one network.
 The calendar lays every post not published yet at its
 `plannedAt` (`SocialPostRepository::findPlannedBetween()`); a drag changes the moment only, never the
-approval.
+approval. A card's panel also orders and removes the post's medias (`SocialCalendarController::medias()`,
+route `social_calendar_medias`, `SocialPost::sortMedias()`), until the post has gone out on a network
+(`SocialPost::hasGoneOut()`).
 
 Bluesky's tile is the AT Protocol's OAuth with the site as its own confidential client: no app, no
 password. The session sits in `social-bluesky-oauth-session`, the client key in `social-bluesky-oauth-key`;
@@ -337,6 +341,9 @@ Google connection still answers - the import being the one thing here that stops
   would be the saved one, not the one just corrected.
 - **Do not hand a network the picture's bytes without `SocialImageExporter::bytes()`.** With
   `social-image-format` set to `square`, every network has to show the same 1080 x 1080 visual.
+- **Do not change the medias of a post gone out on a network.** Removing one deletes its file and frees
+  its content while a network already shows it; guard with `SocialPost::hasGoneOut()`, not the
+  `published` state.
 - **Do not create a `SocialPost` without a moment, nor approve on a drag.** The calendar shows every post
   at its `plannedAt`, and the planned run is the only clock; a drag moves, "Valider" approves.
 - **Do not hand Meta the site's WebP url.** Go through `SocialImageExporter::jpegUrl()`.

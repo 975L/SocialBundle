@@ -17,7 +17,7 @@ use c975L\UiBundle\Contract\PickableMediaProviderInterface;
 use c975L\UiBundle\Model\PickableMedia;
 use Symfony\Contracts\Translation\TranslatableInterface;
 
-// The site's own pictures and videos a post takes, from the libraries other bundles offer (a gallery): a picture copied as the post's own JPEG, so it suits every network and goes with the purge, a video only referenced, too heavy to copy
+// The site's own pictures and videos a post takes, from the libraries other bundles offer (a gallery): a picture copied as the post's own JPEG, so it suits every network and goes with the purge, a video only referenced, too heavy to copy. Each keeps the content it was picked from, which the post holds as long as the media stays (see SocialContentStatusProvider)
 class SocialMediaPicker
 {
     // How many medias each library shows, the search narrowing them
@@ -67,6 +67,7 @@ class SocialMediaPicker
         foreach (array_unique($paths) as $path) {
             $media = isset($offered[$path]) ? $this->toSocialMedia($post, $offered[$path]) : null;
             if (null !== $media) {
+                $media->setSource($offered[$path]->sourceType, $offered[$path]->sourceId);
                 $post->addMedia($media->setPosition($post->getMedias()->count()));
                 ++$added;
             }

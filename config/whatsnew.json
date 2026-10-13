@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-10-13",
+        "description": [
+            {
+                "en": "On the calendar, a post's panel now shows its photos and videos: drag them into another order, or remove one",
+                "fr": "Sur le calendrier, le panneau d'une publication montre désormais ses photos et vidéos : glissez-les pour changer leur ordre, ou retirez-en une",
+                "es": "En el calendario, el panel de una publicación muestra ahora sus fotos y vídeos: arrástrelos para cambiar su orden, o quite uno"
+            },
+            {
+                "en": "A photo of the gallery added to a post is now shown as reserved, then published, in the gallery",
+                "fr": "Une photo de la galerie ajoutée à une publication est désormais signalée comme réservée, puis publiée, dans la galerie",
+                "es": "Una foto de la galería añadida a una publicación se indica ahora como reservada, y luego publicada, en la galería"
+            }
+        ]
+    },
+    {
         "date": "2026-10-09",
         "description": [
             {

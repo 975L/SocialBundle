@@ -33,7 +33,7 @@ class BlueskyOAuthClient
     // A token refreshed this many seconds before it expires, so it never runs out between the check and the call
     private const int EXPIRY_MARGIN = 60;
 
-    // The DPoP nonces each server handed out, by origin: kept for the process, a stale one only costing a retry
+    // The DPoP nonces each server handed out, by origin: kept for the process, a stale one only costing a retry to a request without a body - call() reads the nonce of the moment before sending one
     /** @var array<string, string> */
     private array $nonces = [];
 
@@ -194,6 +194,11 @@ class BlueskyOAuthClient
     {
         $session = $this->freshSession($this->session() ?? throw new \RuntimeException('Bluesky is not connected.'));
 
+        // A blob sent without the server's nonce of the moment is refused while still uploading, which an older curl reports as a transport error and not as the 401 send() answers: a bodiless request reads the nonce first, every time - the one kept by a long-running process may have expired
+        if (isset($options['body'])) {
+            $this->sendOnce('GET', $session['pds'] . '/xrpc/com.atproto.server.getSession', $session['dpopKey'], (string) $session['accessToken'], []);
+        }
+
         $response = $this->send('POST', $session['pds'] . '/xrpc/' . $method, $session['dpopKey'], (string) $session['accessToken'], $options);
 
         return $this->data($response, $method);
@@ -267,7 +272,7 @@ class BlueskyOAuthClient
     /** @param array<string, mixed> $options */
     private function sendOnce(string $method, string $url, string $dpopKey, ?string $accessToken, array $options): ResponseInterface
     {
-        $origin = (string) preg_replace('~^(https?://[^/]+).*$~', '$1', $url);
+        $origin = $this->origin($url);
         $headers = [...$options['headers'] ?? [], 'DPoP' => $this->dpopProof($dpopKey, $method, $url, $this->nonces[$origin] ?? null, $accessToken)];
         if (null !== $accessToken) {
             $headers['Authorization'] = 'DPoP ' . $accessToken;
@@ -280,6 +285,12 @@ class BlueskyOAuthClient
         }
 
         return $response;
+    }
+
+    // The scheme and host a nonce is kept under
+    private function origin(string $url): string
+    {
+        return (string) preg_replace('~^(https?://[^/]+).*$~', '$1', $url);
     }
 
     // The authorization server says so in its body, the resource server in its WWW-Authenticate header
