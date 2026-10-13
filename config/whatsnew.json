@@ -11,6 +11,11 @@
                 "en": "A photo of the gallery added to a post is now shown as reserved, then published, in the gallery",
                 "fr": "Une photo de la galerie ajoutée à une publication est désormais signalée comme réservée, puis publiée, dans la galerie",
                 "es": "Una foto de la galería añadida a una publicación se indica ahora como reservada, y luego publicada, en la galería"
+            },
+            {
+                "en": "On the calendar's week, a post sent to one network later than the others now shows at each moment it went out",
+                "fr": "Sur la semaine du calendrier, une publication partie plus tard sur un réseau que sur les autres apparaît désormais à chacun de ses moments d'envoi",
+                "es": "En la semana del calendario, una publicación enviada a una red más tarde que a las demás aparece ahora en cada momento de envío"
             }
         ]
     },

@@ -92,7 +92,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, reorders or removes its medias, or opens its texts to edit them.</target>
+                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, reorders or removes its medias, adds some from the site or changes its content, or opens its texts to edit them.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>

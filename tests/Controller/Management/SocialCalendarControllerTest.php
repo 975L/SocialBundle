@@ -57,13 +57,13 @@ class SocialCalendarControllerTest extends TestCase
         new SocialPostTarget($this->post, 'bluesky', 'Text');
     }
 
-    private function controller(): SocialCalendarController
+    private function controller(?SocialPostRepository $postRepository = null): SocialCalendarController
     {
         return new SocialCalendarController(
             $this->createStub(ConfigServiceInterface::class),
             new SocialPlanner(),
             $this->createStub(SocialPublisher::class),
-            $this->createStub(SocialPostRepository::class),
+            $postRepository ?? $this->createStub(SocialPostRepository::class),
             $this->createStub(EntityManagerInterface::class),
             $this->createStub(AdminUrlGeneratorInterface::class),
             $this->mediaChecker ?? $this->createStub(SocialMediaChecker::class),
@@ -83,6 +83,51 @@ class SocialCalendarControllerTest extends TestCase
         // From 06:00, 19:00 is the 52nd quarter of an hour
         $this->assertSame([[52, 0], [53, 1], [54, 0], [60, 0]], array_map(static fn (array $group): array => [$group['row'], $group['lane']], $rows));
         $this->assertSame([2], array_values(array_unique(array_column($rows, 'lanes'))));
+    }
+
+    // A network sent more than a quarter of an hour after the others gets its own card, the ones gone out in one run sharing theirs
+    public function testNetworksGoneOutAtDifferentMomentsGetTheirOwnCards(): void
+    {
+        $this->assertSame(
+            [['12:07', ['facebook', 'instagram']], ['16:02', ['bluesky']]],
+            $this->publishedCards(['bluesky' => '16:02', 'instagram' => '12:08', 'facebook' => '12:07'], false),
+        );
+    }
+
+    // The month has no hour to tell two cards apart: a post gets one card per day, its networks all on it
+    public function testTheMonthGathersADaysNetworksOnOneCard(): void
+    {
+        $this->assertSame(
+            [['12:00', ['facebook', 'instagram', 'bluesky']]],
+            $this->publishedCards(['bluesky' => '16:02', 'facebook' => '12:00', 'instagram' => '12:01'], true),
+        );
+    }
+
+    // The published cards of the 13th, each as its moment and its networks, the post gone out on $networks at their moments
+    /**
+     * @param array<string, string> $networks
+     *
+     * @return list<array{0: string, 1: list<string>}>
+     */
+    private function publishedCards(array $networks, bool $byDay): array
+    {
+        $publishedAt = new \ReflectionProperty(SocialPostTarget::class, 'publishedAt');
+        foreach ($networks as $network => $at) {
+            $target = 'bluesky' === $network ? $this->target() : new SocialPostTarget($this->post, $network, 'Text');
+            $target->markPublished('ext-' . $network);
+            $publishedAt->setValue($target, new \DateTimeImmutable('2026-10-13 ' . $at));
+        }
+
+        $postRepository = $this->createStub(SocialPostRepository::class);
+        $postRepository->method('findPublishedBetween')->willReturn([$this->post]);
+
+        $items = new \ReflectionMethod(SocialCalendarController::class, 'publishedItems')->invoke($this->controller($postRepository), new \DateTimeImmutable('2026-10-12'), new \DateTimeImmutable('2026-10-19'), $byDay);
+        $this->assertSame(['2026-10-13'], array_keys($items));
+
+        $cards = array_values($items['2026-10-13']);
+        usort($cards, static fn (array $a, array $b): int => $a['at'] <=> $b['at']);
+
+        return array_map(static fn (array $item): array => [$item['at']->format('H:i'), $item['networks']], $cards);
     }
 
     // The card's colour: a draft, an approved post, one refused somewhere, one gone out on every network

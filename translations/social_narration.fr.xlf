@@ -28,7 +28,7 @@
             </trans-unit>
             <trans-unit id="eg9BzH0">
                 <source>narration.guided_step_social_calendar_panel</source>
-                <target>Cliquez une publication du calendrier : son panneau change sa date et son heure, la valide ou la remet en brouillon, réordonne ou retire ses médias, ou ouvre ses textes pour les modifier.</target>
+                <target>Cliquez une publication du calendrier : son panneau change sa date et son heure, la valide ou la remet en brouillon, réordonne ou retire ses médias, en ajoute depuis le site ou change son contenu, ou ouvre ses textes pour les modifier.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>

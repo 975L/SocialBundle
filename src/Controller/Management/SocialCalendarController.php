@@ -310,7 +310,7 @@ class SocialCalendarController extends AbstractController
     /** @return list<array<string, mixed>> */
     private function days(\DateTimeImmutable $start, \DateTimeImmutable $end, ?\DateTimeImmutable $month): array
     {
-        $items = $this->publishedItems($start, $end);
+        $items = $this->publishedItems($start, $end, null !== $month);
         foreach ($this->comingItems($start, $end) as $day => $dayItems) {
             $items[$day] = [...$items[$day] ?? [], ...$dayItems];
         }
@@ -351,21 +351,26 @@ class SocialCalendarController extends AbstractController
         return $items;
     }
 
-    // The posts that went out between the two days, by day: one card per post and day, its networks gathered on it
+    // The posts that went out between the two days, by day: one card per post and run, its networks gathered on it - a network sent more than a quarter of an hour after the card's first one getting its own. $byDay is the month, whose day holds one card per post
     /** @return array<string, array<string, array<string, mixed>>> */
-    private function publishedItems(\DateTimeImmutable $start, \DateTimeImmutable $end): array
+    private function publishedItems(\DateTimeImmutable $start, \DateTimeImmutable $end, bool $byDay = false): array
     {
         $items = [];
         foreach ($this->postRepository->findPublishedBetween($start, $end) as $post) {
-            foreach ($post->getTargets() as $target) {
+            // The post's networks gone out in the period, the earliest first
+            $targets = array_filter($post->getTargets()->toArray(), static fn (SocialPostTarget $target): bool => null !== $target->getPublishedAt() && $target->getPublishedAt() >= $start && $target->getPublishedAt() < $end);
+            usort($targets, static fn (SocialPostTarget $a, SocialPostTarget $b): int => $a->getPublishedAt() <=> $b->getPublishedAt());
+
+            $first = null;
+            foreach ($targets as $target) {
                 $publishedAt = $target->getPublishedAt();
-                if (null === $publishedAt || $publishedAt < $start || $publishedAt >= $end) {
-                    continue;
+                if (null === $first || $byDay || $publishedAt->getTimestamp() - $first->getTimestamp() > SocialPlanner::QUARTER) {
+                    $first = $publishedAt;
                 }
 
-                $key = $publishedAt->format('Y-m-d') . '#' . $post->getId();
-                $items[$publishedAt->format('Y-m-d')][$key] ??= ['kind' => 'published', 'at' => $publishedAt, 'networks' => [], 'state' => 'published'] + $this->card($post);
-                $items[$publishedAt->format('Y-m-d')][$key]['networks'][] = $target->getNetwork();
+                $key = ($byDay ? '' : $first->format('H:i:s')) . '#' . $post->getId();
+                $items[$first->format('Y-m-d')][$key] ??= ['kind' => 'published', 'at' => $first, 'networks' => [], 'state' => 'published'] + $this->card($post);
+                $items[$first->format('Y-m-d')][$key]['networks'][] = $target->getNetwork();
             }
         }
 

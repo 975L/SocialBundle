@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.12.2
+
+Calendar shows one card per run of a post gone out
+
+- Calendar week: a post gone out shows one card per run, a network sent later getting its own (13/10/2026)
+- Calendar month: a post gone out keeps one card per day (13/10/2026)
+- Guided project: the calendar's panel step tells "Ajouter depuis le site" and "Changer le contenu" (13/10/2026)
+- UPGRADE: the 2.12.1 note, `social_media` columns and core-bundle 1.64 (13/10/2026)
+
 ## v2.12.1
 
 Calendar panel shows the post's medias, reordered and removed

@@ -261,7 +261,8 @@ A refused target is emailed with a retry address, which sends the failed targets
 draft. `c975l:social:media:purge` frees the uploads past `social-media-retention-days`. A post with no target is never published (`SocialPost::isPublished()`), and the CRUD requires one network.
 The calendar lays every post not published yet at its
 `plannedAt` (`SocialPostRepository::findPlannedBetween()`); a drag changes the moment only, never the
-approval. A card's panel also orders and removes the post's medias (`SocialCalendarController::medias()`,
+approval. A post gone out shows one card per run in the week - its networks sent within a quarter of an
+hour of the first - and one per day in the month (`SocialCalendarController::publishedItems()`). A card's panel also orders and removes the post's medias (`SocialCalendarController::medias()`,
 route `social_calendar_medias`, `SocialPost::sortMedias()`), until the post has gone out on a network
 (`SocialPost::hasGoneOut()`).
 

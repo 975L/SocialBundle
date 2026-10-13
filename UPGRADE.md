@@ -1,5 +1,14 @@
 # Upgrade
 
+## To 2.12.1
+
+**Database:** `social_media` gains `source_type` and `source_id`, indexed together - a site's own migration
+(`doctrine:migrations:diff`, then `migrate`). A media picked from the site's own contents holds the one it came from,
+which its bundle then shows as reserved or published; the medias picked before stay as they were and hold nothing.
+
+**Requires** c975l/core-bundle 1.64, whose `PickableMedia` carries the optional `sourceType` and `sourceId` a
+`PickableMediaProviderInterface` of a site's own may now give.
+
 ## To 2.11
 
 **Publication slots and the hourly run are gone: every post is planned on the calendar.** A post is prepared as a
