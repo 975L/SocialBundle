@@ -11,7 +11,7 @@
 
         <div class="input-group mb-3">
             <input type="search" name="search" value="{{ search }}" class="form-control" placeholder="{{ 'label.social_media_pick_search'|trans({}, 'social') }}">
-            <button type="submit" name="filter" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+            <twig:ea:Button name="filter" icon="fa fa-search" aria-label="{{ 'action.search'|trans({}, 'EasyAdminBundle') }}" title="{{ 'action.search'|trans({}, 'EasyAdminBundle') }}" />
         </div>
 
         {% for library in libraries %}
@@ -34,7 +34,7 @@
             {% endfor %}
         {% endfor %}
 
-        <button type="submit" name="add" class="btn btn-primary">{{ 'label.social_media_pick_submit'|trans({}, 'social') }}</button>
-        <a href="{{ back_url }}" class="btn btn-link">{{ 'action.cancel'|trans({}, 'EasyAdminBundle') }}</a>
+        <twig:ea:Button name="add" variant="primary">{{ 'label.social_media_pick_submit'|trans({}, 'social') }}</twig:ea:Button>
+        <twig:ea:Button htmlElement="a" href="{{ back_url }}" variant="link">{{ 'action.cancel'|trans({}, 'EasyAdminBundle') }}</twig:ea:Button>
     </form>
 {% endblock main %}

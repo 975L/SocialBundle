@@ -55,7 +55,7 @@ Add SocialBundle on top of the shared [UiBundle](https://github.com/975L/UiBundl
 - PHP >= 8.4
 - Symfony 8
 - [c975L/CoreBundle](https://github.com/975L/CoreBundle), the single package shipping ConfigBundle and UiBundle
-- EasyAdmin
+- EasyAdmin 5.7 or later
 
 ---
 

@@ -15,27 +15,21 @@ use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
-use Twig\Loader\ArrayLoader;
-use Twig\Loader\ChainLoader;
-use Twig\Loader\FilesystemLoader;
-use Twig\TwigFilter;
-use Twig\TwigFunction;
 
-// The calendar rendered for real: a filter or a macro call that does not exist only shows once the template runs, which a test reading its source would never see
+// The calendar rendered for real, EasyAdmin's components included: a filter, a macro call or a component prop that does not exist only shows once the template runs, which a test reading its source would never see
 class SocialCalendarTemplateTest extends TestCase
 {
+    private static ?TemplateTestKernel $kernel = null;
+
+    // The kernel's Twig, booted once for the class - in debug, so a change to the kernel rebuilds its container
     private function twig(): Environment
     {
-        $files = new FilesystemLoader();
-        $files->addPath(\dirname(__DIR__, 2) . '/templates', 'c975LSocial');
-        $twig = new Environment(new ChainLoader([new ArrayLoader(['@EasyAdmin/page/content.html.twig' => '{% block main %}{% endblock %}']), $files]), ['strict_variables' => true]);
-        $twig->addFunction(new TwigFunction('path', static fn (string $route, array $parameters = []): string => '/' . $route . ([] === $parameters ? '' : '?' . http_build_query($parameters))));
-        $twig->addFunction(new TwigFunction('csrf_token', static fn (string $id): string => 'token-' . $id));
-        $twig->addFunction(new TwigFunction('asset', static fn (string $path): string => '/' . $path));
-        $twig->addFunction(new TwigFunction('social_link_icon', static fn (string $network): ?string => 'linkedin' === $network ? null : 'bundles/c975lsocial/icons/' . $network . '.svg'));
-        $twig->addFilter(new TwigFilter('trans', static fn (mixed $key): string => \is_string($key) ? $key : 'translated'));
+        if (null === self::$kernel) {
+            self::$kernel = new TemplateTestKernel('test', true);
+            self::$kernel->boot();
+        }
 
-        return $twig;
+        return self::$kernel->getContainer()->get('test.service_container')->get('twig');
     }
 
     private function render(string $view = 'month', ?string $feedUrl = null): string
@@ -131,7 +125,7 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringContainsString('data-to="' . new \DateTimeImmutable('2026-10-04 14:15')->format('c') . '" data-action="dblclick->social-calendar#create"', $week);
         $this->assertStringContainsString('data-to="2026-10-04" data-action="dblclick->social-calendar#create"', $month);
         $this->assertSame(1, substr_count($month, 'dblclick->social-calendar#create'));
-        $this->assertStringContainsString('class="btn btn-primary social-calendar-new" href="/new"', $month);
+        $this->assertMatchesRegularExpression('#<[^>]*(?=[^>]*href="/new")(?=[^>]*social-calendar-new)[^>]*>#', $month);
         $this->assertStringContainsString('data-social-calendar-new-url-value="/new"', $month);
     }
 

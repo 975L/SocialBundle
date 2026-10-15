@@ -8,6 +8,6 @@
 
     {{ form_start(form) }}
         {{ form_widget(form) }}
-        <button type="submit" class="btn btn-primary">{{ ('label.social_post_prepare'|trans({}, 'social')) }}</button>
+        <twig:ea:Button variant="primary">{{ ('label.social_post_prepare'|trans({}, 'social')) }}</twig:ea:Button>
     {{ form_end(form) }}
 {% endblock main %}

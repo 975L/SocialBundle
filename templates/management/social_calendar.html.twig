@@ -37,16 +37,16 @@
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
             <h1 class="mb-0">{{ 'label.social_calendar'|trans({}, 'social') }} - {{ title|capitalize }}</h1>
             <div class="d-flex flex-wrap gap-2">
-                <a class="btn btn-primary social-calendar-new" href="{{ new_url }}"><i class="fa fa-plus"></i> {{ 'label.social_calendar_new'|trans({}, 'social') }}</a>
-                <a class="btn btn-secondary social-calendar-series" href="{{ series_url }}"><i class="fa fa-layer-group"></i> {{ 'label.social_series_generate'|trans({}, 'social') }}</a>
+                <twig:ea:Button htmlElement="a" href="{{ new_url }}" variant="primary" icon="fa fa-plus" class="social-calendar-new">{{ 'label.social_calendar_new'|trans({}, 'social') }}</twig:ea:Button>
+                <twig:ea:Button htmlElement="a" href="{{ series_url }}" icon="fa fa-layer-group" class="social-calendar-series">{{ 'label.social_series_generate'|trans({}, 'social') }}</twig:ea:Button>
                 <div class="btn-group">
-                    <a class="btn {{ view == 'week' ? 'btn-primary' : 'btn-secondary' }}" href="{{ path('management_social_calendar', {view: 'week', date: date}) }}">{{ 'label.social_calendar_week'|trans({}, 'social') }}</a>
-                    <a class="btn {{ view == 'month' ? 'btn-primary' : 'btn-secondary' }}" href="{{ path('management_social_calendar', {view: 'month', date: date}) }}">{{ 'label.social_calendar_month'|trans({}, 'social') }}</a>
+                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: 'week', date: date}) }}" variant="{{ view == 'week' ? 'primary' : 'default' }}">{{ 'label.social_calendar_week'|trans({}, 'social') }}</twig:ea:Button>
+                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: 'month', date: date}) }}" variant="{{ view == 'month' ? 'primary' : 'default' }}">{{ 'label.social_calendar_month'|trans({}, 'social') }}</twig:ea:Button>
                 </div>
                 <div class="btn-group">
-                    <a class="btn btn-secondary" href="{{ path('management_social_calendar', {view: view, date: previous}) }}" aria-label="{{ 'label.social_calendar_previous'|trans({}, 'social') }}"><i class="fa fa-chevron-left"></i></a>
-                    <a class="btn btn-secondary" href="{{ path('management_social_calendar', {view: view}) }}">{{ 'label.social_calendar_today'|trans({}, 'social') }}</a>
-                    <a class="btn btn-secondary" href="{{ path('management_social_calendar', {view: view, date: next}) }}" aria-label="{{ 'label.social_calendar_next'|trans({}, 'social') }}"><i class="fa fa-chevron-right"></i></a>
+                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: view, date: previous}) }}" icon="fa fa-chevron-left" aria-label="{{ 'label.social_calendar_previous'|trans({}, 'social') }}" />
+                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: view}) }}">{{ 'label.social_calendar_today'|trans({}, 'social') }}</twig:ea:Button>
+                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: view, date: next}) }}" icon="fa fa-chevron-right" aria-label="{{ 'label.social_calendar_next'|trans({}, 'social') }}" />
                 </div>
             </div>
         </div>
@@ -72,7 +72,7 @@
             <p class="small text-muted mt-2 mb-2">{{ (feed_url ? 'help.social_calendar_feed' : 'help.social_calendar_feed_none')|trans({}, 'social') }}</p>
             <form method="post" action="{{ feed_token_url }}">
                 <input type="hidden" name="token" value="{{ csrf_token(token) }}">
-                <button type="submit" class="btn btn-sm btn-secondary"><i class="fa fa-calendar-plus"></i> {{ (feed_url ? 'label.social_calendar_feed_renew' : 'label.social_calendar_feed_create')|trans({}, 'social') }}</button>
+                <twig:ea:Button size="sm" icon="fa fa-calendar-plus">{{ (feed_url ? 'label.social_calendar_feed_renew' : 'label.social_calendar_feed_create')|trans({}, 'social') }}</twig:ea:Button>
             </form>
         </details>
 

@@ -7,14 +7,14 @@
     <p><strong>{{ post.title }}</strong> - {{ post.plannedAt|date('d/m/Y H:i') }}</p>
 
     {% for target in failed %}
-        <div class="alert alert-warning small mb-2">{{ target.network|capitalize }} : {{ target.error }}</div>
+        <twig:ea:Alert variant="warning" role="status" class="small mb-2">{{ target.network|capitalize }} : {{ target.error }}</twig:ea:Alert>
     {% else %}
         <p class="text-muted">{{ 'label.social_post_retry_none'|trans({}, 'social') }}</p>
     {% endfor %}
 
     <form method="post" class="d-flex flex-wrap gap-2 mt-3">
         <input type="hidden" name="token" value="{{ csrf_token('social_post_publish') }}">
-        <button type="submit" name="retry" class="btn btn-primary"><i class="fa fa-paper-plane"></i> {{ 'label.social_post_retry_submit'|trans({}, 'social') }}</button>
-        <a href="{{ edit_url }}" class="btn btn-secondary">{{ 'label.social_post_retry_edit'|trans({}, 'social') }}</a>
+        <twig:ea:Button name="retry" variant="primary" icon="fa fa-paper-plane">{{ 'label.social_post_retry_submit'|trans({}, 'social') }}</twig:ea:Button>
+        <twig:ea:Button htmlElement="a" href="{{ edit_url }}">{{ 'label.social_post_retry_edit'|trans({}, 'social') }}</twig:ea:Button>
     </form>
 {% endblock main %}

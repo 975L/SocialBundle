@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.12.3
+
+Back-office screens drawn with EasyAdmin 5.7 components
+
+- Requires `easycorp/easyadmin-bundle` ^5.7 (14/10/2026)
+- Custom actions no longer add the `btn` classes EasyAdmin already sets (14/10/2026)
+- Back-office screens drawn with EasyAdmin Twig components (14/10/2026)
+- Requires `symfony/ux-twig-component` ^2.32|^3.0 (15/10/2026)
+- Back-office warnings announced as status, not alerts (15/10/2026)
+- Search and filter icon buttons named for screen readers (15/10/2026)
+- Template tests render EasyAdmin's components for real (15/10/2026)
+
 ## v2.12.2
 
 Calendar shows one card per run of a post gone out

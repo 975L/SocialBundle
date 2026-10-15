@@ -16,11 +16,11 @@
                         </h2>
 
                         {% if network.connected %}
-                            <p><span class="badge badge-success">{{ ('label.connection_connected'|trans({}, 'social')) }}</span></p>
+                            <p><twig:ea:Badge variant="success">{{ ('label.connection_connected'|trans({}, 'social')) }}</twig:ea:Badge></p>
                         {% elseif network.configured %}
-                            <p><span class="badge badge-secondary">{{ ('label.connection_not_connected'|trans({}, 'social')) }}</span></p>
+                            <p><twig:ea:Badge>{{ ('label.connection_not_connected'|trans({}, 'social')) }}</twig:ea:Badge></p>
                         {% else %}
-                            <p><span class="badge badge-warning">{{ ('label.connection_not_configured'|trans({}, 'social')) }}</span></p>
+                            <p><twig:ea:Badge variant="warning">{{ ('label.connection_not_configured'|trans({}, 'social')) }}</twig:ea:Badge></p>
                         {% endif %}
 
                         <p class="card-text">{{ ('label.info_' ~ network.name ~ '_connect')|trans({}, 'social') }}</p>
@@ -44,9 +44,9 @@
                                 {# Bluesky knows the site by "site-url" only: started from here, it would refuse the connection #}
                                 <p class="card-text small">{{ ('label.connection_wrong_host'|trans({'%url%': network.site_url}, 'social')) }}</p>
                             {% else %}
-                                <a href="{{ path(network.route) }}" class="btn {{ network.connected ? 'btn-secondary' : 'btn-primary' }}">
+                                <twig:ea:Button htmlElement="a" href="{{ path(network.route) }}" variant="{{ network.connected ? 'default' : 'primary' }}">
                                     {{ (network.connected ? 'label.connection_reconnect' : 'label.connection_connect')|trans({}, 'social') }}
-                                </a>
+                                </twig:ea:Button>
                             {% endif %}
                         </div>
                     </div>

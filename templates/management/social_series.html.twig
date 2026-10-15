@@ -22,6 +22,6 @@
         {{ form_row(form.sources) }}
         <div data-social-series-when="mode:text,ai">{{ form_row(form.media) }}</div>
         {{ form_rest(form) }}
-        <button type="submit" class="btn btn-primary">{{ 'label.social_series_submit'|trans({}, 'social') }}</button>
+        <twig:ea:Button variant="primary">{{ 'label.social_series_submit'|trans({}, 'social') }}</twig:ea:Button>
     {{ form_end(form) }}
 {% endblock main %}

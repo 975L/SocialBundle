@@ -1,8 +1,8 @@
 {# The panel a card opens beside the calendar (see SocialCalendarController::renderPanel()): its buttons go through the same move as a drag, so a post planned here and a post dropped there are one and the same thing #}
 {% import '@c975LSocial/management/social_calendar.html.twig' as calendar %}
 <div class="social-calendar-panel-head">
-    <span class="badge badge-{{ {published: 'secondary', approved: 'success', failed: 'warning', draft: 'danger'}[state] }}">{{ ('label.social_calendar_state_' ~ state)|trans({}, 'social') }}</span>
-    <button type="button" class="btn btn-sm btn-secondary" data-action="social-calendar#closePanel">{{ 'label.social_calendar_close'|trans({}, 'social') }}</button>
+    <twig:ea:Badge variant="{{ {published: 'secondary', approved: 'success', failed: 'warning', draft: 'danger'}[state] }}">{{ ('label.social_calendar_state_' ~ state)|trans({}, 'social') }}</twig:ea:Badge>
+    <twig:ea:Button type="button" size="sm" data-action="social-calendar#closePanel">{{ 'label.social_calendar_close'|trans({}, 'social') }}</twig:ea:Button>
 </div>
 
 <h2 class="h5">{{ post.title }}</h2>
@@ -12,11 +12,11 @@
         <label for="social-calendar-plan-{{ post.id }}" class="form-label small">{{ 'label.social_calendar_plan_at'|trans({}, 'social') }}</label>
         <input type="datetime-local" step="900" class="form-control" id="social-calendar-plan-{{ post.id }}" value="{{ post.planned_at|date('Y-m-d\\TH:i') }}" data-social-calendar-target="planAt">
         <div class="d-flex flex-wrap gap-2 mt-2">
-            <button type="button" class="btn btn-secondary btn-sm" data-action="social-calendar#plan" data-post-id="{{ post.id }}">{{ 'label.social_calendar_plan'|trans({}, 'social') }}</button>
+            <twig:ea:Button type="button" size="sm" data-action="social-calendar#plan" data-post-id="{{ post.id }}">{{ 'label.social_calendar_plan'|trans({}, 'social') }}</twig:ea:Button>
             {% if state == 'approved' %}
-                <button type="button" class="btn btn-secondary btn-sm" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="unapprove">{{ 'label.social_post_unapprove'|trans({}, 'social') }}</button>
+                <twig:ea:Button type="button" size="sm" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="unapprove">{{ 'label.social_post_unapprove'|trans({}, 'social') }}</twig:ea:Button>
             {% else %}
-                <button type="button" class="btn btn-success btn-sm" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve">{{ 'label.social_post_approve'|trans({}, 'social') }}</button>
+                <twig:ea:Button type="button" variant="success" size="sm" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve">{{ 'label.social_post_approve'|trans({}, 'social') }}</twig:ea:Button>
             {% endif %}
         </div>
     </div>
@@ -34,7 +34,7 @@
                         <img src="{{ media.publicPath }}" alt="{{ media.alt }}" loading="lazy" draggable="false">
                     {% endif %}
                     {% if editable %}
-                        <button type="button" class="btn btn-sm btn-danger" data-action="social-calendar#removeMedia" data-post-id="{{ post.id }}" data-media-id="{{ media.id }}" data-confirm="{{ 'label.social_calendar_media_remove_confirm'|trans({}, 'social') }}" title="{{ 'label.social_calendar_media_remove'|trans({}, 'social') }}" aria-label="{{ 'label.social_calendar_media_remove'|trans({}, 'social') }}"><i class="fa fa-trash"></i></button>
+                        <twig:ea:Button type="button" variant="danger" size="sm" icon="fa fa-trash" data-action="social-calendar#removeMedia" data-post-id="{{ post.id }}" data-media-id="{{ media.id }}" data-confirm="{{ 'label.social_calendar_media_remove_confirm'|trans({}, 'social') }}" title="{{ 'label.social_calendar_media_remove'|trans({}, 'social') }}" aria-label="{{ 'label.social_calendar_media_remove'|trans({}, 'social') }}" />
                     {% endif %}
                 </li>
             {% endfor %}
@@ -49,8 +49,8 @@
 
 {% if editable and (pick_media_url or change_content_url) %}
     <div class="d-flex flex-wrap gap-2">
-        {% if pick_media_url %}<a href="{{ pick_media_url }}" class="btn btn-secondary btn-sm"><i class="fa fa-images"></i> {{ 'label.social_media_pick'|trans({}, 'social') }}</a>{% endif %}
-        {% if change_content_url %}<a href="{{ change_content_url }}" class="btn btn-secondary btn-sm"><i class="fa fa-shuffle"></i> {{ 'label.social_content_change'|trans({}, 'social') }}</a>{% endif %}
+        {% if pick_media_url %}<twig:ea:Button htmlElement="a" href="{{ pick_media_url }}" size="sm" icon="fa fa-images">{{ 'label.social_media_pick'|trans({}, 'social') }}</twig:ea:Button>{% endif %}
+        {% if change_content_url %}<twig:ea:Button htmlElement="a" href="{{ change_content_url }}" size="sm" icon="fa fa-shuffle">{{ 'label.social_content_change'|trans({}, 'social') }}</twig:ea:Button>{% endif %}
     </div>
 {% endif %}
 
@@ -64,4 +64,4 @@
     </div>
 {% endfor %}
 
-<a href="{{ post.edit_url }}" class="btn btn-secondary btn-sm">{{ 'label.social_calendar_edit_texts'|trans({}, 'social') }}</a>
+<twig:ea:Button htmlElement="a" href="{{ post.edit_url }}" size="sm">{{ 'label.social_calendar_edit_texts'|trans({}, 'social') }}</twig:ea:Button>
