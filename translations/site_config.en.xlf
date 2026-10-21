@@ -100,7 +100,7 @@
             </trans-unit>
             <trans-unit id="u6Xslj2">
                 <source>description.social_meta_page_id</source>
-                <target>Filled by "Connect Meta": the Page the posts go out on. Entered beforehand, it is kept: useful when the account manages several Pages.</target>
+                <target>Filled by "Connect Meta": the Page the posts go out on. Picked at the connection when the account manages several Pages.</target>
             </trans-unit>
             <trans-unit id="_0D94rb">
                 <source>description.social_meta_page_token</source>

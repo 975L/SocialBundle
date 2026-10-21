@@ -11,8 +11,8 @@
 namespace c975L\SocialBundle\Tests\Controller;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\SocialBundle\Controller\Management\SocialMetaPageController;
 use c975L\SocialBundle\Controller\MetaOAuthController;
-use c975L\SocialBundle\Service\ConfigValueWriter;
 use c975L\SocialBundle\Service\MetaGraphClient;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -26,6 +26,10 @@ use Symfony\Contracts\Translation\TranslatableInterface;
 
 class MetaOAuthControllerTest extends TestCase
 {
+    private const array PAGE = ['pageId' => '55', 'name' => 'Papa Câlin', 'pageToken' => 'page-token', 'instagramId' => '77', 'instagram' => 'papacalin'];
+
+    private const array OTHER_PAGE = ['pageId' => '11', 'name' => 'Other', 'pageToken' => 'other-token', 'instagramId' => null, 'instagram' => null];
+
     private function createRequest(array $query = []): Request
     {
         $request = new Request($query);
@@ -35,7 +39,7 @@ class MetaOAuthControllerTest extends TestCase
     }
 
     // Same seam as GoogleOAuthControllerTest: AbstractController resolves security, routing and the flash bag through its container
-    private function createController(Request $request, ?MetaGraphClient $metaGraphClient = null, ?ConfigValueWriter $configValueWriter = null): MetaOAuthController
+    private function createController(Request $request, ?MetaGraphClient $metaGraphClient = null): MetaOAuthController
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $key) => 'site-role-editor' === $key ? 'ROLE_EDITOR' : null);
@@ -46,7 +50,7 @@ class MetaOAuthControllerTest extends TestCase
             $metaGraphClient->method('getAuthorizationUrl')->willReturn('https://www.facebook.com/v26.0/dialog/oauth?state=x');
         }
 
-        $controller = new MetaOAuthController($configService, $configValueWriter ?? $this->createStub(ConfigValueWriter::class), $metaGraphClient);
+        $controller = new MetaOAuthController($configService, $metaGraphClient);
         $controller->setContainer($this->createContainer($request));
 
         return $controller;
@@ -115,62 +119,46 @@ class MetaOAuthControllerTest extends TestCase
         $this->assertSame(['danger' => ['flash.meta_not_configured']], $this->flashes($request));
     }
 
-    public function testCallbackStoresThePageItsTokenAndTheInstagramAccount(): void
+    // Every Page the account manages held in the session, for a short while, and nothing written: the Page screen stores the site's one
+    public function testCallbackHoldsThePagesForThePageScreen(): void
     {
         $metaGraphClient = $this->createStub(MetaGraphClient::class);
-        $metaGraphClient->method('connect')->willReturn(['pageId' => '55', 'pageToken' => 'page-token', 'instagramId' => '77']);
-
-        $written = [];
-        $configValueWriter = $this->createStub(ConfigValueWriter::class);
-        $configValueWriter->method('write')->willReturnCallback(function (array $values) use (&$written): void {
-            $written[] = $values;
-        });
+        $metaGraphClient->method('connect')->willReturn([self::OTHER_PAGE, self::PAGE]);
 
         $request = $this->callbackRequest();
-        $this->createController($request, $metaGraphClient, $configValueWriter)->callback($request);
+        $response = $this->createController($request, $metaGraphClient)->callback($request);
 
-        $this->assertSame([['social-meta-page-id' => '55', 'social-meta-page-token' => 'page-token', 'social-meta-instagram-id' => '77']], $written);
-        $this->assertSame(['success' => ['flash.meta_connected']], $this->flashes($request));
-    }
-
-    // A Page with no Instagram account linked still connects: Facebook posts, and the flash says why Instagram will not
-    public function testCallbackSaysWhenNoInstagramAccountIsLinked(): void
-    {
-        $metaGraphClient = $this->createStub(MetaGraphClient::class);
-        $metaGraphClient->method('connect')->willReturn(['pageId' => '55', 'pageToken' => 'page-token', 'instagramId' => null]);
-
-        $request = $this->callbackRequest();
-        $this->createController($request, $metaGraphClient)->callback($request);
-
-        $this->assertSame(['success' => ['flash.meta_connected_without_instagram']], $this->flashes($request));
+        $held = $request->getSession()->get(SocialMetaPageController::SESSION_PAGES);
+        $this->assertSame('/' . SocialMetaPageController::ROUTE, $response->getTargetUrl());
+        $this->assertSame([self::OTHER_PAGE, self::PAGE], $held['pages']);
+        $this->assertGreaterThan(time(), $held['expires']);
     }
 
     public function testCallbackRefusesAStateTheSessionNeverIssued(): void
     {
-        $configValueWriter = $this->createMock(ConfigValueWriter::class);
-        $configValueWriter->expects($this->never())->method('write');
+        $metaGraphClient = $this->createMock(MetaGraphClient::class);
+        $metaGraphClient->expects($this->never())->method('connect');
 
         $request = $this->createRequest(['code' => 'auth-code', 'state' => 'forged-state']);
         $request->getSession()->set('social_meta_oauth_state', 'expected-state');
 
-        $this->createController($request, configValueWriter: $configValueWriter)->callback($request);
+        $this->createController($request, $metaGraphClient)->callback($request);
 
         $this->assertSame(['danger' => ['flash.meta_refused']], $this->flashes($request));
     }
 
-    // A failure on a reconnection leaves the working connection as it was, nothing having been written yet
+    // A failure on a reconnection leaves the working connection as it was, and drops the Pages an earlier connection left unpicked
     public function testCallbackLeavesTheConnectionUntouchedWhenMetaRefuses(): void
     {
         $metaGraphClient = $this->createStub(MetaGraphClient::class);
         $metaGraphClient->method('connect')->willThrowException(new \RuntimeException('This Facebook account manages no Page: the posts need one to go out under.'));
 
-        $configValueWriter = $this->createMock(ConfigValueWriter::class);
-        $configValueWriter->expects($this->never())->method('write');
-
         $request = $this->callbackRequest();
-        $response = $this->createController($request, $metaGraphClient, $configValueWriter)->callback($request);
+        $request->getSession()->set(SocialMetaPageController::SESSION_PAGES, ['expires' => time() + 600, 'pages' => [self::OTHER_PAGE, self::PAGE]]);
+        $response = $this->createController($request, $metaGraphClient)->callback($request);
 
         $this->assertSame(['danger' => ['This Facebook account manages no Page: the posts need one to go out under.']], $this->flashes($request));
         $this->assertSame('/management_social_connections', $response->getTargetUrl());
+        $this->assertNull($request->getSession()->get(SocialMetaPageController::SESSION_PAGES));
     }
 }

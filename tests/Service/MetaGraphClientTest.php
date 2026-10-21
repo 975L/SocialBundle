@@ -24,14 +24,13 @@ class MetaGraphClientTest extends TestCase
     /**
      * @param list<MockResponse> $responses
      */
-    private function client(array $responses = [], ?string $pageToken = null, ?string $pageId = null): MetaGraphClient
+    private function client(array $responses = [], ?string $pageToken = null): MetaGraphClient
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnMap([
             ['social-meta-app-id', '123'],
             ['social-meta-app-secret', 'secret'],
             ['social-meta-page-token', $pageToken],
-            ['social-meta-page-id', $pageId],
         ]);
 
         return new MetaGraphClient(new MockHttpClient(function (string $method, string $url) use (&$responses): MockResponse {
@@ -50,38 +49,22 @@ class MetaGraphClientTest extends TestCase
         $this->assertStringContainsString('instagram_content_publish', urldecode($url));
     }
 
-    // Code, then a long-lived user token, then the Page and its token - one that does not expire - then the Instagram account linked to it
-    public function testConnectTradesTheCodeForThePageTokenAndTheInstagramAccount(): void
+    // Code, then a long-lived user token, then every Page - up to 100, past Meta's default of 25 - with its token - one that does not expire - and the Instagram account linked to it, in one call
+    public function testConnectTradesTheCodeForThePagesTheirTokensAndInstagramAccounts(): void
     {
-        $connection = $this->client([
+        $pages = $this->client([
             new MockResponse('{"access_token":"short"}'),
             new MockResponse('{"access_token":"long"}'),
-            new MockResponse('{"data":[{"id":"55","access_token":"page-token"}]}'),
-            new MockResponse('{"instagram_business_account":{"id":"77"},"id":"55"}'),
+            new MockResponse('{"data":[{"id":"55","name":"Papa Câlin","access_token":"page-token","instagram_business_account":{"id":"77","username":"papacalin"}},{"id":"11","name":"Other","access_token":"other-token"}]}'),
         ])->connect('code', 'https://example.org/callback');
 
-        $this->assertSame(['pageId' => '55', 'pageToken' => 'page-token', 'instagramId' => '77'], $connection);
+        $this->assertSame([
+            ['pageId' => '55', 'name' => 'Papa Câlin', 'pageToken' => 'page-token', 'instagramId' => '77', 'instagram' => 'papacalin'],
+            ['pageId' => '11', 'name' => 'Other', 'pageToken' => 'other-token', 'instagramId' => null, 'instagram' => null],
+        ], $pages);
         $this->assertStringContainsString('fb_exchange_token=short', $this->urls[1]);
-    }
-
-    // An owner managing the Pages of several sites: the one this site already names is kept, whatever Meta lists first
-    public function testConnectKeepsThePageTheSiteAlreadyNames(): void
-    {
-        $connection = $this->client([
-            new MockResponse('{"access_token":"short"}'),
-            new MockResponse('{"access_token":"long"}'),
-            new MockResponse('{"data":[{"id":"11","access_token":"other-token"},{"id":"55","access_token":"page-token"}]}'),
-            new MockResponse('{"id":"55"}'),
-        ], pageId: '55')->connect('code', 'https://example.org/callback');
-
-        $this->assertSame(['pageId' => '55', 'pageToken' => 'page-token', 'instagramId' => null], $connection);
-    }
-
-    public function testAPageTheAccountDoesNotManageCannotBeConnected(): void
-    {
-        $this->expectExceptionMessage('does not manage the Page "99" set in "social-meta-page-id" (Pages returned: 55)');
-
-        $this->client([new MockResponse('{"access_token":"s"}'), new MockResponse('{"access_token":"l"}'), new MockResponse('{"data":[{"id":"55","access_token":"t"}]}')], pageId: '99')->connect('code', 'https://example.org/callback');
+        $this->assertStringContainsString('instagram_business_account', urldecode($this->urls[2]));
+        $this->assertStringContainsString('limit=100', $this->urls[2]);
     }
 
     public function testAnAccountManagingNoPageCannotBeConnected(): void

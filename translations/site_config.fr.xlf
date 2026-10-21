@@ -100,7 +100,7 @@
             </trans-unit>
             <trans-unit id="u6Xslj2">
                 <source>description.social_meta_page_id</source>
-                <target>Renseignée par « Connecter Meta » : la Page sur laquelle les publications partent. Saisie avant, elle est conservée : utile quand le compte gère plusieurs Pages.</target>
+                <target>Renseignée par « Connecter Meta » : la Page sur laquelle les publications partent. Choisie à la connexion quand le compte gère plusieurs Pages.</target>
             </trans-unit>
             <trans-unit id="_0D94rb">
                 <source>description.social_meta_page_token</source>

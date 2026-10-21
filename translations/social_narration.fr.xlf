@@ -108,11 +108,11 @@
             </trans-unit>
             <trans-unit id="Nhfo2ra">
                 <source>narration.guided_step_social_meta_connect</source>
-                <target>Cliquez sur « Connecter » dans la tuile « Facebook et Instagram », puis autorisez l'accès avec le compte Facebook qui gère la Page. Le site enregistre lui-même la Page, son jeton et le compte Instagram.</target>
+                <target>Cliquez sur « Connecter » dans la tuile « Facebook et Instagram », puis autorisez l'accès avec le compte Facebook qui gère la Page, en cochant la Page et son compte Instagram sous « Modifier l'accès ». Si le compte gère plusieurs Pages, le site vous demande ensuite laquelle choisir. Il enregistre lui-même la Page, son jeton et le compte Instagram.</target>
             </trans-unit>
             <trans-unit id="ek3eUUp">
                 <source>narration.guided_step_social_meta_credentials</source>
-                <target>Cherchez « social-meta-app-id » et « social-meta-app-secret » dans la liste des réglages, et collez-y les deux valeurs de l'application. Si le compte gère plusieurs Pages, renseignez aussi « social-meta-page-id », sinon la première sera prise.</target>
+                <target>Cherchez « social-meta-app-id » et « social-meta-app-secret » dans la liste des réglages, et collez-y les deux valeurs de l'application.</target>
             </trans-unit>
             <trans-unit id="NauQ5Sa">
                 <source>narration.guided_step_social_meta_prerequisites</source>

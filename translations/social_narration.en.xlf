@@ -108,11 +108,11 @@
             </trans-unit>
             <trans-unit id="Nhfo2ra">
                 <source>narration.guided_step_social_meta_connect</source>
-                <target>Click "Connect" on the "Facebook &amp; Instagram" tile, then grant access with the Facebook account managing the Page. The site stores the Page, its token and the Instagram account by itself.</target>
+                <target>Click "Connect" on the "Facebook &amp; Instagram" tile, then grant access with the Facebook account managing the Page, ticking the Page and its Instagram account under "Edit access". If the account manages several Pages, the site then asks you which one to pick. It stores the Page, its token and the Instagram account by itself.</target>
             </trans-unit>
             <trans-unit id="ek3eUUp">
                 <source>narration.guided_step_social_meta_credentials</source>
-                <target>Search for "social-meta-app-id" and "social-meta-app-secret" in the settings list, and paste in the app's two values. If the account manages several Pages, fill in "social-meta-page-id" too, or the first one will be taken.</target>
+                <target>Search for "social-meta-app-id" and "social-meta-app-secret" in the settings list, and paste in the app's two values.</target>
             </trans-unit>
             <trans-unit id="NauQ5Sa">
                 <source>narration.guided_step_social_meta_prerequisites</source>

@@ -217,7 +217,7 @@ self-serve app, so no Company Page and a token to renew every 60 days, watched b
 | Content contract | `c975L\UiBundle\Contract\SocialContentSourceInterface`, handing out `c975L\UiBundle\Model\SocialContent` |
 | Network contract | `Contract\NetworkPublisherInterface` (`getName()`, `isConfigured()`, `getMaxLength()`, `getMediaRules()`, `publish()`, `preview()`) |
 | Networks | `Service\BlueskyPublisher`, `Service\FacebookPublisher`, `Service\InstagramPublisher`, `Service\LinkedInPublisher` |
-| Meta connection | `Service\MetaGraphClient`, `Controller\MetaOAuthController` (`/social/meta/connect`, `/social/meta/callback`) |
+| Meta connection | `Service\MetaGraphClient`, `Controller\MetaOAuthController` (`/social/meta/connect`, `/social/meta/callback`), `Controller\Management\SocialMetaPageController` (the Page picked, held 10 minutes in the session) |
 | Bluesky connection | `Service\BlueskyOAuthClient`, `Service\Es256Signer`, `Controller\BlueskyOAuthController` (`/social/bluesky/connect`, `/social/bluesky/callback`) |
 | Orchestration | `Service\SocialPublisher`, `Command\PublishCommand` (`c975l:social:publish`) |
 | Stored posts | `Entity\SocialPost`, one `Entity\SocialPostTarget` per network, `Enum\SocialPostStatus` |
@@ -276,8 +276,9 @@ key's RFC 7638 thumbprint, and the connection only starts from the `site-url` ho
 client there, so another host's key would be refused). There is no app-password fallback.
 
 The Meta keys `social-meta-app-id` and `social-meta-app-secret` are `restricted`; the Meta tile fills
-the Page, its token and the Instagram id, keeping a `social-meta-page-id` filled beforehand. Meta gets a
-JPEG copy written by `SocialImageExporter` under `public/medias/social/`, never the site's WebP.
+the Page, its token and the Instagram id, an account managing several Pages picking the site's one on
+"Choisir la Page" (`SocialMetaPageController::index()`). Meta gets a JPEG copy written by
+`SocialImageExporter` under `public/medias/social/`, never the site's WebP.
 
 ## What the bundle already contributes
 

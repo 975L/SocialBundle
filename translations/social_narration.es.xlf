@@ -108,11 +108,11 @@
             </trans-unit>
             <trans-unit id="Nhfo2ra">
                 <source>narration.guided_step_social_meta_connect</source>
-                <target>Haga clic en «Conectar» en la ficha «Facebook e Instagram», luego autorice el acceso con la cuenta de Facebook que gestiona la Página. El sitio guarda por sí mismo la Página, su token y la cuenta de Instagram.</target>
+                <target>Haga clic en «Conectar» en la ficha «Facebook e Instagram», luego autorice el acceso con la cuenta de Facebook que gestiona la Página, marcando la Página y su cuenta de Instagram en «Editar acceso». Si la cuenta gestiona varias Páginas, el sitio le pregunta luego cuál elegir. Guarda por sí mismo la Página, su token y la cuenta de Instagram.</target>
             </trans-unit>
             <trans-unit id="ek3eUUp">
                 <source>narration.guided_step_social_meta_credentials</source>
-                <target>Busque «social-meta-app-id» y «social-meta-app-secret» en la lista de ajustes, y pegue allí los dos valores de la aplicación. Si la cuenta gestiona varias Páginas, rellene también «social-meta-page-id», o se tomará la primera.</target>
+                <target>Busque «social-meta-app-id» y «social-meta-app-secret» en la lista de ajustes, y pegue allí los dos valores de la aplicación.</target>
             </trans-unit>
             <trans-unit id="NauQ5Sa">
                 <source>narration.guided_step_social_meta_prerequisites</source>

@@ -3,6 +3,11 @@
         "date": "2026-10-21",
         "description": [
             {
+                "en": "Connecting Facebook and Instagram, pick the site's Page among those your account manages, its Instagram account shown beside it",
+                "fr": "En connectant Facebook et Instagram, choisissez la Page du site parmi celles que gère votre compte, son compte Instagram affiché à côté",
+                "es": "Al conectar Facebook e Instagram, elija la Página del sitio entre las que gestiona su cuenta, con su cuenta de Instagram al lado"
+            },
+            {
                 "en": "On the calendar, approve all the coming posts of a series in one click from a post's panel",
                 "fr": "Sur le calendrier, validez d'un clic toutes les publications à venir d'une série, depuis le panneau d'une publication",
                 "es": "En el calendario, valide con un clic todas las próximas publicaciones de una serie, desde el panel de una publicación"

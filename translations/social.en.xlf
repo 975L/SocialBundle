@@ -168,11 +168,11 @@
             </trans-unit>
             <trans-unit id="a4QkcYj">
                 <source>description.guided_step_social_meta_connect</source>
-                <target>Click "Connect" on the "Facebook &amp; Instagram" tile, then grant access with the Facebook account managing the Page. The site stores the Page, its token and the Instagram account by itself.</target>
+                <target>Click "Connect" on the "Facebook &amp; Instagram" tile, then grant access with the Facebook account managing the Page, ticking the Page and its Instagram account under "Edit access". If the account manages several Pages, the site then asks which one to pick. It stores the Page, its token and the Instagram account by itself.</target>
             </trans-unit>
             <trans-unit id="0xEpiaR">
                 <source>description.guided_step_social_meta_credentials</source>
-                <target>Search for "social-meta-app-id" and "social-meta-app-secret" in the list, and paste in the app's two values. The secret only shows with the "Show sensitive data" button. For an account managing several Pages, fill in "social-meta-page-id" too, or the first one is taken. The token and the Instagram account fill themselves in at the next step.</target>
+                <target>Search for "social-meta-app-id" and "social-meta-app-secret" in the list, and paste in the app's two values. The secret only shows with the "Show sensitive data" button. The token and the Instagram account fill themselves in at the next step.</target>
             </trans-unit>
             <trans-unit id="JCFGCmV">
                 <source>description.guided_step_social_meta_prerequisites</source>
@@ -309,6 +309,10 @@
             <trans-unit id="im1osly">
                 <source>flash.meta_not_configured</source>
                 <target>Fill in your Meta app's id and secret in the configuration first.</target>
+            </trans-unit>
+            <trans-unit id="VUEJdjL">
+                <source>flash.meta_page_invalid</source>
+                <target>This choice could not be saved: reload the page and pick again.</target>
             </trans-unit>
             <trans-unit id="XAjNZmW">
                 <source>flash.meta_refused</source>
@@ -866,6 +870,10 @@
                 <source>label.info_social_media_pick</source>
                 <target>Tick the site's photos or videos to add to "%title%", after its medias. A photo is copied as a JPEG for the post, a video stays the site's own. Save the post first: its unsaved changes are not carried over.</target>
             </trans-unit>
+            <trans-unit id="eZ5rH.c">
+                <source>label.info_social_meta_page</source>
+                <target>This Facebook account manages several Pages: pick the one the site posts on. The Instagram account is the one Meta links to the Page; to change it, edit that link in Meta Business Suite, then connect again.</target>
+            </trans-unit>
             <trans-unit id="td4VA3T">
                 <source>label.info_social_post_prepare_url</source>
                 <target>The address of a page, of this site or another one: its title, summary and sharing image become a post, to review before publishing.</target>
@@ -1165,6 +1173,22 @@
             <trans-unit id="Ehl11pZ">
                 <source>label.social_media_video_type</source>
                 <target>video taken as %types% only</target>
+            </trans-unit>
+            <trans-unit id="kbi4aVg">
+                <source>label.social_meta_page</source>
+                <target>Pick the Page</target>
+            </trans-unit>
+            <trans-unit id="ywnN0CZ">
+                <source>label.social_meta_page_current</source>
+                <target>Current Page</target>
+            </trans-unit>
+            <trans-unit id="Q9Z8sF0">
+                <source>label.social_meta_page_instagram_linked</source>
+                <target>Instagram professional account linked</target>
+            </trans-unit>
+            <trans-unit id="O.QWmc1">
+                <source>label.social_meta_page_pick</source>
+                <target>Pick this Page</target>
             </trans-unit>
             <trans-unit id="tiqhi.Y">
                 <source>label.social_post</source>

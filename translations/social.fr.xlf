@@ -168,11 +168,11 @@
             </trans-unit>
             <trans-unit id="a4QkcYj">
                 <source>description.guided_step_social_meta_connect</source>
-                <target>Cliquer sur "Connecter" dans la tuile "Facebook et Instagram", puis autoriser l'accès avec le compte Facebook qui gère la Page. Le site enregistre lui-même la Page, son jeton et le compte Instagram.</target>
+                <target>Cliquer sur "Connecter" dans la tuile "Facebook et Instagram", puis autoriser l'accès avec le compte Facebook qui gère la Page, en cochant la Page et son compte Instagram sous "Modifier l'accès". Si le compte gère plusieurs Pages, le site demande ensuite laquelle choisir. Il enregistre lui-même la Page, son jeton et le compte Instagram.</target>
             </trans-unit>
             <trans-unit id="0xEpiaR">
                 <source>description.guided_step_social_meta_credentials</source>
-                <target>Chercher « social-meta-app-id » et « social-meta-app-secret » dans la liste, et y coller les deux valeurs de l'application. Le secret ne s'affiche qu'avec le bouton « Voir données sensibles ». Pour un compte gérant plusieurs Pages, renseigner aussi « social-meta-page-id », sinon la première est prise. Le jeton et le compte Instagram se remplissent tout seuls à l'étape suivante.</target>
+                <target>Chercher « social-meta-app-id » et « social-meta-app-secret » dans la liste, et y coller les deux valeurs de l'application. Le secret ne s'affiche qu'avec le bouton « Voir données sensibles ». Le jeton et le compte Instagram se remplissent tout seuls à l'étape suivante.</target>
             </trans-unit>
             <trans-unit id="JCFGCmV">
                 <source>description.guided_step_social_meta_prerequisites</source>
@@ -309,6 +309,10 @@
             <trans-unit id="im1osly">
                 <source>flash.meta_not_configured</source>
                 <target>Renseignez d'abord l'identifiant et la clé secrète de votre app Meta dans la configuration.</target>
+            </trans-unit>
+            <trans-unit id="VUEJdjL">
+                <source>flash.meta_page_invalid</source>
+                <target>Ce choix n'a pas pu être enregistré : rechargez la page et choisissez à nouveau.</target>
             </trans-unit>
             <trans-unit id="XAjNZmW">
                 <source>flash.meta_refused</source>
@@ -866,6 +870,10 @@
                 <source>label.info_social_media_pick</source>
                 <target>Cochez les photos ou vidéos du site à ajouter à « %title% », après ses médias. Une photo est copiée en JPEG pour le post, une vidéo reste celle du site. Enregistrez d'abord le post : ses modifications en cours ne sont pas reprises.</target>
             </trans-unit>
+            <trans-unit id="eZ5rH.c">
+                <source>label.info_social_meta_page</source>
+                <target>Ce compte Facebook gère plusieurs Pages : choisissez celle sur laquelle le site publie. Le compte Instagram est celui que Meta relie à la Page ; pour en changer, modifiez ce lien dans Meta Business Suite, puis reconnectez.</target>
+            </trans-unit>
             <trans-unit id="td4VA3T">
                 <source>label.info_social_post_prepare_url</source>
                 <target>L'adresse d'une page, de ce site ou d'un autre : son titre, son résumé et son image de partage deviennent une publication, à relire avant de publier.</target>
@@ -1165,6 +1173,22 @@
             <trans-unit id="Ehl11pZ">
                 <source>label.social_media_video_type</source>
                 <target>vidéo acceptée en %types% seulement</target>
+            </trans-unit>
+            <trans-unit id="kbi4aVg">
+                <source>label.social_meta_page</source>
+                <target>Choisir la Page</target>
+            </trans-unit>
+            <trans-unit id="ywnN0CZ">
+                <source>label.social_meta_page_current</source>
+                <target>Page actuelle</target>
+            </trans-unit>
+            <trans-unit id="Q9Z8sF0">
+                <source>label.social_meta_page_instagram_linked</source>
+                <target>Compte Instagram professionnel relié</target>
+            </trans-unit>
+            <trans-unit id="O.QWmc1">
+                <source>label.social_meta_page_pick</source>
+                <target>Choisir cette Page</target>
             </trans-unit>
             <trans-unit id="tiqhi.Y">
                 <source>label.social_post</source>

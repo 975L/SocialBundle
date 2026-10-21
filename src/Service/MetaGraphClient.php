@@ -53,24 +53,23 @@ class MetaGraphClient
         ]);
     }
 
-    // Trades the code the callback received for what the posts need: the site's Page, its token - one that does not expire, being derived from a long-lived user token - and the Instagram account linked to it, if any
-    /** @return array{pageId: string, pageToken: string, instagramId: ?string} */
+    // Trades the code the callback received for the Pages the account manages, each with its token - one that does not expire, being derived from a long-lived user token - and the Instagram account linked to it, if any
+    /** @return non-empty-list<array{pageId: string, name: string, pageToken: string, instagramId: ?string, instagram: ?string}> */
     public function connect(string $code, string $redirectUri): array
     {
         $credentials = ['client_id' => $this->config('social-meta-app-id'), 'client_secret' => $this->config('social-meta-app-secret')];
         $short = $this->request('GET', '/oauth/access_token', [...$credentials, 'redirect_uri' => $redirectUri, 'code' => $code]);
         $long = $this->request('GET', '/oauth/access_token', [...$credentials, 'grant_type' => 'fb_exchange_token', 'fb_exchange_token' => (string) $short['access_token']]);
 
-        $pages = $this->request('GET', '/me/accounts', ['access_token' => (string) $long['access_token'], 'fields' => 'id,access_token'])['data'] ?? [];
-        $page = $this->sitePage(\is_array($pages) ? $pages : []);
+        $pages = $this->request('GET', '/me/accounts', ['access_token' => (string) $long['access_token'], 'fields' => 'id,name,access_token,instagram_business_account{id,username}', 'limit' => '100'])['data'] ?? [];
 
-        $linked = $this->request('GET', '/' . $page['id'], ['access_token' => (string) $page['access_token'], 'fields' => 'instagram_business_account']);
+        $connections = array_values(array_filter(array_map($this->page(...), \is_array($pages) ? $pages : [])));
 
-        return [
-            'pageId' => (string) $page['id'],
-            'pageToken' => (string) $page['access_token'],
-            'instagramId' => isset($linked['instagram_business_account']['id']) ? (string) $linked['instagram_business_account']['id'] : null,
-        ];
+        if ([] === $connections) {
+            throw new \RuntimeException('This Facebook account manages no Page: the posts need one to go out under.');
+        }
+
+        return $connections;
     }
 
     // One Graph call, parameters sent in the query for a GET and in the body otherwise
@@ -95,25 +94,23 @@ class MetaGraphClient
         return $data;
     }
 
-    // The Page already set in "social-meta-page-id", so an owner managing the Pages of several sites connects each to its own - the first one managed while none is set
-    /**
-     * @param array<mixed> $pages
-     *
-     * @return array<string, mixed>
-     */
-    private function sitePage(array $pages): array
+    // One Page as Meta lists it, read into what the site keeps of it - null for an entry missing its id or its token
+    /** @return array{pageId: string, name: string, pageToken: string, instagramId: ?string, instagram: ?string}|null */
+    private function page(mixed $page): ?array
     {
-        $pageId = $this->config('social-meta-page-id');
-        foreach ($pages as $page) {
-            if (\is_array($page) && ('' === $pageId || (string) $page['id'] === $pageId)) {
-                return $page;
-            }
+        if (!\is_array($page) || !isset($page['id'], $page['access_token'])) {
+            return null;
         }
 
-        // Names the Pages Meta did return, so a wrong id or a Page left out of the login can be told apart
-        $returned = implode(', ', array_map(static fn ($page): string => \is_array($page) ? (string) ($page['id'] ?? '') : '', $pages));
+        $instagram = \is_array($page['instagram_business_account'] ?? null) ? $page['instagram_business_account'] : [];
 
-        throw new \RuntimeException('' === $pageId ? 'This Facebook account manages no Page: the posts need one to go out under.' : sprintf('This Facebook account does not manage the Page "%s" set in "social-meta-page-id" (Pages returned: %s).', $pageId, '' === $returned ? 'none' : $returned));
+        return [
+            'pageId' => (string) $page['id'],
+            'name' => (string) ($page['name'] ?? $page['id']),
+            'pageToken' => (string) $page['access_token'],
+            'instagramId' => isset($instagram['id']) ? (string) $instagram['id'] : null,
+            'instagram' => isset($instagram['username']) ? (string) $instagram['username'] : null,
+        ];
     }
 
     private function config(string $slug): string

@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.13.0
+
+Meta connection picks the site's Page among the account's
+
+- "Connecter Meta": an account managing several Pages picks the site's on "Choisir la Page", each shown with its linked Instagram account (21/10/2026)
+- `MetaGraphClient::connect()` returns every Page the account manages, `social-meta-page-id` no longer read before the connection (21/10/2026)
+- Added `SocialMetaPageController`, storing the Page picked (21/10/2026)
+- Pages held ten minutes at most in the session (21/10/2026)
+- Up to 100 Pages listed per account (21/10/2026)
+- "Choisir la Page" shows each Page's ID (21/10/2026)
+- Flash when a Page pick cannot be saved (21/10/2026)
+- Guided project: the Meta connect step tells the Page and Instagram access and the Page pick (21/10/2026)
+
 ## v2.12.4
 
 Calendar panel approves a whole series at once

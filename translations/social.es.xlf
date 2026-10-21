@@ -168,11 +168,11 @@
             </trans-unit>
             <trans-unit id="a4QkcYj">
                 <source>description.guided_step_social_meta_connect</source>
-                <target>Hacer clic en "Conectar" en la ficha "Facebook e Instagram" y autorizar el acceso con la cuenta de Facebook que gestiona la Página. El sitio guarda por sí mismo la Página, su token y la cuenta de Instagram.</target>
+                <target>Hacer clic en "Conectar" en la ficha "Facebook e Instagram" y autorizar el acceso con la cuenta de Facebook que gestiona la Página, marcando la Página y su cuenta de Instagram en "Editar acceso". Si la cuenta gestiona varias Páginas, el sitio pregunta luego cuál elegir. Guarda por sí mismo la Página, su token y la cuenta de Instagram.</target>
             </trans-unit>
             <trans-unit id="0xEpiaR">
                 <source>description.guided_step_social_meta_credentials</source>
-                <target>Buscar «social-meta-app-id» y «social-meta-app-secret» en la lista, y pegar allí los dos valores de la aplicación. El secreto solo aparece con el botón «Ver datos sensibles». Para una cuenta que gestiona varias Páginas, rellenar también «social-meta-page-id», o se toma la primera. El token y la cuenta de Instagram se rellenan solos en el paso siguiente.</target>
+                <target>Buscar «social-meta-app-id» y «social-meta-app-secret» en la lista, y pegar allí los dos valores de la aplicación. El secreto solo aparece con el botón «Ver datos sensibles». El token y la cuenta de Instagram se rellenan solos en el paso siguiente.</target>
             </trans-unit>
             <trans-unit id="JCFGCmV">
                 <source>description.guided_step_social_meta_prerequisites</source>
@@ -309,6 +309,10 @@
             <trans-unit id="im1osly">
                 <source>flash.meta_not_configured</source>
                 <target>Rellene primero el identificador y la clave secreta de su app de Meta en la configuración.</target>
+            </trans-unit>
+            <trans-unit id="VUEJdjL">
+                <source>flash.meta_page_invalid</source>
+                <target>No se pudo guardar esta elección: recargue la página y elija de nuevo.</target>
             </trans-unit>
             <trans-unit id="XAjNZmW">
                 <source>flash.meta_refused</source>
@@ -866,6 +870,10 @@
                 <source>label.info_social_media_pick</source>
                 <target>Marque las fotos o vídeos del sitio que añadir a «%title%», tras sus medios. Una foto se copia en JPEG para la publicación, un vídeo sigue siendo el del sitio. Guarde antes la publicación: sus cambios en curso no se conservan.</target>
             </trans-unit>
+            <trans-unit id="eZ5rH.c">
+                <source>label.info_social_meta_page</source>
+                <target>Esta cuenta de Facebook gestiona varias Páginas: elija aquella en la que publica el sitio. La cuenta de Instagram es la que Meta vincula a la Página; para cambiarla, modifique ese vínculo en Meta Business Suite y vuelva a conectar.</target>
+            </trans-unit>
             <trans-unit id="td4VA3T">
                 <source>label.info_social_post_prepare_url</source>
                 <target>La dirección de una página, de este sitio o de otro: su título, su resumen y su imagen para compartir se convierten en una publicación, que revisará antes de publicar.</target>
@@ -1165,6 +1173,22 @@
             <trans-unit id="Ehl11pZ">
                 <source>label.social_media_video_type</source>
                 <target>vídeo aceptado solo en %types%</target>
+            </trans-unit>
+            <trans-unit id="kbi4aVg">
+                <source>label.social_meta_page</source>
+                <target>Elegir la Página</target>
+            </trans-unit>
+            <trans-unit id="ywnN0CZ">
+                <source>label.social_meta_page_current</source>
+                <target>Página actual</target>
+            </trans-unit>
+            <trans-unit id="Q9Z8sF0">
+                <source>label.social_meta_page_instagram_linked</source>
+                <target>Cuenta profesional de Instagram vinculada</target>
+            </trans-unit>
+            <trans-unit id="O.QWmc1">
+                <source>label.social_meta_page_pick</source>
+                <target>Elegir esta Página</target>
             </trans-unit>
             <trans-unit id="tiqhi.Y">
                 <source>label.social_post</source>

@@ -1,0 +1,42 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{# The Pages the Facebook account manages, one picked as the site's (see SocialMetaPageController::index()) #}
+{% block main %}
+    <h1>{{ ('label.social_meta_page'|trans({}, 'social')) }}</h1>
+
+    <p>{{ ('label.info_social_meta_page'|trans({}, 'social')) }}</p>
+
+    <form method="post">
+        <input type="hidden" name="token" value="{{ csrf_token(token) }}">
+
+        <div class="row g-3">
+            {% for page in pages %}
+                <div class="col-12 col-md-6 col-xl-4">
+                    <div class="card h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h2 class="h5 card-title"><i class="fab fa-facebook me-2"></i>{{ page.name }}</h2>
+
+                            <p class="card-text small text-muted">ID {{ page.pageId }}</p>
+
+                            {% if page.pageId == current %}
+                                <p><twig:ea:Badge variant="success">{{ ('label.social_meta_page_current'|trans({}, 'social')) }}</twig:ea:Badge></p>
+                            {% endif %}
+
+                            {% if page.instagram %}
+                                <p class="card-text"><i class="fab fa-instagram me-2"></i>@{{ page.instagram }}</p>
+                            {% elseif page.instagramId %}
+                                <p class="card-text"><i class="fab fa-instagram me-2"></i>{{ ('label.social_meta_page_instagram_linked'|trans({}, 'social')) }}</p>
+                            {% else %}
+                                <p class="card-text small text-warning">{{ ('label.connection_instagram_missing'|trans({}, 'social')) }}</p>
+                            {% endif %}
+
+                            <div class="mt-auto">
+                                <twig:ea:Button variant="primary" name="page" value="{{ page.pageId }}">{{ ('label.social_meta_page_pick'|trans({}, 'social')) }}</twig:ea:Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </form>
+{% endblock main %}

@@ -100,7 +100,7 @@
             </trans-unit>
             <trans-unit id="u6Xslj2">
                 <source>description.social_meta_page_id</source>
-                <target>Rellenada por «Conectar Meta»: la Página en la que salen las publicaciones. Introducida antes, se conserva: útil cuando la cuenta gestiona varias Páginas.</target>
+                <target>Rellenada por «Conectar Meta»: la Página en la que salen las publicaciones. Elegida al conectar cuando la cuenta gestiona varias Páginas.</target>
             </trans-unit>
             <trans-unit id="_0D94rb">
                 <source>description.social_meta_page_token</source>

@@ -12,7 +12,7 @@ namespace c975L\SocialBundle\Controller;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\SocialConnectionsController;
-use c975L\SocialBundle\Service\ConfigValueWriter;
+use c975L\SocialBundle\Controller\Management\SocialMetaPageController;
 use c975L\SocialBundle\Service\MetaGraphClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -22,14 +22,13 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use function Symfony\Component\Translation\t;
 
-// The two routes of the Meta connection, the same shape as the Google one (see GoogleOAuthController): the owner consents once, and the site keeps the Page token the posts on Facebook and Instagram are made with
+// The two routes of the Meta connection, the same shape as the Google one (see GoogleOAuthController): the owner consents once, and the site keeps the Page token the posts on Facebook and Instagram are made with - the Page itself stored by SocialMetaPageController, where an account managing several picks the site's own
 class MetaOAuthController extends AbstractController
 {
     private const string SESSION_STATE = 'social_meta_oauth_state';
 
     public function __construct(
         private readonly ConfigServiceInterface $configService,
-        private readonly ConfigValueWriter $configValueWriter,
         private readonly MetaGraphClient $metaGraphClient,
     ) {
     }
@@ -58,6 +57,10 @@ class MetaOAuthController extends AbstractController
         $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
 
         $expected = $request->getSession()->remove(self::SESSION_STATE);
+
+        // A list left by an earlier connection never picked from, so it cannot outlive this one
+        $request->getSession()->remove(SocialMetaPageController::SESSION_PAGES);
+
         $code = $request->query->get('code');
         if (!\is_string($expected) || $expected !== $request->query->get('state') || !\is_string($code) || '' === $code) {
             $this->addFlash('danger', t('flash.meta_refused', [], 'social'));
@@ -67,22 +70,17 @@ class MetaOAuthController extends AbstractController
 
         // Everything fetched before anything is written: a failure on a reconnection leaves the working connection as it was
         try {
-            $connection = $this->metaGraphClient->connect($code, $this->redirectUri());
+            $pages = $this->metaGraphClient->connect($code, $this->redirectUri());
         } catch (\Throwable $exception) {
             $this->addFlash('danger', $exception->getMessage());
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
-        $this->configValueWriter->write([
-            'social-meta-page-id' => $connection['pageId'],
-            'social-meta-page-token' => $connection['pageToken'],
-            'social-meta-instagram-id' => $connection['instagramId'],
-        ]);
+        // Held in the session, tokens included, for the screen that stores the site's Page - straight away when the account manages only one
+        $request->getSession()->set(SocialMetaPageController::SESSION_PAGES, ['expires' => time() + SocialMetaPageController::SESSION_TTL, 'pages' => $pages]);
 
-        $this->addFlash('success', t(null === $connection['instagramId'] ? 'flash.meta_connected_without_instagram' : 'flash.meta_connected', [], 'social'));
-
-        return $this->redirectToRoute(SocialConnectionsController::ROUTE);
+        return $this->redirectToRoute(SocialMetaPageController::ROUTE);
     }
 
     // Absolute, and built from the route rather than configured: it has to match the redirect uri declared in the Meta app character for character
