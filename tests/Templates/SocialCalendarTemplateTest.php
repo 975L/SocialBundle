@@ -77,9 +77,9 @@ class SocialCalendarTemplateTest extends TestCase
 
     // The panel of a post in the given state, its approval being what the state offers - with the medias given, the content's picture otherwise
     /** @param list<SocialMedia> $medias */
-    private function panel(string $state, array $medias = [], ?string $image = null, bool $editable = true): string
+    private function panel(string $state, array $medias = [], ?string $image = null, bool $editable = true, int $seriesDrafts = 0, string $plannedAt = '2026-10-04 19:00'): string
     {
-        $post = new SocialPost('gallery_media', '42', 'La sieste', 'https://example.org/42', null, new \DateTimeImmutable('2026-10-04 19:00'));
+        $post = new SocialPost('gallery_media', '42', 'La sieste', 'https://example.org/42', null, new \DateTimeImmutable($plannedAt));
         new SocialPostTarget($post, 'bluesky', 'Le texte de Bluesky');
 
         return $this->twig()->render('@c975LSocial/management/_social_calendar_panel.html.twig', [
@@ -90,6 +90,7 @@ class SocialCalendarTemplateTest extends TestCase
             'pick_media_url' => '/pick/7',
             'change_content_url' => '/change/7',
             'targets' => $post->getTargets(),
+            'series_drafts' => $seriesDrafts,
             'connected' => ['bluesky'],
         ]);
     }
@@ -174,6 +175,36 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringContainsString('label.social_calendar_state_approved', $html);
         $this->assertStringContainsString('data-to="unapprove"', $html);
         $this->assertStringNotContainsString('data-to="approve"', $html);
+    }
+
+    // A post of a series offers its coming drafts approved at once, counted; a post of none, or of a series all approved, does not
+    public function testThePanelOffersTheSeriesApprovalWhileItHasDrafts(): void
+    {
+        $this->assertStringNotContainsString('approve-series', $this->panel('draft'));
+
+        $html = $this->panel('published', seriesDrafts: 4);
+
+        $this->assertStringContainsString('data-post-id="7" data-to="approve-series"', $html);
+        $this->assertStringContainsString('label.social_calendar_approve_series', $html);
+    }
+
+    // A coming draft that is the series' last one already has its own "Approve": the series' is not offered beside it - a draft gone by, or a post approved, not being counted
+    public function testThePanelOfTheSeriesLastDraftOffersItsOwnApprovalOnly(): void
+    {
+        $this->assertStringNotContainsString('approve-series', $this->panel('draft', seriesDrafts: 1, plannedAt: '+1 day'));
+        $this->assertStringContainsString('approve-series', $this->panel('draft', seriesDrafts: 2, plannedAt: '+1 day'));
+        $this->assertStringContainsString('approve-series', $this->panel('draft', seriesDrafts: 1));
+        $this->assertStringContainsString('approve-series', $this->panel('approved', seriesDrafts: 1, plannedAt: '+1 day'));
+    }
+
+    // The legend shows each state as a card looks, never taken for a card to drag
+    public function testTheLegendShowsEveryState(): void
+    {
+        $html = $this->render();
+
+        foreach (['draft', 'approved', 'failed', 'published'] as $state) {
+            $this->assertStringContainsString('class="social-calendar-card is-' . $state . ' is-legend"', $html);
+        }
     }
 
     // A post gone out everywhere is only read: no moment to set, no approval to change

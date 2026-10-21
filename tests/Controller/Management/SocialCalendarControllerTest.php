@@ -15,11 +15,13 @@ use c975L\SocialBundle\Controller\Management\SocialCalendarController;
 use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
+use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Service\SocialMediaChecker;
 use c975L\SocialBundle\Service\SocialMediaPicker;
 use c975L\SocialBundle\Service\SocialPlanner;
+use c975L\SocialBundle\Service\SocialPostApprover;
 use c975L\SocialBundle\Service\SocialPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
@@ -47,6 +49,10 @@ class SocialCalendarControllerTest extends TestCase
 
     private int $flushes = 0;
 
+    // What the repository answers as the series' coming posts
+    /** @var list<SocialPost> */
+    private array $seriesPosts = [];
+
     /** @var array<string, mixed> */
     private array $rendered = [];
 
@@ -69,6 +75,7 @@ class SocialCalendarControllerTest extends TestCase
             $this->mediaChecker ?? $this->createStub(SocialMediaChecker::class),
             $this->createStub(TranslatorInterface::class),
             $this->createStub(SocialMediaPicker::class),
+            $this->createStub(SocialPostApprover::class),
         );
     }
 
@@ -160,6 +167,7 @@ class SocialCalendarControllerTest extends TestCase
 
         $postRepository = $this->createStub(SocialPostRepository::class);
         $postRepository->method('find')->willReturnCallback(fn (mixed $id): ?SocialPost => 42 === $id ? $this->post : null);
+        $postRepository->method('findComingBySeries')->willReturnCallback(fn (): array => $this->seriesPosts);
 
         $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('flush')->willReturnCallback(function (): void {
@@ -176,6 +184,7 @@ class SocialCalendarControllerTest extends TestCase
             $this->mediaChecker ?? $this->createStub(SocialMediaChecker::class),
             $this->createStub(TranslatorInterface::class),
             $this->createStub(SocialMediaPicker::class),
+            new SocialPostApprover($this->mediaChecker ?? $this->createStub(SocialMediaChecker::class), $entityManager),
         );
 
         $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
@@ -409,5 +418,79 @@ class SocialCalendarControllerTest extends TestCase
     {
         $this->assertSame(Response::HTTP_FORBIDDEN, $this->move('approve', 'forged')->getStatusCode());
         $this->assertSame(SocialPostStatus::Draft, $this->target()->getStatus());
+    }
+
+    // The series' coming drafts approved at once, a post gone out on its network left as it is
+    public function testTheSeriesComingDraftsAreApprovedAtOnce(): void
+    {
+        $other = $this->seriesPost('Other');
+        $published = $this->seriesPost('Published');
+        $target = $published->getTargets()->first();
+        \assert($target instanceof SocialPostTarget);
+        $target->markPublished('remote-id');
+
+        $this->assertSame(Response::HTTP_NO_CONTENT, $this->move('approve-series')->getStatusCode());
+        $this->assertSame(SocialPostStatus::Approved, $this->target()->getStatus());
+        $this->assertSame('approved', $other->getState());
+        $this->assertSame('published', $published->getState());
+        $this->assertSame(1, $this->flushes);
+    }
+
+    // A draft whose medias a network does not take stays a draft, said under its title, the others approved all the same
+    public function testADraftOfTheSeriesTheMediasDoNotSuitStaysADraft(): void
+    {
+        $other = $this->seriesPost('Other');
+        $this->mediaChecker = $this->createStub(SocialMediaChecker::class);
+        $this->mediaChecker->method('check')->willReturnCallback(static fn (SocialPost $post): array => $post === $other ? ['instagram' => [new TranslatableMessage('label.social_media_required')]] : []);
+
+        $response = $this->move('approve-series');
+
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        $this->assertStringStartsWith("Other\nInstagram : ", (string) $response->getContent());
+        $this->assertSame('draft', $other->getState());
+        $this->assertSame(SocialPostStatus::Approved, $this->target()->getStatus());
+        $this->assertSame(1, $this->flushes);
+    }
+
+    // Offered on any post of the series: the panel of one gone out approves the others all the same
+    public function testThePanelOfAPublishedPostApprovesItsSeries(): void
+    {
+        $other = $this->seriesPost('Other');
+        $this->target()->markPublished('ext-1');
+
+        $this->assertSame(Response::HTTP_NO_CONTENT, $this->move('approve-series')->getStatusCode());
+        $this->assertSame('approved', $other->getState());
+        $this->assertSame('published', $this->post->getState());
+    }
+
+    // A post a network refused is no draft: only its own "Approve" tries it again
+    public function testAFailedPostOfTheSeriesIsLeftAsItIs(): void
+    {
+        $other = $this->seriesPost('Other');
+        $this->target()->markFailed('Refused');
+
+        $this->assertSame(Response::HTTP_NO_CONTENT, $this->move('approve-series')->getStatusCode());
+        $this->assertSame('approved', $other->getState());
+        $this->assertSame(SocialPostStatus::Failed, $this->target()->getStatus());
+    }
+
+    // A post of no series approves nothing
+    public function testAPostOfNoSeriesApprovesNothing(): void
+    {
+        $this->assertSame(Response::HTTP_NO_CONTENT, $this->move('approve-series')->getStatusCode());
+        $this->assertSame(SocialPostStatus::Draft, $this->target()->getStatus());
+    }
+
+    // A post of the same series as $this->post, both of them answered as its coming posts
+    private function seriesPost(string $title): SocialPost
+    {
+        $series = $this->post->getSeries() ?? new SocialSeries('Series', 3, 'daily', 1, [], 'text', 'Text', [], ['bluesky']);
+        $this->post->setSeries($series);
+        $post = new SocialPost('gallery_media', $title, $title, 'https://example.org/' . $title, null, $this->plannedAt->modify('+1 day'));
+        $post->setSeries($series);
+        new SocialPostTarget($post, 'bluesky', 'Text');
+        $this->seriesPosts = [...([] === $this->seriesPosts ? [$this->post] : $this->seriesPosts), $post];
+
+        return $post;
     }
 }

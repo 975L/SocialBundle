@@ -183,6 +183,36 @@ class SocialPostRepositoryTest extends TestCase
         $this->assertSame([], $this->repository->findPublishedTexts('bluesky', 3));
     }
 
+    // The series' coming drafts are counted: a post approved, refused or gone by left out, as is another series'
+    public function testTheSeriesComingDraftsAreCounted(): void
+    {
+        $series = new SocialSeries('Series', 3, 'daily', 1, [], 'text', 'Text', [], ['bluesky']);
+        $other = new SocialSeries('Other', 3, 'daily', 1, [], 'text', 'Text', [], ['bluesky']);
+        $post = function (string $id, SocialSeries $series, string $plannedAt = '+1 day', ?\Closure $target = null): SocialPost {
+            $post = new SocialPost('manual', $id, $id, '', null, new \DateTimeImmutable($plannedAt));
+            $post->setSeries($series);
+            new SocialPostTarget($post, 'bluesky', 'Text');
+            $second = new SocialPostTarget($post, 'facebook', 'Text');
+            if (null !== $target) {
+                $target($second);
+            }
+
+            return $post;
+        };
+        $posts = [
+            $post('draft', $series),
+            $post('half-gone', $series, '+2 days', static fn (SocialPostTarget $target) => $target->markPublished('id')),
+            $post('approved', $series, '+1 day', static fn (SocialPostTarget $target) => $target->approve()),
+            $post('failed', $series, '+1 day', static fn (SocialPostTarget $target) => $target->markFailed('Refused')),
+            $post('gone-by', $series, '-1 day'),
+            $post('other', $other),
+        ];
+        array_map($this->entityManager->persist(...), [$series, $other, ...$posts]);
+        $this->entityManager->flush();
+
+        $this->assertSame(2, $this->repository->countComingDraftsBySeries($series, new \DateTimeImmutable()));
+    }
+
     // The purge's posts: gone out everywhere, planned before the moment, holding a media - a post still to go out somewhere, with no network at all, or with no media, left alone
     public function testThePurgeReadsThePostsGoneOutThatHoldAMedia(): void
     {

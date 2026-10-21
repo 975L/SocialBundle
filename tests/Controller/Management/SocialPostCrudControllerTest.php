@@ -21,6 +21,7 @@ use c975L\SocialBundle\Repository\SocialSeriesRepository;
 use c975L\SocialBundle\Service\SocialMediaChecker;
 use c975L\SocialBundle\Service\SocialMediaPicker;
 use c975L\SocialBundle\Service\SocialPlanner;
+use c975L\SocialBundle\Service\SocialPostApprover;
 use c975L\SocialBundle\Service\SocialPublisher;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
 use c975L\UiBundle\Contract\BrowsableSocialContentSourceInterface;
@@ -90,6 +91,7 @@ class SocialPostCrudControllerTest extends TestCase
             $seriesGenerator ?? $this->createStub(SocialSeriesGenerator::class),
             $seriesRepository ?? $this->createStub(SocialSeriesRepository::class),
             $this->createStub(SocialMediaPicker::class),
+            $this->createStub(SocialPostApprover::class),
         );
     }
 

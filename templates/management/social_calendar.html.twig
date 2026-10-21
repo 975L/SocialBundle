@@ -61,6 +61,13 @@
             <a href="{{ path(connections_route) }}">{{ 'label.social_connections'|trans({}, 'social') }}</a>
         </div>
 
+        {# What a card's look says of its post #}
+        <div class="social-calendar-legend mb-2">
+            {% for state in ['draft', 'approved', 'failed', 'published'] %}
+                <span class="social-calendar-card is-{{ state }} is-legend"><span>{{ ('label.social_calendar_state_' ~ state)|trans({}, 'social') }}</span></span>
+            {% endfor %}
+        </div>
+
         <p class="small text-muted">{{ 'label.social_calendar_drag_hint'|trans({}, 'social') }}</p>
 
         {# The calendar subscribed to from Outlook, Evolution or Google Calendar by its secret address (see SocialCalendarFeed) #}

@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-10-21",
+        "description": [
+            {
+                "en": "On the calendar, approve all the coming posts of a series in one click from a post's panel",
+                "fr": "Sur le calendrier, validez d'un clic toutes les publications à venir d'une série, depuis le panneau d'une publication",
+                "es": "En el calendario, valide con un clic todas las próximas publicaciones de una serie, desde el panel de una publicación"
+            },
+            {
+                "en": "The calendar's posts are larger, and a draft, an approved post and a published one are now told apart at a glance",
+                "fr": "Les publications du calendrier sont plus grandes, et un brouillon, une publication validée et une publiée se distinguent désormais d'un coup d'œil",
+                "es": "Las publicaciones del calendario son más grandes, y un borrador, una publicación validada y una publicada se distinguen ahora de un vistazo"
+            }
+        ]
+    },
+    {
         "date": "2026-10-13",
         "description": [
             {

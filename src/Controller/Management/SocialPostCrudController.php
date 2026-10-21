@@ -23,6 +23,7 @@ use c975L\SocialBundle\Repository\SocialSeriesRepository;
 use c975L\SocialBundle\Service\SocialMediaChecker;
 use c975L\SocialBundle\Service\SocialMediaPicker;
 use c975L\SocialBundle\Service\SocialPlanner;
+use c975L\SocialBundle\Service\SocialPostApprover;
 use c975L\SocialBundle\Service\SocialPublisher;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
 use c975L\UiBundle\Contract\ScopedSocialContentSourceInterface;
@@ -48,6 +49,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Translation\TranslatableMessage;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Url;
@@ -76,6 +78,7 @@ class SocialPostCrudController extends AbstractCrudController
         private readonly SocialSeriesGenerator $seriesGenerator,
         private readonly SocialSeriesRepository $seriesRepository,
         private readonly SocialMediaPicker $mediaPicker,
+        private readonly SocialPostApprover $approver,
     ) {
     }
 
@@ -303,17 +306,24 @@ class SocialPostCrudController extends AbstractCrudController
         $this->flashMediaProblems($post, 'warning');
     }
 
-    // One message per network and problem, saying so; whether there was any
+    // One message per network and problem the post's medias meet, saying so; whether there was any
     private function flashMediaProblems(SocialPost $post, string $type): bool
     {
         $problems = $this->mediaChecker->check($post);
+        $this->flashProblems($problems, $type);
+
+        return [] !== $problems;
+    }
+
+    // One message per network and problem
+    /** @param array<string, list<TranslatableMessage>> $problems */
+    private function flashProblems(array $problems, string $type): void
+    {
         foreach ($problems as $network => $messages) {
             foreach ($messages as $message) {
                 $this->addFlash($type, ucfirst($network) . ' : ' . $message->trans($this->translator));
             }
         }
-
-        return [] !== $problems;
     }
 
     // The calendar's moment: an ISO moment brought to the quarter of an hour, a day alone at DEFAULT_HOUR - the next quarter of an hour for anything else, or a moment gone already
@@ -459,16 +469,18 @@ class SocialPostCrudController extends AbstractCrudController
             return $this->redirect($this->indexUrl());
         }
 
-        $approved = 0;
+        $posts = [];
         foreach ($batchActionDto->getEntityIds() as $id) {
             $post = $this->entityManager->find(SocialPost::class, $id);
-            if ($post instanceof SocialPost && $post->isApprovable() && !$this->flashMediaProblems($post, 'danger')) {
-                $post->approve();
-                ++$approved;
+            if ($post instanceof SocialPost && $post->isApprovable()) {
+                $posts[] = $post;
             }
         }
-        $this->entityManager->flush();
-        $this->addFlash('success', t('flash.social_posts_approved', ['%count%' => $approved], 'social'));
+        $refused = $this->approver->approveAll($posts);
+        foreach ($refused as $refusal) {
+            $this->flashProblems($refusal['problems'], 'danger');
+        }
+        $this->addFlash('success', t('flash.social_posts_approved', ['%count%' => \count($posts) - \count($refused)], 'social'));
 
         return $this->redirect($this->indexUrl());
     }

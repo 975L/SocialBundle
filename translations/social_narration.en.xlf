@@ -28,7 +28,7 @@
             </trans-unit>
             <trans-unit id="eg9BzH0">
                 <source>narration.guided_step_social_calendar_panel</source>
-                <target>Click a post on the calendar: its panel changes its date and time, approves it or takes it back to a draft, reorders or removes its medias, adds some from the site or changes its content, or opens its texts to edit them.</target>
+                <target>Click a post on the calendar: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once, reorders or removes its medias, adds some from the site or changes its content, or opens its texts to edit them.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>
@@ -168,7 +168,7 @@
             </trans-unit>
             <trans-unit id="I6Q3TO3">
                 <source>narration.guided_step_social_series_generate</source>
-                <target>Click "Generate the drafts": the calendar opens on the first one, leaving only the proofreading and the approval.</target>
+                <target>Click "Generate the drafts": the calendar opens on the first one, leaving only the proofreading, then the approval one by one or all at once with "Approve the series".</target>
             </trans-unit>
             <trans-unit id="CVYlOoX">
                 <source>narration.guided_step_social_series_media</source>

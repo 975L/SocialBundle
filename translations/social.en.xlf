@@ -92,7 +92,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, reorders or removes its medias, adds some from the site or changes its content, or opens its texts to edit them.</target>
+                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once, reorders or removes its medias, adds some from the site or changes its content, or opens its texts to edit them.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
@@ -212,7 +212,7 @@
             </trans-unit>
             <trans-unit id="lAe7DDv">
                 <source>description.guided_step_social_series_generate</source>
-                <target>The drafts are created and the calendar opens on the first one: proofread them, then approve them one by one or together.</target>
+                <target>The drafts are created and the calendar opens on the first one: proofread them, then approve them one by one, or all at once with "Approve the series" in the panel of any of them.</target>
             </trans-unit>
             <trans-unit id="3sBXLnS">
                 <source>description.guided_step_social_series_mode</source>
@@ -981,6 +981,10 @@
             <trans-unit id="sEl8agd">
                 <source>label.social_calendar</source>
                 <target>Calendar</target>
+            </trans-unit>
+            <trans-unit id="s2WL6hD">
+                <source>label.social_calendar_approve_series</source>
+                <target>Approve the series (%count%)</target>
             </trans-unit>
             <trans-unit id="bSspzgN">
                 <source>label.social_calendar_close</source>

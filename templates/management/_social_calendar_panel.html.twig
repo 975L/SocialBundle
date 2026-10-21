@@ -22,6 +22,12 @@
     </div>
 {% endif %}
 
+{# Every coming draft of the post's series approved at once, each at its own moment - not offered when the post's own "Approve" would do the same #}
+{% set own_draft = state == 'draft' and post.planned_at > date() ? 1 : 0 %}
+{% if series_drafts > own_draft %}
+    <twig:ea:Button type="button" variant="success" size="sm" icon="fa fa-layer-group" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve-series">{{ 'label.social_calendar_approve_series'|trans({'%count%': series_drafts}, 'social') }}</twig:ea:Button>
+{% endif %}
+
 {# The medias as they go out, in their order: dragged to another place, or taken off the post - the content's own picture shown while the post has none #}
 <div data-social-calendar-target="thumbnail" data-post-id="{{ post.id }}" data-image="{{ post.image }}">
     {% if medias is not empty %}

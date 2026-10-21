@@ -92,7 +92,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, réordonne ou retire ses médias, en ajoute depuis le site ou change son contenu, ou ouvre ses textes pour les modifier.</target>
+                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série, réordonne ou retire ses médias, en ajoute depuis le site ou change son contenu, ou ouvre ses textes pour les modifier.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
@@ -212,7 +212,7 @@
             </trans-unit>
             <trans-unit id="lAe7DDv">
                 <source>description.guided_step_social_series_generate</source>
-                <target>Les brouillons sont créés et le calendrier s'ouvre sur le premier : relisez-les, puis validez-les un par un ou ensemble.</target>
+                <target>Les brouillons sont créés et le calendrier s'ouvre sur le premier : relisez-les, puis validez-les un par un, ou tous d'un coup par « Valider la série » dans le panneau de l'un d'entre eux.</target>
             </trans-unit>
             <trans-unit id="3sBXLnS">
                 <source>description.guided_step_social_series_mode</source>
@@ -981,6 +981,10 @@
             <trans-unit id="sEl8agd">
                 <source>label.social_calendar</source>
                 <target>Calendrier</target>
+            </trans-unit>
+            <trans-unit id="s2WL6hD">
+                <source>label.social_calendar_approve_series</source>
+                <target>Valider la série (%count%)</target>
             </trans-unit>
             <trans-unit id="bSspzgN">
                 <source>label.social_calendar_close</source>

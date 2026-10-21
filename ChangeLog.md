@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.12.4
+
+Calendar panel approves a whole series at once
+
+- Calendar panel: "Valider la série" approves the series' coming drafts (21/10/2026)
+- Calendar cards taller, their networks shown in the week when there is room (21/10/2026)
+- Calendar cards tell their state by background and glyph (21/10/2026)
+- Calendar legend of the four states (21/10/2026)
+- Guided project: the panel step tells the series approval (21/10/2026)
+- Guided project: the series' generate step names "Valider la série" (21/10/2026)
+- Added `SocialPostApprover`, shared by the list's selection and the series approval (21/10/2026)
+
 ## v2.12.3
 
 Back-office screens drawn with EasyAdmin 5.7 components

@@ -85,31 +85,50 @@
 
 .social-calendar-card {
     display: flex;
-    gap: .25rem;
+    gap: .35rem;
     align-items: center;
-    padding: .15rem .25rem;
-    margin-top: .15rem;
+    padding: .25rem .4rem;
+    margin-top: .2rem;
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-left-width: 4px;
     border-radius: 4px;
-    background: var(--bs-body-bg, #fff);
-    border-left: 3px solid var(--bs-success, #198754);
     color: inherit;
     text-decoration: none;
-    font-size: .75rem;
+    font-size: .8rem;
     cursor: grab;
 
-    /* Gone out: greyed and never dragged, only opened */
-    &.is-published {
-        border-left-color: var(--bs-secondary, #6c757d);
-        opacity: .6;
-        cursor: pointer;
+    /* Its state read at a glance: a glyph and a background, not only the colour of its edge */
+    &::before {
+        flex: none;
+        font-weight: 700;
     }
 
+    /* Approved: waits for its moment */
+    &.is-approved {
+        background: var(--bs-success-bg-subtle, #d1e7dd);
+        border-color: var(--bs-success, #198754);
+
+        &::before {
+            content: #{"\"\\2713\""};
+            color: var(--bs-success, #198754);
+        }
+    }
+
+    /* A draft: waits for a reading, its edge dashed */
     &.is-draft {
-        border-left-color: var(--bs-danger, #dc3545);
+        background: var(--bs-body-bg, #fff);
+        border-style: dashed;
+        border-color: var(--bs-danger, #dc3545);
+
+        &::before {
+            content: #{"\"\\25CB\""};
+            color: var(--bs-danger, #dc3545);
+        }
     }
 
     &.is-failed {
-        border-left-color: var(--bs-orange, #fd7e14);
+        background: var(--bs-warning-bg-subtle, #fff3cd);
+        border-color: var(--bs-orange, #fd7e14);
 
         &::before {
             content: #{"\"\\26A0\""};
@@ -117,9 +136,26 @@
         }
     }
 
+    /* Gone out: greyed and never dragged, only opened */
+    &.is-published {
+        background: var(--bs-secondary-bg, #e9ecef);
+        border-color: var(--bs-secondary, #6c757d);
+        color: var(--bs-secondary-color, #6c757d);
+        cursor: pointer;
+
+        &::before {
+            content: #{"\"\\2714\""};
+        }
+
+        > img {
+            filter: grayscale(1);
+            opacity: .6;
+        }
+    }
+
     > img {
-        width: 24px;
-        height: 24px;
+        width: 28px;
+        height: 28px;
         object-fit: cover;
         border-radius: 2px;
         flex: none;
@@ -148,7 +184,7 @@
 }
 
 /* The week: a column of hours, then seven days of quarters of an hour, the items laid over the quarter they stand at */
-$quarter: 1rem;
+$quarter: 1.25rem;
 
 .social-week {
     display: grid;
@@ -228,23 +264,40 @@ $quarter: 1rem;
         min-width: 0;
     }
 
-    /* Compact on the grid: a quarter of an hour is short, and the networks are read in the panel */
+    /* Two quarters of an hour high on the grid, its networks shown when there is room */
     .social-calendar-card {
+        container-type: inline-size;
         margin-top: 0;
-        height: 22px;
-        padding: 1px 4px;
-        font-size: .7rem;
+        height: calc(2 * #{$quarter} - 2px);
+        padding: 2px 5px;
+        font-size: .78rem;
         line-height: 1.15;
 
         > img {
-            width: 16px;
-            height: 16px;
+            width: 30px;
+            height: 30px;
         }
 
         .social-network-badges {
-            display: none;
+            flex: none;
+
+            @container (max-width: 140px) {
+                display: none;
+            }
         }
     }
+}
+
+/* What a card's look says, above the calendar */
+.social-calendar-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.social-calendar-card.is-legend {
+    margin-top: 0;
+    cursor: default;
 }
 
 /* A card being dragged follows the pointer, the zones under it read through it */

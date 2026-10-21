@@ -21,6 +21,7 @@ use c975L\SocialBundle\Service\SocialCalendarFeed;
 use c975L\SocialBundle\Service\SocialMediaChecker;
 use c975L\SocialBundle\Service\SocialMediaPicker;
 use c975L\SocialBundle\Service\SocialPlanner;
+use c975L\SocialBundle\Service\SocialPostApprover;
 use c975L\SocialBundle\Service\SocialPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
@@ -33,7 +34,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatableMessage;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// The week - or the month - of publications: what went out, and every post still to go out at its planned moment, a draft as well as an approved one. A post is dragged onto another moment to plan it there, its approval untouched; a click opens it, a double click on a coming moment writes a new one there
+// The week - or the month - of publications: what went out, and every post still to go out at its planned moment, a draft as well as an approved one. A post is dragged onto another moment to plan it there, its approval untouched; a click opens it, where its whole series may be approved too; a double click on a coming moment writes a new one there
 class SocialCalendarController extends AbstractController
 {
     // The dashboard prefixes the AdminRoute name with its own route name (see SocialConnectionsController::ROUTE)
@@ -55,12 +56,15 @@ class SocialCalendarController extends AbstractController
 
     private const string TO_UNAPPROVE = 'unapprove';
 
+    // Every coming draft of the post's series approved at once
+    private const string TO_APPROVE_SERIES = 'approve-series';
+
     // The two views: a week of tall days, opened first, or a month of short ones
     private const string WEEK = 'week';
 
     private const string MONTH = 'month';
 
-    // How many quarters of an hour a card covers on the grid (a quarter being 1rem, a card 22px)
+    // How many quarters of an hour a card covers on the grid (a quarter being 1.25rem, a card 38px)
     private const int CARD_HEIGHT = 2;
 
     // The hours the week's grid shows when the site sets none
@@ -78,6 +82,7 @@ class SocialCalendarController extends AbstractController
         private readonly SocialMediaChecker $mediaChecker,
         private readonly TranslatorInterface $translator,
         private readonly SocialMediaPicker $mediaPicker,
+        private readonly SocialPostApprover $approver,
     ) {
     }
 
@@ -214,13 +219,14 @@ class SocialCalendarController extends AbstractController
             'medias' => $post->getMedias(),
             'editable' => !$post->hasGoneOut(),
             'targets' => $post->getTargets(),
+            'series_drafts' => null === $post->getSeries() ? 0 : $this->postRepository->countComingDraftsBySeries($post->getSeries(), new \DateTimeImmutable()),
             'connected' => $this->publisher->getConnectedNetworkNames(),
             'pick_media_url' => $this->mediaPicker->hasLibraries() ? $this->postUrl($post, 'pickMedia') : null,
             'change_content_url' => null === $this->publisher->browsableSourceOf($post) ? null : $this->postUrl($post, 'changeContent'),
         ]);
     }
 
-    // A post dropped on a moment - a quarter of an hour of the week, or a day of the month, keeping its time there - planned at it, its approval untouched; or the panel's approval and its withdrawal. A post gone out on every network moves no more
+    // A post dropped on a moment - a quarter of an hour of the week, or a day of the month, keeping its time there - planned at it, its approval untouched; or the panel's approval, its withdrawal, and the approval of its series. A post gone out on every network moves no more
     #[AdminRoute(path: '/social-calendar/move', name: 'social_calendar_move', options: ['methods' => ['POST']])]
     public function move(Request $request): Response
     {
@@ -231,11 +237,17 @@ class SocialCalendarController extends AbstractController
         }
 
         $post = $this->postRepository->find($request->request->getInt('post'));
+        $to = $request->request->getString('to');
+
+        // Offered on any post of the series, one gone out as well
+        if ($post instanceof SocialPost && self::TO_APPROVE_SERIES === $to) {
+            return $this->approveSeries($post);
+        }
+
         if (!$post instanceof SocialPost || 'published' === $post->getState()) {
             return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $to = $request->request->getString('to');
         // A media a network does not take refuses the approval, its reasons said in the answer
         $problems = self::TO_APPROVE === $to ? $this->mediaChecker->check($post) : [];
         if ([] !== $problems) {
@@ -255,6 +267,26 @@ class SocialCalendarController extends AbstractController
         $this->entityManager->flush();
 
         return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    // The series' coming drafts approved, each at its own moment - one whose medias a network does not take left a draft, its reasons said under its title
+    private function approveSeries(SocialPost $post): Response
+    {
+        $refused = array_map(fn (array $refusal): string => $refusal['post']->getTitle() . "\n" . $this->problemsText($refusal['problems']), $this->approver->approveAll($this->seriesDrafts($post)));
+
+        return [] === $refused ? new Response(null, Response::HTTP_NO_CONTENT) : new Response(implode("\n\n", $refused), Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    // The drafts of the post's series still to come, a moment gone being left alone: approved, it would go out at once. A post refused by a network is not one, retried by its own "Approve" only (see SocialPostRepository::countComingDraftsBySeries(), the panel's count)
+    /** @return list<SocialPost> */
+    private function seriesDrafts(SocialPost $post): array
+    {
+        $series = $post->getSeries();
+        if (null === $series) {
+            return [];
+        }
+
+        return array_values(array_filter($this->postRepository->findComingBySeries($series, new \DateTimeImmutable()), static fn (SocialPost $draft): bool => 'draft' === $draft->getState()));
     }
 
     // One line per network and problem, the way the post's screen says them

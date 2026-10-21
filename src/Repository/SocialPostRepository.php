@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Repository;
 use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
+use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -128,6 +129,41 @@ class SocialPostRepository extends ServiceEntityRepository
             ->setParameter('to', $to)
             ->getQuery()
             ->getResult();
+    }
+
+    // The posts of a series still to come, every target and media loaded - the medias being checked before each approval -, in their order: what "Approve the series" goes through
+    /** @return list<SocialPost> */
+    public function findComingBySeries(SocialSeries $series, \DateTimeImmutable $after): array
+    {
+        /* @var list<SocialPost> */
+        return $this->createQueryBuilder('p')
+            ->addSelect('t', 'm')
+            ->leftJoin('p.targets', 't')
+            ->leftJoin('p.medias', 'm')
+            ->where('p.series = :series')
+            ->andWhere('p.plannedAt > :after')
+            ->setParameter('series', $series)
+            ->setParameter('after', $after)
+            ->orderBy('p.plannedAt', \SortDirection::Ascending)
+            ->getQuery()
+            ->getResult();
+    }
+
+    // How many posts of a series still to come are drafts - waiting on a network, none approved nor refused anywhere (see SocialPost::getState()) -, counted without loading them: what "Approve the series" says it will approve
+    public function countComingDraftsBySeries(SocialSeries $series, \DateTimeImmutable $after): int
+    {
+        return (int) $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->where('p.series = :series')
+            ->andWhere('p.plannedAt > :after')
+            ->andWhere('EXISTS (SELECT d.id FROM ' . SocialPostTarget::class . ' d WHERE d.post = p AND d.status = :draft)')
+            ->andWhere('NOT EXISTS (SELECT o.id FROM ' . SocialPostTarget::class . ' o WHERE o.post = p AND o.status IN (:decided))')
+            ->setParameter('series', $series)
+            ->setParameter('after', $after)
+            ->setParameter('draft', SocialPostStatus::Draft)
+            ->setParameter('decided', [SocialPostStatus::Approved->value, SocialPostStatus::Failed->value])
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     // The posts gone out on every network they have - at least one -, planned before the moment given, that still hold a media - what the purge frees their files from
