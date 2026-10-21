@@ -180,7 +180,7 @@
             </trans-unit>
             <trans-unit id="2_2asy8">
                 <source>description.guided_step_social_posts_approve</source>
-                <target>Este botón valida la publicación: saldrá sola en su fecha prevista, en lugar de enviarse enseguida. Marque varios borradores para validarlos juntos con «Validar la selección».</target>
+                <target>Este botón con forma de calendario marcado valida la publicación: saldrá sola en su fecha prevista, en lugar de enviarse enseguida. Marque varios borradores para validarlos juntos con «Validar la selección».</target>
             </trans-unit>
             <trans-unit id="cJ_J6x4">
                 <source>description.guided_step_social_posts_change_content</source>
@@ -188,7 +188,7 @@
             </trans-unit>
             <trans-unit id="hq1t6co">
                 <source>description.guided_step_social_posts_edit</source>
-                <target>El botón de edición abre la publicación: un texto por red, cada uno limitado a la longitud que acepta esa red, bajo las fotos o el vídeo que saldrán con ella.</target>
+                <target>El botón del lápiz abre la publicación: un texto por red, cada uno limitado a la longitud que acepta esa red, bajo las fotos o el vídeo que saldrán con ella.</target>
             </trans-unit>
             <trans-unit id="xXIWC.O">
                 <source>description.guided_step_social_posts_open</source>
@@ -880,7 +880,7 @@
             </trans-unit>
             <trans-unit id="ehHeI2l">
                 <source>label.info_social_posts</source>
-                <target>Las publicaciones preparadas para sus redes, un texto por red, cada una en su fecha. Las que están en borrador esperan su revisión: corrija los textos, guarde y luego haga clic en «Validar» para que salga en su fecha, o en «Publicar» para enviarla enseguida. Eliminar una publicación la cancela.</target>
+                <target>Las publicaciones preparadas para sus redes, un texto por red, cada una en su fecha. Las que están en borrador esperan su revisión: corrija los textos, guarde y luego haga clic en el icono de calendario marcado («Validar») para que salga en su fecha, o en el avión de papel («Publicar») para enviarla enseguida. Eliminar una publicación (icono de papelera) la cancela.</target>
             </trans-unit>
             <trans-unit id="68T_uBv">
                 <source>label.info_social_series</source>

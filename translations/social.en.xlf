@@ -180,7 +180,7 @@
             </trans-unit>
             <trans-unit id="2_2asy8">
                 <source>description.guided_step_social_posts_approve</source>
-                <target>This button approves the post: it goes out on its own at its planned date, instead of being sent at once. Tick several drafts to approve them together with "Approve the selection".</target>
+                <target>This checked-calendar button approves the post: it goes out on its own at its planned date, instead of being sent at once. Tick several drafts to approve them together with "Approve the selection".</target>
             </trans-unit>
             <trans-unit id="cJ_J6x4">
                 <source>description.guided_step_social_posts_change_content</source>
@@ -188,7 +188,7 @@
             </trans-unit>
             <trans-unit id="hq1t6co">
                 <source>description.guided_step_social_posts_edit</source>
-                <target>The edit button opens the post: one text per network, each limited to the length that network accepts, under the photos or the video going out with it.</target>
+                <target>The pencil button opens the post: one text per network, each limited to the length that network accepts, under the photos or the video going out with it.</target>
             </trans-unit>
             <trans-unit id="xXIWC.O">
                 <source>description.guided_step_social_posts_open</source>
@@ -880,7 +880,7 @@
             </trans-unit>
             <trans-unit id="ehHeI2l">
                 <source>label.info_social_posts</source>
-                <target>The posts prepared for your networks, one text per network, each at its date. Those in draft wait for your reading: correct the texts, save, then click "Approve" for it to go out at its date, or "Publish" to send it at once. Deleting a post cancels it.</target>
+                <target>The posts prepared for your networks, one text per network, each at its date. Those in draft wait for your reading: correct the texts, save, then click the checked-calendar icon ("Approve") for it to go out at its date, or the paper plane ("Publish") to send it at once. Deleting a post (bin icon) cancels it.</target>
             </trans-unit>
             <trans-unit id="68T_uBv">
                 <source>label.info_social_series</source>

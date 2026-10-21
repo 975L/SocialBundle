@@ -127,17 +127,12 @@ class ShareButtonsSettingsCrudController extends AbstractCrudController
         $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')
             ->linkToCrudAction(Action::INDEX);
 
+        // EasyAdmin's own Edit and Delete as icons on the list, their label kept as the title
+        EasyAdminActionHelper::iconOnlyDefaults($actions, $this->translator);
+
         return $actions
             ->add(Crud::PAGE_NEW, $cancelAction)
             ->add(Crud::PAGE_EDIT, $cancelAction)
-            ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
-                $action,
-                $this->translator->trans('action.edit', [], 'EasyAdminBundle'),
-            ))
-            ->update(Crud::PAGE_INDEX, Action::DELETE, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
-                $action,
-                $this->translator->trans('action.delete', [], 'EasyAdminBundle'),
-            ))
             ->setPermission(Action::INDEX, $role)
             ->setPermission(Action::NEW, $role)
             ->setPermission(Action::EDIT, $role)

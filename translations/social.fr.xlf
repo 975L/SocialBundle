@@ -180,7 +180,7 @@
             </trans-unit>
             <trans-unit id="2_2asy8">
                 <source>description.guided_step_social_posts_approve</source>
-                <target>Ce bouton valide la publication : elle partira d'elle-même à sa date prévue, au lieu d'être envoyée tout de suite. Cochez plusieurs brouillons pour les valider ensemble avec « Valider la sélection ».</target>
+                <target>Ce bouton en forme de calendrier coché valide la publication : elle partira d'elle-même à sa date prévue, au lieu d'être envoyée tout de suite. Cochez plusieurs brouillons pour les valider ensemble avec « Valider la sélection ».</target>
             </trans-unit>
             <trans-unit id="cJ_J6x4">
                 <source>description.guided_step_social_posts_change_content</source>
@@ -188,7 +188,7 @@
             </trans-unit>
             <trans-unit id="hq1t6co">
                 <source>description.guided_step_social_posts_edit</source>
-                <target>Le bouton de modification ouvre la publication : un texte par réseau, chacun limité à la longueur que ce réseau accepte, sous les photos ou la vidéo qui partiront avec.</target>
+                <target>Le bouton crayon ouvre la publication : un texte par réseau, chacun limité à la longueur que ce réseau accepte, sous les photos ou la vidéo qui partiront avec.</target>
             </trans-unit>
             <trans-unit id="xXIWC.O">
                 <source>description.guided_step_social_posts_open</source>
@@ -880,7 +880,7 @@
             </trans-unit>
             <trans-unit id="ehHeI2l">
                 <source>label.info_social_posts</source>
-                <target>Les publications préparées pour vos réseaux, un texte par réseau, chacune à sa date. Celles en brouillon attendent votre relecture : corrigez les textes, enregistrez, puis cliquez sur « Valider » pour qu'elle parte à sa date, ou sur « Publier » pour l'envoyer tout de suite. Supprimer une publication l'annule.</target>
+                <target>Les publications préparées pour vos réseaux, un texte par réseau, chacune à sa date. Celles en brouillon attendent votre relecture : corrigez les textes, enregistrez, puis cliquez sur l'icône de calendrier coché (« Valider ») pour qu'elle parte à sa date, ou sur l'avion en papier (« Publier ») pour l'envoyer tout de suite. Supprimer une publication (icône corbeille) l'annule.</target>
             </trans-unit>
             <trans-unit id="68T_uBv">
                 <source>label.info_social_series</source>

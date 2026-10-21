@@ -3,6 +3,11 @@
         "date": "2026-10-21",
         "description": [
             {
+                "en": "On the posts list, editing and deleting are now icons, the pencil and the bin, like approving and publishing",
+                "fr": "Sur la liste des publications, modifier et supprimer sont désormais des icônes, le crayon et la corbeille, comme valider et publier",
+                "es": "En la lista de publicaciones, editar y eliminar son ahora iconos, el lápiz y la papelera, como validar y publicar"
+            },
+            {
                 "en": "Connecting Facebook and Instagram, pick the site's Page among those your account manages, its Instagram account shown beside it",
                 "fr": "En connectant Facebook et Instagram, choisissez la Page du site parmi celles que gère votre compte, son compte Instagram affiché à côté",
                 "es": "Al conectar Facebook e Instagram, elija la Página del sitio entre las que gestiona su cuenta, con su cuenta de Instagram al lado"

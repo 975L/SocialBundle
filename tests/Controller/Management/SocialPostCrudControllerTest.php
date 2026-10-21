@@ -123,6 +123,18 @@ class SocialPostCrudControllerTest extends TestCase
         $this->assertNull($actions->getAsDto(Crud::PAGE_EDIT)->getAction(Crud::PAGE_EDIT, 'publishPost'));
     }
 
+    // Every row action of the list is an icon, its name carried by the title
+    public function testRowActionsOfTheListAreIconOnly(): void
+    {
+        $index = $this->configureActions()->getAsDto(Crud::PAGE_INDEX);
+
+        foreach ([Action::EDIT, Action::DELETE, 'approvePost', 'unapprovePost', 'publishPost'] as $name) {
+            $action = $index->getAction(Crud::PAGE_INDEX, $name);
+            $this->assertFalse($action->getLabel(), $name);
+            $this->assertArrayHasKey('title', $action->getHtmlAttributes(), $name);
+        }
+    }
+
     // The libraries' medias are added to a saved post, from its page
     public function testPickingMediasIsOfferedOnThePostsPage(): void
     {

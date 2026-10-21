@@ -120,7 +120,7 @@
             </trans-unit>
             <trans-unit id="vcZmc00">
                 <source>narration.guided_step_social_posts_approve</source>
-                <target>Back on the list, "Approve" hands the post over to its planned date: it goes out on its own, instead of being sent at once.</target>
+                <target>Back on the list, the checked-calendar icon, "Approve", hands the post over to its planned date: it goes out on its own, instead of being sent at once.</target>
             </trans-unit>
             <trans-unit id="l7IZ8AF">
                 <source>narration.guided_step_social_posts_change_content</source>
@@ -128,7 +128,7 @@
             </trans-unit>
             <trans-unit id="4cJ._fk">
                 <source>narration.guided_step_social_posts_edit</source>
-                <target>The edit button opens the post: one text per network, each at the length that network accepts, under the photos or the video going out with it. Correct what needs to be.</target>
+                <target>The pencil button opens the post: one text per network, each at the length that network accepts, under the photos or the video going out with it. Correct what needs to be.</target>
             </trans-unit>
             <trans-unit id="HRyz2B3">
                 <source>narration.guided_step_social_posts_medias</source>

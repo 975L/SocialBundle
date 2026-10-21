@@ -162,6 +162,9 @@ class SocialPostCrudController extends AbstractCrudController
             ->createAsGlobalAction()
         ;
 
+        // EasyAdmin's own Edit and Delete as icons on the list, their label kept as the title
+        EasyAdminActionHelper::iconOnlyDefaults($actions, $this->translator);
+
         return $actions
             ->setPermission(Action::INDEX, $role)
             ->setPermission(Action::NEW, $role)
@@ -187,9 +190,19 @@ class SocialPostCrudController extends AbstractCrudController
             ->add(Crud::PAGE_INDEX, $approve)
             ->add(Crud::PAGE_INDEX, $unapprove)
             ->add(Crud::PAGE_INDEX, $publish)
-            ->update(Crud::PAGE_INDEX, 'approvePost', fn (Action $action) => EasyAdminActionHelper::toIconOnly($action, $this->translator->trans('label.social_post_approve', [], 'social')))
-            ->update(Crud::PAGE_INDEX, 'unapprovePost', fn (Action $action) => EasyAdminActionHelper::toIconOnly($action, $this->translator->trans('label.social_post_unapprove', [], 'social')))
-            ->update(Crud::PAGE_INDEX, 'publishPost', fn (Action $action) => EasyAdminActionHelper::toIconOnly($action, $this->translator->trans('label.social_post_publish', [], 'social')))
+            // Every row action of the list is an icon, its name kept as the title
+            ->update(Crud::PAGE_INDEX, 'approvePost', fn (Action $action) => EasyAdminActionHelper::toIconOnly(
+                $action,
+                $this->translator->trans('label.social_post_approve', [], 'social'),
+            ))
+            ->update(Crud::PAGE_INDEX, 'unapprovePost', fn (Action $action) => EasyAdminActionHelper::toIconOnly(
+                $action,
+                $this->translator->trans('label.social_post_unapprove', [], 'social'),
+            ))
+            ->update(Crud::PAGE_INDEX, 'publishPost', fn (Action $action) => EasyAdminActionHelper::toIconOnly(
+                $action,
+                $this->translator->trans('label.social_post_publish', [], 'social'),
+            ))
         ;
     }
 

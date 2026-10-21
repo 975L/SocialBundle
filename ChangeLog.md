@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.13.1
+
+Posts list's Edit and Delete shown as icons
+
+- Posts list: Edit and Delete icon-only, like the post's own actions (21/10/2026)
+- Edit and Delete icons drawn by `EasyAdminActionHelper::iconOnlyDefaults()` (21/10/2026)
+- Posts screen help names the icons (21/10/2026)
+- Guided project: the approve and edit steps name their icons (21/10/2026)
+- Required c975l/core-bundle ^1.72.2 (21/10/2026)
+
 ## v2.13.0
 
 Meta connection picks the site's Page among the account's

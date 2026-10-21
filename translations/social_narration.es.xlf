@@ -120,7 +120,7 @@
             </trans-unit>
             <trans-unit id="vcZmc00">
                 <source>narration.guided_step_social_posts_approve</source>
-                <target>De vuelta en la lista, «Validar» confía la publicación a su fecha prevista: saldrá sola, en lugar de enviarse enseguida.</target>
+                <target>De vuelta en la lista, el icono de calendario marcado, «Validar», confía la publicación a su fecha prevista: saldrá sola, en lugar de enviarse enseguida.</target>
             </trans-unit>
             <trans-unit id="l7IZ8AF">
                 <source>narration.guided_step_social_posts_change_content</source>
@@ -128,7 +128,7 @@
             </trans-unit>
             <trans-unit id="4cJ._fk">
                 <source>narration.guided_step_social_posts_edit</source>
-                <target>El botón de edición abre la publicación: un texto por red, cada uno con la longitud que acepta esa red, bajo las fotos o el vídeo que saldrán con ella. Corrija lo que haga falta.</target>
+                <target>El botón del lápiz abre la publicación: un texto por red, cada uno con la longitud que acepta esa red, bajo las fotos o el vídeo que saldrán con ella. Corrija lo que haga falta.</target>
             </trans-unit>
             <trans-unit id="HRyz2B3">
                 <source>narration.guided_step_social_posts_medias</source>
