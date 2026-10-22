@@ -80,15 +80,15 @@
             </trans-unit>
             <trans-unit id="y3lKM_7">
                 <source>description.guided_step_social_calendar_move</source>
-                <target>Arrastre una publicación a una hora próxima de la semana, o a un día próximo del mes donde conserva su hora: queda prevista allí, su validación no cambia.</target>
+                <target>Arrastre una publicación a una hora próxima de la semana o del día, o a un día próximo del mes donde conserva su hora: queda prevista allí, su validación no cambia.</target>
             </trans-unit>
             <trans-unit id="QikFj7G">
                 <source>description.guided_step_social_calendar_new</source>
-                <target>«Nueva publicación» abre una publicación por escribir, prevista para el próximo cuarto de hora. Un doble clic en una hora próxima de la semana, o en un día del mes, la abre directamente en ese momento.</target>
+                <target>«Nueva publicación» abre una publicación por escribir, prevista para el próximo cuarto de hora. Un doble clic en una hora próxima de la semana o del día, o en un día del mes, la abre directamente en ese momento.</target>
             </trans-unit>
             <trans-unit id="17dUjo3">
                 <source>description.guided_step_social_calendar_open</source>
-                <target>La semana de publicaciones: las enviadas, y todas las próximas en su fecha y hora, en rojo por validar, en verde validadas. «Mes» muestra el mes entero. Las horas mostradas se ajustan en la configuración.</target>
+                <target>La semana de publicaciones: las enviadas, y todas las próximas en su fecha y hora, en rojo por validar, en verde validadas. «Día» muestra un solo día, «Mes» el mes entero; haga clic en la fecha de un día para abrirlo. Las horas mostradas se ajustan en la configuración.</target>
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
@@ -96,7 +96,7 @@
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
-                <target>La pantalla «Conexiones», en el submenú «Social» de la barra lateral: cada red tiene allí su ficha, con su estado y su botón «Conectar».</target>
+                <target>La pantalla «Conexiones», en el submenú «Social» de la barra lateral: cada red tiene allí su ficha, con su estado, las cuentas a las que llega (abiertas en la red con un clic) y su botón «Conectar».</target>
             </trans-unit>
             <trans-unit id="Q2.88W1">
                 <source>description.guided_step_social_google_connect</source>
@@ -168,7 +168,7 @@
             </trans-unit>
             <trans-unit id="a4QkcYj">
                 <source>description.guided_step_social_meta_connect</source>
-                <target>Hacer clic en "Conectar" en la ficha "Facebook e Instagram" y autorizar el acceso con la cuenta de Facebook que gestiona la Página, marcando la Página y su cuenta de Instagram en "Editar acceso". Si la cuenta gestiona varias Páginas, el sitio pregunta luego cuál elegir. Guarda por sí mismo la Página, su token y la cuenta de Instagram.</target>
+                <target>Hacer clic en "Conectar" en la ficha "Facebook e Instagram" y autorizar el acceso con la cuenta de Facebook que gestiona la Página, marcando la Página y su cuenta de Instagram en "Editar acceso". Si la cuenta gestiona varias Páginas, el sitio pregunta luego cuál elegir. Guarda por sí mismo la Página, su token y la cuenta de Instagram, mostrados luego en la ficha con su nombre.</target>
             </trans-unit>
             <trans-unit id="0xEpiaR">
                 <source>description.guided_step_social_meta_credentials</source>
@@ -429,10 +429,6 @@
             <trans-unit id="tKFuD86">
                 <source>label.category_navigation</source>
                 <target>Navegación</target>
-            </trans-unit>
-            <trans-unit id="lXCPPAS">
-                <source>label.connection_account</source>
-                <target>Cuenta: %account%</target>
             </trans-unit>
             <trans-unit id="h7bW5vi">
                 <source>label.connection_connect</source>
@@ -832,7 +828,7 @@
             </trans-unit>
             <trans-unit id="QtqwtAv">
                 <source>label.info_meta_connect</source>
-                <target>Vincula el sitio con su Página de Facebook y la cuenta profesional de Instagram asociada: se hace una vez, y de nuevo si se retira el acceso.</target>
+                <target>Vincula el sitio con su Página de Facebook y la cuenta profesional de Instagram asociada: se hace una vez, y de nuevo si se retira el acceso. Tras un cambio de nombre de la cuenta de Instagram, vuelva a conectar para actualizar el enlace.</target>
             </trans-unit>
             <trans-unit id="to_3wK2">
                 <source>label.info_meta_not_configured</source>
@@ -997,6 +993,10 @@
             <trans-unit id="bSspzgN">
                 <source>label.social_calendar_close</source>
                 <target>Cerrar</target>
+            </trans-unit>
+            <trans-unit id="7W.yGmo">
+                <source>label.social_calendar_day</source>
+                <target>Día</target>
             </trans-unit>
             <trans-unit id="l0Dqa_D">
                 <source>label.social_calendar_drag_hint</source>

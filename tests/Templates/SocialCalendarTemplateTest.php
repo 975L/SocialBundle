@@ -47,13 +47,14 @@ class SocialCalendarTemplateTest extends TestCase
         $published = [['kind' => 'published', 'at' => $evening->modify('-1 day')] + ['networks' => ['facebook']] + $card(7, 'published', $evening->modify('-2 days'))];
         // The week's two quarters of an hour around the planned post, the first one gone by
         $cells = [['at' => $planned->modify('-15 minutes'), 'open' => false], ['at' => $planned, 'open' => true]];
-        $day = static fn (string $date, bool $open, array $dayItems, array $rows): array => ['date' => new \DateTimeImmutable($date), 'open' => $open, 'in_month' => true, 'today' => false, 'items' => $dayItems, 'cells' => 'week' === $view ? $cells : [], 'rows' => 'week' === $view ? $rows : []];
+        $day = static fn (string $date, bool $open, array $dayItems, array $rows): array => ['date' => new \DateTimeImmutable($date), 'open' => $open, 'in_month' => true, 'today' => false, 'items' => $dayItems, 'cells' => 'month' !== $view ? $cells : [], 'rows' => 'month' !== $view ? $rows : []];
 
         return $twig->render('@c975LSocial/management/social_calendar.html.twig', [
             'view' => $view,
             'title' => '28 sept. - 4 oct. 2026',
             'date' => '2026-09-28',
-            'hours' => 'week' === $view ? ['06:00', '07:00'] : [],
+            'day_date' => '2026-09-28',
+            'hours' => 'month' !== $view ? ['06:00', '07:00'] : [],
             'networks' => [['name' => 'bluesky', 'connected' => true], ['name' => 'linkedin', 'connected' => false]],
             'connected' => ['bluesky'],
             'connections_route' => 'management_social_connections',
@@ -93,6 +94,19 @@ class SocialCalendarTemplateTest extends TestCase
             'series_drafts' => $seriesDrafts,
             'connected' => ['bluesky'],
         ]);
+    }
+
+    // The day: the week's grid narrowed to one column, its button pressed - a day's heading in the week and in the month opening it
+    public function testTheDayIsTheWeeksGridOnOneColumn(): void
+    {
+        $html = $this->render('day');
+
+        $this->assertStringContainsString('social-week social-week--day', $html);
+        $this->assertStringContainsString('class="social-week-hour">06:00', $html);
+        $this->assertStringContainsString('btn-primary" role="button" href="/management_social_calendar?view=day&amp;date=2026-09-28"', $html);
+        $this->assertStringContainsString('view=day&amp;date=2026-10-04', $this->render('week'));
+        $this->assertStringContainsString('view=day&amp;date=2026-10-04', $this->render('month'));
+        $this->assertStringNotContainsString('social-week--day', $this->render('week'));
     }
 
     // The week: every coming quarter of an hour a drop zone at its moment, one gone by none, and each item laid at its quarter

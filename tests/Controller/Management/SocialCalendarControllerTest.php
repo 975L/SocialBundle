@@ -30,6 +30,7 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -198,7 +199,7 @@ class SocialCalendarControllerTest extends TestCase
 
             return 'panel';
         });
-        $services = ['request_stack' => new RequestStack([$request]), 'security.authorization_checker' => $authorizationChecker, 'security.csrf.token_manager' => $csrf, 'twig' => $twig];
+        $services = ['request_stack' => new RequestStack([$request]), 'security.authorization_checker' => $authorizationChecker, 'security.csrf.token_manager' => $csrf, 'twig' => $twig, 'router' => $this->createStub(UrlGeneratorInterface::class)];
         $container = $this->createStub(ContainerInterface::class);
         $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
         $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
@@ -221,6 +222,32 @@ class SocialCalendarControllerTest extends TestCase
         \assert($target instanceof SocialPostTarget);
 
         return $target;
+    }
+
+    // The day: the week's grid on that day alone, with its quarters of an hour, the arrows moving a day at a time
+    public function testTheDayViewShowsOneDayOfQuartersOfAnHour(): void
+    {
+        $request = Request::create('/', 'GET', ['view' => 'day', 'date' => '2026-10-22']);
+        $this->createController($request)->index($request);
+
+        $this->assertSame('day', $this->rendered['view']);
+        $this->assertSame(['2026-10-21', '2026-10-23', '2026-10-22'], [$this->rendered['previous'], $this->rendered['next'], $this->rendered['date']]);
+        $this->assertCount(1, $this->rendered['weeks']);
+        $this->assertCount(1, $this->rendered['weeks'][0]);
+        $this->assertNotEmpty($this->rendered['weeks'][0][0]['cells']);
+        $this->assertNotEmpty($this->rendered['hours']);
+    }
+
+    // "Day" opens on today when the period shown holds it, on the period's first day otherwise
+    public function testTheDayButtonOpensTodayWhenShown(): void
+    {
+        $request = Request::create('/', 'GET', ['view' => 'month']);
+        $this->createController($request)->index($request);
+        $this->assertSame(new \DateTimeImmutable('today')->format('Y-m-d'), $this->rendered['day_date']);
+
+        $request = Request::create('/', 'GET', ['view' => 'week', 'date' => '2020-01-08']);
+        $this->createController($request)->index($request);
+        $this->assertSame('2020-01-06', $this->rendered['day_date']);
     }
 
     // A draft dropped on a quarter of an hour is planned there, the moment brought to the server's own time zone, and stays a draft

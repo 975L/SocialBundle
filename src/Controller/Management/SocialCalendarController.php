@@ -34,7 +34,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatableMessage;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// The week - or the month - of publications: what went out, and every post still to go out at its planned moment, a draft as well as an approved one. A post is dragged onto another moment to plan it there, its approval untouched; a click opens it, where its whole series may be approved too; a double click on a coming moment writes a new one there
+// The week - or the day, or the month - of publications: what went out, and every post still to go out at its planned moment, a draft as well as an approved one. A post is dragged onto another moment to plan it there, its approval untouched; a click opens it, where its whole series may be approved too; a double click on a coming moment writes a new one there
 class SocialCalendarController extends AbstractController
 {
     // The dashboard prefixes the AdminRoute name with its own route name (see SocialConnectionsController::ROUTE)
@@ -59,8 +59,10 @@ class SocialCalendarController extends AbstractController
     // Every coming draft of the post's series approved at once
     private const string TO_APPROVE_SERIES = 'approve-series';
 
-    // The two views: a week of tall days, opened first, or a month of short ones
+    // The three views: a week of tall days, opened first, a single day the same way, or a month of short ones
     private const string WEEK = 'week';
+
+    private const string DAY = 'day';
 
     private const string MONTH = 'month';
 
@@ -93,7 +95,12 @@ class SocialCalendarController extends AbstractController
 
         $locale = $request->getLocale();
         $date = $this->date($request->query->getString('date'));
-        $month = self::MONTH === $request->query->getString('view');
+        $view = match ($request->query->getString('view')) {
+            self::MONTH => self::MONTH,
+            self::DAY => self::DAY,
+            default => self::WEEK,
+        };
+        $month = self::MONTH === $view;
         if ($month) {
             // Whole weeks, Monday first, so the grid has no hole at either end
             $anchor = $date->modify('first day of this month');
@@ -101,6 +108,11 @@ class SocialCalendarController extends AbstractController
             $end = $this->monday($anchor->modify('first day of next month')->modify('+6 days'));
             $title = $this->format($anchor, 'LLLL y', $locale);
             [$previous, $next] = [$anchor->modify('-1 month'), $anchor->modify('+1 month')];
+        } elseif (self::DAY === $view) {
+            $anchor = $start = $date;
+            $end = $start->modify('+1 day');
+            $title = $this->format($start, 'EEEE d MMMM y', $locale);
+            [$previous, $next] = [$start->modify('-1 day'), $end];
         } else {
             $anchor = $start = $this->monday($date);
             $end = $start->modify('+7 days');
@@ -109,12 +121,15 @@ class SocialCalendarController extends AbstractController
         }
 
         $connected = $this->publisher->getConnectedNetworkNames();
+        $today = new \DateTimeImmutable('today');
 
         return $this->render('@c975LSocial/management/social_calendar.html.twig', [
-            'view' => $month ? self::MONTH : self::WEEK,
+            'view' => $view,
             'title' => $title,
-            // Kept when switching between the two views
+            // Kept when switching between the three views
             'date' => $anchor->format('Y-m-d'),
+            // The day the "Day" view opens on: today when it is shown, the period's first day otherwise
+            'day_date' => ($today >= $start && $today < $end ? $today : $anchor)->format('Y-m-d'),
             'weekdays' => array_map(fn (int $day): string => $this->format($start->modify('+' . $day . ' days'), 'EEE', $locale), range(0, 6)),
             'weeks' => array_chunk($this->days($start, $end, $month ? $anchor : null), 7),
             'hours' => $month ? [] : $this->hours(),

@@ -80,15 +80,15 @@
             </trans-unit>
             <trans-unit id="y3lKM_7">
                 <source>description.guided_step_social_calendar_move</source>
-                <target>Drag a post onto a coming time of the week, or onto a coming day of the month where it keeps its time: it is planned there, its approval unchanged.</target>
+                <target>Drag a post onto a coming time of the week or the day, or onto a coming day of the month where it keeps its time: it is planned there, its approval unchanged.</target>
             </trans-unit>
             <trans-unit id="QikFj7G">
                 <source>description.guided_step_social_calendar_new</source>
-                <target>"New post" opens a post to write, planned at the next quarter of an hour. A double click on a coming time of the week, or on a day of the month, opens it at that very moment.</target>
+                <target>"New post" opens a post to write, planned at the next quarter of an hour. A double click on a coming time of the week or the day, or on a day of the month, opens it at that very moment.</target>
             </trans-unit>
             <trans-unit id="17dUjo3">
                 <source>description.guided_step_social_calendar_open</source>
-                <target>The week of posts: those gone out, and every coming one at its date and time, red to approve, green approved. "Month" shows the whole month. The hours shown are set in the configuration.</target>
+                <target>The week of posts: those gone out, and every coming one at its date and time, red to approve, green approved. "Day" shows a single day, "Month" the whole month; click a day's date to open it. The hours shown are set in the configuration.</target>
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
@@ -96,7 +96,7 @@
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
-                <target>The "Connections" screen, in the sidebar's "Social" submenu: each network has its tile there, with its state and its "Connect" button.</target>
+                <target>The "Connections" screen, in the sidebar's "Social" submenu: each network has its tile there, with its state, the accounts it reaches (opened on the network with a click) and its "Connect" button.</target>
             </trans-unit>
             <trans-unit id="Q2.88W1">
                 <source>description.guided_step_social_google_connect</source>
@@ -168,7 +168,7 @@
             </trans-unit>
             <trans-unit id="a4QkcYj">
                 <source>description.guided_step_social_meta_connect</source>
-                <target>Click "Connect" on the "Facebook &amp; Instagram" tile, then grant access with the Facebook account managing the Page, ticking the Page and its Instagram account under "Edit access". If the account manages several Pages, the site then asks which one to pick. It stores the Page, its token and the Instagram account by itself.</target>
+                <target>Click "Connect" on the "Facebook &amp; Instagram" tile, then grant access with the Facebook account managing the Page, ticking the Page and its Instagram account under "Edit access". If the account manages several Pages, the site then asks which one to pick. It stores the Page, its token and the Instagram account by itself, then shown on the tile under their names.</target>
             </trans-unit>
             <trans-unit id="0xEpiaR">
                 <source>description.guided_step_social_meta_credentials</source>
@@ -429,10 +429,6 @@
             <trans-unit id="tKFuD86">
                 <source>label.category_navigation</source>
                 <target>Navigation</target>
-            </trans-unit>
-            <trans-unit id="lXCPPAS">
-                <source>label.connection_account</source>
-                <target>Account: %account%</target>
             </trans-unit>
             <trans-unit id="h7bW5vi">
                 <source>label.connection_connect</source>
@@ -832,7 +828,7 @@
             </trans-unit>
             <trans-unit id="QtqwtAv">
                 <source>label.info_meta_connect</source>
-                <target>Links the site to your Facebook Page and the Instagram professional account attached to it: done once, then again if the access is withdrawn.</target>
+                <target>Links the site to your Facebook Page and the Instagram professional account attached to it: done once, then again if the access is withdrawn. After the Instagram account is renamed, reconnect to update its link.</target>
             </trans-unit>
             <trans-unit id="to_3wK2">
                 <source>label.info_meta_not_configured</source>
@@ -997,6 +993,10 @@
             <trans-unit id="bSspzgN">
                 <source>label.social_calendar_close</source>
                 <target>Close</target>
+            </trans-unit>
+            <trans-unit id="7W.yGmo">
+                <source>label.social_calendar_day</source>
+                <target>Day</target>
             </trans-unit>
             <trans-unit id="l0Dqa_D">
                 <source>label.social_calendar_drag_hint</source>

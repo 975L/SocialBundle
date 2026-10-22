@@ -20,6 +20,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Translation\TranslatableMessage;
 use Twig\Environment;
 
 // What each tile of "Connexions" is handed: the screen only reads the networks' clients, it never writes
@@ -29,16 +30,17 @@ class SocialConnectionsControllerTest extends TestCase
     private array $rendered = [];
 
     // Same seam as SocialCalendarControllerTest: AbstractController resolves security and Twig through its container
-    private function networks(BlueskyOAuthClient $bluesky, string $host = 'site.example'): array
+    /** @param array<string, string> $configs */
+    private function networks(BlueskyOAuthClient $bluesky, string $host = 'site.example', array $configs = []): array
     {
-        $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturnCallback(static fn (string $key) => match ($key) {
+        $configs += [
             'site-role-editor' => 'ROLE_EDITOR',
             'social-bluesky-handle' => ' me.bsky.social ',
             'social-meta-page-id' => '123',
             'social-meta-instagram-id' => '',
-            default => null,
-        });
+        ];
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnCallback(static fn (string $key) => $configs[$key] ?? null);
 
         $meta = $this->createStub(MetaGraphClient::class);
         $meta->method('isConfigured')->willReturn(true);
@@ -88,14 +90,30 @@ class SocialConnectionsControllerTest extends TestCase
 
         $this->assertSame(['bluesky', 'meta', 'linkedin', 'google'], array_keys($networks));
         $this->assertSame(['social_bluesky_oauth_connect', 'social_meta_oauth_connect', 'social_linkedin_oauth_connect', 'social_google_oauth_connect'], array_column($networks, 'route'));
-        $this->assertSame('me.bsky.social', $networks['bluesky']['account']);
+        $this->assertSame([['icon' => 'fab fa-bluesky', 'name' => 'me.bsky.social', 'url' => 'https://bsky.app/profile/me.bsky.social']], $networks['bluesky']['accounts']);
+        $this->assertSame([['icon' => 'fab fa-facebook', 'name' => '123', 'url' => 'https://www.facebook.com/123']], $networks['meta']['accounts']);
         $this->assertTrue($networks['meta']['configured']);
         $this->assertFalse($networks['meta']['connected']);
         $this->assertFalse($networks['meta']['instagram']);
         $this->assertTrue($networks['linkedin']['connected']);
         $this->assertInstanceOf(\DateTimeImmutable::class, $networks['linkedin']['expires_at']);
         $this->assertFalse($networks['google']['configured']);
-        $this->assertNull($networks['google']['account']);
+        $this->assertSame([], $networks['google']['accounts']);
+    }
+
+    // The Page under its name and the Instagram account under its username, each linked - one connected before their names were stored left unnamed and unlinked
+    public function testTheMetaTileLinksThePageAndTheInstagramAccount(): void
+    {
+        $named = $this->networks($this->bluesky(), configs: ['social-meta-page-name' => 'Papa Câlin', 'social-meta-instagram-id' => '77', 'social-meta-instagram-username' => 'papacalin']);
+        $this->assertSame([
+            ['icon' => 'fab fa-facebook', 'name' => 'Papa Câlin', 'url' => 'https://www.facebook.com/123'],
+            ['icon' => 'fab fa-instagram', 'name' => '@papacalin', 'url' => 'https://www.instagram.com/papacalin/'],
+        ], $named['meta']['accounts']);
+
+        $unnamed = $this->networks($this->bluesky(), configs: ['social-meta-instagram-id' => '77']);
+        $instagram = $unnamed['meta']['accounts'][1];
+        $this->assertInstanceOf(TranslatableMessage::class, $instagram['name']);
+        $this->assertSame(['label.social_meta_page_instagram_linked', null], [$instagram['name']->getMessage(), $instagram['url']]);
     }
 
     // On the site's own address there is nothing to warn about; anywhere else the tile names the address to connect from

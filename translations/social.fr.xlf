@@ -80,15 +80,15 @@
             </trans-unit>
             <trans-unit id="y3lKM_7">
                 <source>description.guided_step_social_calendar_move</source>
-                <target>Glissez une publication sur une heure à venir de la semaine, ou sur un jour à venir du mois où elle garde son heure : elle y est prévue, sa validation ne change pas.</target>
+                <target>Glissez une publication sur une heure à venir de la semaine ou du jour, ou sur un jour à venir du mois où elle garde son heure : elle y est prévue, sa validation ne change pas.</target>
             </trans-unit>
             <trans-unit id="QikFj7G">
                 <source>description.guided_step_social_calendar_new</source>
-                <target>« Nouvelle publication » ouvre une publication à écrire, prévue au prochain quart d'heure. Un double-clic sur une heure à venir de la semaine, ou sur un jour du mois, l'ouvre directement à ce moment-là.</target>
+                <target>« Nouvelle publication » ouvre une publication à écrire, prévue au prochain quart d'heure. Un double-clic sur une heure à venir de la semaine ou du jour, ou sur un jour du mois, l'ouvre directement à ce moment-là.</target>
             </trans-unit>
             <trans-unit id="17dUjo3">
                 <source>description.guided_step_social_calendar_open</source>
-                <target>La semaine des publications : celles parties, et toutes celles à venir à leur date et heure, en rouge à valider, en vert validées. « Mois » montre le mois entier. Les heures affichées se règlent dans la configuration.</target>
+                <target>La semaine des publications : celles parties, et toutes celles à venir à leur date et heure, en rouge à valider, en vert validées. « Jour » montre une seule journée, « Mois » le mois entier ; cliquez la date d'un jour pour l'ouvrir. Les heures affichées se règlent dans la configuration.</target>
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
@@ -96,7 +96,7 @@
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
-                <target>L'écran « Connexions », dans le menu « Social » de la barre latérale : chaque réseau y a sa tuile, avec son état et son bouton « Connecter ».</target>
+                <target>L'écran « Connexions », dans le menu « Social » de la barre latérale : chaque réseau y a sa tuile, avec son état, les comptes qu'il atteint (ouverts sur le réseau d'un clic) et son bouton « Connecter ».</target>
             </trans-unit>
             <trans-unit id="Q2.88W1">
                 <source>description.guided_step_social_google_connect</source>
@@ -168,7 +168,7 @@
             </trans-unit>
             <trans-unit id="a4QkcYj">
                 <source>description.guided_step_social_meta_connect</source>
-                <target>Cliquer sur "Connecter" dans la tuile "Facebook et Instagram", puis autoriser l'accès avec le compte Facebook qui gère la Page, en cochant la Page et son compte Instagram sous "Modifier l'accès". Si le compte gère plusieurs Pages, le site demande ensuite laquelle choisir. Il enregistre lui-même la Page, son jeton et le compte Instagram.</target>
+                <target>Cliquer sur "Connecter" dans la tuile "Facebook et Instagram", puis autoriser l'accès avec le compte Facebook qui gère la Page, en cochant la Page et son compte Instagram sous "Modifier l'accès". Si le compte gère plusieurs Pages, le site demande ensuite laquelle choisir. Il enregistre lui-même la Page, son jeton et le compte Instagram, affichés ensuite sur la tuile sous leur nom.</target>
             </trans-unit>
             <trans-unit id="0xEpiaR">
                 <source>description.guided_step_social_meta_credentials</source>
@@ -429,10 +429,6 @@
             <trans-unit id="tKFuD86">
                 <source>label.category_navigation</source>
                 <target>Navigation</target>
-            </trans-unit>
-            <trans-unit id="lXCPPAS">
-                <source>label.connection_account</source>
-                <target>Compte : %account%</target>
             </trans-unit>
             <trans-unit id="h7bW5vi">
                 <source>label.connection_connect</source>
@@ -832,7 +828,7 @@
             </trans-unit>
             <trans-unit id="QtqwtAv">
                 <source>label.info_meta_connect</source>
-                <target>Relie le site à votre Page Facebook et au compte Instagram professionnel qui lui est associé : à faire une fois, puis à refaire si l'accès est retiré.</target>
+                <target>Relie le site à votre Page Facebook et au compte Instagram professionnel qui lui est associé : à faire une fois, puis à refaire si l'accès est retiré. Après un changement de nom du compte Instagram, reconnectez pour mettre à jour le lien.</target>
             </trans-unit>
             <trans-unit id="to_3wK2">
                 <source>label.info_meta_not_configured</source>
@@ -997,6 +993,10 @@
             <trans-unit id="bSspzgN">
                 <source>label.social_calendar_close</source>
                 <target>Fermer</target>
+            </trans-unit>
+            <trans-unit id="7W.yGmo">
+                <source>label.social_calendar_day</source>
+                <target>Jour</target>
             </trans-unit>
             <trans-unit id="l0Dqa_D">
                 <source>label.social_calendar_drag_hint</source>

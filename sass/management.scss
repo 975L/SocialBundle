@@ -79,6 +79,17 @@
     font-weight: 600;
 }
 
+/* A day's date opens it in the day view, its link drawn as the heading it stands for */
+.social-calendar-date a,
+.social-week-head a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
 .social-calendar-day.is-over {
     background: var(--bs-info-bg-subtle, #cff4fc);
 }
@@ -192,11 +203,16 @@ $quarter: 1.25rem;
     gap: 2px;
 }
 
-/* Scrolled sideways on a narrow screen rather than squeezed: seven days a few pixels wide would show no card at all */
+/* The day: the same grid, one column wide */
+.social-week--day {
+    grid-template-columns: 3.25rem minmax(0, 1fr);
+}
+
+/* Scrolled sideways on a narrow screen rather than squeezed: seven days a few pixels wide would show no card at all - a single day fits as it is */
 .social-week-scroll {
     overflow-x: auto;
 
-    .social-week {
+    .social-week:not(.social-week--day) {
         min-width: 48rem;
     }
 }

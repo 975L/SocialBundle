@@ -19,8 +19,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Translation\TranslatableMessage;
 
-// One screen for every network the site connects to, connected or not: what each connection is for, where it stands, and the button that makes or remakes it - the connected accounts being what turns the publication on (see SocialPublisher::isEnabled())
+use function Symfony\Component\Translation\t;
+
+// One screen for every network the site connects to, connected or not: what each connection is for, where it stands, the accounts it reaches - each opened on its network - and the button that makes or remakes it - the connected accounts being what turns the publication on (see SocialPublisher::isEnabled())
 class SocialConnectionsController extends AbstractController
 {
     // The dashboard prefixes the AdminRoute name with its own route name (see GalleryMediaUploadController::UPLOAD_ROUTE)
@@ -54,6 +57,7 @@ class SocialConnectionsController extends AbstractController
     /** @return array<string, mixed> */
     private function bluesky(string $host): array
     {
+        $handle = $this->value('social-bluesky-handle');
         $siteUrl = null;
         try {
             $siteUrl = $this->blueskyOAuthClient->isSiteHost($host) ? null : $this->blueskyOAuthClient->siteUrl();
@@ -67,7 +71,7 @@ class SocialConnectionsController extends AbstractController
             'route' => 'social_bluesky_oauth_connect',
             'configured' => true,
             'connected' => $this->blueskyOAuthClient->isConnected(),
-            'account' => $this->value('social-bluesky-handle'),
+            'accounts' => $this->accounts(['fab fa-bluesky', $handle, null === $handle ? null : 'https://bsky.app/profile/' . $handle]),
             'site_url' => $siteUrl,
         ];
     }
@@ -76,7 +80,14 @@ class SocialConnectionsController extends AbstractController
     /** @return array<string, mixed> */
     private function meta(): array
     {
+        $page = $this->value('social-meta-page-id');
         $instagram = $this->value('social-meta-instagram-id');
+        $username = $this->value('social-meta-instagram-username');
+
+        // The Page's name and the Instagram username are stored by the connection since 2.14: one made before shows the Page's id, and the Instagram account unnamed and unlinked
+        $pageName = null === $page ? null : ($this->value('social-meta-page-name') ?? $page);
+        $instagramName = null === $instagram ? null : (null === $username ? t('label.social_meta_page_instagram_linked', [], 'social') : '@' . $username);
+        $instagramUrl = null === $username ? null : 'https://www.instagram.com/' . $username . '/';
 
         return [
             'name' => 'meta',
@@ -84,7 +95,10 @@ class SocialConnectionsController extends AbstractController
             'route' => 'social_meta_oauth_connect',
             'configured' => $this->metaGraphClient->isConfigured(),
             'connected' => null !== $this->metaGraphClient->pageToken(),
-            'account' => $this->value('social-meta-page-id'),
+            'accounts' => $this->accounts(
+                ['fab fa-facebook', $pageName, null === $page ? null : 'https://www.facebook.com/' . $page],
+                ['fab fa-instagram', $instagramName, $instagramUrl],
+            ),
             'instagram' => null !== $instagram,
         ];
     }
@@ -99,7 +113,7 @@ class SocialConnectionsController extends AbstractController
             'route' => 'social_linkedin_oauth_connect',
             'configured' => $this->linkedInClient->isConfigured(),
             'connected' => $this->linkedInClient->isConnected(),
-            'account' => null,
+            'accounts' => [],
             'expires_at' => $this->linkedInClient->expiresAt(),
         ];
     }
@@ -114,8 +128,26 @@ class SocialConnectionsController extends AbstractController
             'route' => 'social_google_oauth_connect',
             'configured' => $this->googleOAuthClient->isConfigured(),
             'connected' => $this->googleOAuthClient->isConnected(),
-            'account' => $this->value('social-google-business-location-id'),
+            'accounts' => $this->accounts(['fab fa-google', $this->value('social-google-business-location-id'), null]),
         ];
+    }
+
+    // The accounts a connection reaches, each given as [icon, name, link] - one with no name left out, one known by no name yet given a label to translate, one with no link shown as its name alone
+    /**
+     * @param array{0: string, 1: string|TranslatableMessage|null, 2: ?string} ...$accounts
+     *
+     * @return list<array{icon: string, name: string|TranslatableMessage, url: ?string}>
+     */
+    private function accounts(array ...$accounts): array
+    {
+        $kept = [];
+        foreach ($accounts as [$icon, $name, $url]) {
+            if (null !== $name) {
+                $kept[] = ['icon' => $icon, 'name' => $name, 'url' => $url];
+            }
+        }
+
+        return $kept;
     }
 
     private function value(string $slug): ?string

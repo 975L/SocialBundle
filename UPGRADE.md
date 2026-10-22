@@ -1,5 +1,10 @@
 # Upgrade
 
+## To 2.14
+
+**Config:** run `c975l:config:load-all` for `social-meta-page-name` and `social-meta-instagram-username`, then
+"Reconnecter" Meta on "Connexions" so the Page and the Instagram account show under their names.
+
 ## To 2.12.1
 
 **Database:** `social_media` gains `source_type` and `source_id`, indexed together - a site's own migration

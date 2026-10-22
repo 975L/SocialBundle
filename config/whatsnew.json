@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-10-22",
+        "description": [
+            {
+                "en": "The calendar now has a Day view: click a day's date in the week or the month to see it alone",
+                "fr": "Le calendrier a maintenant une vue Jour : cliquez la date d'un jour, dans la semaine ou le mois, pour le voir seul",
+                "es": "El calendario tiene ahora una vista Día: haga clic en la fecha de un día, en la semana o el mes, para verlo solo"
+            },
+            {
+                "en": "On Connections, each network shows the accounts it posts to, opened on the network with a click",
+                "fr": "Sur Connexions, chaque réseau montre les comptes sur lesquels il publie, ouverts sur le réseau d'un clic",
+                "es": "En Conexiones, cada red muestra las cuentas en las que publica, abiertas en la red con un clic"
+            }
+        ]
+    },
+    {
         "date": "2026-10-21",
         "description": [
             {

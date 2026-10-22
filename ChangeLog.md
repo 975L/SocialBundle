@@ -1,5 +1,20 @@
 # Changelog
 
+## v2.14.0
+
+Calendar gains a day view, Connections link the accounts reached
+
+- Calendar: "Jour" view, a day's heading opening it from the week and the month (22/10/2026)
+- Connections: the accounts reached shown and opened in a new tab (Bluesky, Facebook Page, Instagram) (22/10/2026)
+- Added configs `social-meta-page-name` and `social-meta-instagram-username`, filled by "Connecter Meta" (22/10/2026)
+- "Connecter Meta" no longer blocked when the name configs are not loaded yet (22/10/2026)
+- Calendar: "Jour" button opens today when the period shown holds it (22/10/2026)
+- Calendar: month's date link narrowed to its text, the rest of the day's band double-clickable (22/10/2026)
+- Calendar: the day view's heading is no longer a link (22/10/2026)
+- Connections: an unnamed Instagram account labelled by the controller (22/10/2026)
+- Connections: Meta tile says to reconnect after renaming the Instagram account (22/10/2026)
+- Guided project: calendar and connections steps tell the day view and the accounts shown (22/10/2026)
+
 ## v2.13.1
 
 Posts list's Edit and Delete shown as icons

@@ -36,6 +36,9 @@ class SocialMetaPageControllerTest extends TestCase
     /** @var list<array<string, ?string>> */
     private array $written = [];
 
+    // A site not yet through load-all: the names' slugs not declared
+    private bool $namesUndeclared = false;
+
     // The Pages held as the callback holds them, posted to when a page id is given
     private function createRequest(array $pages = [self::OTHER_PAGE, self::PAGE], ?string $pageId = null, string $token = 'valid', int $expires = 600): Request
     {
@@ -57,6 +60,9 @@ class SocialMetaPageControllerTest extends TestCase
 
         $configValueWriter = $this->createStub(ConfigValueWriter::class);
         $configValueWriter->method('write')->willReturnCallback(function (array $values): void {
+            if ($this->namesUndeclared && \array_key_exists('social-meta-page-name', $values)) {
+                throw new \RuntimeException('The config "social-meta-page-name" is not declared.');
+            }
             $this->written[] = $values;
         });
 
@@ -115,6 +121,19 @@ class SocialMetaPageControllerTest extends TestCase
 
         $response = $this->createController($request)->index($request);
 
+        $this->assertSame([['social-meta-page-id' => '55', 'social-meta-page-token' => 'page-token', 'social-meta-instagram-id' => '77'], ['social-meta-page-name' => 'Papa Câlin', 'social-meta-instagram-username' => 'papacalin']], $this->written);
+        $this->assertSame(['success' => ['flash.meta_connected']], $this->flashes($request));
+        $this->assertSame('/management_social_connections', $response->getTargetUrl());
+    }
+
+    // A site not yet through load-all keeps its connection, the names left out
+    public function testUndeclaredNamesDoNotBlockTheConnection(): void
+    {
+        $this->namesUndeclared = true;
+        $request = $this->createRequest([self::PAGE]);
+
+        $response = $this->createController($request)->index($request);
+
         $this->assertSame([['social-meta-page-id' => '55', 'social-meta-page-token' => 'page-token', 'social-meta-instagram-id' => '77']], $this->written);
         $this->assertSame(['success' => ['flash.meta_connected']], $this->flashes($request));
         $this->assertSame('/management_social_connections', $response->getTargetUrl());
@@ -144,7 +163,7 @@ class SocialMetaPageControllerTest extends TestCase
 
         $response = $this->createController($request)->index($request);
 
-        $this->assertSame([['social-meta-page-id' => '55', 'social-meta-page-token' => 'page-token', 'social-meta-instagram-id' => '77']], $this->written);
+        $this->assertSame([['social-meta-page-id' => '55', 'social-meta-page-token' => 'page-token', 'social-meta-instagram-id' => '77'], ['social-meta-page-name' => 'Papa Câlin', 'social-meta-instagram-username' => 'papacalin']], $this->written);
         $this->assertNull($request->getSession()->get(SocialMetaPageController::SESSION_PAGES));
         $this->assertSame('/management_social_connections', $response->getTargetUrl());
     }
@@ -180,6 +199,6 @@ class SocialMetaPageControllerTest extends TestCase
 
         $this->createController($request)->index($request);
 
-        $this->assertSame([['social-meta-page-id' => '55', 'social-meta-page-token' => 'page-token', 'social-meta-instagram-id' => '77']], $this->written);
+        $this->assertSame([['social-meta-page-id' => '55', 'social-meta-page-token' => 'page-token', 'social-meta-instagram-id' => '77'], ['social-meta-page-name' => 'Papa Câlin', 'social-meta-instagram-username' => 'papacalin']], $this->written);
     }
 }

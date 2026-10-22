@@ -238,6 +238,17 @@
         "description": "description.social_meta_page_id"
     },
     {
+        "label": "label.social_meta_page_name",
+        "slug": "social-meta-page-name",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_meta_page_name"
+    },
+    {
         "label": "label.social_meta_page_token",
         "slug": "social-meta-page-token",
         "feature": true,
@@ -260,6 +271,17 @@
         "group": "social",
         "severity": null,
         "description": "description.social_meta_instagram_id"
+    },
+    {
+        "label": "label.social_meta_instagram_username",
+        "slug": "social-meta-instagram-username",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_meta_instagram_username"
     },
     {
         "label": "label.social_linkedin_client_id",

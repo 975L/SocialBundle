@@ -1,6 +1,6 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
-{# The week - or the month - of publications (see SocialCalendarController): a card is dragged onto a coming moment, and opened with a click #}
+{# The week - or the day, or the month - of publications (see SocialCalendarController): a card is dragged onto a coming moment, and opened with a click #}
 {% macro networks(networks, connected) %}
     <span class="social-network-badges">
         {%- for network in networks -%}
@@ -40,6 +40,7 @@
                 <twig:ea:Button htmlElement="a" href="{{ new_url }}" variant="primary" icon="fa fa-plus" class="social-calendar-new">{{ 'label.social_calendar_new'|trans({}, 'social') }}</twig:ea:Button>
                 <twig:ea:Button htmlElement="a" href="{{ series_url }}" icon="fa fa-layer-group" class="social-calendar-series">{{ 'label.social_series_generate'|trans({}, 'social') }}</twig:ea:Button>
                 <div class="btn-group">
+                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: 'day', date: day_date}) }}" variant="{{ view == 'day' ? 'primary' : 'default' }}">{{ 'label.social_calendar_day'|trans({}, 'social') }}</twig:ea:Button>
                     <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: 'week', date: date}) }}" variant="{{ view == 'week' ? 'primary' : 'default' }}">{{ 'label.social_calendar_week'|trans({}, 'social') }}</twig:ea:Button>
                     <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: 'month', date: date}) }}" variant="{{ view == 'month' ? 'primary' : 'default' }}">{{ 'label.social_calendar_month'|trans({}, 'social') }}</twig:ea:Button>
                 </div>
@@ -83,16 +84,18 @@
             </form>
         </details>
 
-        {% if view == 'week' %}
-                    {# A week of quarters of an hour: each coming one a drop zone planning the card at that very moment, the items laid over them at the quarter they stand at #}
-                    <div class="social-week-scroll"><div class="social-week">
+        {% if view != 'month' %}
+                    {# A week - or a day - of quarters of an hour: each coming one a drop zone planning the card at that very moment, the items laid over them at the quarter they stand at #}
+                    <div class="social-week-scroll"><div class="social-week{{ view == 'day' ? ' social-week--day' : '' }}">
                         <div class="social-week-hours">
                             <div class="social-week-head"></div>
                             {% for hour in hours %}<div class="social-week-hour">{{ hour }}</div>{% endfor %}
                         </div>
                         {% for day in weeks|first %}
                             <div class="social-week-day{{ day.today ? ' is-today' : '' }}">
-                                <div class="social-week-head">{{ weekdays[loop.index0]|capitalize }} {{ day.date|date('d/m') }}</div>
+                                {# The day shown is not a link to itself #}
+                                {% set head = weekdays[loop.index0]|capitalize ~ ' ' ~ day.date|date('d/m') %}
+                                <div class="social-week-head">{% if view == 'day' %}{{ head }}{% else %}<a href="{{ path('management_social_calendar', {view: 'day', date: day.date|date('Y-m-d')}) }}">{{ head }}</a>{% endif %}</div>
                                 <div class="social-week-body">
                                     {% for cell in day.cells %}
                                         <div class="social-week-cell{{ cell.open ? '' : ' is-past' }}"{% if cell.open %} data-social-calendar-target="zone" data-to="{{ cell.at|date('c') }}" data-action="dblclick->social-calendar#create"{% endif %}></div>
@@ -115,7 +118,7 @@
                         {% for week in weeks %}
                             {% for day in week %}
                                 <div class="social-calendar-day{{ day.in_month ? '' : ' is-other-month' }}{{ day.today ? ' is-today' : '' }}{{ day.items is empty ? ' is-empty' : '' }}"{% if day.open %} data-social-calendar-target="zone" data-to="{{ day.date|date('Y-m-d') }}" data-action="dblclick->social-calendar#create"{% endif %}>
-                                    <div class="social-calendar-date">{{ day.date|date('d/m') }}</div>
+                                    <div class="social-calendar-date"><a href="{{ path('management_social_calendar', {view: 'day', date: day.date|date('Y-m-d')}) }}">{{ day.date|date('d/m') }}</a></div>
                                     {% for item in day.items %}{{ _self.card(item, connected) }}{% endfor %}
                                 </div>
                             {% endfor %}

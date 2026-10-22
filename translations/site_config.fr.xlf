@@ -98,9 +98,17 @@
                 <source>description.social_meta_instagram_id</source>
                 <target>Renseigné par « Connecter Meta » : le compte professionnel Instagram relié à la Page.</target>
             </trans-unit>
+            <trans-unit id="JO8h3d6">
+                <source>description.social_meta_instagram_username</source>
+                <target>Renseigné par « Connecter Meta » : le nom du compte Instagram relié à la Page, affiché sur « Connexions ».</target>
+            </trans-unit>
             <trans-unit id="u6Xslj2">
                 <source>description.social_meta_page_id</source>
                 <target>Renseignée par « Connecter Meta » : la Page sur laquelle les publications partent. Choisie à la connexion quand le compte gère plusieurs Pages.</target>
+            </trans-unit>
+            <trans-unit id="4scQM3r">
+                <source>description.social_meta_page_name</source>
+                <target>Renseigné par « Connecter Meta » : le nom de la Page, affiché sur « Connexions ».</target>
             </trans-unit>
             <trans-unit id="_0D94rb">
                 <source>description.social_meta_page_token</source>
@@ -210,9 +218,17 @@
                 <source>label.social_meta_instagram_id</source>
                 <target>Compte Instagram</target>
             </trans-unit>
+            <trans-unit id="W31l07z">
+                <source>label.social_meta_instagram_username</source>
+                <target>Nom du compte Instagram</target>
+            </trans-unit>
             <trans-unit id="mfEfNnJ">
                 <source>label.social_meta_page_id</source>
                 <target>Page Facebook</target>
+            </trans-unit>
+            <trans-unit id="nImbsSp">
+                <source>label.social_meta_page_name</source>
+                <target>Nom de la Page Facebook</target>
             </trans-unit>
             <trans-unit id="q7doyNI">
                 <source>label.social_meta_page_token</source>

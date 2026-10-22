@@ -25,8 +25,16 @@
 
                         <p class="card-text">{{ ('label.info_' ~ network.name ~ '_connect')|trans({}, 'social') }}</p>
 
-                        {% if network.connected and network.account %}
-                            <p class="card-text small">{{ ('label.connection_account'|trans({'%account%': network.account}, 'social')) }}</p>
+                        {# The accounts the connection reaches, each opened on its network #}
+                        {% if network.connected and network.accounts is not empty %}
+                            <ul class="list-unstyled card-text small">
+                                {% for account in network.accounts %}
+                                    <li>
+                                        <i class="{{ account.icon }} me-2"></i>
+                                        {%- if account.url %}<a href="{{ account.url }}" target="_blank" rel="noopener noreferrer">{{ account.name|trans }}</a>{% else %}{{ account.name|trans }}{% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         {% endif %}
 
                         {% if network.connected and network.expires_at is defined and network.expires_at %}

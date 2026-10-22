@@ -98,9 +98,17 @@
                 <source>description.social_meta_instagram_id</source>
                 <target>Rellenada por «Conectar Meta»: la cuenta profesional de Instagram vinculada a la Página.</target>
             </trans-unit>
+            <trans-unit id="JO8h3d6">
+                <source>description.social_meta_instagram_username</source>
+                <target>Rellenado por «Conectar Meta»: el nombre de la cuenta de Instagram vinculada a la Página, mostrado en «Conexiones».</target>
+            </trans-unit>
             <trans-unit id="u6Xslj2">
                 <source>description.social_meta_page_id</source>
                 <target>Rellenada por «Conectar Meta»: la Página en la que salen las publicaciones. Elegida al conectar cuando la cuenta gestiona varias Páginas.</target>
+            </trans-unit>
+            <trans-unit id="4scQM3r">
+                <source>description.social_meta_page_name</source>
+                <target>Rellenado por «Conectar Meta»: el nombre de la Página, mostrado en «Conexiones».</target>
             </trans-unit>
             <trans-unit id="_0D94rb">
                 <source>description.social_meta_page_token</source>
@@ -210,9 +218,17 @@
                 <source>label.social_meta_instagram_id</source>
                 <target>Cuenta de Instagram</target>
             </trans-unit>
+            <trans-unit id="W31l07z">
+                <source>label.social_meta_instagram_username</source>
+                <target>Nombre de la cuenta de Instagram</target>
+            </trans-unit>
             <trans-unit id="mfEfNnJ">
                 <source>label.social_meta_page_id</source>
                 <target>Página de Facebook</target>
+            </trans-unit>
+            <trans-unit id="nImbsSp">
+                <source>label.social_meta_page_name</source>
+                <target>Nombre de la Página de Facebook</target>
             </trans-unit>
             <trans-unit id="q7doyNI">
                 <source>label.social_meta_page_token</source>

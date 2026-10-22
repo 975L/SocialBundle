@@ -82,7 +82,7 @@ class SocialMetaPageController extends AbstractController
     }
 
     // The Pages the callback held, unless held too long - an entry not of the shape this code writes (a session from another version of it) left out rather than failing the screen
-    /** @return list<array{pageId: string, pageToken: string, instagramId: ?string}> */
+    /** @return list<array{pageId: string, pageToken: string, instagramId: ?string, name?: string, instagram?: ?string}> */
     private function heldPages(Request $request): array
     {
         $held = $request->getSession()->get(self::SESSION_PAGES);
@@ -99,8 +99,8 @@ class SocialMetaPageController extends AbstractController
         return \is_array($page) && \is_string($page['pageId'] ?? null) && \is_string($page['pageToken'] ?? null) && \array_key_exists('instagramId', $page);
     }
 
-    // The Page the posts go out on, its token and the Instagram account linked to it
-    /** @param array{pageId: string, pageToken: string, instagramId: ?string} $page */
+    // The Page the posts go out on, its token and the Instagram account linked to it - their names kept for "Connexions" to show and link them
+    /** @param array{pageId: string, pageToken: string, instagramId: ?string, name?: string, instagram?: ?string} $page */
     private function store(array $page): RedirectResponse
     {
         $this->configValueWriter->write([
@@ -108,6 +108,15 @@ class SocialMetaPageController extends AbstractController
             'social-meta-page-token' => $page['pageToken'],
             'social-meta-instagram-id' => $page['instagramId'],
         ]);
+
+        // A site not yet through load-all keeps its connection, the names missing until then
+        try {
+            $this->configValueWriter->write([
+                'social-meta-page-name' => $page['name'] ?? null,
+                'social-meta-instagram-username' => $page['instagram'] ?? null,
+            ]);
+        } catch (\RuntimeException) {
+        }
 
         $this->addFlash('success', t(null === $page['instagramId'] ? 'flash.meta_connected_without_instagram' : 'flash.meta_connected', [], 'social'));
 
