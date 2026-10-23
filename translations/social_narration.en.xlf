@@ -84,7 +84,7 @@
             </trans-unit>
             <trans-unit id="EGRu2Nm">
                 <source>narration.guided_step_social_links_entries</source>
-                <target>At the bottom of the form you find the list of networks. Add one row per network: its icon, the address of your page over there, and a label if you want to replace the network's own.</target>
+                <target>At the bottom of the form you find the list of networks. Add one row per network: its icon, the address of your page over there, and a label if you want to replace the network's own. Drag a row by its handle to change the order they are shown in.</target>
             </trans-unit>
             <trans-unit id="4B6rMy0">
                 <source>narration.guided_step_social_links_icon_style</source>

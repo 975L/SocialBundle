@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Tests\Templates;
 
+use EasyCorp\Bundle\EasyAdminBundle\Provider\ComponentDefaultsProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Alert;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Badge;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Button;
@@ -72,7 +73,8 @@ class TemplateTestKernel extends Kernel
         $services->set('test.admin_context_provider', TemplateTestAdminContextProvider::class);
         $services->set(Icon::class)->args([service('test.admin_context_provider')])->tag('twig.component');
         $services->set(Alert::class)->tag('twig.component');
-        $services->set(Badge::class)->tag('twig.component');
+        $services->set(ComponentDefaultsProvider::class)->args([service('test.admin_context_provider')]);
+        $services->set(Badge::class)->args([service(ComponentDefaultsProvider::class)])->tag('twig.component');
         $services->set(Button::class)->args([service('translator')])->tag('twig.component');
 
         // The layout the pages extend reduced to its block, ahead of EasyAdmin's own templates

@@ -43,7 +43,7 @@ CRUD scoped to its own kind. Both sit behind ConfigBundle's `site-role-editor` s
 
 | Kind | Pickable | What it does |
 | --- | --- | --- |
-| `social_links` | no | the singleton itself: an ordered list of `network` + `url`, an optional rich-text intro, the icon style and the label visibility |
+| `social_links` | no | the singleton itself: an ordered list of `network` + `url` (rows dragged into order, their `position` dropped on submit, the array order stored), an optional rich-text intro, the icon style and the label visibility |
 | `social_links_display` | yes | a thin pointer dropping the same site-wide links into any page's block flow |
 | `share_buttons_display` | yes | the same, for the dashboard-defined share buttons; its one field is an anchor |
 

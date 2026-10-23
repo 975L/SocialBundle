@@ -23,6 +23,8 @@
                     <div class="row">
                         {{ form_row(form.network) }}
                         {{ form_row(form.url) }}
+                        {# The drag handle's target (see UiBundle's ea-sortable.js), which also only offers the handle on a collection whose rows carry one #}
+                        {{ form_widget(form.position) }}
                         {# Server-rendered hidden, so an existing custom entry isn't hidden before the script runs #}
                         <div data-social-link-network-custom{{ is_other ? '' : ' hidden' }}>
                             {{ form_row(form.customLabel) }}

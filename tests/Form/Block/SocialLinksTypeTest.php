@@ -113,6 +113,20 @@ class SocialLinksTypeTest extends TypeTestCase
         $this->assertSame('facebook', $form->getData()['links'][0]['network']);
     }
 
+    // The order the rows were dragged to is the order stored, the position itself never reaching the Block's JSON
+    public function testSubmitStoresTheLinksInTheirDraggedOrderWithoutPosition(): void
+    {
+        $form = $this->factory->create(SocialLinksType::class);
+
+        $form->submit(['links' => [
+            ['network' => 'facebook', 'url' => 'https://facebook.com/975l', 'position' => '1'],
+            ['network' => 'youtube', 'url' => 'https://youtube.com/@975l', 'position' => '0'],
+        ]]);
+
+        $this->assertSame(['youtube', 'facebook'], array_column($form->getData()['links'], 'network'));
+        $this->assertArrayNotHasKey('position', $form->getData()['links'][0]);
+    }
+
     public function testConfigureOptionsHasNoDataClassAndSocialTranslationDomain(): void
     {
         $form = $this->factory->create(SocialLinksType::class);

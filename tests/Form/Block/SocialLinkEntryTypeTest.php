@@ -42,7 +42,7 @@ class SocialLinkEntryTypeTest extends TypeTestCase
     {
         $form = $this->factory->create(SocialLinkEntryType::class);
 
-        $this->assertSame(['network', 'url', 'customLabel', 'customIcon'], array_keys($form->all()));
+        $this->assertSame(['network', 'url', 'position', 'customLabel', 'customIcon'], array_keys($form->all()));
     }
 
     // "network" is restricted to the curated NETWORKS list and stores the bare key ("facebook"), not an icon path - see SocialLinkExtension::getSocialLinkIcon(), which resolves that key to an icon path at render time
@@ -102,7 +102,7 @@ class SocialLinkEntryTypeTest extends TypeTestCase
 
         $this->assertTrue($form->isSynchronized());
         $this->assertSame(
-            ['network' => 'facebook', 'url' => 'https://facebook.com/975l', 'customLabel' => null, 'customIcon' => null],
+            ['network' => 'facebook', 'url' => 'https://facebook.com/975l', 'position' => null, 'customLabel' => null, 'customIcon' => null],
             $form->getData()
         );
     }

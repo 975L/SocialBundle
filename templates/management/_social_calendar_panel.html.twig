@@ -1,7 +1,7 @@
 {# The panel a card opens beside the calendar (see SocialCalendarController::renderPanel()): its buttons go through the same move as a drag, so a post planned here and a post dropped there are one and the same thing #}
 {% import '@c975LSocial/management/social_calendar.html.twig' as calendar %}
 <div class="social-calendar-panel-head">
-    <twig:ea:Badge variant="{{ {published: 'secondary', approved: 'success', failed: 'warning', draft: 'danger'}[state] }}">{{ ('label.social_calendar_state_' ~ state)|trans({}, 'social') }}</twig:ea:Badge>
+    <twig:ea:Badge color="{{ {published: 'secondary', approved: 'success', failed: 'warning', draft: 'danger'}[state] }}">{{ ('label.social_calendar_state_' ~ state)|trans({}, 'social') }}</twig:ea:Badge>
     <twig:ea:Button type="button" size="sm" data-action="social-calendar#closePanel">{{ 'label.social_calendar_close'|trans({}, 'social') }}</twig:ea:Button>
 </div>
 

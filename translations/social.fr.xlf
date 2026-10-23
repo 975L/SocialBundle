@@ -148,7 +148,7 @@
             </trans-unit>
             <trans-unit id="ajiJRR8">
                 <source>description.guided_step_social_links_entries</source>
-                <target>Une ligne par réseau : son icône, l'adresse de votre page là-bas, et un libellé si vous voulez remplacer celui du réseau.</target>
+                <target>Une ligne par réseau : son icône, l'adresse de votre page là-bas, et un libellé si vous voulez remplacer celui du réseau. Glissez une ligne par sa poignée pour changer l'ordre d'affichage.</target>
             </trans-unit>
             <trans-unit id="CbQbxws">
                 <source>description.guided_step_social_links_icon_style</source>

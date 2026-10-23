@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.15.0
+
+Social links dragged into the order they render in
+
+- Social links: rows dragged into order, the order stored (23/10/2026)
+- Social links: the preview follows the dragged order (23/10/2026)
+- Guided project: the links step tells the rows can be reordered (23/10/2026)
+
 ## v2.14.0
 
 Calendar gains a day view, Connections link the accounts reached

@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-23",
+        "description": [
+            {
+                "en": "Your social links can now be dragged into the order you want them shown in",
+                "fr": "Vos liens vers les réseaux sociaux se glissent maintenant dans l'ordre où vous voulez les afficher",
+                "es": "Sus enlaces a las redes sociales se arrastran ahora en el orden en que quiere mostrarlos"
+            }
+        ]
+    },
+    {
         "date": "2026-10-22",
         "description": [
             {

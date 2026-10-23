@@ -12,6 +12,7 @@ namespace c975L\SocialBundle\Form\Block;
 
 use c975L\UiBundle\Form\IconPickerType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -42,6 +43,11 @@ class SocialLinkEntryType extends AbstractType
             ])
             ->add('url', UrlType::class, [
                 'label' => 'label.url',
+            ])
+            // Written by the drag handle, never typed (see UiBundle's ea-sortable.js) - read back and dropped on submit by SocialLinksType (see UiBundle's PositionSorter), the array order being what is stored
+            ->add('position', HiddenType::class, [
+                'required' => false,
+                'attr' => ['class' => 'ui-sort-position'],
             ])
             // Only used when network is left empty - see social_link_entry_form_theme.html.twig
             ->add('customLabel', TextType::class, [

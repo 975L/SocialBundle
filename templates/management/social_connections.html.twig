@@ -16,11 +16,11 @@
                         </h2>
 
                         {% if network.connected %}
-                            <p><twig:ea:Badge variant="success">{{ ('label.connection_connected'|trans({}, 'social')) }}</twig:ea:Badge></p>
+                            <p><twig:ea:Badge color="success">{{ ('label.connection_connected'|trans({}, 'social')) }}</twig:ea:Badge></p>
                         {% elseif network.configured %}
                             <p><twig:ea:Badge>{{ ('label.connection_not_connected'|trans({}, 'social')) }}</twig:ea:Badge></p>
                         {% else %}
-                            <p><twig:ea:Badge variant="warning">{{ ('label.connection_not_configured'|trans({}, 'social')) }}</twig:ea:Badge></p>
+                            <p><twig:ea:Badge color="warning">{{ ('label.connection_not_configured'|trans({}, 'social')) }}</twig:ea:Badge></p>
                         {% endif %}
 
                         <p class="card-text">{{ ('label.info_' ~ network.name ~ '_connect')|trans({}, 'social') }}</p>

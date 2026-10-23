@@ -148,7 +148,7 @@
             </trans-unit>
             <trans-unit id="ajiJRR8">
                 <source>description.guided_step_social_links_entries</source>
-                <target>Una fila por red: su icono, la dirección de su página allí, y una etiqueta si quiere sustituir la de la red.</target>
+                <target>Una fila por red: su icono, la dirección de su página allí, y una etiqueta si quiere sustituir la de la red. Arrastre una fila por su asa para cambiar el orden de visualización.</target>
             </trans-unit>
             <trans-unit id="CbQbxws">
                 <source>description.guided_step_social_links_icon_style</source>

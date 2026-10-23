@@ -148,7 +148,7 @@
             </trans-unit>
             <trans-unit id="ajiJRR8">
                 <source>description.guided_step_social_links_entries</source>
-                <target>One row per network: its icon, the address of your page over there, and a label if you want to replace the network's own.</target>
+                <target>One row per network: its icon, the address of your page over there, and a label if you want to replace the network's own. Drag a row by its handle to change the order they are shown in.</target>
             </trans-unit>
             <trans-unit id="CbQbxws">
                 <source>description.guided_step_social_links_icon_style</source>

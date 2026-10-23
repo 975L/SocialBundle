@@ -84,7 +84,7 @@
             </trans-unit>
             <trans-unit id="EGRu2Nm">
                 <source>narration.guided_step_social_links_entries</source>
-                <target>En la parte inferior del formulario encontrará la lista de las redes. Añada una fila por red: su icono, la dirección de su página allí, y una etiqueta si quiere sustituir la de la red.</target>
+                <target>En la parte inferior del formulario encontrará la lista de las redes. Añada una fila por red: su icono, la dirección de su página allí, y una etiqueta si quiere sustituir la de la red. Arrastre una fila por su asa para cambiar el orden de visualización.</target>
             </trans-unit>
             <trans-unit id="4B6rMy0">
                 <source>narration.guided_step_social_links_icon_style</source>

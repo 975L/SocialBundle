@@ -11,11 +11,14 @@
 namespace c975L\SocialBundle\Form\Block;
 
 use c975L\UiBundle\Form\TrixEditorType;
+use c975L\UiBundle\Form\Util\PositionSorter;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 // Data form of the "social_links" block kind - the list of links is a plain array stored in the Block's JSON "data" column (data.links), not a separate entity/table (see SocialLinkEntryType)
@@ -61,6 +64,14 @@ class SocialLinksType extends AbstractType
                 'by_reference' => false,
                 'prototype' => true,
             ])
+            // Stores the links in the order they were dragged to, their "position" dropped - the array order is what the block renders (see UiBundle's PositionSorter)
+            ->addEventListener(FormEvents::SUBMIT, static function (FormEvent $event): void {
+                $data = $event->getData();
+                if (\is_array($data) && \is_array($data['links'] ?? null)) {
+                    $data['links'] = PositionSorter::sort($data['links']);
+                    $event->setData($data);
+                }
+            })
         ;
     }
 
