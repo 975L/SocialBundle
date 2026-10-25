@@ -285,9 +285,10 @@ class SkillsTest extends TestCase
                     continue;
                 }
 
+                // A constant may be typed (const string FROM)
                 $source = (string) file_get_contents($file);
-                $needle = str_ends_with($member, '()') ? 'function ' . substr($member, 0, -2) . '(' : 'const ' . $member;
-                $this->assertStringContainsString($needle, $source, sprintf('%s quotes "%s", which %s does not hold', $directory, $token, basename($file)));
+                $pattern = str_ends_with($member, '()') ? '/function ' . preg_quote(substr($member, 0, -2), '/') . '\(/' : '/const (\??[\w\\\\|]+ )?' . preg_quote($member, '/') . '\b/';
+                $this->assertMatchesRegularExpression($pattern, $source, sprintf('%s quotes "%s", which %s does not hold', $directory, $token, basename($file)));
             }
         }
     }

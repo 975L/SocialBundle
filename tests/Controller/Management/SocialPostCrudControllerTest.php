@@ -17,6 +17,7 @@ use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Enum\SocialPostStatus;
+use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Repository\SocialSeriesRepository;
 use c975L\SocialBundle\Service\SocialMediaChecker;
 use c975L\SocialBundle\Service\SocialMediaPicker;
@@ -65,8 +66,19 @@ class SocialPostCrudControllerTest extends TestCase
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
 
+        // The url generated is the action, followed by the parameters set since the last unsetAll()
         $adminUrlGenerator = $this->createStub(AdminUrlGeneratorInterface::class);
-        $adminUrlGenerator->method('unsetAll')->willReturnSelf();
+        $parameters = [];
+        $adminUrlGenerator->method('unsetAll')->willReturnCallback(static function () use (&$parameters, $adminUrlGenerator): AdminUrlGeneratorInterface {
+            $parameters = [];
+
+            return $adminUrlGenerator;
+        });
+        $adminUrlGenerator->method('set')->willReturnCallback(static function (string $name, mixed $value) use (&$parameters, $adminUrlGenerator): AdminUrlGeneratorInterface {
+            $parameters[$name] = $value;
+
+            return $adminUrlGenerator;
+        });
         $adminUrlGenerator->method('setController')->willReturnSelf();
         $action = '';
         $adminUrlGenerator->method('setAction')->willReturnCallback(static function (string $name) use (&$action, $adminUrlGenerator): AdminUrlGeneratorInterface {
@@ -75,8 +87,8 @@ class SocialPostCrudControllerTest extends TestCase
             return $adminUrlGenerator;
         });
         $adminUrlGenerator->method('setEntityId')->willReturnSelf();
-        $adminUrlGenerator->method('generateUrl')->willReturnCallback(static function () use (&$action): string {
-            return '/admin/' . $action;
+        $adminUrlGenerator->method('generateUrl')->willReturnCallback(static function () use (&$action, &$parameters): string {
+            return '/admin/' . $action . ([] === $parameters ? '' : '?' . http_build_query($parameters));
         });
 
         return new SocialPostCrudController(
@@ -90,6 +102,7 @@ class SocialPostCrudControllerTest extends TestCase
             $this->createStub(SocialMediaChecker::class),
             $seriesGenerator ?? $this->createStub(SocialSeriesGenerator::class),
             $seriesRepository ?? $this->createStub(SocialSeriesRepository::class),
+            $this->createStub(SocialPostRepository::class),
             $this->createStub(SocialMediaPicker::class),
             $this->createStub(SocialPostApprover::class),
         );
@@ -339,6 +352,23 @@ class SocialPostCrudControllerTest extends TestCase
 
         $response = $this->call($this->controller(socialPublisher: $publisher), 'changeContent', $this->post(), Request::create('/', 'POST', ['choose' => '1', 'sourceId' => '7', 'token' => 'valid']));
 
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame('/admin/' . Action::EDIT, $response->getTargetUrl());
+    }
+
+    // Opened from the calendar's panel, the content changed opens the post coming back to the calendar's view - one not of the calendar dropped
+    public function testChangingTheContentFromTheCalendarKeepsItsView(): void
+    {
+        $publisher = $this->createStub(SocialPublisher::class);
+        $publisher->method('browsableSourceOf')->willReturn($this->createStub(BrowsableSocialContentSourceInterface::class));
+        $publisher->method('redraw')->willReturn(true);
+        $redraw = static fn (string $from): Request => Request::create('/?' . SocialCalendarController::FROM . '=' . $from, 'POST', ['redraw' => '1', 'token' => 'valid']);
+
+        $response = $this->call($this->controller(socialPublisher: $publisher), 'changeContent', $this->post(), $redraw('month'));
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame('/admin/' . Action::EDIT . '?' . SocialCalendarController::FROM . '=month', $response->getTargetUrl());
+
+        $response = $this->call($this->controller(socialPublisher: $publisher), 'changeContent', $this->post(), $redraw('1'));
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('/admin/' . Action::EDIT, $response->getTargetUrl());
     }

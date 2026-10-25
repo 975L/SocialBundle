@@ -19,6 +19,7 @@ use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Form\SocialMediaType;
 use c975L\SocialBundle\Form\SocialPostTargetType;
 use c975L\SocialBundle\Form\SocialSeriesType;
+use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Repository\SocialSeriesRepository;
 use c975L\SocialBundle\Service\SocialMediaChecker;
 use c975L\SocialBundle\Service\SocialMediaPicker;
@@ -77,6 +78,7 @@ class SocialPostCrudController extends AbstractCrudController
         private readonly SocialMediaChecker $mediaChecker,
         private readonly SocialSeriesGenerator $seriesGenerator,
         private readonly SocialSeriesRepository $seriesRepository,
+        private readonly SocialPostRepository $postRepository,
         private readonly SocialMediaPicker $mediaPicker,
         private readonly SocialPostApprover $approver,
     ) {
@@ -103,11 +105,48 @@ class SocialPostCrudController extends AbstractCrudController
             ->setEntityLabelInSingular(t('label.social_post', [], 'social'))
             ->setEntityLabelInPlural(t('label.social_posts', [], 'social'))
             ->setEntityPermission($this->configService->get('site-role-editor'))
-            ->setDefaultSort(['createdAt' => 'DESC'])
+            // In the order they go out, whatever series they belong to - the list opening on today's page (see index())
+            ->setDefaultSort(['plannedAt' => 'ASC', 'id' => 'ASC'])
             ->showEntityActionsInlined()
             // Carries the screen's own explanatory text, the very key the sidebar entry reuses as its onboarding description (see MenuProvider)
             ->overrideTemplate('crud/index', '@c975LSocial/management/social_post_crud_index.html.twig')
         ;
+    }
+
+    // Opens on the page holding today's posts, the ones gone by on the pages before - a page, a sort, a search or a filter asked for being kept as asked
+    #[\Override]
+    public function index(AdminContext $context): KeyValueStore | Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
+
+        $query = $context->getRequest()->query;
+        foreach (['page', 'sort', 'query', 'filters'] as $asked) {
+            if ($query->has($asked)) {
+                return parent::index($context);
+            }
+        }
+
+        // The page of the last post gone by, never one past the list's end when every post has
+        $page = intdiv(max(0, $this->postRepository->countPlannedBefore(new \DateTimeImmutable('today')) - 1), $context->getCrud()->getPaginator()->getPageSize()) + 1;
+        if (1 === $page) {
+            return parent::index($context);
+        }
+
+        return $this->redirect($this->adminUrlGenerator->set('page', $page)->generateUrl());
+    }
+
+    // A post opened from the calendar goes back to it once saved, in the view it was opened from, on the period it is now planned in
+    #[\Override]
+    protected function getRedirectResponseAfterSave(AdminContext $context, string $action): RedirectResponse
+    {
+        $post = $context->getEntity()->getInstance();
+        $from = $this->from($context->getRequest());
+        $button = $context->getRequest()->request->all()['ea']['newForm']['btn'] ?? null;
+        if (!$post instanceof SocialPost || null === $from || \in_array($button, [Action::SAVE_AND_CONTINUE, Action::SAVE_AND_ADD_ANOTHER], true)) {
+            return parent::getRedirectResponseAfterSave($context, $action);
+        }
+
+        return $this->redirectToRoute(SocialCalendarController::ROUTE, ['date' => $post->getPlannedAt()->format('Y-m-d'), 'view' => $from]);
     }
 
     #[\Override]
@@ -517,14 +556,14 @@ class SocialPostCrudController extends AbstractCrudController
             $this->addFlash('success', t('flash.social_media_picked', ['%count%' => $added], 'social'));
             $this->flashMediaProblems($post, 'warning');
 
-            return $this->redirect($this->editUrl($post));
+            return $this->redirect($this->editUrl($post, $this->from($request)));
         }
 
         return $this->render('@c975LSocial/management/social_media_pick.html.twig', [
             'post' => $post,
             'search' => $search,
             'libraries' => $this->mediaPicker->libraries($search),
-            'back_url' => $this->editUrl($post),
+            'back_url' => $this->editUrl($post, $this->from($request)),
         ]);
     }
 
@@ -569,7 +608,7 @@ class SocialPostCrudController extends AbstractCrudController
         $post = $context->getEntity()->getInstance();
         $source = $post instanceof SocialPost ? $this->socialPublisher->browsableSourceOf($post) : null;
         if (!$post instanceof SocialPost || null === $source) {
-            return $this->redirect($post instanceof SocialPost ? $this->editUrl($post) : $this->indexUrl());
+            return $this->redirect($post instanceof SocialPost ? $this->editUrl($post, $this->from($request)) : $this->indexUrl());
         }
 
         if (($request->request->has('redraw') || $request->request->has('choose')) && $this->isCsrfTokenValid(self::PUBLISH_CSRF_TOKEN, $request->request->getString('token'))) {
@@ -579,7 +618,7 @@ class SocialPostCrudController extends AbstractCrudController
             $this->entityManager->flush();
             $this->addFlash($changed ? 'success' : 'warning', t($changed ? 'flash.social_content_changed' : 'flash.social_content_unchanged', [], 'social'));
 
-            return $this->redirect($this->editUrl($post));
+            return $this->redirect($this->editUrl($post, $this->from($request)));
         }
 
         $scope = $request->query->has('scope') ? $request->query->getString('scope') : (string) $source->getContentScope($post->getSourceId());
@@ -589,7 +628,7 @@ class SocialPostCrudController extends AbstractCrudController
             'scope' => $scope,
             'scopes' => $source instanceof ScopedSocialContentSourceInterface ? $source->getScopes() : [],
             'contents' => $this->socialPublisher->contentChoices($post, $scope, SocialMediaPicker::LIMIT),
-            'back_url' => $this->editUrl($post),
+            'back_url' => $this->editUrl($post, $this->from($request)),
         ]);
     }
 
@@ -735,14 +774,24 @@ class SocialPostCrudController extends AbstractCrudController
             ->generateUrl();
     }
 
-    private function editUrl(SocialPost $post): string
+    // The post's screen, coming back to the calendar's $from view once saved when opened from it
+    private function editUrl(SocialPost $post, ?string $from = null): string
     {
-        return $this->adminUrlGenerator
+        $url = $this->adminUrlGenerator
             ->unsetAll()
             ->setController(self::class)
             ->setAction(Action::EDIT)
-            ->setEntityId($post->getId())
-            ->generateUrl();
+            ->setEntityId($post->getId());
+
+        return (null === $from ? $url : $url->set(SocialCalendarController::FROM, $from))->generateUrl();
+    }
+
+    // The calendar's view the screen was opened from, null when it was not
+    private function from(Request $request): ?string
+    {
+        $from = $request->query->getString(SocialCalendarController::FROM);
+
+        return \in_array($from, SocialCalendarController::VIEWS, true) ? $from : null;
     }
 
     private function indexUrl(): string

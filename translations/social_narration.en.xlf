@@ -28,7 +28,11 @@
             </trans-unit>
             <trans-unit id="eg9BzH0">
                 <source>narration.guided_step_social_calendar_panel</source>
-                <target>Click a post on the calendar: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once, reorders or removes its medias, adds some from the site or changes its content, or opens its texts to edit them.</target>
+                <target>Click a post on the calendar: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once, reorders or removes its medias, adds some from the site or changes its content.</target>
+            </trans-unit>
+            <trans-unit id="Nu24WA4">
+                <source>narration.guided_step_social_calendar_texts</source>
+                <target>In the panel, correct each network's text, then click "Save the texts"; a text already published stays read only. "Full screen" opens the whole post, for its common text, its rephrasing or its networks.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>

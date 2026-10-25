@@ -115,6 +115,17 @@ class SocialPostRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    // How many posts are planned before the moment: the list, in planned order, opens on the page that follows them
+    public function countPlannedBefore(\DateTimeImmutable $moment): int
+    {
+        return (int) $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->where('p.plannedAt < :moment')
+            ->setParameter('moment', $moment)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     // The posts planned between the two moments, whatever their targets became - what the calendar lays at their moment
     /** @return list<SocialPost> */
     public function findPlannedBetween(\DateTimeImmutable $from, \DateTimeImmutable $to): array

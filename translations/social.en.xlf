@@ -92,7 +92,11 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once, reorders or removes its medias, adds some from the site or changes its content, or opens its texts to edit them.</target>
+                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once, reorders or removes its medias, adds some from the site or changes its content.</target>
+            </trans-unit>
+            <trans-unit id="DKossy4">
+                <source>description.guided_step_social_calendar_texts</source>
+                <target>The panel shows each network's text: correct it there, then "Save the texts", a text already published staying read only. "Full screen" opens the whole post, for its common text, its rephrasing or its networks.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
@@ -382,6 +386,10 @@
                 <source>help.social_calendar_medias</source>
                 <target>Drag a media onto another to change their order.</target>
             </trans-unit>
+            <trans-unit id="ab2SmZ5">
+                <source>help.social_calendar_plan</source>
+                <target>Pick the date and time (to the quarter of an hour), then click Reschedule.</target>
+            </trans-unit>
             <trans-unit id="TRKXywk">
                 <source>help.social_media_reference</source>
                 <target>A gallery file: it is changed in the gallery, and never deleted with the post.</target>
@@ -585,6 +593,10 @@
             <trans-unit id="9fHDZ.c">
                 <source>label.guided_step_social_calendar_panel</source>
                 <target>Open a post</target>
+            </trans-unit>
+            <trans-unit id="7.d72qh">
+                <source>label.guided_step_social_calendar_texts</source>
+                <target>Correct the texts</target>
             </trans-unit>
             <trans-unit id="tVdTpfQ">
                 <source>label.guided_step_social_connections_open</source>
@@ -1004,7 +1016,7 @@
             </trans-unit>
             <trans-unit id="6zf3y2m">
                 <source>label.social_calendar_edit_texts</source>
-                <target>Edit the texts, medias and networks</target>
+                <target>Full screen</target>
             </trans-unit>
             <trans-unit id="mGq6bLy">
                 <source>label.social_calendar_feed</source>
@@ -1044,15 +1056,19 @@
             </trans-unit>
             <trans-unit id="oZ_OaKV">
                 <source>label.social_calendar_plan</source>
-                <target>Move to this time</target>
+                <target>Reschedule</target>
             </trans-unit>
             <trans-unit id="mVWRLZ8">
                 <source>label.social_calendar_plan_at</source>
-                <target>Date and time (to the quarter of an hour)</target>
+                <target>Planned for</target>
             </trans-unit>
             <trans-unit id="x_A7kw0">
                 <source>label.social_calendar_previous</source>
                 <target>Previous</target>
+            </trans-unit>
+            <trans-unit id="D8RSkan">
+                <source>label.social_calendar_save_texts</source>
+                <target>Save the texts</target>
             </trans-unit>
             <trans-unit id="q59uuo1">
                 <source>label.social_calendar_state_approved</source>
@@ -1069,6 +1085,22 @@
             <trans-unit id="1FWwu6R">
                 <source>label.social_calendar_state_published</source>
                 <target>Published</target>
+            </trans-unit>
+            <trans-unit id="yJ1wHuh">
+                <source>label.social_calendar_text_empty</source>
+                <target>the text cannot be empty.</target>
+            </trans-unit>
+            <trans-unit id=".wi1q9a">
+                <source>label.social_calendar_text_refused</source>
+                <target>%network%: %reason%</target>
+            </trans-unit>
+            <trans-unit id="Ai8R5VZ">
+                <source>label.social_calendar_texts_failed</source>
+                <target>The texts were not saved.</target>
+            </trans-unit>
+            <trans-unit id="PBdq0dl">
+                <source>label.social_calendar_texts_saved</source>
+                <target>Texts saved.</target>
             </trans-unit>
             <trans-unit id="zGk8.GX">
                 <source>label.social_calendar_today</source>

@@ -1,31 +1,39 @@
 {# The panel a card opens beside the calendar (see SocialCalendarController::renderPanel()): its buttons go through the same move as a drag, so a post planned here and a post dropped there are one and the same thing #}
 {% import '@c975LSocial/management/social_calendar.html.twig' as calendar %}
+{# The full screen of the post a link away, for what the panel leaves to it: the text every network's own is cut from, rephrased, and the networks it goes to #}
 <div class="social-calendar-panel-head">
     <twig:ea:Badge color="{{ {published: 'secondary', approved: 'success', failed: 'warning', draft: 'danger'}[state] }}">{{ ('label.social_calendar_state_' ~ state)|trans({}, 'social') }}</twig:ea:Badge>
-    <twig:ea:Button type="button" size="sm" data-action="social-calendar#closePanel">{{ 'label.social_calendar_close'|trans({}, 'social') }}</twig:ea:Button>
+    <div class="d-flex gap-2">
+        <twig:ea:Button htmlElement="a" href="{{ post.edit_url }}" size="sm" icon="fa fa-up-right-from-square">{{ 'label.social_calendar_edit_texts'|trans({}, 'social') }}</twig:ea:Button>
+        <twig:ea:Button type="button" size="sm" data-action="social-calendar#closePanel">{{ 'label.social_calendar_close'|trans({}, 'social') }}</twig:ea:Button>
+    </div>
 </div>
 
 <h2 class="h5">{{ post.title }}</h2>
 
+{# Its approval first - the series' too, offered on any of its posts -, then its moment: picked in the field, then saved by its own button #}
+<div class="d-flex flex-wrap gap-2">
+    {% if state == 'approved' %}
+        <twig:ea:Button type="button" size="sm" icon="fa fa-calendar-xmark" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="unapprove">{{ 'label.social_post_unapprove'|trans({}, 'social') }}</twig:ea:Button>
+    {% elseif state != 'published' %}
+        <twig:ea:Button type="button" variant="success" size="sm" icon="fa fa-calendar-check" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve">{{ 'label.social_post_approve'|trans({}, 'social') }}</twig:ea:Button>
+    {% endif %}
+    {# Every coming draft of the post's series approved at once, each at its own moment - not offered when the post's own "Approve" would do the same #}
+    {% set own_draft = state == 'draft' and post.planned_at > date() ? 1 : 0 %}
+    {% if series_drafts > own_draft %}
+        <twig:ea:Button type="button" variant="success" size="sm" icon="fa fa-layer-group" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve-series">{{ 'label.social_calendar_approve_series'|trans({'%count%': series_drafts}, 'social') }}</twig:ea:Button>
+    {% endif %}
+</div>
+
 {% if state != 'published' %}
     <div class="social-calendar-panel-plan">
         <label for="social-calendar-plan-{{ post.id }}" class="form-label small">{{ 'label.social_calendar_plan_at'|trans({}, 'social') }}</label>
-        <input type="datetime-local" step="900" class="form-control" id="social-calendar-plan-{{ post.id }}" value="{{ post.planned_at|date('Y-m-d\\TH:i') }}" data-social-calendar-target="planAt">
-        <div class="d-flex flex-wrap gap-2 mt-2">
-            <twig:ea:Button type="button" size="sm" data-action="social-calendar#plan" data-post-id="{{ post.id }}">{{ 'label.social_calendar_plan'|trans({}, 'social') }}</twig:ea:Button>
-            {% if state == 'approved' %}
-                <twig:ea:Button type="button" size="sm" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="unapprove">{{ 'label.social_post_unapprove'|trans({}, 'social') }}</twig:ea:Button>
-            {% else %}
-                <twig:ea:Button type="button" variant="success" size="sm" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve">{{ 'label.social_post_approve'|trans({}, 'social') }}</twig:ea:Button>
-            {% endif %}
+        <div class="d-flex gap-2">
+            <input type="datetime-local" step="900" class="form-control" id="social-calendar-plan-{{ post.id }}" value="{{ post.planned_at|date('Y-m-d\\TH:i') }}" data-social-calendar-target="planAt">
+            <twig:ea:Button type="button" size="sm" icon="fa fa-clock" data-action="social-calendar#plan" data-post-id="{{ post.id }}">{{ 'label.social_calendar_plan'|trans({}, 'social') }}</twig:ea:Button>
         </div>
+        <p class="small text-muted mb-0">{{ 'help.social_calendar_plan'|trans({}, 'social') }}</p>
     </div>
-{% endif %}
-
-{# Every coming draft of the post's series approved at once, each at its own moment - not offered when the post's own "Approve" would do the same #}
-{% set own_draft = state == 'draft' and post.planned_at > date() ? 1 : 0 %}
-{% if series_drafts > own_draft %}
-    <twig:ea:Button type="button" variant="success" size="sm" icon="fa fa-layer-group" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve-series">{{ 'label.social_calendar_approve_series'|trans({'%count%': series_drafts}, 'social') }}</twig:ea:Button>
 {% endif %}
 
 {# The medias as they go out, in their order: dragged to another place, or taken off the post - the content's own picture shown while the post has none #}
@@ -60,14 +68,25 @@
     </div>
 {% endif %}
 
-{% for target in targets %}
-    <div class="social-calendar-panel-text">
-        <div class="small d-flex justify-content-between">
-            <span>{{ calendar.networks([target.network], connected) }} {{ target.network|capitalize }}</span>
-            <span>{{ target.status|trans }}</span>
+{# Each network's text, corrected here and saved together - one gone out on its network read only #}
+<form class="social-calendar-panel-texts" data-action="social-calendar#saveTexts" data-post-id="{{ post.id }}">
+    {% for key, target in targets %}
+        <div class="social-calendar-panel-text">
+            <label class="small d-flex justify-content-between"{% if target.pending %} for="social-calendar-text-{{ target.id }}"{% endif %}>
+                <span>{{ calendar.networks([target.network], connected) }} {{ target.network|capitalize }}</span>
+                <span>{{ target.status|trans }}</span>
+            </label>
+            {% if target.pending %}
+                <textarea class="form-control" id="social-calendar-text-{{ target.id }}" name="texts[{{ target.id }}]" rows="6" required {% if max_lengths[key] %}maxlength="{{ max_lengths[key] }}"{% endif %}>{{ target.text }}</textarea>
+            {% else %}
+                <div class="social-calendar-panel-body">{{ target.text }}</div>
+            {% endif %}
         </div>
-        <div class="social-calendar-panel-body">{{ target.text }}</div>
-    </div>
-{% endfor %}
-
-<twig:ea:Button htmlElement="a" href="{{ post.edit_url }}" size="sm">{{ 'label.social_calendar_edit_texts'|trans({}, 'social') }}</twig:ea:Button>
+    {% endfor %}
+    {% if texts_saved %}
+        <p class="small text-success mb-0">{{ 'label.social_calendar_texts_saved'|trans({}, 'social') }}</p>
+    {% endif %}
+    {% if targets|filter(target => target.pending) is not empty %}
+        <twig:ea:Button type="submit" variant="primary" size="sm" icon="fa fa-floppy-disk">{{ 'label.social_calendar_save_texts'|trans({}, 'social') }}</twig:ea:Button>
+    {% endif %}
+</form>

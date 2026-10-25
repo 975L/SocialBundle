@@ -40,11 +40,16 @@ class SocialCalendarController extends AbstractController
     // The dashboard prefixes the AdminRoute name with its own route name (see SocialConnectionsController::ROUTE)
     public const string ROUTE = 'management_social_calendar';
 
+    // Carried by the post's screens opened from here, the view they were opened from, to which they come back once saved (see SocialPostCrudController::getRedirectResponseAfterSave())
+    public const string FROM = 'calendar';
+
     private const string MOVE_ROUTE = 'management_social_calendar_move';
 
     private const string PANEL_ROUTE = 'management_social_calendar_post';
 
     private const string MEDIAS_ROUTE = 'management_social_calendar_medias';
+
+    private const string TEXTS_ROUTE = 'management_social_calendar_texts';
 
     private const string FEED_TOKEN_ROUTE = 'management_social_calendar_feed_token';
 
@@ -60,11 +65,13 @@ class SocialCalendarController extends AbstractController
     private const string TO_APPROVE_SERIES = 'approve-series';
 
     // The three views: a week of tall days, opened first, a single day the same way, or a month of short ones
-    private const string WEEK = 'week';
+    public const string WEEK = 'week';
 
-    private const string DAY = 'day';
+    public const string DAY = 'day';
 
-    private const string MONTH = 'month';
+    public const string MONTH = 'month';
+
+    public const array VIEWS = [self::WEEK, self::DAY, self::MONTH];
 
     // How many quarters of an hour a card covers on the grid (a quarter being 1.25rem, a card 38px)
     private const int CARD_HEIGHT = 2;
@@ -95,11 +102,7 @@ class SocialCalendarController extends AbstractController
 
         $locale = $request->getLocale();
         $date = $this->date($request->query->getString('date'));
-        $view = match ($request->query->getString('view')) {
-            self::MONTH => self::MONTH,
-            self::DAY => self::DAY,
-            default => self::WEEK,
-        };
+        $view = $this->view($request);
         $month = self::MONTH === $view;
         if ($month) {
             // Whole weeks, Monday first, so the grid has no hole at either end
@@ -131,17 +134,19 @@ class SocialCalendarController extends AbstractController
             // The day the "Day" view opens on: today when it is shown, the period's first day otherwise
             'day_date' => ($today >= $start && $today < $end ? $today : $anchor)->format('Y-m-d'),
             'weekdays' => array_map(fn (int $day): string => $this->format($start->modify('+' . $day . ' days'), 'EEE', $locale), range(0, 6)),
-            'weeks' => array_chunk($this->days($start, $end, $month ? $anchor : null), 7),
+            'weeks' => array_chunk($this->days($start, $end, $month ? $anchor : null, $view), 7),
             'hours' => $month ? [] : $this->hours(),
             'networks' => array_map(static fn (string $network): array => ['name' => $network, 'connected' => \in_array($network, $connected, true)], $this->publisher->getNetworkNames()),
             'connected' => $connected,
             'previous' => $previous->format('Y-m-d'),
             'next' => $next->format('Y-m-d'),
             'move_url' => $this->generateUrl(self::MOVE_ROUTE),
-            'panel_url' => $this->generateUrl(self::PANEL_ROUTE),
-            'medias_url' => $this->generateUrl(self::MEDIAS_ROUTE),
+            // The panel's own addresses carry the view, which the post's screens it links to come back to
+            'panel_url' => $this->generateUrl(self::PANEL_ROUTE, ['view' => $view]),
+            'medias_url' => $this->generateUrl(self::MEDIAS_ROUTE, ['view' => $view]),
+            'texts_url' => $this->generateUrl(self::TEXTS_ROUTE, ['view' => $view]),
             // A double click on a coming moment writes a post there, the screen of a new post opening on it
-            'new_url' => $this->adminUrlGenerator->unsetAll()->setController(SocialPostCrudController::class)->setAction(Action::NEW)->generateUrl(),
+            'new_url' => $this->adminUrlGenerator->unsetAll()->setController(SocialPostCrudController::class)->setAction(Action::NEW)->set(self::FROM, $view)->generateUrl(),
             'series_url' => $this->adminUrlGenerator->unsetAll()->setController(SocialPostCrudController::class)->setAction('generateSeries')->generateUrl(),
             'connections_route' => SocialConnectionsController::ROUTE,
             'token' => self::CSRF_TOKEN,
@@ -183,7 +188,7 @@ class SocialCalendarController extends AbstractController
             return new Response(null, Response::HTTP_NOT_FOUND);
         }
 
-        return $this->renderPanel($post);
+        return $this->renderPanel($post, $this->view($request));
     }
 
     // The panel's medias put in the order given, one of them taken off the post first when asked - its file going with it, and the content it was picked from freed. Answers the panel as it now reads; a post gone out on a network keeps what it went out with
@@ -220,24 +225,72 @@ class SocialCalendarController extends AbstractController
         $post->sortMedias();
         $this->entityManager->flush();
 
-        return $this->renderPanel($post);
+        return $this->renderPanel($post, $this->view($request));
     }
 
-    // The panel as it now reads, answered to a card opened and to its medias changed alike
-    private function renderPanel(SocialPost $post): Response
+    // The panel's texts saved, each network's own - one gone out on its network keeping what it went out with. An empty text, or one longer than its network takes, refuses the whole save, said in the answer
+    #[AdminRoute(path: '/social-calendar/texts', name: 'social_calendar_texts', options: ['methods' => ['POST']])]
+    public function texts(Request $request): Response
     {
-        $card = $this->card($post);
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
+
+        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN, $request->headers->get('X-CSRF-Token'))) {
+            return new Response(null, Response::HTTP_FORBIDDEN);
+        }
+
+        $post = $this->postRepository->find($request->request->getInt('post'));
+        if (!$post instanceof SocialPost) {
+            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        // Every text checked before any is set, so a refusal saves none
+        $texts = $request->request->all('texts');
+        $changed = [];
+        $problems = [];
+        foreach ($post->getTargets() as $target) {
+            // A text not sent, or not sent as one, is left as it is
+            if (!$target->isPending() || !\is_string($texts[(int) $target->getId()] ?? null)) {
+                continue;
+            }
+
+            $text = trim($texts[(int) $target->getId()]);
+            $maxLength = $this->publisher->getMaxLength($target->getNetwork());
+            if ('' === $text || (null !== $maxLength && mb_strlen($text) > $maxLength)) {
+                $problems[] = $this->problemText($target->getNetwork(), $this->translator->trans('' === $text ? 'label.social_calendar_text_empty' : 'label.social_post_text_help', ['%max%' => $maxLength], 'social'));
+            }
+            $changed[] = [$target, $text];
+        }
+
+        if ([] !== $problems) {
+            return new Response(implode("\n", $problems), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        foreach ($changed as [$target, $text]) {
+            $target->setText($text);
+        }
+        $this->entityManager->flush();
+
+        return $this->renderPanel($post, $this->view($request), true);
+    }
+
+    // The panel as it now reads, answered to a card opened and to its medias or its texts changed alike - $view the calendar's, which the post's screens it links to come back to, $textsSaved saying the texts just were
+    private function renderPanel(SocialPost $post, string $view, bool $textsSaved = false): Response
+    {
+        $card = $this->card($post, $view);
 
         return $this->render('@c975LSocial/management/_social_calendar_panel.html.twig', [
             'post' => $card,
             'state' => $card['state'],
             'medias' => $post->getMedias(),
             'editable' => !$post->hasGoneOut(),
+            // Each network's limit, the panel's text fields stopping there as the post's screen does
+            'max_lengths' => array_map($this->publisher->getMaxLength(...), $post->getTargets()->map(static fn (SocialPostTarget $target): string => $target->getNetwork())->toArray()),
             'targets' => $post->getTargets(),
+            'texts_saved' => $textsSaved,
             'series_drafts' => null === $post->getSeries() ? 0 : $this->postRepository->countComingDraftsBySeries($post->getSeries(), new \DateTimeImmutable()),
             'connected' => $this->publisher->getConnectedNetworkNames(),
-            'pick_media_url' => $this->mediaPicker->hasLibraries() ? $this->postUrl($post, 'pickMedia') : null,
-            'change_content_url' => null === $this->publisher->browsableSourceOf($post) ? null : $this->postUrl($post, 'changeContent'),
+            'pick_media_url' => $this->mediaPicker->hasLibraries() ? $this->postUrl($post, 'pickMedia', $view) : null,
+            'change_content_url' => null === $this->publisher->browsableSourceOf($post) ? null : $this->postUrl($post, 'changeContent', $view),
         ]);
     }
 
@@ -311,11 +364,25 @@ class SocialCalendarController extends AbstractController
         $lines = [];
         foreach ($problems as $network => $messages) {
             foreach ($messages as $message) {
-                $lines[] = ucfirst($network) . ' : ' . $message->trans($this->translator);
+                $lines[] = $this->problemText($network, $message->trans($this->translator));
             }
         }
 
         return implode("\n", $lines);
+    }
+
+    // A network's problem, written the way the visitor's language puts a colon
+    private function problemText(string $network, string $reason): string
+    {
+        return $this->translator->trans('label.social_calendar_text_refused', ['%network%' => ucfirst($network), '%reason%' => $reason], 'social');
+    }
+
+    // The view asked for, the week for anything else
+    private function view(Request $request): string
+    {
+        $view = $request->query->getString('view');
+
+        return \in_array($view, self::VIEWS, true) ? $view : self::WEEK;
     }
 
     // The day asked for, today for anything else
@@ -353,12 +420,12 @@ class SocialCalendarController extends AbstractController
         return $moment;
     }
 
-    // Every day of the grid with what it holds, in time order: the posts that went out, and the ones still to go out at their moment - $month the month shown, the days around it faded, null for a week, which also gets its quarters of an hour
+    // Every day of the grid with what it holds, in time order: the posts that went out, and the ones still to go out at their moment - $month the month shown, the days around it faded, null for a week, which also gets its quarters of an hour. $view is the one shown, which a card's screen comes back to
     /** @return list<array<string, mixed>> */
-    private function days(\DateTimeImmutable $start, \DateTimeImmutable $end, ?\DateTimeImmutable $month): array
+    private function days(\DateTimeImmutable $start, \DateTimeImmutable $end, ?\DateTimeImmutable $month, string $view = self::WEEK): array
     {
-        $items = $this->publishedItems($start, $end, null !== $month);
-        foreach ($this->comingItems($start, $end) as $day => $dayItems) {
+        $items = $this->publishedItems($start, $end, null !== $month, $view);
+        foreach ($this->comingItems($start, $end, $view) as $day => $dayItems) {
             $items[$day] = [...$items[$day] ?? [], ...$dayItems];
         }
 
@@ -385,13 +452,13 @@ class SocialCalendarController extends AbstractController
 
     // What is still to go out between the two days, by day: every post not published yet, at its planned moment
     /** @return array<string, list<array<string, mixed>>> */
-    private function comingItems(\DateTimeImmutable $start, \DateTimeImmutable $end): array
+    private function comingItems(\DateTimeImmutable $start, \DateTimeImmutable $end, string $view): array
     {
         $items = [];
         foreach ($this->postRepository->findPlannedBetween($start, $end) as $post) {
             if (!$post->isPublished()) {
                 $at = $post->getPlannedAt();
-                $items[$at->format('Y-m-d')][] = ['kind' => 'planned', 'at' => $at] + $this->card($post);
+                $items[$at->format('Y-m-d')][] = ['kind' => 'planned', 'at' => $at] + $this->card($post, $view);
             }
         }
 
@@ -400,7 +467,7 @@ class SocialCalendarController extends AbstractController
 
     // The posts that went out between the two days, by day: one card per post and run, its networks gathered on it - a network sent more than a quarter of an hour after the card's first one getting its own. $byDay is the month, whose day holds one card per post
     /** @return array<string, array<string, array<string, mixed>>> */
-    private function publishedItems(\DateTimeImmutable $start, \DateTimeImmutable $end, bool $byDay = false): array
+    private function publishedItems(\DateTimeImmutable $start, \DateTimeImmutable $end, bool $byDay = false, string $view = self::WEEK): array
     {
         $items = [];
         foreach ($this->postRepository->findPublishedBetween($start, $end) as $post) {
@@ -416,7 +483,7 @@ class SocialCalendarController extends AbstractController
                 }
 
                 $key = ($byDay ? '' : $first->format('H:i:s')) . '#' . $post->getId();
-                $items[$first->format('Y-m-d')][$key] ??= ['kind' => 'published', 'at' => $first, 'networks' => [], 'state' => 'published'] + $this->card($post);
+                $items[$first->format('Y-m-d')][$key] ??= ['kind' => 'published', 'at' => $first, 'networks' => [], 'state' => 'published'] + $this->card($post, $view);
                 $items[$first->format('Y-m-d')][$key]['networks'][] = $target->getNetwork();
             }
         }
@@ -492,9 +559,9 @@ class SocialCalendarController extends AbstractController
         return array_map(static fn (array $group): array => ['lanes' => max(1, \count($lanes))] + $group, $groups);
     }
 
-    // What a post shows on the calendar, wherever it sits
+    // What a post shows on the calendar, wherever it sits, its screen coming back to $view
     /** @return array<string, mixed> */
-    private function card(SocialPost $post): array
+    private function card(SocialPost $post, string $view): array
     {
         return [
             'id' => $post->getId(),
@@ -504,23 +571,19 @@ class SocialCalendarController extends AbstractController
             'networks' => $post->getTargets()->filter(static fn (SocialPostTarget $target): bool => $target->isPending())->map(static fn (SocialPostTarget $target): string => $target->getNetwork())->getValues(),
             'planned_at' => $post->getPlannedAt(),
             'state' => $post->getState(),
-            'edit_url' => $this->editUrl($post),
+            'edit_url' => $this->postUrl($post, Action::EDIT, $view),
         ];
     }
 
-    private function editUrl(SocialPost $post): string
-    {
-        return $this->postUrl($post, Action::EDIT);
-    }
-
-    // A screen of the post: its own, or one of its actions'
-    private function postUrl(SocialPost $post, string $action): string
+    // A screen of the post: its own, or one of its actions', coming back to the calendar's $view
+    private function postUrl(SocialPost $post, string $action, string $view): string
     {
         return $this->adminUrlGenerator
             ->unsetAll()
             ->setController(SocialPostCrudController::class)
             ->setAction($action)
             ->setEntityId($post->getId())
+            ->set(self::FROM, $view)
             ->generateUrl();
     }
 

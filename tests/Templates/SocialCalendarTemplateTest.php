@@ -68,6 +68,7 @@ class SocialCalendarTemplateTest extends TestCase
             'move_url' => '/move',
             'panel_url' => '/panel',
             'medias_url' => '/medias',
+            'texts_url' => '/texts',
             'new_url' => '/new',
             'series_url' => '/series',
             'token' => 'social_calendar',
@@ -78,10 +79,14 @@ class SocialCalendarTemplateTest extends TestCase
 
     // The panel of a post in the given state, its approval being what the state offers - with the medias given, the content's picture otherwise
     /** @param list<SocialMedia> $medias */
-    private function panel(string $state, array $medias = [], ?string $image = null, bool $editable = true, int $seriesDrafts = 0, string $plannedAt = '2026-10-04 19:00'): string
+    private function panel(string $state, array $medias = [], ?string $image = null, bool $editable = true, int $seriesDrafts = 0, string $plannedAt = '2026-10-04 19:00', bool $textsSaved = false): string
     {
         $post = new SocialPost('gallery_media', '42', 'La sieste', 'https://example.org/42', null, new \DateTimeImmutable($plannedAt));
-        new SocialPostTarget($post, 'bluesky', 'Le texte de Bluesky');
+        $target = new SocialPostTarget($post, 'bluesky', 'Le texte de Bluesky');
+        // A post published has gone out on its network, as the panel reads it
+        if ('published' === $state) {
+            $target->markPublished('ext-42');
+        }
 
         return $this->twig()->render('@c975LSocial/management/_social_calendar_panel.html.twig', [
             'post' => ['id' => 7, 'title' => 'La sieste', 'image' => $image, 'networks' => ['bluesky'], 'planned_at' => $post->getPlannedAt(), 'state' => $state, 'edit_url' => '/edit/7'],
@@ -91,6 +96,8 @@ class SocialCalendarTemplateTest extends TestCase
             'pick_media_url' => '/pick/7',
             'change_content_url' => '/change/7',
             'targets' => $post->getTargets(),
+            'max_lengths' => [300],
+            'texts_saved' => $textsSaved,
             'series_drafts' => $seriesDrafts,
             'connected' => ['bluesky'],
         ]);
@@ -181,6 +188,24 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringContainsString('href="/edit/7"', $html);
     }
 
+    // A network's text waiting to go out is corrected in the panel, held to its network's limit, the texts saved together
+    public function testThePanelLetsTheTextsBeCorrected(): void
+    {
+        $html = $this->panel('draft');
+
+        $this->assertStringContainsString('data-action="social-calendar#saveTexts" data-post-id="7"', $html);
+        $this->assertMatchesRegularExpression('#<textarea[^>]*name="texts\[[^\]]*\]"[^>]*maxlength="300"[^>]*>Le texte de Bluesky</textarea>#', $html);
+        $this->assertStringContainsString('label.social_calendar_save_texts', $html);
+        $this->assertStringContainsString('for="social-calendar-text-', $html);
+        $this->assertStringNotContainsString('label.social_calendar_texts_saved', $html);
+    }
+
+    // The panel answered to the texts saved says so
+    public function testThePanelSaysTheTextsWereSaved(): void
+    {
+        $this->assertStringContainsString('label.social_calendar_texts_saved', $this->panel('draft', textsSaved: true));
+    }
+
     // The panel of an approved post offers to take it back to a draft instead
     public function testThePanelOfAnApprovedPostOffersItsWithdrawal(): void
     {
@@ -230,6 +255,9 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringNotContainsString('social-calendar#plan', $html);
         $this->assertStringNotContainsString('data-to=', $html);
         $this->assertStringContainsString('Le texte de Bluesky', $html);
+        $this->assertStringNotContainsString('<textarea', $html);
+        $this->assertStringNotContainsString('for="social-calendar-text-', $html);
+        $this->assertStringNotContainsString('label.social_calendar_save_texts', $html);
     }
 
     // Every media of the post is shown in its order, each dragged and taken off while the post waits; a post gone out on a network only shows them

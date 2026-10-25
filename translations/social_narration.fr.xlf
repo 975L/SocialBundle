@@ -28,7 +28,11 @@
             </trans-unit>
             <trans-unit id="eg9BzH0">
                 <source>narration.guided_step_social_calendar_panel</source>
-                <target>Cliquez une publication du calendrier : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série, réordonne ou retire ses médias, en ajoute depuis le site ou change son contenu, ou ouvre ses textes pour les modifier.</target>
+                <target>Cliquez une publication du calendrier : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série, réordonne ou retire ses médias, en ajoute depuis le site ou change son contenu.</target>
+            </trans-unit>
+            <trans-unit id="Nu24WA4">
+                <source>narration.guided_step_social_calendar_texts</source>
+                <target>Dans le panneau, corrigez le texte de chaque réseau puis cliquez sur « Enregistrer les textes » ; un texte déjà publié reste en lecture seule. « Écran complet » ouvre la publication entière, pour son texte commun, sa reformulation ou ses réseaux.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>

@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-10-25",
+        "description": [
+            {
+                "en": "Each network's text of a post can now be corrected right in the calendar's panel",
+                "fr": "Le texte de chaque réseau se corrige maintenant directement dans le panneau du calendrier",
+                "es": "El texto de cada red se corrige ahora directamente en el panel del calendario"
+            },
+            {
+                "en": "A post opened from the calendar now brings you back to the same view once saved",
+                "fr": "Une publication ouverte depuis le calendrier vous ramène maintenant à la même vue une fois enregistrée",
+                "es": "Una publicación abierta desde el calendario le devuelve ahora a la misma vista una vez guardada"
+            },
+            {
+                "en": "The posts list now shows them in the order they go out, opening on today's",
+                "fr": "La liste des publications les montre maintenant dans l'ordre où elles partent, ouverte sur celles du jour",
+                "es": "La lista de publicaciones las muestra ahora en el orden en que salen, abierta en las del día"
+            }
+        ]
+    },
+    {
         "date": "2026-10-23",
         "description": [
             {

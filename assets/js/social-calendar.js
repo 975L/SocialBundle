@@ -12,7 +12,7 @@ import { addSortGesture } from "@c975l/ui-bundle/pointer-sort.js";
 // The publications calendar (see management/social_calendar.html.twig): a card dragged onto a quarter of an hour of the week is planned at that moment, onto a day of the month at its own time that day, its approval untouched; a coming moment double-clicked writes a new post there. The gesture is UiBundle's (pointer-sort.js), this controller owning only where a card lands, saved on the spot then the page reloaded, the server computing where every other post falls
 export default class extends Controller {
     static targets = ["item", "zone", "panel", "planAt", "group", "media", "thumbnail"];
-    static values = { url: String, token: String, panelUrl: String, mediasUrl: String, newUrl: String, failedLabel: String };
+    static values = { url: String, token: String, panelUrl: String, mediasUrl: String, textsUrl: String, newUrl: String, failedLabel: String, textsFailedLabel: String };
 
     // Laid at its quarter of an hour and in its lane from its data, a style attribute being refused by a Content-Security-Policy without 'unsafe-inline'
     groupTargetConnected(group) {
@@ -157,6 +157,23 @@ export default class extends Controller {
             .then((response) => (response.ok ? response.text() : Promise.reject(new Error(String(response.status)))))
             .then((html) => (this.panelTarget.innerHTML = html))
             .catch(() => this.saved(false));
+    }
+
+    // The panel's texts saved together, the button held while they are sent, the server answering the panel as it now reads - a refusal said, the texts typed left as they are to be corrected
+    saveTexts(event) {
+        event.preventDefault();
+        const button = event.submitter;
+        const body = new URLSearchParams(new FormData(event.currentTarget));
+        body.set("post", event.currentTarget.dataset.postId);
+        if (button) button.disabled = true;
+
+        const refused = (reason = "") => {
+            if (button) button.disabled = false;
+            window.alert("" !== reason ? reason : this.textsFailedLabelValue);
+        };
+        fetch(this.textsUrlValue, { method: "POST", headers: { "X-CSRF-Token": this.tokenValue }, body })
+            .then((response) => (response.ok ? response.text().then((html) => (this.panelTarget.innerHTML = html)) : response.text().then(refused)))
+            .catch(() => refused());
     }
 
     // The panel read again says the post's picture as it now is, which its card on the calendar takes: changed, gained when it had none, or lost with the last media

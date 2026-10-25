@@ -452,6 +452,16 @@
   align-items: center;
 }
 
+/* The networks' texts, one under the other, their save button closing the list */
+.social-calendar-panel-texts {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+}
+.social-calendar-panel-texts > .social-calendar-panel-text {
+  justify-self: stretch;
+}
+
 /* The post's medias, side by side in their order, each dragged by itself */
 .social-calendar-panel-medias {
   display: grid;

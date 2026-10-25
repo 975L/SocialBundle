@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.16.0
+
+Calendar panel corrects each network's text in place
+
+- Calendar: each network's text corrected and saved in the panel (25/10/2026)
+- Calendar: "Écran complet" button at the top of the panel (25/10/2026)
+- Calendar: a post's screen opened from it comes back to the view it was opened from once saved (25/10/2026)
+- Calendar: "Ajouter depuis le site" and "Changer le contenu" keep the way back to the calendar (25/10/2026)
+- Calendar: refusals written with each locale's colon (25/10/2026)
+- Posts list: sorted by planned moment, opening on the page of the last post gone by (25/10/2026)
+- Guided project: calendar gains a "Corriger les textes" step (25/10/2026)
+
 ## v2.15.0
 
 Social links dragged into the order they render in

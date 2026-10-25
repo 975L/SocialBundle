@@ -50,6 +50,9 @@ class SocialCalendarControllerTest extends TestCase
 
     private int $flushes = 0;
 
+    // The limit every network's text is held to, none otherwise
+    private ?int $maxLength = null;
+
     // What the repository answers as the series' coming posts
     /** @var list<SocialPost> */
     private array $seriesPosts = [];
@@ -175,15 +178,22 @@ class SocialCalendarControllerTest extends TestCase
             ++$this->flushes;
         });
 
+        $publisher = $this->createStub(SocialPublisher::class);
+        $publisher->method('getMaxLength')->willReturnCallback(fn (): ?int => $this->maxLength);
+
+        // A network's problem written the way French puts it, any other message read as its key
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(static fn (string $id, array $parameters = []): string => 'label.social_calendar_text_refused' === $id ? strtr('%network% : %reason%', $parameters) : $id);
+
         $controller = new SocialCalendarController(
             $configService,
             new SocialPlanner(),
-            $this->createStub(SocialPublisher::class),
+            $publisher,
             $postRepository,
             $entityManager,
             $this->createStub(AdminUrlGeneratorInterface::class),
             $this->mediaChecker ?? $this->createStub(SocialMediaChecker::class),
-            $this->createStub(TranslatorInterface::class),
+            $translator,
             $this->createStub(SocialMediaPicker::class),
             new SocialPostApprover($this->mediaChecker ?? $this->createStub(SocialMediaChecker::class), $entityManager),
         );
@@ -519,5 +529,75 @@ class SocialCalendarControllerTest extends TestCase
         $this->seriesPosts = [...([] === $this->seriesPosts ? [$this->post] : $this->seriesPosts), $post];
 
         return $post;
+    }
+
+    /** @param array<int|string, string> $texts */
+    private function texts(array $texts, string $token = 'valid'): Response
+    {
+        $request = Request::create('/', 'POST', ['post' => '42', 'texts' => $texts]);
+        $request->headers->set('X-CSRF-Token', $token);
+
+        return $this->createController($request)->texts($request);
+    }
+
+    // The post's targets given the ids the panel names them by, a second network added
+    private function addTargetIds(): SocialPostTarget
+    {
+        $linkedin = new SocialPostTarget($this->post, 'linkedin', 'Le texte de LinkedIn');
+        new \ReflectionProperty(SocialPostTarget::class, 'id')->setValue($this->target(), 1);
+        new \ReflectionProperty(SocialPostTarget::class, 'id')->setValue($linkedin, 2);
+
+        return $linkedin;
+    }
+
+    // The texts corrected in the panel are saved together, trimmed, the panel answered as it now reads
+    public function testTheTextsCorrectedInThePanelAreSaved(): void
+    {
+        $linkedin = $this->addTargetIds();
+
+        $this->assertSame(Response::HTTP_OK, $this->texts(['1' => " Nouveau texte \n", '2' => 'Autre texte'])->getStatusCode());
+        $this->assertSame('Nouveau texte', $this->target()->getText());
+        $this->assertSame('Autre texte', $linkedin->getText());
+        $this->assertSame(1, $this->flushes);
+        $this->assertSame([null, null], $this->rendered['max_lengths']);
+        $this->assertTrue($this->rendered['texts_saved']);
+    }
+
+    // A text sent as anything but a string is left as it was, the others saved
+    public function testATextSentAsAnArrayIsLeftAsItWas(): void
+    {
+        $linkedin = $this->addTargetIds();
+        $request = Request::create('/', 'POST', ['post' => '42', 'texts' => ['1' => ['Nouveau texte'], '2' => 'Autre texte']]);
+        $request->headers->set('X-CSRF-Token', 'valid');
+
+        $this->assertSame(Response::HTTP_OK, $this->createController($request)->texts($request)->getStatusCode());
+        $this->assertSame(['Text', 'Autre texte'], [$this->target()->getText(), $linkedin->getText()]);
+    }
+
+    // An empty text, or one past its network's limit, refuses the whole save - the other text left as it was
+    public function testAnEmptyOrTooLongTextRefusesTheSave(): void
+    {
+        $linkedin = $this->addTargetIds();
+
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->texts(['1' => 'Nouveau texte', '2' => '  '])->getStatusCode());
+        $this->maxLength = 5;
+        $response = $this->texts(['1' => 'Nouveau texte']);
+
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        $this->assertStringContainsString('Bluesky : label.social_post_text_help', (string) $response->getContent());
+        $this->assertSame(['Text', 'Le texte de LinkedIn'], [$this->target()->getText(), $linkedin->getText()]);
+        $this->assertSame(0, $this->flushes);
+    }
+
+    // A text gone out on its network keeps what it went out with, and a forged request changes nothing
+    public function testAPublishedTextAndAForgedRequestChangeNothing(): void
+    {
+        $this->addTargetIds();
+
+        $this->assertSame(Response::HTTP_FORBIDDEN, $this->texts(['1' => 'Nouveau texte'], 'forged')->getStatusCode());
+        $this->target()->markPublished('ext-1');
+        $this->texts(['1' => 'Nouveau texte']);
+
+        $this->assertSame('Text', $this->target()->getText());
     }
 }

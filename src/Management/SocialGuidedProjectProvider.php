@@ -439,6 +439,12 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'narration' => 'narration.guided_step_social_calendar_panel',
                 ],
                 [
+                    // No highlight either: the texts are in the panel, open only once a post is clicked
+                    'label' => 'label.guided_step_social_calendar_texts',
+                    'description' => 'description.guided_step_social_calendar_texts',
+                    'narration' => 'narration.guided_step_social_calendar_texts',
+                ],
+                [
                     'label' => 'label.guided_step_social_calendar_feed',
                     'description' => 'description.guided_step_social_calendar_feed',
                     'narration' => 'narration.guided_step_social_calendar_feed',
