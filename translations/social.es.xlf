@@ -86,6 +86,10 @@
                 <source>description.guided_step_social_calendar_move</source>
                 <target>Arrastre una publicación a una hora próxima de la semana o del día, o a un día próximo del mes donde conserva su hora: queda prevista allí, su validación no cambia.</target>
             </trans-unit>
+            <trans-unit id="H0wxayG">
+                <source>description.guided_step_social_calendar_networks</source>
+                <target>El panel marca las redes conectadas a las que va la publicación: marque o desmarque algunas y luego «Guardar las redes»; una red marcada recibe su texto. Una vez publicada en alguna, sus redes quedan como están.</target>
+            </trans-unit>
             <trans-unit id="QikFj7G">
                 <source>description.guided_step_social_calendar_new</source>
                 <target>«Nueva publicación» abre una publicación por escribir, prevista para el próximo cuarto de hora. Un doble clic en una hora próxima de la semana o del día, o en un día del mes, la abre directamente en ese momento.</target>
@@ -96,11 +100,11 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Haga clic en una publicación: su panel cambia su fecha y hora, la valida o la devuelve a borrador, valida de una vez toda su serie, reordena o quita sus medios, añade otros desde el sitio o cambia su contenido.</target>
+                <target>Haga clic en una publicación: su panel cambia su fecha y hora, la valida o la devuelve a borrador, valida de una vez toda su serie, reordena o quita sus medios, añade otros desde el sitio o soltando archivos en él, cambia su contenido, o la duplica al día siguiente.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
-                <target>El panel muestra el texto de cada red: corríjalo ahí mismo y luego «Guardar los textos»; un texto ya publicado queda de solo lectura. «Pantalla completa» abre la publicación entera, para su texto común, su reformulación o sus redes.</target>
+                <target>El panel muestra el texto de cada red: corríjalo ahí mismo y luego «Guardar los textos»; un texto ya publicado queda de solo lectura. «Pantalla completa» abre la publicación entera, para su texto común o su reformulación.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
@@ -278,6 +282,18 @@
                 <source>description.guided_step_social_youtube_prerequisites</source>
                 <target>Esta parte se hace en console.cloud.google.com, en el proyecto del cliente OAuth de Google (el de la ficha de Google o uno nuevo): activar «YouTube Data API v3», añadir los scopes youtube.upload y youtube.readonly a la pantalla de consentimiento y pasarla «En producción», y declarar en el cliente OAuth la dirección del sitio seguida de «/social/youtube/callback». Para que los vídeos salgan públicos, el proyecto también debe pasar la auditoría de la API de YouTube.</target>
             </trans-unit>
+            <trans-unit id="fcDzyeM">
+                <source>email.social_linkedin_reminder_body</source>
+                <target>El acceso del sitio a su perfil de LinkedIn termina el %date%, ya que LinkedIn solo lo concede por 60 días. Después, ya no se publica nada allí. Haga clic en «Connecter» en la ficha LinkedIn de «Connexions»:</target>
+            </trans-unit>
+            <trans-unit id="D5AHhy9">
+                <source>email.social_linkedin_reminder_subject</source>
+                <target>Vuelva a conectar LinkedIn antes del %date%</target>
+            </trans-unit>
+            <trans-unit id="Zcn3ppA">
+                <source>email.social_post_comment_failed</source>
+                <target>la publicación salió, su primer comentario fue rechazado (%error%): solo se reenviará el comentario</target>
+            </trans-unit>
             <trans-unit id="nVJ6Jbx">
                 <source>email.social_post_failed_body</source>
                 <target>Una red rechazó estas publicaciones a su hora. Abra el enlace para ver el motivo y relanzarla, o corregirla antes:</target>
@@ -289,6 +305,10 @@
             <trans-unit id="fFRxt4W">
                 <source>email.social_series_ending_body</source>
                 <target>Estas series llegan a su última publicación. Abra una de sus publicaciones y luego «Prolongar la serie» para continuar con los mismos ajustes:</target>
+            </trans-unit>
+            <trans-unit id="cV8_CqX">
+                <source>email.social_series_ending_import</source>
+                <target>borradores importados: prepare los siguientes</target>
             </trans-unit>
             <trans-unit id="KWHHNzs">
                 <source>email.social_series_ending_subject</source>
@@ -402,6 +422,10 @@
                 <source>flash.youtube_refused</source>
                 <target>La conexión con YouTube fue rechazada o interrumpida.</target>
             </trans-unit>
+            <trans-unit id="r8RnTTk">
+                <source>help.social_calendar_drop</source>
+                <target>Se añaden después de los medios de la publicación. JPEG, PNG, WebP, GIF, MP4 o MOV.</target>
+            </trans-unit>
             <trans-unit id="MtGVTQR">
                 <source>help.social_calendar_feed</source>
                 <target>Copie esta dirección en su agenda: Evolution, Nuevo y luego agenda «En la web»; Google Calendar, Otros calendarios y luego «Desde URL» (visible después en Android); Outlook, Agregar calendario y luego «Suscribirse desde la web». Solo lectura, actualizada por la agenda a su ritmo. Manténgala secreta: renovarla anula la anterior.</target>
@@ -421,6 +445,14 @@
             <trans-unit id="TRKXywk">
                 <source>help.social_media_reference</source>
                 <target>Archivo de la galería: se modifica en la galería, y nunca se borra con la publicación.</target>
+            </trans-unit>
+            <trans-unit id="pIwpMTT">
+                <source>help.social_post_comment</source>
+                <target>Publicado justo después de la publicación, en su nombre. Si se rellena, la publicación sale sin su tarjeta de enlace: escriba aquí el enlace, tras una frase corta.</target>
+            </trans-unit>
+            <trans-unit id="eLp064i">
+                <source>help.social_post_locale</source>
+                <target>El idioma en que está escrita la publicación. Bluesky la clasifica en ese idioma; vacío, el del sitio.</target>
             </trans-unit>
             <trans-unit id="MzBnBYd">
                 <source>help.social_post_medias</source>
@@ -614,6 +646,10 @@
                 <source>label.guided_step_social_calendar_move</source>
                 <target>Mover una publicación</target>
             </trans-unit>
+            <trans-unit id="vTQDiCm">
+                <source>label.guided_step_social_calendar_networks</source>
+                <target>Elegir las redes</target>
+            </trans-unit>
             <trans-unit id="k.rSJli">
                 <source>label.guided_step_social_calendar_new</source>
                 <target>Escribir una publicación</target>
@@ -725,6 +761,10 @@
             <trans-unit id="XkyAGQR">
                 <source>label.guided_step_social_posts_change_content</source>
                 <target>Cambiar el contenido</target>
+            </trans-unit>
+            <trans-unit id="cC4fId_">
+                <source>label.guided_step_social_posts_comment</source>
+                <target>Añadir un primer comentario</target>
             </trans-unit>
             <trans-unit id="9zRMIWa">
                 <source>label.guided_step_social_posts_edit</source>
@@ -1070,6 +1110,14 @@
                 <source>label.social_calendar_drag_hint</source>
                 <target>Haga doble clic en una hora próxima, o en un día en la vista mensual, para escribir allí una publicación; arrastre una publicación a otra hora, u otro día, para moverla, su validación no cambia.</target>
             </trans-unit>
+            <trans-unit id="6NlEPFx">
+                <source>label.social_calendar_drop</source>
+                <target>Suelta aquí imágenes o vídeos, o haz clic para elegirlos</target>
+            </trans-unit>
+            <trans-unit id="Pf81mFx">
+                <source>label.social_calendar_duplicate</source>
+                <target>Duplicar</target>
+            </trans-unit>
             <trans-unit id="6zf3y2m">
                 <source>label.social_calendar_edit_texts</source>
                 <target>Pantalla completa</target>
@@ -1122,6 +1170,10 @@
                 <source>label.social_calendar_previous</source>
                 <target>Anterior</target>
             </trans-unit>
+            <trans-unit id="Tbz6Hmi">
+                <source>label.social_calendar_save_networks</source>
+                <target>Guardar las redes</target>
+            </trans-unit>
             <trans-unit id="D8RSkan">
                 <source>label.social_calendar_save_texts</source>
                 <target>Guardar los textos</target>
@@ -1161,6 +1213,14 @@
             <trans-unit id="zGk8.GX">
                 <source>label.social_calendar_today</source>
                 <target>Hoy</target>
+            </trans-unit>
+            <trans-unit id="6sKyWv4">
+                <source>label.social_calendar_upload_refused</source>
+                <target>%name%: este archivo no es una imagen ni un vídeo aceptado, o no llegó completo. No se ha añadido nada.</target>
+            </trans-unit>
+            <trans-unit id="X6hDpRL">
+                <source>label.social_calendar_uploading</source>
+                <target>Enviando…</target>
             </trans-unit>
             <trans-unit id="9cqH5Ke">
                 <source>label.social_calendar_week</source>
@@ -1294,6 +1354,10 @@
                 <source>label.social_post_approve_selection</source>
                 <target>Validar la selección</target>
             </trans-unit>
+            <trans-unit id="1K_xpba">
+                <source>label.social_post_comment</source>
+                <target>Primer comentario</target>
+            </trans-unit>
             <trans-unit id="BDnUgUx">
                 <source>label.social_post_created_at</source>
                 <target>Preparada el</target>
@@ -1301,6 +1365,10 @@
             <trans-unit id="SKEd7Fa">
                 <source>label.social_post_failed_help</source>
                 <target>Rechazada por la red: %error%</target>
+            </trans-unit>
+            <trans-unit id="2vvsd7Y">
+                <source>label.social_post_locale</source>
+                <target>Idioma</target>
             </trans-unit>
             <trans-unit id="3pF3BRH">
                 <source>label.social_post_medias</source>

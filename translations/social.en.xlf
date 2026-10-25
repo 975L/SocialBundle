@@ -86,6 +86,10 @@
                 <source>description.guided_step_social_calendar_move</source>
                 <target>Drag a post onto a coming time of the week or the day, or onto a coming day of the month where it keeps its time: it is planned there, its approval unchanged.</target>
             </trans-unit>
+            <trans-unit id="H0wxayG">
+                <source>description.guided_step_social_calendar_networks</source>
+                <target>The panel ticks the connected networks the post goes to: tick or untick some, then "Save networks", a network ticked getting its text. Once it went out anywhere, its networks stay as they are.</target>
+            </trans-unit>
             <trans-unit id="QikFj7G">
                 <source>description.guided_step_social_calendar_new</source>
                 <target>"New post" opens a post to write, planned at the next quarter of an hour. A double click on a coming time of the week or the day, or on a day of the month, opens it at that very moment.</target>
@@ -96,11 +100,11 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once, reorders or removes its medias, adds some from the site or changes its content.</target>
+                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once, reorders or removes its medias, adds some from the site or by dropping files on it, changes its content, or duplicates it to the next day.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
-                <target>The panel shows each network's text: correct it there, then "Save the texts", a text already published staying read only. "Full screen" opens the whole post, for its common text, its rephrasing or its networks.</target>
+                <target>The panel shows each network's text: correct it there, then "Save the texts", a text already published staying read only. "Full screen" opens the whole post, for its common text or its rephrasing.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
@@ -278,6 +282,18 @@
                 <source>description.guided_step_social_youtube_prerequisites</source>
                 <target>This part happens on console.cloud.google.com, in the Google OAuth client's project (the Google listing's, or a new one): enable "YouTube Data API v3", add the youtube.upload and youtube.readonly scopes to the consent screen and set it "In production", then declare in the OAuth client the site's address followed by "/social/youtube/callback". For the videos to go out public, the project also has to pass YouTube's API audit.</target>
             </trans-unit>
+            <trans-unit id="fcDzyeM">
+                <source>email.social_linkedin_reminder_body</source>
+                <target>The site's access to your LinkedIn profile ends on %date%, LinkedIn granting it for 60 days only. After that, nothing goes out there any more. Click "Connecter" on the LinkedIn tile of "Connexions":</target>
+            </trans-unit>
+            <trans-unit id="D5AHhy9">
+                <source>email.social_linkedin_reminder_subject</source>
+                <target>Connect LinkedIn again before %date%</target>
+            </trans-unit>
+            <trans-unit id="Zcn3ppA">
+                <source>email.social_post_comment_failed</source>
+                <target>the post went out, its first comment was refused (%error%): only the comment will be sent again</target>
+            </trans-unit>
             <trans-unit id="nVJ6Jbx">
                 <source>email.social_post_failed_body</source>
                 <target>A network refused these posts at their moment. Open the link to see why and send it again, or correct it first:</target>
@@ -289,6 +305,10 @@
             <trans-unit id="fFRxt4W">
                 <source>email.social_series_ending_body</source>
                 <target>These series are reaching their last post. Open one of their posts, then "Prolong the series" to go on with the same settings:</target>
+            </trans-unit>
+            <trans-unit id="cV8_CqX">
+                <source>email.social_series_ending_import</source>
+                <target>imported drafts: prepare the next ones</target>
             </trans-unit>
             <trans-unit id="KWHHNzs">
                 <source>email.social_series_ending_subject</source>
@@ -402,6 +422,10 @@
                 <source>flash.youtube_refused</source>
                 <target>The connection to YouTube was refused or interrupted.</target>
             </trans-unit>
+            <trans-unit id="r8RnTTk">
+                <source>help.social_calendar_drop</source>
+                <target>They are added after the post's medias. JPEG, PNG, WebP, GIF, MP4 or MOV.</target>
+            </trans-unit>
             <trans-unit id="MtGVTQR">
                 <source>help.social_calendar_feed</source>
                 <target>Copy this address into your calendar: Evolution, New then "On the web" calendar; Google Calendar, Other calendars then "From URL" (then shown on Android); Outlook, Add calendar then "Subscribe from web". Read-only, refreshed by the calendar at its own pace. Keep it secret: renewing it cuts the former one.</target>
@@ -421,6 +445,14 @@
             <trans-unit id="TRKXywk">
                 <source>help.social_media_reference</source>
                 <target>A gallery file: it is changed in the gallery, and never deleted with the post.</target>
+            </trans-unit>
+            <trans-unit id="pIwpMTT">
+                <source>help.social_post_comment</source>
+                <target>Posted right after the post, as you. Filled in, the post goes out without its link card: write the link here, after a short sentence.</target>
+            </trans-unit>
+            <trans-unit id="eLp064i">
+                <source>help.social_post_locale</source>
+                <target>The language the post is written in. Bluesky files it under that language; empty, the site's own.</target>
             </trans-unit>
             <trans-unit id="MzBnBYd">
                 <source>help.social_post_medias</source>
@@ -614,6 +646,10 @@
                 <source>label.guided_step_social_calendar_move</source>
                 <target>Move a post</target>
             </trans-unit>
+            <trans-unit id="vTQDiCm">
+                <source>label.guided_step_social_calendar_networks</source>
+                <target>Choose the networks</target>
+            </trans-unit>
             <trans-unit id="k.rSJli">
                 <source>label.guided_step_social_calendar_new</source>
                 <target>Write a post</target>
@@ -725,6 +761,10 @@
             <trans-unit id="XkyAGQR">
                 <source>label.guided_step_social_posts_change_content</source>
                 <target>Change the content</target>
+            </trans-unit>
+            <trans-unit id="cC4fId_">
+                <source>label.guided_step_social_posts_comment</source>
+                <target>Add a first comment</target>
             </trans-unit>
             <trans-unit id="9zRMIWa">
                 <source>label.guided_step_social_posts_edit</source>
@@ -1070,6 +1110,14 @@
                 <source>label.social_calendar_drag_hint</source>
                 <target>Double-click a coming time, or a day in the month view, to write a post there; drag a post onto another time, or another day, to move it, its approval unchanged.</target>
             </trans-unit>
+            <trans-unit id="6NlEPFx">
+                <source>label.social_calendar_drop</source>
+                <target>Drop pictures or videos here, or click to choose them</target>
+            </trans-unit>
+            <trans-unit id="Pf81mFx">
+                <source>label.social_calendar_duplicate</source>
+                <target>Duplicate</target>
+            </trans-unit>
             <trans-unit id="6zf3y2m">
                 <source>label.social_calendar_edit_texts</source>
                 <target>Full screen</target>
@@ -1122,6 +1170,10 @@
                 <source>label.social_calendar_previous</source>
                 <target>Previous</target>
             </trans-unit>
+            <trans-unit id="Tbz6Hmi">
+                <source>label.social_calendar_save_networks</source>
+                <target>Save networks</target>
+            </trans-unit>
             <trans-unit id="D8RSkan">
                 <source>label.social_calendar_save_texts</source>
                 <target>Save the texts</target>
@@ -1161,6 +1213,14 @@
             <trans-unit id="zGk8.GX">
                 <source>label.social_calendar_today</source>
                 <target>Today</target>
+            </trans-unit>
+            <trans-unit id="6sKyWv4">
+                <source>label.social_calendar_upload_refused</source>
+                <target>%name%: this file is not an accepted picture or video, or it did not arrive whole. Nothing was added.</target>
+            </trans-unit>
+            <trans-unit id="X6hDpRL">
+                <source>label.social_calendar_uploading</source>
+                <target>Uploading…</target>
             </trans-unit>
             <trans-unit id="9cqH5Ke">
                 <source>label.social_calendar_week</source>
@@ -1294,6 +1354,10 @@
                 <source>label.social_post_approve_selection</source>
                 <target>Approve the selection</target>
             </trans-unit>
+            <trans-unit id="1K_xpba">
+                <source>label.social_post_comment</source>
+                <target>First comment</target>
+            </trans-unit>
             <trans-unit id="BDnUgUx">
                 <source>label.social_post_created_at</source>
                 <target>Prepared on</target>
@@ -1301,6 +1365,10 @@
             <trans-unit id="SKEd7Fa">
                 <source>label.social_post_failed_help</source>
                 <target>Refused by the network: %error%</target>
+            </trans-unit>
+            <trans-unit id="2vvsd7Y">
+                <source>label.social_post_locale</source>
+                <target>Language</target>
             </trans-unit>
             <trans-unit id="3pF3BRH">
                 <source>label.social_post_medias</source>

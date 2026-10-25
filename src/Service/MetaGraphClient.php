@@ -96,15 +96,27 @@ class MetaGraphClient
         return $data;
     }
 
-    // Hands Meta a video it downloads itself, at the upload address a reel's first phase gave out - outside the Graph host, and authorized by the Page token in a header rather than a parameter
-    public function uploadHosted(string $uploadUrl, string $fileUrl, string $token): void
+    // Sends Meta a video's bytes at the upload address a reel's first phase gave out - outside the Graph host, and authorized by the Page token in a header rather than a parameter. Sent rather than given by its address, so a robots.txt keeping Meta's crawlers away from the site never stops it
+    public function uploadFile(string $uploadUrl, string $path, string $token): void
     {
-        $response = $this->httpClient->request('POST', $uploadUrl, [
-            'headers' => ['Authorization' => 'OAuth ' . $token, 'file_url' => $fileUrl],
-            'timeout' => 60,
-        ]);
+        $file = fopen($path, 'r');
+        if (false === $file) {
+            throw new \RuntimeException(sprintf('The reel\'s video %s cannot be read.', $path));
+        }
 
-        $data = $response->toArray(false);
+        // Its length said up front, the upload refusing a body sent in chunks - the file closed once Meta answered
+        $size = (string) filesize($path);
+        try {
+            $response = $this->httpClient->request('POST', $uploadUrl, [
+                'headers' => ['Authorization' => 'OAuth ' . $token, 'offset' => '0', 'file_size' => $size, 'Content-Length' => $size],
+                'body' => $file,
+                'timeout' => 300,
+            ]);
+            $data = $response->toArray(false);
+        } finally {
+            fclose($file);
+        }
+
         if (200 !== $response->getStatusCode() || true !== ($data['success'] ?? null)) {
             throw new \RuntimeException(sprintf('Meta refused the reel upload: %s', $data['debug_info']['message'] ?? $data['error']['message'] ?? $response->getStatusCode()));
         }

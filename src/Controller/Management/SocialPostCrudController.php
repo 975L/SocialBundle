@@ -12,6 +12,7 @@ namespace c975L\SocialBundle\Controller\Management;
 
 use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Entity\SocialSeries;
@@ -49,6 +50,7 @@ use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Intl\Locales;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Translation\TranslatableMessage;
 use Symfony\Component\Validator\Constraints\Count;
@@ -81,6 +83,7 @@ class SocialPostCrudController extends AbstractCrudController
         private readonly SocialPostRepository $postRepository,
         private readonly SocialMediaPicker $mediaPicker,
         private readonly SocialPostApprover $approver,
+        private readonly SiteLocales $siteLocales,
     ) {
     }
 
@@ -188,7 +191,7 @@ class SocialPostCrudController extends AbstractCrudController
         // As many drafts again for the series the post belongs to, with its settings
         $prolongSeries = Action::new('prolongSeries', t('label.social_series_prolong', [], 'social'), 'fa fa-forward')
             ->linkToUrl(fn (SocialPost $post): string => $this->entityActionUrl('prolongSeries', $post))
-            ->displayIf(static fn (SocialPost $post): bool => null !== $post->getSeries())
+            ->displayIf(static fn (SocialPost $post): bool => null !== $post->getSeries() && SocialSeriesGenerator::MODE_IMPORT !== $post->getSeries()->getMode())
         ;
         // Another content of its source for a post prepared from one - another photograph of the gallery, chosen or drawn again - while it has not gone out
         $changeContent = Action::new('changeContent', t('label.social_content_change', [], 'social'), 'fa fa-shuffle')
@@ -281,6 +284,15 @@ class SocialPostCrudController extends AbstractCrudController
             ->setHelp($post instanceof SocialPost ? $this->thumbnail($post, 300) : '')
             ->setFormTypeOption('help_html', true)
         ;
+        // The language it is written in, on a site offering several - empty for the site's own
+        if ($this->siteLocales->isMultilingual()) {
+            yield ChoiceField::new('locale', t('label.social_post_locale', [], 'social'))
+                ->setChoices(array_combine(array_map(Locales::getName(...), $this->siteLocales->all()), $this->siteLocales->all()))
+                ->setRequired(false)
+                ->setHelp(t('help.social_post_locale', [], 'social'))
+                ->onlyOnForms()
+            ;
+        }
         // The moment it goes out once approved, to the quarter of an hour
         yield DateTimeField::new('plannedAt', t('label.social_post_planned_at', [], 'social'))
             ->setRequired(true)
@@ -449,7 +461,7 @@ class SocialPostCrudController extends AbstractCrudController
 
         return $this->render('@c975LSocial/management/social_post_retry.html.twig', [
             'post' => $post,
-            'failed' => $post->getTargets()->filter(static fn (SocialPostTarget $target): bool => SocialPostStatus::Failed === $target->getStatus()),
+            'failed' => $post->getTargets()->filter(static fn (SocialPostTarget $target): bool => SocialPostStatus::Failed === $target->getStatus() || $target->isCommentPending()),
             'edit_url' => $this->editUrl($post),
         ]);
     }
@@ -706,6 +718,11 @@ class SocialPostCrudController extends AbstractCrudController
                 SocialPostStatus::Draft->value => $this->addFlash('info', t('flash.social_post_draft', $parameters, 'social')),
                 default => $this->addFlash('danger', t('flash.social_post_failed', $parameters, 'social')),
             };
+
+            // A post out whose first comment was refused, said right after the network it went to
+            if (isset($result['comment_error'])) {
+                $this->addFlash('warning', t('email.social_post_comment_failed', ['%error%' => (string) $result['comment_error']], 'social'));
+            }
         }
     }
 

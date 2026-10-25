@@ -39,6 +39,11 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # Imported drafts' pictures are stored as a series' media is
+    c975L\SocialBundle\Service\SocialDraftImporter:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # Libraries are auto-tagged from UiBundle's PickableMediaProviderInterface (see c975LSocialBundle::build()), their files read and copied under the site's public/ folder
     c975L\SocialBundle\Service\SocialMediaPicker:
         arguments:
@@ -52,6 +57,11 @@ services:
 
     # The medias uploaded for a post are read under the site's public/ folder
     c975L\SocialBundle\Listener\SocialMediaUploadListener:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
+    # A post duplicated copies its uploads under the site's public/ folder
+    c975L\SocialBundle\Service\SocialPostDuplicator:
         arguments:
             $projectDir: '%kernel.project_dir%'
 

@@ -22,11 +22,13 @@ use c975L\SocialBundle\Service\SocialMediaChecker;
 use c975L\SocialBundle\Service\SocialMediaPicker;
 use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPostApprover;
+use c975L\SocialBundle\Service\SocialPostDuplicator;
 use c975L\SocialBundle\Service\SocialPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,6 +62,18 @@ class SocialCalendarControllerTest extends TestCase
     /** @var array<string, mixed> */
     private array $rendered = [];
 
+    // The networks the site is connected to
+    /** @var list<string> */
+    private array $connected = ['bluesky', 'linkedin'];
+
+    // The networks handed to SocialPublisher::addTargets(), to have their texts written
+    /** @var list<string> */
+    private array $added = [];
+
+    // What the entity manager was handed to persist
+    /** @var list<object> */
+    private array $persisted = [];
+
     protected function setUp(): void
     {
         $this->plannedAt = new \DateTimeImmutable('+1 day 09:30');
@@ -80,6 +94,7 @@ class SocialCalendarControllerTest extends TestCase
             $this->createStub(TranslatorInterface::class),
             $this->createStub(SocialMediaPicker::class),
             $this->createStub(SocialPostApprover::class),
+            new SocialPostDuplicator(sys_get_temp_dir()),
         );
     }
 
@@ -177,9 +192,20 @@ class SocialCalendarControllerTest extends TestCase
         $entityManager->method('flush')->willReturnCallback(function (): void {
             ++$this->flushes;
         });
+        $entityManager->method('persist')->willReturnCallback(function (object $entity): void {
+            $this->persisted[] = $entity;
+        });
 
         $publisher = $this->createStub(SocialPublisher::class);
         $publisher->method('getMaxLength')->willReturnCallback(fn (): ?int => $this->maxLength);
+        $publisher->method('getNetworkNames')->willReturn(['bluesky', 'facebook', 'linkedin']);
+        $publisher->method('getConnectedNetworkNames')->willReturnCallback(fn (): array => $this->connected);
+        $publisher->method('addTargets')->willReturnCallback(function (SocialPost $post, array $networks): void {
+            $this->added = $networks;
+            foreach ($networks as $network) {
+                new SocialPostTarget($post, $network, 'Written');
+            }
+        });
 
         // A network's problem written the way French puts it, any other message read as its key
         $translator = $this->createStub(TranslatorInterface::class);
@@ -196,6 +222,7 @@ class SocialCalendarControllerTest extends TestCase
             $translator,
             $this->createStub(SocialMediaPicker::class),
             new SocialPostApprover($this->mediaChecker ?? $this->createStub(SocialMediaChecker::class), $entityManager),
+            new SocialPostDuplicator(sys_get_temp_dir()),
         );
 
         $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
@@ -432,6 +459,62 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertSame(0, $this->flushes);
     }
 
+    /** @param list<UploadedFile> $files */
+    private function upload(array $files, string $token = 'valid'): Response
+    {
+        $request = Request::create('/', 'POST', ['post' => '42'], [], ['files' => $files]);
+        $request->headers->set('X-CSRF-Token', $token);
+
+        return $this->createController($request)->upload($request);
+    }
+
+    // A file of the given content under a client name, as the browser sends it
+    private function uploaded(string $name, string $content): UploadedFile
+    {
+        $path = (string) tempnam(sys_get_temp_dir(), 'social');
+        file_put_contents($path, $content);
+
+        return new UploadedFile($path, $name, null, null, true);
+    }
+
+    // A small JPEG, which the server recognises as one whatever its name
+    private function jpeg(): string
+    {
+        $image = imagecreatetruecolor(4, 4);
+        ob_start();
+        imagejpeg($image);
+
+        return (string) ob_get_clean();
+    }
+
+    // The files dropped on the panel go after the post's medias, in the order sent, the panel answered with them
+    public function testTheFilesDroppedAreAddedAfterTheMedias(): void
+    {
+        $this->addMedias(1);
+
+        $this->assertSame(Response::HTTP_OK, $this->upload([$this->uploaded('a.jpg', $this->jpeg()), $this->uploaded('b.jpg', $this->jpeg())])->getStatusCode());
+        $medias = $this->rendered['medias']->getValues();
+        $this->assertCount(3, $medias);
+        $this->assertSame([0, 1, 2], array_map(static fn (SocialMedia $media): int => $media->getPosition(), $medias));
+        $this->assertSame(['a.jpg', 'b.jpg'], array_map(static fn (SocialMedia $media): ?string => $media->getFile() instanceof UploadedFile ? $media->getFile()->getClientOriginalName() : null, \array_slice($medias, 1)));
+        $this->assertSame(1, $this->flushes);
+    }
+
+    // One file of another type refuses the whole drop, saying which; a forged request, a post gone out or nothing sent change nothing
+    public function testADropWithAFileOfAnotherTypeAddsNothing(): void
+    {
+        $refused = $this->upload([$this->uploaded('a.jpg', $this->jpeg()), $this->uploaded('notes.txt', 'Hello')]);
+
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $refused->getStatusCode());
+        $this->assertSame('label.social_calendar_upload_refused', $refused->getContent());
+        $this->assertSame(Response::HTTP_FORBIDDEN, $this->upload([$this->uploaded('a.jpg', $this->jpeg())], 'forged')->getStatusCode());
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->upload([])->getStatusCode());
+        $this->target()->markPublished('ext-1');
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->upload([$this->uploaded('a.jpg', $this->jpeg())])->getStatusCode());
+        $this->assertCount(0, $this->post->getMedias());
+        $this->assertSame(0, $this->flushes);
+    }
+
     // Gone out on one network and still waited for on another, a post keeps the medias it went out with - its panel saying so
     public function testAPostGoneOutOnOneNetworkKeepsItsMedias(): void
     {
@@ -599,5 +682,75 @@ class SocialCalendarControllerTest extends TestCase
         $this->texts(['1' => 'Nouveau texte']);
 
         $this->assertSame('Text', $this->target()->getText());
+    }
+
+    /** @param list<string> $networks */
+    private function networks(array $networks, string $token = 'valid'): Response
+    {
+        $request = Request::create('/', 'POST', ['post' => '42', 'networks' => $networks]);
+        $request->headers->set('X-CSRF-Token', $token);
+
+        return $this->createController($request)->networks($request);
+    }
+
+    // A connected network ticked gets its text written, one unticked drops its own, the panel answered as it now reads with the connected networks to tick
+    public function testTheNetworksTickedInThePanelAreSaved(): void
+    {
+        $this->assertSame(Response::HTTP_OK, $this->networks(['linkedin'])->getStatusCode());
+
+        $this->assertSame(['linkedin'], $this->added);
+        $this->assertSame(['linkedin'], $this->post->getNetworks());
+        $this->assertSame(1, $this->flushes);
+        $this->assertSame(['bluesky', 'linkedin'], $this->rendered['offered_networks']);
+        $this->assertSame(['linkedin'], $this->rendered['networks']);
+    }
+
+    // Networks ticked whose medias would be refused are saved all the same, the panel warning of it as the post's screen does
+    public function testNetworksTickedWhoseMediasDoNotSuitAreWarned(): void
+    {
+        $this->mediaChecker = $this->createStub(SocialMediaChecker::class);
+        $this->mediaChecker->method('check')->willReturn(['instagram' => [new TranslatableMessage('label.social_media_required')]]);
+
+        $this->assertSame(Response::HTTP_OK, $this->networks(['linkedin'])->getStatusCode());
+        $this->assertSame(['linkedin'], $this->post->getNetworks());
+        $this->assertSame('Instagram : label.social_media_required', $this->rendered['media_problems']);
+    }
+
+    // A network not connected is not offered: sent anyway it is not added, and one the post already goes to stays
+    public function testANetworkNotConnectedIsLeftAsItWas(): void
+    {
+        new SocialPostTarget($this->post, 'facebook', 'Facebook');
+
+        $this->networks(['bluesky', 'facebook', 'instagram']);
+        $this->assertSame([], $this->added);
+        $this->assertEqualsCanonicalizing(['bluesky', 'facebook'], $this->post->getNetworks());
+
+        $this->networks([]);
+        $this->assertSame(['facebook'], $this->post->getNetworks());
+    }
+
+    // A post gone out anywhere keeps its networks, and a forged request changes nothing
+    public function testAPostGoneOutAndAForgedRequestKeepTheirNetworks(): void
+    {
+        $this->assertSame(Response::HTTP_FORBIDDEN, $this->networks(['linkedin'], 'forged')->getStatusCode());
+        $this->target()->markPublished('ext-1');
+
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->networks(['linkedin'])->getStatusCode());
+        $this->assertSame(['bluesky'], $this->post->getNetworks());
+        $this->assertSame(0, $this->flushes);
+    }
+
+    // The copy is saved, answered by the calendar's address on its day; a forged request copies nothing
+    public function testAPostIsDuplicated(): void
+    {
+        $request = Request::create('/', 'POST', ['post' => '42']);
+        $request->headers->set('X-CSRF-Token', 'forged');
+        $this->assertSame(Response::HTTP_FORBIDDEN, $this->createController($request)->duplicate($request)->getStatusCode());
+
+        $request->headers->set('X-CSRF-Token', 'valid');
+        $this->assertSame(Response::HTTP_OK, $this->createController($request)->duplicate($request)->getStatusCode());
+        $this->assertCount(1, $this->persisted);
+        $this->assertInstanceOf(SocialPost::class, $this->persisted[0]);
+        $this->assertSame(1, $this->flushes);
     }
 }

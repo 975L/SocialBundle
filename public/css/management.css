@@ -446,6 +446,12 @@
   align-content: start;
 }
 
+/* On a wide screen the calendar narrows beside the panel rather than going under it */
+@media (min-width: 768px) {
+  .social-calendar-has-panel {
+    padding-right: 28rem;
+  }
+}
 .social-calendar-panel-head {
   display: flex;
   justify-content: space-between;
@@ -494,6 +500,27 @@
   position: absolute;
   top: 0.25rem;
   right: 0.25rem;
+}
+
+.social-calendar-panel-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 1rem;
+  text-align: center;
+  border: 2px dashed var(--bs-border-color, #ccc);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.social-calendar-panel-drop:hover, .social-calendar-panel-drop:focus-within, .social-calendar-panel-drop.is-over {
+  border-color: var(--bs-primary, #0d6efd);
+  background-color: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.08);
+}
+.social-calendar-panel-drop.is-busy {
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .social-calendar-panel-content {

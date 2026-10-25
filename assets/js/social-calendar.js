@@ -11,8 +11,18 @@ import { addSortGesture } from "@c975l/ui-bundle/pointer-sort.js";
 
 // The publications calendar (see management/social_calendar.html.twig): a card dragged onto a quarter of an hour of the week is planned at that moment, onto a day of the month at its own time that day, its approval untouched; a coming moment double-clicked writes a new post there. The gesture is UiBundle's (pointer-sort.js), this controller owning only where a card lands, saved on the spot then the page reloaded, the server computing where every other post falls
 export default class extends Controller {
-    static targets = ["item", "zone", "panel", "planAt", "group", "media", "thumbnail"];
-    static values = { url: String, token: String, panelUrl: String, mediasUrl: String, textsUrl: String, newUrl: String, failedLabel: String, textsFailedLabel: String };
+    static targets = ["item", "zone", "panel", "planAt", "group", "media", "thumbnail", "badges", "drop"];
+    static values = { url: String, token: String, panelUrl: String, mediasUrl: String, uploadUrl: String, textsUrl: String, networksUrl: String, duplicateUrl: String, openId: Number, newUrl: String, failedLabel: String, textsFailedLabel: String };
+
+    // A copy just made opens its panel with the page, its id then taken off the address so a reload does not open it again
+    connect() {
+        if (this.openIdValue <= 0) return;
+
+        this.openPanel(this.openIdValue);
+        const url = new URL(window.location.href);
+        url.searchParams.delete("post");
+        window.history.replaceState(window.history.state, "", url);
+    }
 
     // Laid at its quarter of an hour and in its lane from its data, a style attribute being refused by a Content-Security-Policy without 'unsafe-inline'
     groupTargetConnected(group) {
@@ -73,15 +83,22 @@ export default class extends Controller {
         if (event.metaKey || event.ctrlKey || event.shiftKey || event.button > 0) return;
         event.preventDefault();
 
+        const href = event.currentTarget.href;
+        this.openPanel(event.currentTarget.dataset.panelId, () => window.location.assign(href));
+    }
+
+    // The post's panel read and shown, the calendar narrowed beside it on a wide screen (see management.scss) - $failed run when it cannot be read
+    openPanel(id, failed = () => {}) {
         const url = new URL(this.panelUrlValue, window.location.href);
-        url.searchParams.set("id", event.currentTarget.dataset.panelId);
+        url.searchParams.set("id", id);
         fetch(url)
             .then((response) => (response.ok ? response.text() : Promise.reject(new Error(String(response.status)))))
             .then((html) => {
                 this.panelTarget.innerHTML = html;
                 this.panelTarget.hidden = false;
+                this.element.classList.add("social-calendar-has-panel");
             })
-            .catch(() => window.location.assign(event.currentTarget.href));
+            .catch(failed);
     }
 
     // A coming moment double-clicked opens the screen of a new post planned there - a card double-clicked on it keeps opening its own. Announced first, cancelable, as a save is
@@ -93,9 +110,12 @@ export default class extends Controller {
         if (!this.dispatch("create", { detail: { url: url.href }, cancelable: true }).defaultPrevented) window.location.assign(url);
     }
 
-    closePanel() {
+    // Closed by its button or Escape, the calendar taking its whole width back - an Escape typed in a field only closing what the browser opened there, so its unsaved text stays
+    closePanel(event) {
+        if (event?.type === "keydown" && event.target.closest?.("input, textarea, select")) return;
         this.panelTarget.hidden = true;
         this.panelTarget.innerHTML = "";
+        this.element.classList.remove("social-calendar-has-panel");
     }
 
     // The moment typed in the panel, sent as typed: the server reads it in its own time zone, the one the field shows, and brings it to the quarter of an hour
@@ -159,6 +179,54 @@ export default class extends Controller {
             .catch(() => this.saved(false));
     }
 
+    // Armed per drop zone of the panel as it is read: lit while files are held over it, then the ones let go on it sent - the browser kept from opening them in its tab
+    dropTargetConnected(zone) {
+        const over = (event) => {
+            event.preventDefault();
+            zone.classList.add("is-over");
+        };
+        zone.addEventListener("dragenter", over);
+        zone.addEventListener("dragover", over);
+        zone.addEventListener("dragleave", (event) => {
+            if (!zone.contains(event.relatedTarget)) zone.classList.remove("is-over");
+        });
+        zone.addEventListener("drop", (event) => {
+            event.preventDefault();
+            zone.classList.remove("is-over");
+            this.upload(zone, event.dataTransfer.files);
+        });
+    }
+
+    // The files picked by a click on the zone, sent the same way
+    pickFiles(event) {
+        this.upload(event.currentTarget.closest("[data-social-calendar-target~='drop']"), event.currentTarget.files);
+    }
+
+    // The files sent with the post's id, the zone held and saying so while they go - the server answering the panel with them added, or why it refused them
+    upload(zone, files) {
+        if (0 === files.length) return;
+
+        const body = new FormData();
+        body.set("post", zone.dataset.postId);
+        for (const file of files) body.append("files[]", file);
+        zone.classList.add("is-busy");
+        const label = zone.querySelector(".social-calendar-panel-drop-label");
+        if (label) label.textContent = zone.dataset.uploading;
+
+        // Only a refusal of the files says its own reason, a file too heavy for the server answering a page of its own
+        const refused = (reason = "") => {
+            window.alert("" !== reason ? reason : this.failedLabelValue);
+            this.openPanel(zone.dataset.postId);
+        };
+        fetch(this.uploadUrlValue, { method: "POST", headers: { "X-CSRF-Token": this.tokenValue }, body })
+            .then((response) => {
+                if (response.ok) return response.text().then((html) => (this.panelTarget.innerHTML = html));
+
+                return 422 === response.status ? response.text().then(refused) : refused();
+            })
+            .catch(() => refused());
+    }
+
     // The panel's texts saved together, the button held while they are sent, the server answering the panel as it now reads - a refusal said, the texts typed left as they are to be corrected
     saveTexts(event) {
         event.preventDefault();
@@ -174,6 +242,39 @@ export default class extends Controller {
         fetch(this.textsUrlValue, { method: "POST", headers: { "X-CSRF-Token": this.tokenValue }, body })
             .then((response) => (response.ok ? response.text().then((html) => (this.panelTarget.innerHTML = html)) : response.text().then(refused)))
             .catch(() => refused());
+    }
+
+    // The networks ticked in the panel saved, the button held while their texts are written - which may take a few seconds - the server answering the panel as it now reads
+    saveNetworks(event) {
+        event.preventDefault();
+        const button = event.submitter;
+        const body = new URLSearchParams(new FormData(event.currentTarget));
+        body.set("post", event.currentTarget.dataset.postId);
+        if (button) button.disabled = true;
+
+        fetch(this.networksUrlValue, { method: "POST", headers: { "X-CSRF-Token": this.tokenValue }, body })
+            .then((response) => (response.ok ? response.text() : Promise.reject(new Error(String(response.status)))))
+            .then((html) => (this.panelTarget.innerHTML = html))
+            .catch(() => this.saved(false));
+    }
+
+    // The post written again the day after, the calendar then opened on the copy's day with its panel
+    duplicate(event) {
+        const button = event.currentTarget;
+        button.disabled = true;
+
+        fetch(this.duplicateUrlValue, { method: "POST", headers: { "X-CSRF-Token": this.tokenValue }, body: new URLSearchParams({ post: button.dataset.postId }) })
+            .then((response) => (response.ok ? response.text() : Promise.reject(new Error(String(response.status)))))
+            .then((url) => window.location.assign(url))
+            .catch(() => this.saved(false));
+    }
+
+    // The panel read again says the post's networks as they now are, which its card on the calendar takes
+    badgesTargetConnected(badges) {
+        const card = this.element.querySelector(`[data-panel-id="${badges.dataset.postId}"]`);
+        const current = card?.querySelector(":scope > .social-network-badges");
+        const updated = badges.content.firstElementChild;
+        if (current && updated) current.replaceWith(updated.cloneNode(true));
     }
 
     // The panel read again says the post's picture as it now is, which its card on the calendar takes: changed, gained when it had none, or lost with the last media

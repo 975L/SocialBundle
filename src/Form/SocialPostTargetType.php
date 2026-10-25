@@ -55,6 +55,17 @@ class SocialPostTargetType extends AbstractType
                 // Opt-in marker read by the block form theme, which is what puts Donovan under a plain textarea
                 'attr' => array_filter(['maxlength' => $maxLength, 'rows' => 6, 'data-ai-rephrase' => true]),
             ]);
+
+            // Offered on a network answering its posts with a first comment alone, where the link then goes rather than in the text
+            if ($this->socialPublisher->supportsComment($target->getNetwork())) {
+                $event->getForm()->add('comment', TextareaType::class, [
+                    'label' => t('label.social_post_comment', [], 'social'),
+                    'help' => null === $target->getCommentError() ? t('help.social_post_comment', [], 'social') : t('email.social_post_comment_failed', ['%error%' => $target->getCommentError()], 'social'),
+                    'required' => false,
+                    'disabled' => null !== $target->getCommentId(),
+                    'attr' => ['rows' => 2],
+                ]);
+            }
         });
     }
 

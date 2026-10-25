@@ -81,6 +81,15 @@ class SocialPostTest extends TestCase
         $this->assertSame([], $post->takeAddedNetworks());
     }
 
+    // The language picked is kept trimmed, an empty one leaving the site's default
+    public function testTheLanguageIsTrimmedAndEmptiedToNone(): void
+    {
+        $post = $this->post();
+
+        $this->assertSame('en', $post->setLocale(' en ')->getLocale());
+        $this->assertNull($post->setLocale('  ')->getLocale());
+    }
+
     // An emptied field on the post's screen never leaves it without a moment
     public function testAPostKeepsItsMomentWhenTheFieldIsEmptied(): void
     {

@@ -39,6 +39,18 @@ class SocialPostTarget
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $error = null;
 
+    // The first comment the post is answered with, where the link goes on a network showing a post with a link to fewer people (see FirstCommentPublisherInterface)
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $comment = null;
+
+    // What the network calls the comment once it is there - never sent twice
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $commentId = null;
+
+    // The network's refusal of the comment, the post itself staying published: only the comment is sent again
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $commentError = null;
+
     public function __construct(
         #[ORM\ManyToOne(targetEntity: SocialPost::class, inversedBy: 'targets')]
         #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -96,6 +108,46 @@ class SocialPostTarget
     public function getError(): ?string
     {
         return $this->error;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?string $comment): self
+    {
+        $comment = trim((string) $comment);
+        $this->comment = '' === $comment ? null : $comment;
+
+        return $this;
+    }
+
+    public function getCommentId(): ?string
+    {
+        return $this->commentId;
+    }
+
+    public function getCommentError(): ?string
+    {
+        return $this->commentError;
+    }
+
+    // Published, with a comment still to send - the post never sent again for it
+    public function isCommentPending(): bool
+    {
+        return SocialPostStatus::Published === $this->status && null !== $this->comment && null === $this->commentId;
+    }
+
+    public function markCommented(string $commentId): void
+    {
+        $this->commentId = $commentId;
+        $this->commentError = null;
+    }
+
+    public function markCommentFailed(string $error): void
+    {
+        $this->commentError = $error;
     }
 
     // Whether "Publish" still has something to do here - a published target is never sent twice

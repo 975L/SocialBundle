@@ -11,6 +11,7 @@
 namespace c975L\SocialBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\SocialBundle\Service\BlueskyOAuthClient;
@@ -27,9 +28,10 @@ class BlueskyPublisherTest extends TestCase
     private array $requests = [];
 
     // The OAuth connection stubbed: every call recorded with its json body, Bluesky's refusal thrown the way BlueskyOAuthClient words it
-    private function createPublisher(bool $connected = true, bool $refused = false, string $remoteImage = ''): BlueskyPublisher
+    private function createPublisher(bool $connected = true, bool $refused = false, string $remoteImage = '', ?string $label = null): BlueskyPublisher
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnCallback(static fn (string $slug): ?string => 'social-bluesky-label' === $slug ? $label : null);
 
         $oauthClient = $this->createStub(BlueskyOAuthClient::class);
         $oauthClient->method('isConnected')->willReturn($connected);
@@ -51,7 +53,7 @@ class BlueskyPublisherTest extends TestCase
             return new MockResponse($remoteImage);
         });
 
-        return new BlueskyPublisher(new SocialImageExporter($httpClient, $this->createStub(SiteUrlResolver::class), sys_get_temp_dir(), $configService), $oauthClient);
+        return new BlueskyPublisher(new SocialImageExporter($httpClient, $this->createStub(SiteUrlResolver::class), sys_get_temp_dir(), $configService), $oauthClient, $configService, new SiteLocales(['fr', 'en'], 'fr'));
     }
 
     /**
@@ -261,5 +263,34 @@ class BlueskyPublisherTest extends TestCase
         imagepng(imagecreatetruecolor(4, 2));
 
         return (string) ob_get_clean();
+    }
+
+    // The site's label carried by the record, so the apps blur the post from the start
+    public function testTheSitesLabelIsCarriedByThePost(): void
+    {
+        $this->createPublisher(label: 'sexual')->publish('Hello', new SocialContent('1', 'Title', 'https://example.org'));
+
+        $this->assertSame(['$type' => 'com.atproto.label.defs#selfLabels', 'values' => [['val' => 'sexual']]], $this->postedRecord()['labels']);
+    }
+
+    // No label for "none", nor for a value Bluesky does not know
+    public function testNoLabelWithoutAKnownOne(): void
+    {
+        foreach (['none', 'unknown', null] as $label) {
+            $this->requests = [];
+            $this->createPublisher(label: $label)->publish('Hello', new SocialContent('1', 'Title', 'https://example.org'));
+
+            $this->assertArrayNotHasKey('labels', $this->postedRecord());
+        }
+    }
+
+    // The post filed under its content's language, the site's own when the content does not say
+    public function testThePostIsFiledUnderItsLanguage(): void
+    {
+        $this->createPublisher()->publish('Hello', new SocialContent('1', 'Title', 'https://example.org', locale: 'en'));
+        $this->assertSame(['en'], $this->postedRecord()['langs']);
+
+        $this->createPublisher()->publish('Bonjour', new SocialContent('1', 'Titre', 'https://example.org'));
+        $this->assertSame(['fr'], $this->postedRecord()['langs']);
     }
 }

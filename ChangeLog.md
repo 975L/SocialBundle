@@ -1,5 +1,31 @@
 # Changelog
 
+## v2.18.0
+
+LinkedIn first comment, imported drafts, calendar panel actions
+
+- LinkedIn: a first comment per post, the post then sent without its link card (25/10/2026) [Needs db update]
+- Added `FirstCommentPublisherInterface` (25/10/2026)
+- A refused first comment leaves the post published, retried alone (25/10/2026)
+- LinkedIn: a first comment asked again on a 404 only (25/10/2026)
+- Added command `c975l:social:draft`, importing a JSON file as a series of drafts (25/10/2026)
+- Imported series are not prolonged, their ending announced (25/10/2026)
+- Added command `c975l:social:linkedin:reminder`, nightly, 14 then 3 days ahead (25/10/2026)
+- Calendar panel: files dropped added to the post's medias (25/10/2026)
+- Calendar panel: networks ticked and saved (25/10/2026)
+- Calendar panel: "Dupliquer" copies the post to the next day (`SocialPostDuplicator`) (25/10/2026)
+- Calendar panel: media problems warned after a drop or networks saved (25/10/2026)
+- Calendar panel: Escape typed in a field keeps it open (25/10/2026)
+- Post language: `SocialPost::$locale`, picked on a multilingual site (25/10/2026) [Needs db update]
+- Bluesky: post filed under its language (25/10/2026)
+- Added config `social-bluesky-label`, a self-label on every Bluesky post (25/10/2026)
+- Bluesky: videos allowed in the OAuth scope, Bluesky to connect again (25/10/2026)
+- Facebook: a Reel's file sent to Meta rather than fetched (25/10/2026)
+- Removed `MetaGraphClient::uploadHosted()` (25/10/2026) [BC-Break]
+- Meta: reel upload sends its length and closes the file (25/10/2026)
+- Guided projects: calendar networks step, first comment step, panel description (25/10/2026)
+- Requires `c975l/core-bundle` ^1.79 and `symfony/intl` (25/10/2026)
+
 ## v2.17.1
 
 Connections help no longer lists the networks

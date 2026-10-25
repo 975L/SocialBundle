@@ -10,6 +10,8 @@
 
 namespace c975L\SocialBundle\Service;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\SocialBundle\Model\MediaRules;
 use c975L\SocialBundle\Model\PostMedia;
@@ -24,9 +26,14 @@ class BlueskyPublisher implements NetworkPublisherInterface
     // What app.bsky.embed.images accepts per image, an image above it being posted without it rather than failing the post
     private const int MAX_IMAGE_SIZE = 2000000;
 
+    // The self-labels Bluesky's apps blur a post behind (com.atproto.label.defs#selfLabels), one picked per site in "social-bluesky-label"
+    public const array LABELS = ['sexual', 'nudity', 'porn', 'graphic-media'];
+
     public function __construct(
         private readonly SocialImageExporter $imageExporter,
         private readonly BlueskyOAuthClient $oauthClient,
+        private readonly ConfigServiceInterface $configService,
+        private readonly SiteLocales $siteLocales,
     ) {
     }
 
@@ -96,11 +103,19 @@ class BlueskyPublisher implements NetworkPublisherInterface
             'text' => $text,
             'createdAt' => new \DateTimeImmutable()->format(\DATE_ATOM),
             'facets' => $this->facets($text),
+            // The language the apps file the post under, a feed of one language showing it or not
+            'langs' => [$content->locale ?? $this->siteLocales->getDefaultLocale()],
         ];
 
         $embed = $this->embed($content, $medias, $upload);
         if (null !== $embed) {
             $record['embed'] = $embed;
+        }
+
+        // Labelled by the account itself, the post is blurred from the start rather than once Bluesky's moderation has seen it
+        $label = (string) $this->configService->get('social-bluesky-label');
+        if (\in_array($label, self::LABELS, true)) {
+            $record['labels'] = ['$type' => 'com.atproto.label.defs#selfLabels', 'values' => [['val' => $label]]];
         }
 
         return $record;

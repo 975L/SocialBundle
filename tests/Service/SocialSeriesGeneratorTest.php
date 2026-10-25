@@ -193,6 +193,12 @@ class SocialSeriesGeneratorTest extends TestCase
         $this->assertEquals(new \DateTimeImmutable('2026-11-09 21:00'), $mondays[0]->getPlannedAt());
     }
 
+    // Imported drafts have nothing to be prolonged with, the next ones being imported in turn
+    public function testAnImportedSeriesIsNotProlonged(): void
+    {
+        $this->assertSame([], $this->generator(lastPlannedAt: new \DateTimeImmutable('2026-11-07 21:00'))->prolong($this->series(3, SocialSeriesGenerator::MODE_IMPORT, ['linkedin'])));
+    }
+
     // A series whose posts were all deleted has no last post to go on from
     public function testASeriesWithoutPostsIsNotProlonged(): void
     {

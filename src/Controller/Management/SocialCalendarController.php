@@ -22,12 +22,14 @@ use c975L\SocialBundle\Service\SocialMediaChecker;
 use c975L\SocialBundle\Service\SocialMediaPicker;
 use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPostApprover;
+use c975L\SocialBundle\Service\SocialPostDuplicator;
 use c975L\SocialBundle\Service\SocialPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -50,6 +52,12 @@ class SocialCalendarController extends AbstractController
     private const string MEDIAS_ROUTE = 'management_social_calendar_medias';
 
     private const string TEXTS_ROUTE = 'management_social_calendar_texts';
+
+    private const string UPLOAD_ROUTE = 'management_social_calendar_upload';
+
+    private const string NETWORKS_ROUTE = 'management_social_calendar_networks';
+
+    private const string DUPLICATE_ROUTE = 'management_social_calendar_duplicate';
 
     private const string FEED_TOKEN_ROUTE = 'management_social_calendar_feed_token';
 
@@ -92,6 +100,7 @@ class SocialCalendarController extends AbstractController
         private readonly TranslatorInterface $translator,
         private readonly SocialMediaPicker $mediaPicker,
         private readonly SocialPostApprover $approver,
+        private readonly SocialPostDuplicator $duplicator,
     ) {
     }
 
@@ -144,7 +153,12 @@ class SocialCalendarController extends AbstractController
             // The panel's own addresses carry the view, which the post's screens it links to come back to
             'panel_url' => $this->generateUrl(self::PANEL_ROUTE, ['view' => $view]),
             'medias_url' => $this->generateUrl(self::MEDIAS_ROUTE, ['view' => $view]),
+            'upload_url' => $this->generateUrl(self::UPLOAD_ROUTE, ['view' => $view]),
             'texts_url' => $this->generateUrl(self::TEXTS_ROUTE, ['view' => $view]),
+            'networks_url' => $this->generateUrl(self::NETWORKS_ROUTE, ['view' => $view]),
+            'duplicate_url' => $this->generateUrl(self::DUPLICATE_ROUTE, ['view' => $view]),
+            // The post whose panel opens with the page, a copy just made
+            'open_id' => $request->query->getInt('post'),
             // A double click on a coming moment writes a post there, the screen of a new post opening on it
             'new_url' => $this->adminUrlGenerator->unsetAll()->setController(SocialPostCrudController::class)->setAction(Action::NEW)->set(self::FROM, $view)->generateUrl(),
             'series_url' => $this->adminUrlGenerator->unsetAll()->setController(SocialPostCrudController::class)->setAction('generateSeries')->generateUrl(),
@@ -228,6 +242,38 @@ class SocialCalendarController extends AbstractController
         return $this->renderPanel($post, $this->view($request));
     }
 
+    // The pictures and videos dropped on the panel, or picked from its zone, added after the post's medias as files of its own - Vich storing each one as the post's screen does (see SocialMediaUploadListener). A file of another type, or one the server did not receive whole, refuses the whole drop, said in the answer; a post gone out on a network keeps what it went out with
+    #[AdminRoute(path: '/social-calendar/upload', name: 'social_calendar_upload', options: ['methods' => ['POST']])]
+    public function upload(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
+
+        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN, $request->headers->get('X-CSRF-Token'))) {
+            return new Response(null, Response::HTTP_FORBIDDEN);
+        }
+
+        $post = $this->postRepository->find($request->request->getInt('post'));
+        $files = array_filter($request->files->all('files'), static fn (mixed $file): bool => $file instanceof UploadedFile);
+        if (!$post instanceof SocialPost || $post->hasGoneOut() || [] === $files) {
+            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        // Every file checked before any is kept, the drop going in whole or not at all
+        foreach ($files as $file) {
+            if (!$file->isValid() || !\in_array($file->getMimeType(), SocialMedia::ACCEPTED_TYPES, true)) {
+                return new Response($this->translator->trans('label.social_calendar_upload_refused', ['%name%' => $file->getClientOriginalName()], 'social'), Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        }
+
+        $position = $post->getMedias()->count();
+        foreach ($files as $file) {
+            $post->addMedia(new SocialMedia($post)->setFile($file)->setPosition($position++));
+        }
+        $this->entityManager->flush();
+
+        return $this->renderPanel($post, $this->view($request), problems: $this->mediaChecker->check($post));
+    }
+
     // The panel's texts saved, each network's own - one gone out on its network keeping what it went out with. An empty text, or one longer than its network takes, refuses the whole save, said in the answer
     #[AdminRoute(path: '/social-calendar/texts', name: 'social_calendar_texts', options: ['methods' => ['POST']])]
     public function texts(Request $request): Response
@@ -273,8 +319,55 @@ class SocialCalendarController extends AbstractController
         return $this->renderPanel($post, $this->view($request), true);
     }
 
-    // The panel as it now reads, answered to a card opened and to its medias or its texts changed alike - $view the calendar's, which the post's screens it links to come back to, $textsSaved saying the texts just were
-    private function renderPanel(SocialPost $post, string $view, bool $textsSaved = false): Response
+    // The networks ticked in the panel, among the connected ones, written the way the post's screen writes them: a network unticked drops its text, one ticked gets its text written - a network not connected left as it was, the panel not offering it. A post gone out anywhere keeps its networks
+    #[AdminRoute(path: '/social-calendar/networks', name: 'social_calendar_networks', options: ['methods' => ['POST']])]
+    public function networks(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
+
+        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN, $request->headers->get('X-CSRF-Token'))) {
+            return new Response(null, Response::HTTP_FORBIDDEN);
+        }
+
+        $post = $this->postRepository->find($request->request->getInt('post'));
+        if (!$post instanceof SocialPost || $post->hasGoneOut()) {
+            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $connected = $this->publisher->getConnectedNetworkNames();
+        $ticked = array_intersect(array_filter($request->request->all('networks'), \is_string(...)), $connected);
+        $post->setNetworks(array_values(array_unique([...$ticked, ...array_diff($post->getNetworks(), $connected)])));
+        $this->publisher->addTargets($post, $post->takeAddedNetworks());
+        $this->entityManager->flush();
+
+        return $this->renderPanel($post, $this->view($request), problems: $this->mediaChecker->check($post));
+    }
+
+    // The post written again the day after, a draft on the networks still connected, its medias its own - answered by the calendar's address on the copy's day, its panel opening there
+    #[AdminRoute(path: '/social-calendar/duplicate', name: 'social_calendar_duplicate', options: ['methods' => ['POST']])]
+    public function duplicate(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
+
+        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN, $request->headers->get('X-CSRF-Token'))) {
+            return new Response(null, Response::HTTP_FORBIDDEN);
+        }
+
+        $post = $this->postRepository->find($request->request->getInt('post'));
+        if (!$post instanceof SocialPost) {
+            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $copy = $this->duplicator->duplicate($post, $this->publisher->getConnectedNetworkNames());
+        $this->entityManager->persist($copy);
+        $this->entityManager->flush();
+
+        return new Response($this->generateUrl(self::ROUTE, ['view' => $this->view($request), 'date' => $copy->getPlannedAt()->format('Y-m-d'), 'post' => $copy->getId()]));
+    }
+
+    // The panel as it now reads, answered to a card opened and to its medias or its texts changed alike - $view the calendar's, which the post's screens it links to come back to, $textsSaved saying the texts just were, $problems what a network would refuse in its medias, warned as the post's screen does
+    /** @param array<string, list<TranslatableMessage>> $problems */
+    private function renderPanel(SocialPost $post, string $view, bool $textsSaved = false, array $problems = []): Response
     {
         $card = $this->card($post, $view);
 
@@ -286,9 +379,15 @@ class SocialCalendarController extends AbstractController
             // Each network's limit, the panel's text fields stopping there as the post's screen does
             'max_lengths' => array_map($this->publisher->getMaxLength(...), $post->getTargets()->map(static fn (SocialPostTarget $target): string => $target->getNetwork())->toArray()),
             'targets' => $post->getTargets(),
+            'networks' => $post->getNetworks(),
             'texts_saved' => $textsSaved,
+            'media_problems' => $this->problemsText($problems),
             'series_drafts' => null === $post->getSeries() ? 0 : $this->postRepository->countComingDraftsBySeries($post->getSeries(), new \DateTimeImmutable()),
             'connected' => $this->publisher->getConnectedNetworkNames(),
+            // The networks offered to tick, the connected ones in the site's order
+            'offered_networks' => array_values(array_intersect($this->publisher->getNetworkNames(), $this->publisher->getConnectedNetworkNames())),
+            // What the panel's drop zone takes, its file picker offering these alone
+            'accepted_types' => implode(',', SocialMedia::ACCEPTED_TYPES),
             'pick_media_url' => $this->mediaPicker->hasLibraries() ? $this->postUrl($post, 'pickMedia', $view) : null,
             'change_content_url' => null === $this->publisher->browsableSourceOf($post) ? null : $this->postUrl($post, 'changeContent', $view),
         ]);

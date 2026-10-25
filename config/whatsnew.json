@@ -26,6 +26,36 @@
                 "en": "A short vertical video now goes out on Facebook as a Reel, seen beyond your Page's followers",
                 "fr": "Une courte vidéo verticale part maintenant sur Facebook en Reel, vue au-delà des abonnés de votre Page",
                 "es": "Un vídeo vertical corto sale ahora en Facebook como Reel, visto más allá de los seguidores de su Página"
+            },
+            {
+                "en": "A LinkedIn post can now carry a first comment holding its link, so it reaches more people",
+                "fr": "Une publication LinkedIn peut maintenant porter un premier commentaire qui contient son lien, pour toucher plus de monde",
+                "es": "Una publicación de LinkedIn puede ahora llevar un primer comentario con su enlace, para llegar a más gente"
+            },
+            {
+                "en": "Pictures and videos can now be dropped straight into a post's panel in the calendar",
+                "fr": "Les images et les vidéos se déposent maintenant directement dans le panneau d'une publication du calendrier",
+                "es": "Las imágenes y los vídeos se sueltan ahora directamente en el panel de una publicación del calendario"
+            },
+            {
+                "en": "The networks of a post can now be ticked right in the calendar's panel, which warns when a media does not suit them",
+                "fr": "Les réseaux d'une publication se cochent maintenant directement dans le panneau du calendrier, qui prévient quand un média ne leur convient pas",
+                "es": "Las redes de una publicación se marcan ahora directamente en el panel del calendario, que avisa cuando un medio no les conviene"
+            },
+            {
+                "en": "A post can now be duplicated to the next day from the calendar",
+                "fr": "Une publication se duplique maintenant au lendemain depuis le calendrier",
+                "es": "Una publicación se duplica ahora al día siguiente desde el calendario"
+            },
+            {
+                "en": "You now get an email 14 then 3 days before LinkedIn must be connected again",
+                "fr": "Vous recevez maintenant un e-mail 14 puis 3 jours avant de devoir reconnecter LinkedIn",
+                "es": "Ahora recibe un correo 14 y luego 3 días antes de tener que volver a conectar LinkedIn"
+            },
+            {
+                "en": "Bluesky posts can now carry a content warning, and say the language they are written in",
+                "fr": "Les publications Bluesky peuvent maintenant porter un avertissement de contenu, et disent la langue dans laquelle elles sont écrites",
+                "es": "Las publicaciones de Bluesky pueden ahora llevar una advertencia de contenido, e indican el idioma en que están escritas"
             }
         ]
     },

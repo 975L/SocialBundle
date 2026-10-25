@@ -65,6 +65,16 @@ class SeriesEndingCommandTest extends TestCase
         $this->assertCount(1, $this->sent);
     }
 
+    // An imported series ending says so, its next drafts being imported rather than prolonged
+    public function testAnImportedSeriesEndingSaysItIsImported(): void
+    {
+        $series = new SocialSeries('Bundles', 2, 'days', 1, [], 'import', '', [], ['linkedin']);
+
+        $this->tester([['series' => $series, 'lastPlannedAt' => new \DateTimeImmutable('+2 days 21:00')]])->execute([]);
+
+        $this->assertStringContainsString('Bundles (email.social_series_ending_import)', $this->sent[0]);
+    }
+
     // An announcement not sent is a warning, not a failure alerting every night, and is tried again the next night
     public function testAnAnnouncementNotSentIsTriedAgain(): void
     {

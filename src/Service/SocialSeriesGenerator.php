@@ -26,6 +26,9 @@ class SocialSeriesGenerator
 
     public const string MODE_SOURCE = 'source';
 
+    // Drafts written elsewhere and imported whole (see SocialDraftImporter): nothing to prolong them with, the next ones being imported in turn
+    public const string MODE_IMPORT = 'import';
+
     // Where a series' media is written, under public/
     public const string DIRECTORY = 'medias/social/series';
 
@@ -114,7 +117,7 @@ class SocialSeriesGenerator
     public function prolong(SocialSeries $series): array
     {
         $last = $this->seriesRepository->findLastPlannedAt($series);
-        if (null === $last) {
+        if (null === $last || self::MODE_IMPORT === $series->getMode()) {
             return [];
         }
 
@@ -187,9 +190,9 @@ class SocialSeriesGenerator
         return [] === $lengths ? 300 : min($lengths);
     }
 
-    // The series' media, written once in a folder of its own - a picture as the same JPEG an upload becomes - and measured. Only referenced by its drafts, it is kept when they are purged
+    // A series' media, written once in a folder of its own - a picture as the same JPEG an upload becomes - and measured. Only referenced by its drafts, it is kept when they are purged
     /** @return array{0: string, 1: string, 2: ?int, 3: ?int, 4: ?float} */
-    private function store(File $media): array
+    public function store(File $media): array
     {
         $video = \in_array($media->getMimeType(), SocialMedia::VIDEO_TYPES, true);
         $name = self::DIRECTORY . '/' . bin2hex(random_bytes(16)) . '.' . ($video ? ('video/quicktime' === $media->getMimeType() ? 'mov' : 'mp4') : 'jpg');

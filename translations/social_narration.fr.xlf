@@ -18,6 +18,10 @@
                 <source>narration.guided_step_social_calendar_move</source>
                 <target>Pour changer la date d'une publication, glissez-la sur une heure à venir de la semaine, ou sur un jour du mois où elle garde son heure : elle y est prévue, validée ou non comme avant.</target>
             </trans-unit>
+            <trans-unit id="dfQHjIu">
+                <source>narration.guided_step_social_calendar_networks</source>
+                <target>Toujours dans le panneau, cochez ou décochez les réseaux puis cliquez sur « Enregistrer les réseaux » : un réseau coché reçoit son texte.</target>
+            </trans-unit>
             <trans-unit id="Zx3lCKG">
                 <source>narration.guided_step_social_calendar_new</source>
                 <target>Pour écrire une publication, cliquez « Nouvelle publication », ou double-cliquez directement l'heure ou le jour où elle doit partir : l'écran de la publication s'ouvre avec ce moment déjà rempli.</target>
@@ -28,11 +32,11 @@
             </trans-unit>
             <trans-unit id="eg9BzH0">
                 <source>narration.guided_step_social_calendar_panel</source>
-                <target>Cliquez une publication du calendrier : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série, réordonne ou retire ses médias, en ajoute depuis le site ou change son contenu.</target>
+                <target>Cliquez une publication du calendrier : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série, réordonne ou retire ses médias, en ajoute depuis le site ou en y déposant des fichiers, change son contenu, ou la duplique au lendemain.</target>
             </trans-unit>
             <trans-unit id="Nu24WA4">
                 <source>narration.guided_step_social_calendar_texts</source>
-                <target>Dans le panneau, corrigez le texte de chaque réseau puis cliquez sur « Enregistrer les textes » ; un texte déjà publié reste en lecture seule. « Écran complet » ouvre la publication entière, pour son texte commun, sa reformulation ou ses réseaux.</target>
+                <target>Dans le panneau, corrigez le texte de chaque réseau puis cliquez sur « Enregistrer les textes » ; un texte déjà publié reste en lecture seule. « Écran complet » ouvre la publication entière, pour son texte commun ou sa reformulation.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>
@@ -129,6 +133,10 @@
             <trans-unit id="l7IZ8AF">
                 <source>narration.guided_step_social_posts_change_content</source>
                 <target>Si la photo ne convient pas, « Changer le contenu » en prend une autre, tirée à nouveau dans la même galerie ou choisie parmi celles encore libres, et réécrit les textes pour elle.</target>
+            </trans-unit>
+            <trans-unit id="AXYP7f2">
+                <source>narration.guided_step_social_posts_comment</source>
+                <target>Sous le texte d'un réseau qui le permet, comme LinkedIn, le premier commentaire part juste après la publication : écrivez-y le lien, la publication partant alors sans sa carte de lien.</target>
             </trans-unit>
             <trans-unit id="4cJ._fk">
                 <source>narration.guided_step_social_posts_edit</source>

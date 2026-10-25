@@ -44,6 +44,7 @@ class LinkedInPublisherTest extends TestCase
             return $uploadFails ? throw new \RuntimeException('Refused') : 'urn:li:image:' . ++$uploads;
         });
         $client->method('uploadVideo')->willReturn('urn:li:video:1');
+        $client->method('createComment')->willReturnCallback(static fn (string $postUrn, string $text): string => $postUrn . '/' . $text);
         $client->method('createPost')->willReturnCallback(function (array $post): string {
             $this->posted = $post;
 
@@ -54,6 +55,12 @@ class LinkedInPublisherTest extends TestCase
         $exporter->method('bytes')->willReturn($image);
 
         return new LinkedInPublisher($client, $exporter);
+    }
+
+    // The first comment goes under the post as LinkedIn answers it, its id handed back
+    public function testTheFirstCommentGoesUnderThePost(): void
+    {
+        $this->assertSame('urn:li:share:1/Read more', $this->publisher(null)->comment('urn:li:share:1', 'Read more'));
     }
 
     private function content(): SocialContent

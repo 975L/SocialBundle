@@ -91,8 +91,8 @@ class FacebookPublisher implements NetworkPublisherInterface
         return $this->request($text, $content, $medias);
     }
 
-    // A reel in Meta's three phases: a session started on the Page, the video handed over by its address, then published with its text
-    /** @param array{file_url: string, description: string} $reel */
+    // A reel in Meta's three phases: a session started on the Page, the video's file sent, then published with its text
+    /** @param array{file: string, description: string} $reel */
     private function publishReel(string $path, array $reel, string $token): string
     {
         $started = $this->metaGraphClient->request('POST', $path, ['upload_phase' => 'start', 'access_token' => $token]);
@@ -101,7 +101,7 @@ class FacebookPublisher implements NetworkPublisherInterface
         }
 
         $videoId = (string) $started['video_id'];
-        $this->metaGraphClient->uploadHosted((string) ($started['upload_url'] ?? 'https://rupload.facebook.com/video-upload/' . MetaGraphClient::VERSION . '/' . $videoId), $reel['file_url'], $token);
+        $this->metaGraphClient->uploadFile((string) ($started['upload_url'] ?? 'https://rupload.facebook.com/video-upload/' . MetaGraphClient::VERSION . '/' . $videoId), $reel['file'], $token);
         $finished = $this->metaGraphClient->request('POST', $path, ['upload_phase' => 'finish', 'video_id' => $videoId, 'video_state' => 'PUBLISHED', 'description' => $reel['description'], 'access_token' => $token]);
 
         // A 200 may still say the reel did not go out (being processed, blocked on rights): left in error, so publishing tries it again
@@ -127,7 +127,7 @@ class FacebookPublisher implements NetworkPublisherInterface
     /**
      * @param list<PostMedia> $medias
      *
-     * @return array{path: string, parameters: array<string, string>, uploads?: list<array{path: string, parameters: array<string, string>}>, reel?: array{file_url: string, description: string}}
+     * @return array{path: string, parameters: array<string, string>, uploads?: list<array{path: string, parameters: array<string, string>}>, reel?: array{file: string, description: string}}
      */
     private function request(string $text, SocialContent $content, array $medias): array
     {
@@ -136,7 +136,7 @@ class FacebookPublisher implements NetworkPublisherInterface
         // The post's video, alone as Facebook takes it - a vertical one of 90 s at most as a reel, the format Facebook shows to people who do not follow the Page
         foreach ($medias as $media) {
             if ($media->isVideo() && self::isReel($media)) {
-                return ['path' => $page . '/video_reels', 'parameters' => ['upload_phase' => 'start'], 'reel' => ['file_url' => $media->url, 'description' => $text]];
+                return ['path' => $page . '/video_reels', 'parameters' => ['upload_phase' => 'start'], 'reel' => ['file' => $media->path, 'description' => $text]];
             }
             if ($media->isVideo()) {
                 return ['path' => $page . '/videos', 'parameters' => ['file_url' => $media->url, 'description' => $text]];

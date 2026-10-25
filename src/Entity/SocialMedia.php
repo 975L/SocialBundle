@@ -25,6 +25,9 @@ class SocialMedia
     // The video types the networks take, what an upload is kept as rather than turned into a JPEG
     public const array VIDEO_TYPES = ['video/mp4', 'video/quicktime'];
 
+    // What an upload may be, on the post's screen as in the calendar's panel: the pictures turned into a JPEG, and the videos the networks take
+    public const array ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', ...self::VIDEO_TYPES];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

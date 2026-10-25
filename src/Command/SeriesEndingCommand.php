@@ -15,6 +15,7 @@ use c975L\SocialBundle\Controller\Management\SocialCalendarController;
 use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Repository\SocialSeriesRepository;
 use c975L\SocialBundle\Service\SocialAdminMailer;
+use c975L\SocialBundle\Service\SocialSeriesGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -98,6 +99,9 @@ class SeriesEndingCommand extends Command
     {
         $url = $this->mailer->url(SocialCalendarController::ROUTE, ['date' => $lastPlannedAt->format('Y-m-d')]);
 
-        return sprintf("- %s : %s\n  %s", $series->getTitle(), $lastPlannedAt->format('d/m/Y H:i'), $url);
+        // Imported drafts are not prolonged: the next ones are imported in turn
+        $title = SocialSeriesGenerator::MODE_IMPORT === $series->getMode() ? $series->getTitle() . ' (' . $this->translator->trans('email.social_series_ending_import', [], 'social') . ')' : $series->getTitle();
+
+        return sprintf("- %s : %s\n  %s", $title, $lastPlannedAt->format('d/m/Y H:i'), $url);
     }
 }

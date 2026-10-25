@@ -27,11 +27,16 @@
 {% block main %}
 
     <div data-controller="social-calendar"
+        data-action="keydown.esc@window->social-calendar#closePanel"
         data-social-calendar-url-value="{{ move_url }}"
         data-social-calendar-token-value="{{ csrf_token(token) }}"
         data-social-calendar-panel-url-value="{{ panel_url }}"
         data-social-calendar-medias-url-value="{{ medias_url }}"
+        data-social-calendar-upload-url-value="{{ upload_url }}"
         data-social-calendar-texts-url-value="{{ texts_url }}"
+        data-social-calendar-networks-url-value="{{ networks_url }}"
+        data-social-calendar-duplicate-url-value="{{ duplicate_url }}"
+        data-social-calendar-open-id-value="{{ open_id }}"
         data-social-calendar-new-url-value="{{ new_url }}"
         data-social-calendar-texts-failed-label-value="{{ 'label.social_calendar_texts_failed'|trans({}, 'social') }}"
         data-social-calendar-failed-label-value="{{ 'label.social_calendar_move_failed'|trans({}, 'social') }}">

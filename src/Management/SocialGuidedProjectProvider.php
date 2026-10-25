@@ -276,6 +276,12 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '#SocialPost_networks',
                 ],
                 [
+                    // No highlight: the field's id depends on the network's place among the post's, and only networks taking one show it
+                    'label' => 'label.guided_step_social_posts_comment',
+                    'description' => 'help.social_post_comment',
+                    'narration' => 'narration.guided_step_social_posts_comment',
+                ],
+                [
                     'label' => 'label.guided_step_social_posts_save',
                     'narration' => 'narration.guided_step_social_posts_save',
                     'highlight' => '.action-saveAndReturn',
@@ -478,6 +484,12 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_social_calendar_texts',
                     'description' => 'description.guided_step_social_calendar_texts',
                     'narration' => 'narration.guided_step_social_calendar_texts',
+                ],
+                [
+                    // Nor here: the networks are ticked in the panel as well
+                    'label' => 'label.guided_step_social_calendar_networks',
+                    'description' => 'description.guided_step_social_calendar_networks',
+                    'narration' => 'narration.guided_step_social_calendar_networks',
                 ],
                 [
                     'label' => 'label.guided_step_social_calendar_feed',

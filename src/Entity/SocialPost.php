@@ -57,6 +57,10 @@ class SocialPost implements \Stringable
     /** @var list<string> */
     private array $addedNetworks = [];
 
+    // The language it is written in ("fr", "en"), the content's when prepared from one - null for the site's default. Bluesky files the post under it
+    #[ORM\Column(length: 8, nullable: true)]
+    private ?string $locale = null;
+
     // The series it was generated in, prolonged from its last post - none for a post prepared on its own, or once its series is deleted
     #[ORM\ManyToOne(targetEntity: SocialSeries::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
@@ -221,8 +225,21 @@ class SocialPost implements \Stringable
         $this->title = mb_substr($content->title, 0, 255);
         $this->url = $content->url;
         $this->imageUrl = $content->imageUrl;
+        $this->locale = $content->locale;
 
         return true;
+    }
+
+    public function getLocale(): ?string
+    {
+        return $this->locale;
+    }
+
+    public function setLocale(?string $locale): self
+    {
+        $this->locale = '' === trim((string) $locale) ? null : trim((string) $locale);
+
+        return $this;
     }
 
     public function getSeries(): ?SocialSeries

@@ -18,6 +18,10 @@
                 <source>narration.guided_step_social_calendar_move</source>
                 <target>Para cambiar la fecha de una publicación, arrástrela a una hora próxima de la semana, o a un día del mes donde conserva su hora: queda prevista allí, validada o no como antes.</target>
             </trans-unit>
+            <trans-unit id="dfQHjIu">
+                <source>narration.guided_step_social_calendar_networks</source>
+                <target>En el mismo panel, marque o desmarque las redes y haga clic en «Guardar las redes»: una red marcada recibe su texto.</target>
+            </trans-unit>
             <trans-unit id="Zx3lCKG">
                 <source>narration.guided_step_social_calendar_new</source>
                 <target>Para escribir una publicación, haga clic en «Nueva publicación», o haga doble clic directamente en la hora o el día en que debe salir: la pantalla de la publicación se abre con ese momento ya rellenado.</target>
@@ -28,11 +32,11 @@
             </trans-unit>
             <trans-unit id="eg9BzH0">
                 <source>narration.guided_step_social_calendar_panel</source>
-                <target>Haga clic en una publicación del calendario: su panel cambia su fecha y hora, la valida o la devuelve a borrador, valida de una vez toda su serie, reordena o quita sus medios, añade otros desde el sitio o cambia su contenido.</target>
+                <target>Haga clic en una publicación del calendario: su panel cambia su fecha y hora, la valida o la devuelve a borrador, valida de una vez toda su serie, reordena o quita sus medios, añade otros desde el sitio o soltando archivos en él, cambia su contenido, o la duplica al día siguiente.</target>
             </trans-unit>
             <trans-unit id="Nu24WA4">
                 <source>narration.guided_step_social_calendar_texts</source>
-                <target>En el panel, corrija el texto de cada red y haga clic en «Guardar los textos»; un texto ya publicado queda de solo lectura. «Pantalla completa» abre la publicación entera, para su texto común, su reformulación o sus redes.</target>
+                <target>En el panel, corrija el texto de cada red y haga clic en «Guardar los textos»; un texto ya publicado queda de solo lectura. «Pantalla completa» abre la publicación entera, para su texto común o su reformulación.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>
@@ -129,6 +133,10 @@
             <trans-unit id="l7IZ8AF">
                 <source>narration.guided_step_social_posts_change_content</source>
                 <target>Si la foto no conviene, «Cambiar el contenido» toma otra, sorteada de nuevo en la misma galería o elegida entre las aún libres, y reescribe los textos para ella.</target>
+            </trans-unit>
+            <trans-unit id="AXYP7f2">
+                <source>narration.guided_step_social_posts_comment</source>
+                <target>Bajo el texto de una red que lo permite, como LinkedIn, el primer comentario sale justo después de la publicación: escriba ahí el enlace, y la publicación saldrá sin su tarjeta de enlace.</target>
             </trans-unit>
             <trans-unit id="4cJ._fk">
                 <source>narration.guided_step_social_posts_edit</source>

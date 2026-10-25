@@ -173,7 +173,7 @@ class MetaPublishersTest extends TestCase
         $this->assertSame(['file_url' => 'https://example.org/medias/v.mp4', 'description' => 'Texte', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
     }
 
-    // A vertical video of 90 s at most goes out as a reel, in Meta's three phases: started, handed over by its address, published with its text
+    // A vertical video of 90 s at most goes out as a reel, in Meta's three phases: started, its file sent, published with its text
     public function testFacebookPostsAVerticalShortVideoAsAReel(): void
     {
         $graph = $this->graph([['video_id' => 'r1', 'upload_url' => 'https://rupload.example/r1'], ['success' => true, 'post_id' => '55_r1']]);

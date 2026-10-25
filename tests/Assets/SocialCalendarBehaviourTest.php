@@ -258,6 +258,100 @@ class SocialCalendarBehaviourTest extends JsCase
         $this->assertSame('post=7&remove=2', $sent['body'], 'The media taken off is not the one whose button was clicked.');
     }
 
+    // The networks ticked are sent with the post, the button held meanwhile, and the card takes the badges the panel answers with
+    public function testTheNetworksTickedAreSavedAndTheCardTakesTheirBadges(): void
+    {
+        $saved = $this->calendar(
+            'item("draft").click(); await frame(); await frame();
+             item("networks").querySelector("[value=linkedin]").checked = false;
+             item("save-networks").click();
+             const held = item("save-networks").disabled;
+             await frame(); await frame();
+
+             return { url: window.__sent.url, body: window.__sent.body, held, badges: null !== item("draft").querySelector("[data-name=badges]"), icon: null !== item("draft").querySelector("[data-name=icon]") };'
+        );
+
+        $this->assertSame('/management/social-calendar/networks', $saved['url'], 'The networks were not saved where the screen said to save them.');
+        $this->assertSame('networks%5B%5D=bluesky&post=7', $saved['body'], 'What was sent is not the networks left ticked.');
+        $this->assertTrue($saved['held'], 'The button was not held while the texts were written.');
+        $this->assertTrue($saved['badges'], 'The card did not take the badges the panel answered with.');
+        $this->assertFalse($saved['icon'], 'The card kept the badges it had.');
+    }
+
+    // The duplicate is asked for the post, its button held meanwhile
+    public function testThePostIsDuplicated(): void
+    {
+        $sent = $this->calendar(
+            'item("draft").click(); await frame(); await frame();
+             window.alert = () => {};
+             window.__refusal = "";
+             item("duplicate").click();
+             const held = item("duplicate").disabled;
+             await frame(); await frame();
+
+             return { url: window.__sent.url, body: window.__sent.body, held };'
+        );
+
+        $this->assertSame(['/management/social-calendar/duplicate', 'post=7', true], [$sent['url'], $sent['body'], $sent['held']], 'The duplicate was not asked for the post, or its button was not held.');
+    }
+
+    // Files held over the panel's zone light it, and those let go on it are sent with the post under the screen's token, the zone held and saying so while they go
+    public function testFilesDroppedOnThePanelAreSent(): void
+    {
+        $sent = $this->calendar(
+            'item("draft").click(); await frame(); await frame();
+             let upload = null;
+             window.fetch = (url, options) => {
+                 upload = { url, post: options.body.get("post"), names: options.body.getAll("files[]").map((file) => file.name), token: options.headers["X-CSRF-Token"] };
+
+                 return new Promise(() => {});
+             };
+             const files = new DataTransfer();
+             files.items.add(new File(["a"], "photo.jpg", { type: "image/jpeg" }));
+             files.items.add(new File(["b"], "reel.mp4", { type: "video/mp4" }));
+             const zone = item("drop");
+             const hold = (type) => zone.dispatchEvent(new DragEvent(type, { bubbles: true, cancelable: true, dataTransfer: files }));
+             hold("dragenter");
+             const lit = zone.classList.contains("is-over");
+             const kept = !hold("drop");
+             await frame();
+
+             return { lit, kept, upload, busy: zone.classList.contains("is-busy"), label: zone.querySelector(".social-calendar-panel-drop-label").textContent, out: !zone.classList.contains("is-over") };'
+        );
+
+        $this->assertTrue($sent['lit'], 'The zone was not lit while files were held over it.');
+        $this->assertTrue($sent['kept'], 'The browser was left to open the files dropped in its tab.');
+        $this->assertSame(['/management/social-calendar/upload', '7', ['photo.jpg', 'reel.mp4'], 'jeton'], [$sent['upload']['url'], $sent['upload']['post'], $sent['upload']['names'], $sent['upload']['token']], 'The files were not sent with the post, where the screen said, under its token.');
+        $this->assertSame([true, 'Envoi', true], [$sent['busy'], $sent['label'], $sent['out']], 'The zone was not held, saying so, while the files went.');
+    }
+
+    // Escape closes the panel, the calendar taking its whole width back
+    public function testEscapeClosesThePanel(): void
+    {
+        $closed = $this->calendar(
+            'item("draft").click(); await frame(); await frame();
+             const narrowed = root.firstElementChild.classList.contains("social-calendar-has-panel");
+             window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+
+             return { narrowed, hidden: item("panel").hidden, wide: !root.firstElementChild.classList.contains("social-calendar-has-panel") };'
+        );
+
+        $this->assertSame(['narrowed' => true, 'hidden' => true, 'wide' => true], $closed, 'Escape did not close the panel, or the calendar did not narrow beside it.');
+    }
+
+    // Escape typed in one of the panel's fields leaves it open, what was typed there kept
+    public function testEscapeInAFieldKeepsThePanel(): void
+    {
+        $open = $this->calendar(
+            'item("draft").click(); await frame(); await frame();
+             item("panel").querySelector("input").dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+
+             return !item("panel").hidden;'
+        );
+
+        $this->assertTrue($open, 'Escape in a field of the panel closed it.');
+    }
+
     private function calendar(string $probe): mixed
     {
         $preamble = 'const item = (name) => root.querySelector(`[data-name=${name}]`);
@@ -289,13 +383,13 @@ class SocialCalendarBehaviourTest extends JsCase
                         if (!options) {
                             window.__panel = String(url);
 
-                            return Promise.resolve({ ok: true, text: () => Promise.resolve(\'<input type="datetime-local" data-social-calendar-target="planAt" value="2026-10-05T14:20"><button data-name="plan" data-action="social-calendar#plan" data-post-id="7">Plan</button><button data-name="approve" data-action="social-calendar#place" data-post-id="7" data-to="approve">Approve</button><button data-name="unapprove" data-action="social-calendar#place" data-post-id="7" data-to="unapprove">Unapprove</button><button data-name="close" data-action="social-calendar#closePanel">Close</button><ul class="medias"><li data-name="m1" data-social-calendar-target="media" data-post-id="7" data-media-id="1"></li><li data-name="m2" data-social-calendar-target="media" data-post-id="7" data-media-id="2"></li><li data-name="m3" data-social-calendar-target="media" data-post-id="7" data-media-id="3"></li></ul><button data-name="remove" data-action="social-calendar#removeMedia" data-post-id="7" data-media-id="2" data-confirm="Retirer ?">Remove</button>\') });
+                            return Promise.resolve({ ok: true, text: () => Promise.resolve(\'<input type="datetime-local" data-social-calendar-target="planAt" value="2026-10-05T14:20"><button data-name="plan" data-action="social-calendar#plan" data-post-id="7">Plan</button><button data-name="approve" data-action="social-calendar#place" data-post-id="7" data-to="approve">Approve</button><button data-name="unapprove" data-action="social-calendar#place" data-post-id="7" data-to="unapprove">Unapprove</button><button data-name="close" data-action="social-calendar#closePanel">Close</button><form data-name="networks" data-action="social-calendar#saveNetworks" data-post-id="7"><input type="checkbox" name="networks[]" value="bluesky" checked><input type="checkbox" name="networks[]" value="linkedin" checked><button data-name="save-networks" type="submit">Save</button></form><button data-name="duplicate" data-action="social-calendar#duplicate" data-post-id="7">Duplicate</button><ul class="medias"><li data-name="m1" data-social-calendar-target="media" data-post-id="7" data-media-id="1"></li><li data-name="m2" data-social-calendar-target="media" data-post-id="7" data-media-id="2"></li><li data-name="m3" data-social-calendar-target="media" data-post-id="7" data-media-id="3"></li></ul><button data-name="remove" data-action="social-calendar#removeMedia" data-post-id="7" data-media-id="2" data-confirm="Retirer ?">Remove</button><label data-name="drop" data-social-calendar-target="drop" data-post-id="7" data-uploading="Envoi"><input type="file" multiple data-action="social-calendar#pickFiles"><span class="social-calendar-panel-drop-label">Déposez</span></label>\') });
                         }
                         window.__saves += 1;
                         window.__sent = { url, body: String(options.body), token: options.headers["X-CSRF-Token"] };
 
-                        // A refusal when the scenario sets one, its reason as the body
-                        return Promise.resolve(undefined === window.__refusal ? { ok: true, text: () => Promise.resolve(\'<div data-social-calendar-target="thumbnail" data-post-id="7" data-image="\' + (window.__image ?? "/social/3.jpg") + \'"></div>\') } : { ok: false, text: () => Promise.resolve(window.__refusal) });
+                        // A refusal when the scenario sets one, its reason as the body - the networks saved answering the badges of the card too
+                        return Promise.resolve(undefined === window.__refusal ? { ok: true, text: () => Promise.resolve((String(url).endsWith("/networks") ? \'<template data-social-calendar-target="badges" data-post-id="7"><span class="social-network-badges" data-name="badges"></span></template>\' : "") + \'<div data-social-calendar-target="thumbnail" data-post-id="7" data-image="\' + (window.__image ?? "/social/3.jpg") + \'"></div>\') } : { ok: false, text: () => Promise.resolve(window.__refusal) });
                     };
                     document.addEventListener("social-calendar:saved", (event) => event.preventDefault());',
             ]
@@ -305,9 +399,9 @@ class SocialCalendarBehaviourTest extends JsCase
     // Two days of the month and two quarters of an hour of the week, as social_calendar.html.twig renders them
     private function page(): string
     {
-        return '<div data-controller="social-calendar" data-social-calendar-panel-url-value="/management/social-calendar/post" data-social-calendar-url-value="' . self::URL . '" data-social-calendar-medias-url-value="/management/social-calendar/medias" data-social-calendar-new-url-value="https://example.org/management/social-post/new" data-social-calendar-token-value="jeton" data-social-calendar-failed-label-value="Echec">
+        return '<div data-controller="social-calendar" data-action="keydown.esc@window->social-calendar#closePanel" data-social-calendar-panel-url-value="/management/social-calendar/post" data-social-calendar-url-value="' . self::URL . '" data-social-calendar-medias-url-value="/management/social-calendar/medias" data-social-calendar-upload-url-value="/management/social-calendar/upload" data-social-calendar-networks-url-value="/management/social-calendar/networks" data-social-calendar-duplicate-url-value="/management/social-calendar/duplicate" data-social-calendar-new-url-value="https://example.org/management/social-post/new" data-social-calendar-token-value="jeton" data-social-calendar-failed-label-value="Echec">
                 <div data-name="d1004" data-social-calendar-target="zone" data-to="2026-10-04" data-action="dblclick->social-calendar#create">
-                    <a data-name="draft" href="#" draggable="false" data-social-calendar-target="item" data-action="social-calendar#open" data-panel-id="7" data-post-id="7" data-at="2026-10-04T19:00:00+02:00" class="social-calendar-card is-draft"><img src="data:," alt="">Draft<span><img data-name="icon" src="data:," alt=""></span></a>
+                    <a data-name="draft" href="#" draggable="false" data-social-calendar-target="item" data-action="social-calendar#open" data-panel-id="7" data-post-id="7" data-at="2026-10-04T19:00:00+02:00" class="social-calendar-card is-draft"><img src="data:," alt="">Draft<span class="social-network-badges"><img data-name="icon" src="data:," alt=""></span></a>
                 </div>
                 <div data-name="d1005" data-social-calendar-target="zone" data-to="2026-10-05" data-action="dblclick->social-calendar#create"></div>
                 <div class="social-week-body">

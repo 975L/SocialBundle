@@ -1,6 +1,6 @@
 {# The panel a card opens beside the calendar (see SocialCalendarController::renderPanel()): its buttons go through the same move as a drag, so a post planned here and a post dropped there are one and the same thing #}
 {% import '@c975LSocial/management/social_calendar.html.twig' as calendar %}
-{# The full screen of the post a link away, for what the panel leaves to it: the text every network's own is cut from, rephrased, and the networks it goes to #}
+{# The full screen of the post a link away, for what the panel leaves to it: the text every network's own is cut from, rephrased #}
 <div class="social-calendar-panel-head">
     <twig:ea:Badge color="{{ {published: 'secondary', approved: 'success', failed: 'warning', draft: 'danger'}[state] }}">{{ ('label.social_calendar_state_' ~ state)|trans({}, 'social') }}</twig:ea:Badge>
     <div class="d-flex gap-2">
@@ -10,6 +10,14 @@
 </div>
 
 <h2 class="h5">{{ post.title }}</h2>
+
+{# What a network would refuse in its medias, after a drop or networks ticked, warned as the post's screen does #}
+{% if media_problems is not empty %}
+    <twig:ea:Alert variant="warning" role="status" class="small">{{ media_problems|nl2br }}</twig:ea:Alert>
+{% endif %}
+
+{# The card's network badges as they now read, which the card on the calendar takes #}
+<template data-social-calendar-target="badges" data-post-id="{{ post.id }}">{{ calendar.networks(post.networks, connected) }}</template>
 
 {# Its approval first - the series' too, offered on any of its posts -, then its moment: picked in the field, then saved by its own button #}
 <div class="d-flex flex-wrap gap-2">
@@ -23,7 +31,29 @@
     {% if series_drafts > own_draft %}
         <twig:ea:Button type="button" variant="success" size="sm" icon="fa fa-layer-group" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve-series">{{ 'label.social_calendar_approve_series'|trans({'%count%': series_drafts}, 'social') }}</twig:ea:Button>
     {% endif %}
+    {# Written again the day after, a draft whose panel opens at once - offered on a post gone out as well #}
+    <twig:ea:Button type="button" size="sm" icon="fa fa-clone" data-action="social-calendar#duplicate" data-post-id="{{ post.id }}">{{ 'label.social_calendar_duplicate'|trans({}, 'social') }}</twig:ea:Button>
 </div>
+
+{# The connected networks it goes to, ticked or unticked until it goes out anywhere, then as they stand #}
+{% if offered_networks is not empty %}
+    <form class="social-calendar-panel-networks" data-action="social-calendar#saveNetworks" data-post-id="{{ post.id }}">
+        <fieldset class="d-grid gap-2"{% if not editable %} disabled{% endif %}>
+            <legend class="form-label small mb-0">{{ 'label.social_post_send_on'|trans({}, 'social') }}</legend>
+            <div class="d-flex flex-wrap gap-3">
+                {% for network in offered_networks %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="networks[]" value="{{ network }}" id="social-calendar-network-{{ post.id }}-{{ network }}"{% if network in networks %} checked{% endif %}>
+                        <label class="form-check-label" for="social-calendar-network-{{ post.id }}-{{ network }}">{{ calendar.networks([network], connected) }} {{ network|capitalize }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if editable %}
+                <div><twig:ea:Button type="submit" size="sm" icon="fa fa-floppy-disk">{{ 'label.social_calendar_save_networks'|trans({}, 'social') }}</twig:ea:Button></div>
+            {% endif %}
+        </fieldset>
+    </form>
+{% endif %}
 
 {% if state != 'published' %}
     <div class="social-calendar-panel-plan">
@@ -60,6 +90,16 @@
         <img src="{{ post.image }}" alt="" loading="lazy" class="social-calendar-panel-content">
     {% endif %}
 </div>
+
+{# Pictures and videos of the post's own, dropped here or picked from the computer, added after its medias #}
+{% if editable %}
+    <label class="social-calendar-panel-drop" data-social-calendar-target="drop" data-post-id="{{ post.id }}" data-uploading="{{ 'label.social_calendar_uploading'|trans({}, 'social') }}">
+        <input type="file" class="visually-hidden" multiple accept="{{ accepted_types }}" data-action="social-calendar#pickFiles">
+        <i class="fa fa-cloud-arrow-up fa-lg" aria-hidden="true"></i>
+        <span class="social-calendar-panel-drop-label">{{ 'label.social_calendar_drop'|trans({}, 'social') }}</span>
+        <span class="small text-muted">{{ 'help.social_calendar_drop'|trans({}, 'social') }}</span>
+    </label>
+{% endif %}
 
 {% if editable and (pick_media_url or change_content_url) %}
     <div class="d-flex flex-wrap gap-2">

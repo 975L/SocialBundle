@@ -12,6 +12,7 @@ namespace c975L\SocialBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
+use c975L\SocialBundle\Contract\FirstCommentPublisherInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
@@ -668,5 +669,123 @@ class SocialPublisherTest extends TestCase
         $publisher->publish($post);
 
         $this->assertSame(['bluesky:https://example.org/medias/a.jpg,https://example.org/medias/b.jpg'], $this->published);
+    }
+
+    // A network answering its posts with a first comment: what it was sent and commented recorded in $this->published, a refused comment thrown while $commentFailures lasts
+    private function createCommentingNetwork(int $commentFailures = 0): NetworkPublisherInterface
+    {
+        $network = $this->createStubForIntersectionOfInterfaces([NetworkPublisherInterface::class, FirstCommentPublisherInterface::class]);
+        $network->method('getName')->willReturn('linkedin');
+        $network->method('isConfigured')->willReturn(true);
+        $network->method('getMaxLength')->willReturn(3000);
+        $network->method('getMediaRules')->willReturn(new MediaRules(maxImages: 20, video: true));
+        $network->method('preview')->willReturnCallback(static fn (string $text, SocialContent $content): array => ['text' => $text, 'url' => $content->url]);
+        $network->method('publish')->willReturnCallback(function (string $text, SocialContent $content): string {
+            $this->published[] = 'post:' . $content->url;
+
+            return 'urn:li:share:1';
+        });
+        $network->method('comment')->willReturnCallback(function (string $postId, string $text) use (&$commentFailures): string {
+            if ($commentFailures-- > 0) {
+                throw new \RuntimeException('Throttled');
+            }
+            $this->published[] = 'comment:' . $postId . ':' . $text;
+
+            return '42';
+        });
+
+        return $network;
+    }
+
+    // The first comment goes right after the post, which leaves its link out so that it goes out as a picture rather than a link card
+    public function testAFirstCommentFollowsThePostWhichLeavesItsLinkOut(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'linkedin', 'Text')->setComment('Read more: https://example.org/42');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createCommentingNetwork()]);
+
+        $report = $publisher->publish($post);
+
+        $this->assertSame(['post:', 'comment:urn:li:share:1:Read more: https://example.org/42'], $this->published);
+        $this->assertSame(['status' => 'published', 'message' => 'urn:li:share:1'], $report['linkedin']);
+        $this->assertSame('42', $post->getTargets()->first()->getCommentId());
+    }
+
+    // A refused comment leaves the post published, and sending it again sends the comment alone
+    public function testARefusedCommentKeepsThePostAndOnlyTheCommentIsSentAgain(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'linkedin', 'Text')->setComment('Link');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createCommentingNetwork(1)]);
+
+        $report = $publisher->publish($post);
+        $this->assertSame(['status' => 'published', 'message' => 'urn:li:share:1', 'comment_error' => 'Throttled'], $report['linkedin']);
+
+        $report = $publisher->retryFailed($post);
+
+        $this->assertSame(['post:', 'comment:urn:li:share:1:Link'], $this->published);
+        $this->assertSame(['status' => 'published', 'message' => 'urn:li:share:1'], $report['linkedin'] ?? null);
+    }
+
+    // A comment to send again on a network no longer connected says so, rather than waiting with no reason
+    public function testACommentOnANetworkNoLongerConnectedSaysWhy(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'linkedin', 'Text')->setComment('Link');
+        $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createCommentingNetwork(1)])->publish($post);
+
+        $report = $this->createPublisher([$this->createSource('gallery_media', null)], [])->retryFailed($post);
+
+        $this->assertSame('The network is no longer connected.', $report['linkedin']['comment_error'] ?? null);
+        $this->assertSame(['post:'], $this->published);
+    }
+
+    // Without a comment, the post keeps its link card; a network taking no comment ignores one
+    public function testWithoutCommentOrCommentingNetworkThePostKeepsItsLink(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'linkedin', 'Text');
+        new SocialPostTarget($post, 'bluesky', 'Text')->setComment('Ignored');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createCommentingNetwork(), $this->createNetwork('bluesky')]);
+
+        $publisher->publish($post);
+
+        $this->assertSame(['post:https://example.org/42', 'bluesky:/moved.webp'], $this->published);
+        $this->assertTrue($publisher->supportsComment('linkedin'));
+        $this->assertFalse($publisher->supportsComment('bluesky'));
+    }
+
+    // The dry run shows the first comment beside the post it would answer
+    public function testADryRunShowsTheFirstComment(): void
+    {
+        $post = $this->approvedPost(new \DateTimeImmutable('-1 minute'), 'linkedin');
+        $post->getTargets()->first()->setComment('Link');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createCommentingNetwork()], approved: [$post]);
+
+        $report = $publisher->publishPlanned(true);
+
+        $this->assertSame(['text' => 'Approved text', 'url' => '', 'first_comment' => 'Link'], array_values($report)[0]['payload']);
+        $this->assertSame([], $this->published);
+    }
+
+    // The language corrected on the post wins over its content's, which the network then files it under
+    public function testThePostsLanguageGoesWithTheContent(): void
+    {
+        $locales = [];
+        $network = $this->createStub(NetworkPublisherInterface::class);
+        $network->method('getName')->willReturn('bluesky');
+        $network->method('isConfigured')->willReturn(true);
+        $network->method('publish')->willReturnCallback(static function (string $text, SocialContent $content) use (&$locales): string {
+            $locales[] = $content->locale;
+
+            return 'id';
+        });
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'bluesky', 'Text');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$network]);
+
+        $publisher->publish($post->setLocale('en'));
+
+        $this->assertSame(['en'], $locales);
     }
 }

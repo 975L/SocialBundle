@@ -24,7 +24,7 @@ class BlueskyOAuthClient
     public const string ENTRYWAY = 'https://bsky.social';
 
     // Posting and uploading its image, nothing else - the owner reads this list on the consent page
-    public const string SCOPE = 'atproto repo:app.bsky.feed.post?action=create blob:image/*';
+    public const string SCOPE = 'atproto repo:app.bsky.feed.post?action=create blob:image/* blob:video/*';
 
     public const string KEY_SLUG = 'social-bluesky-oauth-key';
 

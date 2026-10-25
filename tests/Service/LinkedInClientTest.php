@@ -172,4 +172,47 @@ class LinkedInClientTest extends TestCase
             @unlink($path);
         }
     }
+
+    // The comment signed by the member, on the post's encoded urn, its id read from the header - a post LinkedIn does not find yet asked again
+    public function testACommentIsPostedAsTheMemberAndAnswersItsId(): void
+    {
+        $id = $this->client([
+            new MockResponse('{"message": "Not found"}', ['http_code' => 404]),
+            new MockResponse('{}', ['http_code' => 201, 'response_headers' => ['x-restli-id' => '6643']]),
+        ])->createComment('urn:li:share:1', 'Read more: https://example.org');
+
+        $this->assertSame('6643', $id);
+        $this->assertCount(2, $this->calls);
+        $this->assertSame('https://api.linkedin.com/rest/socialActions/urn%3Ali%3Ashare%3A1/comments', $this->calls[1]['url']);
+        $this->assertSame(['actor' => 'urn:li:person:abc', 'object' => 'urn:li:share:1', 'message' => ['text' => 'Read more: https://example.org']], json_decode((string) $this->calls[1]['body'], true));
+    }
+
+    // Refused every time, the comment says why
+    public function testACommentRefusedEveryTimeSaysWhy(): void
+    {
+        $this->expectExceptionMessageIsOrContains('Not found');
+
+        $this->client(array_fill(0, 5, new MockResponse('{"message": "Not found"}', ['http_code' => 404])))->createComment('urn:li:share:1', 'Text');
+    }
+
+    // Any refusal but a post not found yet fails at once, rather than waiting to fail the same
+    public function testACommentRefusedForAnotherReasonIsNotAskedAgain(): void
+    {
+        try {
+            $this->client([new MockResponse('{"message": "Not enough permissions"}', ['http_code' => 403])])->createComment('urn:li:share:1', 'Text');
+            $this->fail('The refusal should have been thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertStringContainsString('Not enough permissions', $exception->getMessage());
+        }
+
+        $this->assertCount(1, $this->calls);
+    }
+
+    // A comment created without its id in the header is still out, never sent again
+    public function testACommentWithoutIdHeaderIsStillPosted(): void
+    {
+        $id = $this->client([new MockResponse('', ['http_code' => 201])])->createComment('urn:li:share:1', 'Text');
+
+        $this->assertSame('', $id);
+    }
 }

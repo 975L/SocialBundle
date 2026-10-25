@@ -27,6 +27,8 @@ class SocialMaintenanceTaskProvider implements MaintenanceTaskProviderInterface
             new MaintenanceTask('# #(2-5) * * *', 'c975l:social:media:purge'),
             // The series coming to their end announced by email, nightly - the command reads the delay, so changing it needs no new schedule
             new MaintenanceTask('# #(2-5) * * *', 'c975l:social:series:ending'),
+            // The reminder to connect LinkedIn again, nightly - one email 14 days before its token ends, one 3 days before
+            new MaintenanceTask('# #(2-5) * * *', 'c975l:social:linkedin:reminder'),
         ];
     }
 }

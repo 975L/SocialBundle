@@ -32,6 +32,9 @@ class LinkedInClient
     // LinkedIn processes an uploaded video before a post may carry it: asked again this many times, this many seconds apart
     private const int VIDEO_STATUS_ATTEMPTS = 100;
 
+    // A post just created is not always found at once by the comments API
+    private const int COMMENT_ATTEMPTS = 5;
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly ConfigServiceInterface $configService,
@@ -202,6 +205,30 @@ class LinkedInClient
         return $urn;
     }
 
+    // Comments the post as the member who posted it, answering the comment's id, which LinkedIn hands back in a header. The text is plain, links written out
+    public function createComment(string $postUrn, string $text): string
+    {
+        for ($attempt = 1;; ++$attempt) {
+            try {
+                $response = $this->send('POST', '/rest/socialActions/' . rawurlencode($postUrn) . '/comments', [
+                    'actor' => $this->author(),
+                    'object' => $postUrn,
+                    'message' => ['text' => $text],
+                ], (string) $this->accessToken());
+                break;
+            } catch (\RuntimeException $exception) {
+                // Only a post LinkedIn does not find yet is worth asking again, anything else would fail the same or post the comment twice
+                if ($attempt >= self::COMMENT_ATTEMPTS || 404 !== $exception->getCode()) {
+                    throw $exception;
+                }
+                sleep($this->statusDelay);
+            }
+        }
+
+        // The comment is out whether or not its id comes back, so a missing one must not have it sent again
+        return $response->getHeaders(false)['x-restli-id'][0] ?? (string) (('' === $response->getContent(false) ? [] : $response->toArray(false))['id'] ?? '');
+    }
+
     // One API call, JSON both ways - the versioned headers sent on /rest only, /v2/userinfo being the OpenID endpoint
     /**
      * @param array<string, mixed>|null $json
@@ -229,7 +256,7 @@ class LinkedInClient
         // LinkedIn explains a refusal in the body ("Not enough permissions", an expired token), which is what the screen should show rather than a bare status code
         if ($response->getStatusCode() >= 300) {
             $data = json_decode($response->getContent(false), true);
-            throw new \RuntimeException(sprintf('LinkedIn refused %s: %s', $path, \is_array($data) ? ($data['message'] ?? $response->getStatusCode()) : $response->getStatusCode()));
+            throw new \RuntimeException(sprintf('LinkedIn refused %s: %s', $path, \is_array($data) ? ($data['message'] ?? $response->getStatusCode()) : $response->getStatusCode()), $response->getStatusCode());
         }
 
         return $response;

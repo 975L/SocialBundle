@@ -21,6 +21,10 @@ class MetaGraphClientTest extends TestCase
     /** @var list<string> */
     private array $urls = [];
 
+    // The headers of the last request, lowercased
+    /** @var list<string> */
+    private array $headers = [];
+
     /**
      * @param list<MockResponse> $responses
      */
@@ -33,8 +37,9 @@ class MetaGraphClientTest extends TestCase
             ['social-meta-page-token', $pageToken],
         ]);
 
-        return new MetaGraphClient(new MockHttpClient(function (string $method, string $url) use (&$responses): MockResponse {
+        return new MetaGraphClient(new MockHttpClient(function (string $method, string $url, array $options) use (&$responses): MockResponse {
             $this->urls[] = $url;
+            $this->headers = array_map(strtolower(...), $options['headers'] ?? []);
 
             return array_shift($responses) ?? new MockResponse('{}');
         }), $configService);
@@ -87,19 +92,25 @@ class MetaGraphClientTest extends TestCase
         $this->assertSame('token', $this->client(pageToken: 'token')->pageToken());
     }
 
-    // A reel's video handed over at the address its first phase gave out, outside the Graph host
-    public function testAHostedVideoIsHandedOverAtTheUploadAddress(): void
+    // A reel's video sent at the address its first phase gave out, outside the Graph host, its size said in the headers
+    public function testAVideoIsSentAtTheUploadAddress(): void
     {
-        $this->client([new MockResponse('{"success": true}')])->uploadHosted('https://rupload.example/r1', 'https://example.org/r.mp4', 'page-token');
+        $video = (string) tempnam(sys_get_temp_dir(), 'reel');
+        file_put_contents($video, str_repeat('v', 2048));
+
+        $this->client([new MockResponse('{"success": true}')])->uploadFile('https://rupload.example/r1', $video, 'page-token');
+        unlink($video);
 
         $this->assertSame(['https://rupload.example/r1'], $this->urls);
+        $this->assertContains('file_size: 2048', $this->headers);
+        $this->assertContains('content-length: 2048', $this->headers);
     }
 
     // A refusal carries Meta's own reason
-    public function testARefusedHostedUploadSaysWhy(): void
+    public function testARefusedUploadSaysWhy(): void
     {
-        $this->expectExceptionMessageIsOrContains('Meta refused the reel upload: File not found');
+        $this->expectExceptionMessageIsOrContains('Meta refused the reel upload: Invalid file');
 
-        $this->client([new MockResponse('{"success": false, "debug_info": {"message": "File not found"}}')])->uploadHosted('https://rupload.example/r1', 'https://example.org/r.mp4', 'page-token');
+        $this->client([new MockResponse('{"success": false, "debug_info": {"message": "Invalid file"}}')])->uploadFile('https://rupload.example/r1', __FILE__, 'page-token');
     }
 }

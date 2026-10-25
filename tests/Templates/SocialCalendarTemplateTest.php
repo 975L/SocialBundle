@@ -68,7 +68,11 @@ class SocialCalendarTemplateTest extends TestCase
             'move_url' => '/move',
             'panel_url' => '/panel',
             'medias_url' => '/medias',
+            'upload_url' => '/upload',
             'texts_url' => '/texts',
+            'networks_url' => '/networks',
+            'duplicate_url' => '/duplicate',
+            'open_id' => 0,
             'new_url' => '/new',
             'series_url' => '/series',
             'token' => 'social_calendar',
@@ -79,7 +83,7 @@ class SocialCalendarTemplateTest extends TestCase
 
     // The panel of a post in the given state, its approval being what the state offers - with the medias given, the content's picture otherwise
     /** @param list<SocialMedia> $medias */
-    private function panel(string $state, array $medias = [], ?string $image = null, bool $editable = true, int $seriesDrafts = 0, string $plannedAt = '2026-10-04 19:00', bool $textsSaved = false): string
+    private function panel(string $state, array $medias = [], ?string $image = null, bool $editable = true, int $seriesDrafts = 0, string $plannedAt = '2026-10-04 19:00', bool $textsSaved = false, string $mediaProblems = ''): string
     {
         $post = new SocialPost('gallery_media', '42', 'La sieste', 'https://example.org/42', null, new \DateTimeImmutable($plannedAt));
         $target = new SocialPostTarget($post, 'bluesky', 'Le texte de Bluesky');
@@ -98,8 +102,12 @@ class SocialCalendarTemplateTest extends TestCase
             'targets' => $post->getTargets(),
             'max_lengths' => [300],
             'texts_saved' => $textsSaved,
+            'media_problems' => $mediaProblems,
             'series_drafts' => $seriesDrafts,
             'connected' => ['bluesky'],
+            'offered_networks' => ['bluesky', 'facebook'],
+            'accepted_types' => 'image/jpeg,video/mp4',
+            'networks' => $post->getNetworks(),
         ]);
     }
 
@@ -206,6 +214,13 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringContainsString('label.social_calendar_texts_saved', $this->panel('draft', textsSaved: true));
     }
 
+    // What a network would refuse in the medias is warned at the top of the panel, one line each, and nothing when they suit
+    public function testThePanelWarnsOfTheMediasANetworkWouldRefuse(): void
+    {
+        $this->assertMatchesRegularExpression('#alert-warning.*Instagram : one<br />\s*Facebook : two#s', $this->panel('draft', mediaProblems: "Instagram : one\nFacebook : two"));
+        $this->assertStringNotContainsString('alert-warning', $this->panel('draft'));
+    }
+
     // The panel of an approved post offers to take it back to a draft instead
     public function testThePanelOfAnApprovedPostOffersItsWithdrawal(): void
     {
@@ -302,5 +317,47 @@ class SocialCalendarTemplateTest extends TestCase
         $created = $this->render('week', 'https://example.org/social/calendar/' . str_repeat('a', 64) . '.ics');
         $this->assertStringContainsString('value="https://example.org/social/calendar/' . str_repeat('a', 64) . '.ics" readonly', $created);
         $this->assertStringContainsString('label.social_calendar_feed_renew', $created);
+    }
+
+    // The connected networks are ticked in the panel, the ones the post goes to checked, while it has not gone out anywhere - then shown as they stand
+    public function testThePanelLetsTheNetworksBeTicked(): void
+    {
+        $html = $this->panel('draft');
+
+        $this->assertStringContainsString('data-action="social-calendar#saveNetworks" data-post-id="7"', $html);
+        $this->assertMatchesRegularExpression('#<input[^>]*name="networks\[\]" value="bluesky"[^>]*checked>#', $html);
+        $this->assertMatchesRegularExpression('#<input[^>]*name="networks\[\]" value="facebook"[^>]*>#', $html);
+        $this->assertDoesNotMatchRegularExpression('#value="facebook"[^>]*checked#', $html);
+        $this->assertStringContainsString('label.social_calendar_save_networks', $html);
+
+        $frozen = $this->panel('published', editable: false);
+        $this->assertMatchesRegularExpression('#<fieldset[^>]* disabled>#', $frozen);
+        $this->assertStringNotContainsString('label.social_calendar_save_networks', $frozen);
+    }
+
+    // Any post is offered to be duplicated, one gone out as well, and its card's badges come with the panel
+    public function testThePanelOffersTheDuplicateAndTheCardsBadges(): void
+    {
+        foreach (['draft', 'published'] as $state) {
+            $this->assertStringContainsString('data-action="social-calendar#duplicate" data-post-id="7"', $this->panel($state, editable: 'draft' === $state));
+        }
+        $this->assertMatchesRegularExpression('#<template data-social-calendar-target="badges" data-post-id="7">\s*<span class="social-network-badges">#', $this->panel('draft'));
+    }
+
+    // A post still to go out offers a zone to drop its own pictures and videos on, its file picker taking the accepted types alone - not one gone out
+    public function testThePanelOffersAZoneToDropMediasOn(): void
+    {
+        $html = $this->panel('draft');
+
+        $this->assertMatchesRegularExpression('#<label class="social-calendar-panel-drop" data-social-calendar-target="drop" data-post-id="7" data-uploading="label.social_calendar_uploading">#', $html);
+        $this->assertStringContainsString('<input type="file" class="visually-hidden" multiple accept="image/jpeg,video/mp4" data-action="social-calendar#pickFiles">', $html);
+        $this->assertStringContainsString('data-social-calendar-upload-url-value="/upload"', $this->render('week'));
+        $this->assertStringNotContainsString('social-calendar-panel-drop', $this->panel('published', editable: false));
+    }
+
+    // Escape closes the panel, from anywhere on the screen
+    public function testEscapeClosesThePanel(): void
+    {
+        $this->assertStringContainsString('data-action="keydown.esc@window->social-calendar#closePanel"', $this->render('week'));
     }
 }

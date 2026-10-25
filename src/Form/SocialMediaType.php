@@ -27,9 +27,6 @@ use function Symfony\Component\Translation\t;
 // One picture or video of a post on its screen: seen as it will go out, replaced by a new upload, described, ordered - removed with the collection's own button
 class SocialMediaType extends AbstractType
 {
-    // What an upload may be: the pictures turned into a JPEG, and the videos the networks take
-    private const array ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', ...SocialMedia::VIDEO_TYPES];
-
     // Above every network's own limit for a video, which the rules then say network by network
     private const string MAX_SIZE = '1024M';
 
@@ -75,8 +72,8 @@ class SocialMediaType extends AbstractType
             'required' => false,
             'allow_delete' => false,
             'download_uri' => false,
-            'constraints' => [new File(maxSize: self::MAX_SIZE, mimeTypes: self::ACCEPTED_TYPES)],
-            'attr' => ['accept' => implode(',', self::ACCEPTED_TYPES)],
+            'constraints' => [new File(maxSize: self::MAX_SIZE, mimeTypes: SocialMedia::ACCEPTED_TYPES)],
+            'attr' => ['accept' => implode(',', SocialMedia::ACCEPTED_TYPES)],
         ];
     }
 

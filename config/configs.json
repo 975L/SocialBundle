@@ -116,6 +116,24 @@
         "description": "description.social_image_format"
     },
     {
+        "label": "label.social_bluesky_label",
+        "slug": "social-bluesky-label",
+        "sensitive": false,
+        "restricted": false,
+        "value": "none",
+        "kind": "choice",
+        "choices": [
+            "none",
+            "sexual",
+            "nudity",
+            "porn",
+            "graphic-media"
+        ],
+        "group": "social",
+        "severity": null,
+        "description": "description.social_bluesky_label"
+    },
+    {
         "label": "label.social_media_retention_days",
         "slug": "social-media-retention-days",
         "sensitive": false,

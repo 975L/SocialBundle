@@ -98,7 +98,9 @@ class PublishCommand extends Command
     {
         $lines = [];
         foreach ($report as $result) {
-            if (SocialPostStatus::Failed->value !== ($result['status'] ?? null)) {
+            // A post gone out whose first comment was refused is announced too, the comment alone being sent again
+            $commentError = $result['comment_error'] ?? null;
+            if (SocialPostStatus::Failed->value !== ($result['status'] ?? null) && null === $commentError) {
                 continue;
             }
 
@@ -109,7 +111,7 @@ class PublishCommand extends Command
                 "- %s - %s : %s\n  %s",
                 $post instanceof SocialPost ? $post->getTitle() : '#' . $id,
                 ucfirst($network),
-                (string) ($result['message'] ?? ''),
+                null === $commentError ? (string) ($result['message'] ?? '') : $this->translator->trans('email.social_post_comment_failed', ['%error%' => $commentError], 'social'),
                 $this->mailer->url('management_social_post_retry_post', ['entityId' => $id]),
             );
         }

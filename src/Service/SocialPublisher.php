@@ -11,6 +11,7 @@
 namespace c975L\SocialBundle\Service;
 
 use c975L\ConfigBundle\Service\SiteUrlResolver;
+use c975L\SocialBundle\Contract\FirstCommentPublisherInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
@@ -168,6 +169,8 @@ class SocialPublisher
             foreach ($post->getTargets() as $target) {
                 if ($target->isPending()) {
                     $this->send($networks[$target->getNetwork()] ?? null, $target, $content);
+                } elseif ($target->isCommentPending()) {
+                    $this->sendComment($networks[$target->getNetwork()] ?? null, $target);
                 }
                 $report[$target->getNetwork()] = $this->report($target);
             }
@@ -210,15 +213,25 @@ class SocialPublisher
 
             $report = [];
             foreach ($post->getTargets() as $target) {
-                if ($status !== $target->getStatus() || !\in_array($target->getNetwork(), $networks, true)) {
+                if (!\in_array($target->getNetwork(), $networks, true)) {
                     continue;
                 }
 
                 $network = $all[$target->getNetwork()] ?? null;
+                // A post gone out whose comment a network refused: the comment alone is sent again
+                if (!$dryRun && SocialPostStatus::Failed === $status && $target->isCommentPending()) {
+                    $this->sendComment($network, $target);
+                    $report[$target->getNetwork()] = $this->report($target);
+                    continue;
+                }
+                if ($status !== $target->getStatus()) {
+                    continue;
+                }
+
                 if ($dryRun) {
                     $report[$target->getNetwork()] = null === $network || null === $content
                         ? ['status' => self::DRY_RUN, 'message' => $status->value, 'payload' => ['error' => 'Nothing to send it with.']]
-                        : $this->preview($network, $target->getText(), $content, $this->mediasOf($post));
+                        : $this->previewTarget($network, $target, $content);
                     continue;
                 }
 
@@ -253,7 +266,7 @@ class SocialPublisher
     {
         [$sourceType, $content] = $this->hasConnectedNetwork() ? $this->nextContent($this->scopesOf($sources)) : ['', null];
 
-        return null === $content ? null : new SocialPost($sourceType, $content->sourceId, $content->title, $content->url, $content->imageUrl, $at);
+        return null === $content ? null : new SocialPost($sourceType, $content->sourceId, $content->title, $content->url, $content->imageUrl, $at)->setLocale($content->locale);
     }
 
     // The source of a post whose content may be changed on its screen, null for one written there, read from a page, gone out already, or whose source lists nothing
@@ -388,7 +401,7 @@ class SocialPublisher
     /** @return array<string, array<string, mixed>> */
     private function prepare(string $sourceType, SocialContent $content, bool $dryRun, \DateTimeImmutable $plannedAt): array
     {
-        $post = new SocialPost($sourceType, $content->sourceId, $content->title, $content->url, $content->imageUrl, $plannedAt);
+        $post = new SocialPost($sourceType, $content->sourceId, $content->title, $content->url, $content->imageUrl, $plannedAt)->setLocale($content->locale);
         $this->prepared = null;
 
         // Every network on a dry run, the configured ones only otherwise: the dry run is what is read before any credential is plugged in. A content brings no video, so a network of videos alone is left out
@@ -520,12 +533,66 @@ class SocialPublisher
         }
 
         try {
-            $target->markPublished($network->publish($target->getText(), $content, $this->mediasOf($target->getPost())));
+            $target->markPublished($network->publish($target->getText(), $this->sentContent($network, $target, $content), $this->mediasOf($target->getPost())));
         } catch (\Throwable $exception) {
             // One network refusing never keeps the others from posting - the refusal is kept on the target, where "Publish" tries it again
             $this->logger->error('Social publication failed on {network}: {message}', ['network' => $target->getNetwork(), 'message' => $exception->getMessage()]);
             $target->markFailed($exception->getMessage());
+
+            return;
         }
+
+        if ($target->isCommentPending()) {
+            $this->sendComment($network, $target);
+        }
+    }
+
+    // The content as the network gets it: in the post's language, which may have been corrected, and without its link when a first comment carries it, so the post goes out as its picture rather than a link card
+    private function sentContent(NetworkPublisherInterface $network, SocialPostTarget $target, SocialContent $content): SocialContent
+    {
+        $commented = null !== $target->getComment() && $network instanceof FirstCommentPublisherInterface;
+
+        return new SocialContent($content->sourceId, $content->title, $commented ? '' : $content->url, $content->imagePath, $content->imageUrl, $content->imageAlt, $content->variables, $target->getPost()->getLocale() ?? $content->locale);
+    }
+
+    // The first comment under a post gone out, its refusal kept on the target without touching the post
+    private function sendComment(?NetworkPublisherInterface $network, SocialPostTarget $target): void
+    {
+        // A comment whose network is no longer connected is said refused, so the retry screen gives a reason and tries again once it is
+        if (null === $network && null !== $target->getComment()) {
+            $target->markCommentFailed('The network is no longer connected.');
+
+            return;
+        }
+
+        if (!$network instanceof FirstCommentPublisherInterface || null === $target->getExternalId() || null === $target->getComment()) {
+            return;
+        }
+
+        try {
+            $target->markCommented($network->comment($target->getExternalId(), $target->getComment()));
+        } catch (\Throwable $exception) {
+            $this->logger->error('Social first comment failed on {network}: {message}', ['network' => $target->getNetwork(), 'message' => $exception->getMessage()]);
+            $target->markCommentFailed($exception->getMessage());
+        }
+    }
+
+    // A target's dry run, the first comment it would be answered with beside the post
+    /** @return array<string, mixed> */
+    private function previewTarget(NetworkPublisherInterface $network, SocialPostTarget $target, SocialContent $content): array
+    {
+        $preview = $this->preview($network, $target->getText(), $this->sentContent($network, $target, $content), $this->mediasOf($target->getPost()));
+        if ($network instanceof FirstCommentPublisherInterface && null !== $target->getComment()) {
+            $preview['payload']['first_comment'] = $target->getComment();
+        }
+
+        return $preview;
+    }
+
+    // Whether a network answers its posts with a first comment, which the post's screen then offers
+    public function supportsComment(string $network): bool
+    {
+        return ($this->allNetworks()[$network] ?? null) instanceof FirstCommentPublisherInterface;
     }
 
     /**
@@ -533,7 +600,11 @@ class SocialPublisher
      */
     private function report(SocialPostTarget $target): array
     {
-        return ['status' => $target->getStatus()->value, 'message' => (string) ($target->getExternalId() ?? $target->getError())];
+        return array_filter([
+            'status' => $target->getStatus()->value,
+            'message' => (string) ($target->getExternalId() ?? $target->getError()),
+            'comment_error' => $target->getCommentError(),
+        ], static fn (?string $value): bool => null !== $value);
     }
 
     // What a network would receive, or why it would refuse - Instagram taking no post without an image, one network saying so must not hide what the others would get

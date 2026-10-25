@@ -11,6 +11,7 @@
 namespace c975L\SocialBundle\Tests\Controller\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\SocialBundle\Controller\Management\SocialCalendarController;
 use c975L\SocialBundle\Controller\Management\SocialPostCrudController;
 use c975L\SocialBundle\Entity\SocialPost;
@@ -105,6 +106,7 @@ class SocialPostCrudControllerTest extends TestCase
             $this->createStub(SocialPostRepository::class),
             $this->createStub(SocialMediaPicker::class),
             $this->createStub(SocialPostApprover::class),
+            new SiteLocales(['fr'], 'fr'),
         );
     }
 

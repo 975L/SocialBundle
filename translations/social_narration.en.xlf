@@ -18,6 +18,10 @@
                 <source>narration.guided_step_social_calendar_move</source>
                 <target>To change a post's date, drag it onto a coming time of the week, or onto a day of the month where it keeps its time: it is planned there, approved or not as before.</target>
             </trans-unit>
+            <trans-unit id="dfQHjIu">
+                <source>narration.guided_step_social_calendar_networks</source>
+                <target>Still in the panel, tick or untick the networks, then click "Save networks": a network ticked gets its text.</target>
+            </trans-unit>
             <trans-unit id="Zx3lCKG">
                 <source>narration.guided_step_social_calendar_new</source>
                 <target>To write a post, click "New post", or double-click straight on the time or the day it should go out: the post's screen opens with that moment already filled in.</target>
@@ -28,11 +32,11 @@
             </trans-unit>
             <trans-unit id="eg9BzH0">
                 <source>narration.guided_step_social_calendar_panel</source>
-                <target>Click a post on the calendar: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once, reorders or removes its medias, adds some from the site or changes its content.</target>
+                <target>Click a post on the calendar: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once, reorders or removes its medias, adds some from the site or by dropping files on it, changes its content, or duplicates it to the next day.</target>
             </trans-unit>
             <trans-unit id="Nu24WA4">
                 <source>narration.guided_step_social_calendar_texts</source>
-                <target>In the panel, correct each network's text, then click "Save the texts"; a text already published stays read only. "Full screen" opens the whole post, for its common text, its rephrasing or its networks.</target>
+                <target>In the panel, correct each network's text, then click "Save the texts"; a text already published stays read only. "Full screen" opens the whole post, for its common text or its rephrasing.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>
@@ -129,6 +133,10 @@
             <trans-unit id="l7IZ8AF">
                 <source>narration.guided_step_social_posts_change_content</source>
                 <target>If the photo does not suit, "Change the content" takes another one, drawn again in the same gallery or chosen among those still free, and writes the texts again for it.</target>
+            </trans-unit>
+            <trans-unit id="AXYP7f2">
+                <source>narration.guided_step_social_posts_comment</source>
+                <target>Under the text of a network that takes one, such as LinkedIn, the first comment goes out right after the post: write the link there, the post then going out without its link card.</target>
             </trans-unit>
             <trans-unit id="4cJ._fk">
                 <source>narration.guided_step_social_posts_edit</source>

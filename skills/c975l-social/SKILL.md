@@ -1,6 +1,6 @@
 ---
 name: c975l-social
-description: "Use this skill when working with social links, share buttons, customer reviews or the publication on the social networks in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, the Google Business Profile review import with its pluggable sources, and the scheduled posts on Bluesky, Facebook, Instagram and LinkedIn, the publications calendar and the AI-written texts. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, startStimulusApp, c975lStimulusApp, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile, c975l:social:publish, SocialPublisher, SocialPost, SocialPostTarget, SocialPostCrudController, NetworkPublisherInterface, SocialContentSourceInterface, SocialContent, social-publish-template, social-meta-app-id, social-bluesky-oauth-session, SocialConnectionsController, Connexions, BlueskyOAuthClient, Es256Signer, DPoP, MetaGraphClient, SocialImageExporter, post on Bluesky, post on Facebook, post on Instagram, LinkedInClient, LinkedInPublisher, social-linkedin-client-id, post on LinkedIn, SocialPlanner, plannedAt, SocialCalendarController, SocialPostWriter, social-ai-guidelines, social publishing, SocialSeries, prolong a series, c975l:social:series:ending, changeContent, retryFailed, SocialCalendarFeed, iCal feed, SocialMedia, SocialMediaPicker, social_calendar_medias, sortMedias, hasGoneOut, approve-series, findComingBySeries, SocialPostApprover, social-meta-page-name, social-meta-instagram-username, calendar day view, social_calendar_texts, SocialCalendarController::FROM, YoutubeClient, YoutubePublisher, YoutubeHealthCheckProvider, social-youtube-made-for-kids, post on YouTube, Facebook Reel, videoRequired, GoogleOAuthClient."
+description: "Use this skill when working with social links, share buttons, customer reviews or the publication on the social networks in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, the Google Business Profile review import with its pluggable sources, and the scheduled posts on Bluesky, Facebook, Instagram and LinkedIn, the publications calendar and the AI-written texts. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, startStimulusApp, c975lStimulusApp, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile, c975l:social:publish, SocialPublisher, SocialPost, SocialPostTarget, SocialPostCrudController, NetworkPublisherInterface, SocialContentSourceInterface, SocialContent, social-publish-template, social-meta-app-id, social-bluesky-oauth-session, SocialConnectionsController, Connexions, BlueskyOAuthClient, Es256Signer, DPoP, MetaGraphClient, SocialImageExporter, post on Bluesky, post on Facebook, post on Instagram, LinkedInClient, LinkedInPublisher, social-linkedin-client-id, post on LinkedIn, SocialPlanner, plannedAt, SocialCalendarController, SocialPostWriter, social-ai-guidelines, social publishing, SocialSeries, prolong a series, c975l:social:series:ending, changeContent, retryFailed, SocialCalendarFeed, iCal feed, SocialMedia, SocialMediaPicker, social_calendar_medias, sortMedias, hasGoneOut, approve-series, findComingBySeries, SocialPostApprover, social-meta-page-name, social-meta-instagram-username, calendar day view, social_calendar_texts, SocialCalendarController::FROM, YoutubeClient, YoutubePublisher, YoutubeHealthCheckProvider, social-youtube-made-for-kids, post on YouTube, Facebook Reel, videoRequired, GoogleOAuthClient, FirstCommentPublisherInterface, first comment, isCommentPending, c975l:social:draft, SocialDraftImporter, imported drafts, c975l:social:linkedin:reminder, SocialPostDuplicator, social_calendar_upload, social_calendar_networks, social_calendar_duplicate, social-bluesky-label, SocialPost::$locale."
 ---
 
 # c975L SocialBundle
@@ -213,7 +213,7 @@ account linked to that Page and a member's **LinkedIn** profile (`LinkedInClient
 self-serve app, so no Company Page and a token to renew every 60 days, watched by `LinkedInHealthCheckProvider`), plus a
 **YouTube** channel for the posts carrying a video (`YoutubeClient`, `YoutubePublisher`: the reviews' `GoogleOAuthClient`
 given its own scopes and refresh token slug, watched by `YoutubeHealthCheckProvider`, `social-youtube-made-for-kids` declaring
-every upload, uploads kept private until the Google Cloud project passes YouTube's API audit). A network declaring
+every upload, an unaudited Google Cloud project's uploads possibly locked private until it passes YouTube's API audit, a warning logged then). A network declaring
 `MediaRules::$videoRequired` is left out of the drafts prepared from a content and of a new post, ticked by hand once a video is added. A vertical Facebook video of 3 to 90 s goes out as a Reel (`/video_reels`) — on as soon as one of them is connected (`SocialPublisher::hasConnectedNetwork()`), no switch besides.
 
 | Piece | Class |
@@ -232,6 +232,9 @@ every upload, uploads kept private until the Google Cloud project passes YouTube
 | Calendar feed | `Service\SocialCalendarFeed`, `Controller\SocialCalendarFeedController` (`/social/calendar/{token}.ics`, secret `social-calendar-ics-token`) |
 | Series | `Entity\SocialSeries`, `Service\SocialSeriesGenerator`, `Command\SeriesEndingCommand` (`c975l:social:series:ending`, `social-series-ending-days`) |
 | Refusals | `Service\SocialAdminMailer` (emails `email-to`), `SocialPostCrudController::retryPost()` → `SocialPublisher::retryFailed()` |
+| First comment | `Contract\FirstCommentPublisherInterface` (`comment()`, LinkedIn alone), `SocialPostTarget::$comment`, `isCommentPending()` |
+| Imported drafts | `Service\SocialDraftImporter`, `Command\DraftCommand` (`c975l:social:draft`), a series of mode `SocialSeriesGenerator::MODE_IMPORT` |
+| LinkedIn reminder | `Command\LinkedInReminderCommand` (`c975l:social:linkedin:reminder`, nightly, 14 then 3 days ahead) |
 
 A bundle owning contents implements `SocialContentSourceInterface`, declared in UiBundle so it needs no
 dependency on this one; both contracts are auto-tagged by interface (`social.content_source`,
@@ -263,14 +266,14 @@ another free content and write its texts again (a post with its own text keeps i
 `Service\SocialContentStatusProvider` tells the owning bundle which contents are reserved or published,
 a post's own and its medias' alike, a published one never read as reserved again.
 A refused target is emailed with a retry address, which sends the failed targets only - a draft stays a
-draft. `c975l:social:media:purge` frees the uploads past `social-media-retention-days`. A post with no target is never published (`SocialPost::isPublished()`), and the CRUD requires one network.
+draft. A target's first comment goes right after its post on a `FirstCommentPublisherInterface` network, the post then sent without its link; a refused comment leaves the post published, `retryFailed()` sending the comment alone, and `LinkedInClient::createComment()` asks again on a 404 only (the post not found yet). `c975l:social:draft` reads a JSON file (`at` written `Y-m-d H:i` and to come) into one series of drafts, never prolonged. A post carries its language (`SocialPost::$locale`, from `SocialContent::$locale`, picked on a multilingual site), which Bluesky files it under; `social-bluesky-label` self-labels every Bluesky post. `c975l:social:media:purge` frees the uploads past `social-media-retention-days`. A post with no target is never published (`SocialPost::isPublished()`), and the CRUD requires one network.
 The calendar lays every post not published yet at its
 `plannedAt` (`SocialPostRepository::findPlannedBetween()`); a drag changes the moment only, never the
 approval. Three views, `view=week` (default), `day` and `month`, a day's date opening its day. A post gone out shows one card per run in the week - its networks sent within a quarter of an
 hour of the first - and one per day in the month (`SocialCalendarController::publishedItems()`). A card's panel also orders and removes the post's medias (`SocialCalendarController::medias()`,
 route `social_calendar_medias`, `SocialPost::sortMedias()`), until the post has gone out on a network
 (`SocialPost::hasGoneOut()`), and saves each network's text not out yet (`SocialCalendarController::texts()`, route
-`social_calendar_texts`, an empty or too long text refusing the whole save). A post's screen opened from the calendar
+`social_calendar_texts`, an empty or too long text refusing the whole save), takes dropped files (`upload()`, route `social_calendar_upload`, `SocialMedia::ACCEPTED_TYPES`), ticks the connected networks (`networks()`, route `social_calendar_networks`) - both warning of what `SocialMediaChecker` finds, without refusing - and duplicates the post to the next day (`duplicate()`, route `social_calendar_duplicate`, `Service\SocialPostDuplicator`, texts, first comments and medias copied, a draft again). A post's screen opened from the calendar
 carries the view in `SocialCalendarController::FROM` (`calendar=week|day|month`) and comes back to it once saved. It also approves the series' coming drafts at once (`to=approve-series`,
 `SocialPostRepository::findComingBySeries()`, counted by `countComingDraftsBySeries()`), a moment gone or a post refused by a
 network left alone, every draft checked by `SocialMediaChecker` through `SocialPostApprover::approveAll()` - the list's
@@ -301,7 +304,7 @@ export/import provider per
 singleton (`SocialLinksExportProvider`, `ShareButtonsSettingsExportProvider` and their import twins),
 `Management\GoogleReviewsHealthCheckProvider` (one row on the health check page, saying whether the
 Google connection still answers - the import being the one thing here that stops silently) and
-`Scheduler\SocialMaintenanceTaskProvider` (the nightly review sync and the publication run every 15 minutes).
+`Scheduler\SocialMaintenanceTaskProvider` (the nightly review sync and LinkedIn reminder, and the publication run every 15 minutes).
 
 ## Do not
 
@@ -319,6 +322,7 @@ Google connection still answers - the import being the one thing here that stops
   copy is what makes a page's links drift from the site's.
 - **Do not copy Google's OAuth into another client.** `GoogleOAuthClient` takes the scope and the refresh token
   slug; a new Google API passes its own, as `YoutubeClient` does.
+- **Do not retry a first comment on any error.** A timeout after LinkedIn created it posts it twice; only a 404 (the post not found yet) is asked again.
 - **Do not send failed targets with `SocialPublisher::publish()`.** It sends drafts too; a retry goes
   through `retryFailed()`.
 - **Do not file a setting under a drawer without labelling it.** A `group` outside `Config::GROUPS` needs its

@@ -342,6 +342,13 @@ $quarter: 1.25rem;
     align-content: start;
 }
 
+/* On a wide screen the calendar narrows beside the panel rather than going under it */
+@media (min-width: 768px) {
+    .social-calendar-has-panel {
+        padding-right: 28rem;
+    }
+}
+
 .social-calendar-panel-head {
     display: flex;
     justify-content: space-between;
@@ -395,6 +402,32 @@ $quarter: 1.25rem;
         position: absolute;
         top: .25rem;
         right: .25rem;
+    }
+}
+
+// The zone files are dropped on, outlined so it reads as one - lit while a file is held over it, dimmed while they are sent
+.social-calendar-panel-drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .25rem;
+    padding: 1rem;
+    text-align: center;
+    border: 2px dashed var(--bs-border-color, #ccc);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color .15s, background-color .15s;
+
+    &:hover,
+    &:focus-within,
+    &.is-over {
+        border-color: var(--bs-primary, #0d6efd);
+        background-color: rgba(var(--bs-primary-rgb, 13, 110, 253), .08);
+    }
+
+    &.is-busy {
+        opacity: .6;
+        pointer-events: none;
     }
 }
 

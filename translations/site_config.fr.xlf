@@ -10,6 +10,10 @@
                 <source>description.social_bluesky_handle</source>
                 <target>Identifiant du compte sur lequel publier, par exemple exemple.bsky.social.</target>
             </trans-unit>
+            <trans-unit id="cjp8vim">
+                <source>description.social_bluesky_label</source>
+                <target>Étiquette portée par chaque post Bluesky, pour que les applis le floutent chez qui ne veut pas de ce contenu : none (aucune), sexual (suggestif), nudity (nudité), porn (pornographique) ou graphic-media (violent ou choquant). Les règles de Bluesky l'exigent pour un contenu adulte.</target>
+            </trans-unit>
             <trans-unit id="LYr0t5Y">
                 <source>description.social_bluesky_oauth_key</source>
                 <target>Générée par le site à la première connexion. La changer oblige à reconnecter Bluesky.</target>
@@ -145,6 +149,10 @@
             <trans-unit id="EXIzXnl">
                 <source>label.social_bluesky_handle</source>
                 <target>Identifiant Bluesky</target>
+            </trans-unit>
+            <trans-unit id="MQtLh67">
+                <source>label.social_bluesky_label</source>
+                <target>Étiquette Bluesky</target>
             </trans-unit>
             <trans-unit id="lyX1njK">
                 <source>label.social_bluesky_oauth_key</source>
