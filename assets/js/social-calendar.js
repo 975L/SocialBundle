@@ -173,10 +173,25 @@ export default class extends Controller {
         if (remove) body.set("remove", remove);
         for (const id of medias) body.append("medias[]", id);
 
-        fetch(this.mediasUrlValue, { method: "POST", headers: { "X-CSRF-Token": this.tokenValue }, body })
-            .then((response) => (response.ok ? response.text() : Promise.reject(new Error(String(response.status)))))
-            .then((html) => (this.panelTarget.innerHTML = html))
-            .catch(() => this.saved(false));
+        this.postPanel(this.mediasUrlValue, body).catch(() => this.saved(false));
+    }
+
+    // A change of the panel sent with the page's token, the panel replaced by the one the server answers - a refusal rejected with its response, for the caller to say
+    postPanel(url, body) {
+        return fetch(url, { method: "POST", headers: { "X-CSRF-Token": this.tokenValue }, body })
+            .then((response) => (response.ok ? response.text() : Promise.reject(response)))
+            .then((html) => (this.panelTarget.innerHTML = html));
+    }
+
+    // The panel's form sent for its post, the button held while it goes
+    panelForm(event) {
+        event.preventDefault();
+        const button = event.submitter;
+        const body = new URLSearchParams(new FormData(event.currentTarget));
+        body.set("post", event.currentTarget.dataset.postId);
+        if (button) button.disabled = true;
+
+        return [button, body];
     }
 
     // Armed per drop zone of the panel as it is read: lit while files are held over it, then the ones let go on it sent - the browser kept from opening them in its tab
@@ -218,44 +233,23 @@ export default class extends Controller {
             window.alert("" !== reason ? reason : this.failedLabelValue);
             this.openPanel(zone.dataset.postId);
         };
-        fetch(this.uploadUrlValue, { method: "POST", headers: { "X-CSRF-Token": this.tokenValue }, body })
-            .then((response) => {
-                if (response.ok) return response.text().then((html) => (this.panelTarget.innerHTML = html));
-
-                return 422 === response.status ? response.text().then(refused) : refused();
-            })
-            .catch(() => refused());
+        this.postPanel(this.uploadUrlValue, body).catch((response) => (response instanceof Response && 422 === response.status ? response.text().then(refused) : refused()));
     }
 
     // The panel's texts saved together, the button held while they are sent, the server answering the panel as it now reads - a refusal said, the texts typed left as they are to be corrected
     saveTexts(event) {
-        event.preventDefault();
-        const button = event.submitter;
-        const body = new URLSearchParams(new FormData(event.currentTarget));
-        body.set("post", event.currentTarget.dataset.postId);
-        if (button) button.disabled = true;
-
+        const [button, body] = this.panelForm(event);
         const refused = (reason = "") => {
             if (button) button.disabled = false;
             window.alert("" !== reason ? reason : this.textsFailedLabelValue);
         };
-        fetch(this.textsUrlValue, { method: "POST", headers: { "X-CSRF-Token": this.tokenValue }, body })
-            .then((response) => (response.ok ? response.text().then((html) => (this.panelTarget.innerHTML = html)) : response.text().then(refused)))
-            .catch(() => refused());
+        this.postPanel(this.textsUrlValue, body).catch((response) => (response instanceof Response ? response.text().then(refused) : refused()));
     }
 
     // The networks ticked in the panel saved, the button held while their texts are written - which may take a few seconds - the server answering the panel as it now reads
     saveNetworks(event) {
-        event.preventDefault();
-        const button = event.submitter;
-        const body = new URLSearchParams(new FormData(event.currentTarget));
-        body.set("post", event.currentTarget.dataset.postId);
-        if (button) button.disabled = true;
-
-        fetch(this.networksUrlValue, { method: "POST", headers: { "X-CSRF-Token": this.tokenValue }, body })
-            .then((response) => (response.ok ? response.text() : Promise.reject(new Error(String(response.status)))))
-            .then((html) => (this.panelTarget.innerHTML = html))
-            .catch(() => this.saved(false));
+        const [, body] = this.panelForm(event);
+        this.postPanel(this.networksUrlValue, body).catch(() => this.saved(false));
     }
 
     // The post written again the day after, the calendar then opened on the copy's day with its panel

@@ -229,9 +229,7 @@ class SocialPublisher
                 }
 
                 if ($dryRun) {
-                    $report[$target->getNetwork()] = null === $network || null === $content
-                        ? ['status' => self::DRY_RUN, 'message' => $status->value, 'payload' => ['error' => 'Nothing to send it with.']]
-                        : $this->previewTarget($network, $target, $content);
+                    $report[$target->getNetwork()] = $this->previewTarget($network, $target, $content);
                     continue;
                 }
 
@@ -577,10 +575,14 @@ class SocialPublisher
         }
     }
 
-    // A target's dry run, the first comment it would be answered with beside the post
+    // A target's dry run, the first comment it would be answered with beside the post - or why it would not go, nothing to send it with
     /** @return array<string, mixed> */
-    private function previewTarget(NetworkPublisherInterface $network, SocialPostTarget $target, SocialContent $content): array
+    private function previewTarget(?NetworkPublisherInterface $network, SocialPostTarget $target, ?SocialContent $content): array
     {
+        if (null === $network || null === $content) {
+            return ['status' => self::DRY_RUN, 'message' => $target->getStatus()->value, 'payload' => ['error' => 'Nothing to send it with.']];
+        }
+
         $preview = $this->preview($network, $target->getText(), $this->sentContent($network, $target, $content), $this->mediasOf($target->getPost()));
         if ($network instanceof FirstCommentPublisherInterface && null !== $target->getComment()) {
             $preview['payload']['first_comment'] = $target->getComment();

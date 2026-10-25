@@ -209,15 +209,9 @@ class SocialCalendarController extends AbstractController
     #[AdminRoute(path: '/social-calendar/medias', name: 'social_calendar_medias', options: ['methods' => ['POST']])]
     public function medias(Request $request): Response
     {
-        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
-
-        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN, $request->headers->get('X-CSRF-Token'))) {
-            return new Response(null, Response::HTTP_FORBIDDEN);
-        }
-
-        $post = $this->postRepository->find($request->request->getInt('post'));
-        if (!$post instanceof SocialPost || $post->hasGoneOut()) {
-            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+        $post = $this->postedPost($request, true);
+        if ($post instanceof Response) {
+            return $post;
         }
 
         $remove = (int) $request->request->get('remove');
@@ -246,15 +240,13 @@ class SocialCalendarController extends AbstractController
     #[AdminRoute(path: '/social-calendar/upload', name: 'social_calendar_upload', options: ['methods' => ['POST']])]
     public function upload(Request $request): Response
     {
-        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
-
-        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN, $request->headers->get('X-CSRF-Token'))) {
-            return new Response(null, Response::HTTP_FORBIDDEN);
+        $post = $this->postedPost($request, true);
+        if ($post instanceof Response) {
+            return $post;
         }
 
-        $post = $this->postRepository->find($request->request->getInt('post'));
         $files = array_filter($request->files->all('files'), static fn (mixed $file): bool => $file instanceof UploadedFile);
-        if (!$post instanceof SocialPost || $post->hasGoneOut() || [] === $files) {
+        if ([] === $files) {
             return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -278,15 +270,9 @@ class SocialCalendarController extends AbstractController
     #[AdminRoute(path: '/social-calendar/texts', name: 'social_calendar_texts', options: ['methods' => ['POST']])]
     public function texts(Request $request): Response
     {
-        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
-
-        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN, $request->headers->get('X-CSRF-Token'))) {
-            return new Response(null, Response::HTTP_FORBIDDEN);
-        }
-
-        $post = $this->postRepository->find($request->request->getInt('post'));
-        if (!$post instanceof SocialPost) {
-            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+        $post = $this->postedPost($request);
+        if ($post instanceof Response) {
+            return $post;
         }
 
         // Every text checked before any is set, so a refusal saves none
@@ -323,15 +309,9 @@ class SocialCalendarController extends AbstractController
     #[AdminRoute(path: '/social-calendar/networks', name: 'social_calendar_networks', options: ['methods' => ['POST']])]
     public function networks(Request $request): Response
     {
-        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
-
-        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN, $request->headers->get('X-CSRF-Token'))) {
-            return new Response(null, Response::HTTP_FORBIDDEN);
-        }
-
-        $post = $this->postRepository->find($request->request->getInt('post'));
-        if (!$post instanceof SocialPost || $post->hasGoneOut()) {
-            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+        $post = $this->postedPost($request, true);
+        if ($post instanceof Response) {
+            return $post;
         }
 
         $connected = $this->publisher->getConnectedNetworkNames();
@@ -347,15 +327,9 @@ class SocialCalendarController extends AbstractController
     #[AdminRoute(path: '/social-calendar/duplicate', name: 'social_calendar_duplicate', options: ['methods' => ['POST']])]
     public function duplicate(Request $request): Response
     {
-        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
-
-        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN, $request->headers->get('X-CSRF-Token'))) {
-            return new Response(null, Response::HTTP_FORBIDDEN);
-        }
-
-        $post = $this->postRepository->find($request->request->getInt('post'));
-        if (!$post instanceof SocialPost) {
-            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+        $post = $this->postedPost($request);
+        if ($post instanceof Response) {
+            return $post;
         }
 
         $copy = $this->duplicator->duplicate($post, $this->publisher->getConnectedNetworkNames());
@@ -363,6 +337,23 @@ class SocialCalendarController extends AbstractController
         $this->entityManager->flush();
 
         return new Response($this->generateUrl(self::ROUTE, ['view' => $this->view($request), 'date' => $copy->getPlannedAt()->format('Y-m-d'), 'post' => $copy->getId()]));
+    }
+
+    // The post a panel's action is sent for, once the editor's role and the panel's token checked - the refusal answered instead, a post not found or, $editable, gone out on a network being one
+    private function postedPost(Request $request, bool $editable = false): SocialPost | Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
+
+        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN, $request->headers->get('X-CSRF-Token'))) {
+            return new Response(null, Response::HTTP_FORBIDDEN);
+        }
+
+        $post = $this->postRepository->find($request->request->getInt('post'));
+        if (!$post instanceof SocialPost || ($editable && $post->hasGoneOut())) {
+            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return $post;
     }
 
     // The panel as it now reads, answered to a card opened and to its medias or its texts changed alike - $view the calendar's, which the post's screens it links to come back to, $textsSaved saying the texts just were, $problems what a network would refuse in its medias, warned as the post's screen does
@@ -397,21 +388,19 @@ class SocialCalendarController extends AbstractController
     #[AdminRoute(path: '/social-calendar/move', name: 'social_calendar_move', options: ['methods' => ['POST']])]
     public function move(Request $request): Response
     {
-        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
-
-        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN, $request->headers->get('X-CSRF-Token'))) {
-            return new Response(null, Response::HTTP_FORBIDDEN);
+        $post = $this->postedPost($request);
+        if ($post instanceof Response) {
+            return $post;
         }
 
-        $post = $this->postRepository->find($request->request->getInt('post'));
         $to = $request->request->getString('to');
 
         // Offered on any post of the series, one gone out as well
-        if ($post instanceof SocialPost && self::TO_APPROVE_SERIES === $to) {
+        if (self::TO_APPROVE_SERIES === $to) {
             return $this->approveSeries($post);
         }
 
-        if (!$post instanceof SocialPost || 'published' === $post->getState()) {
+        if ('published' === $post->getState()) {
             return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 

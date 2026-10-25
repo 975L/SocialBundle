@@ -96,25 +96,7 @@ class PublishCommand extends Command
     /** @param array<string, array<string, mixed>> $report */
     private function announceFailures(array $report, SymfonyStyle $io): void
     {
-        $lines = [];
-        foreach ($report as $result) {
-            // A post gone out whose first comment was refused is announced too, the comment alone being sent again
-            $commentError = $result['comment_error'] ?? null;
-            if (SocialPostStatus::Failed->value !== ($result['status'] ?? null) && null === $commentError) {
-                continue;
-            }
-
-            $id = (int) ($result['post'] ?? 0);
-            $network = (string) ($result['network'] ?? '');
-            $post = $this->postRepository->find($id);
-            $lines[] = sprintf(
-                "- %s - %s : %s\n  %s",
-                $post instanceof SocialPost ? $post->getTitle() : '#' . $id,
-                ucfirst($network),
-                null === $commentError ? (string) ($result['message'] ?? '') : $this->translator->trans('email.social_post_comment_failed', ['%error%' => $commentError], 'social'),
-                $this->mailer->url('management_social_post_retry_post', ['entityId' => $id]),
-            );
-        }
+        $lines = array_values(array_filter(array_map($this->failureLine(...), $report)));
         if ([] === $lines) {
             return;
         }
@@ -126,5 +108,27 @@ class PublishCommand extends Command
         if (null !== $error) {
             $io->warning(sprintf('The failures were not emailed: %s', $error));
         }
+    }
+
+    // A refused target's line of the email, null for one that went out - a post gone out whose first comment was refused having one too, the comment alone being sent again
+    /** @param array<string, mixed> $result */
+    private function failureLine(array $result): ?string
+    {
+        $result += ['status' => null, 'comment_error' => null, 'post' => 0, 'network' => '', 'message' => ''];
+        $commentError = $result['comment_error'];
+        if (SocialPostStatus::Failed->value !== $result['status'] && null === $commentError) {
+            return null;
+        }
+
+        $id = (int) $result['post'];
+        $post = $this->postRepository->find($id);
+
+        return sprintf(
+            "- %s - %s : %s\n  %s",
+            $post instanceof SocialPost ? $post->getTitle() : '#' . $id,
+            ucfirst((string) $result['network']),
+            null === $commentError ? (string) $result['message'] : $this->translator->trans('email.social_post_comment_failed', ['%error%' => $commentError], 'social'),
+            $this->mailer->url('management_social_post_retry_post', ['entityId' => $id]),
+        );
     }
 }

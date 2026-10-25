@@ -38,14 +38,16 @@ class SocialDraftImporter
         $errors = [];
         $drafts = [];
         $connected = $this->socialPublisher->getConnectedNetworkNames();
-        if ('' === trim((string) ($data['title'] ?? ''))) {
+        $data += ['title' => '', 'posts' => null];
+        $posts = \is_array($data['posts']) ? $data['posts'] : [];
+        if ('' === trim((string) $data['title'])) {
             $errors[] = 'The file has no "title".';
         }
-        if (!\is_array($data['posts'] ?? null) || [] === $data['posts']) {
+        if ([] === $posts) {
             $errors[] = 'The file has no "posts".';
         }
 
-        foreach (\is_array($data['posts'] ?? null) ? $data['posts'] : [] as $index => $post) {
+        foreach ($posts as $index => $post) {
             $draft = $this->draft(\is_array($post) ? $post : [], $baseDir);
             $errors = [...$errors, ...$this->draftErrors(sprintf('Post %d', (int) $index + 1), $draft, $connected)];
             if (null !== $draft['at']) {
@@ -64,14 +66,15 @@ class SocialDraftImporter
      */
     private function draft(array $post, string $baseDir): array
     {
-        $comment = trim((string) ($post['comment'] ?? ''));
-        $url = trim((string) ($post['url'] ?? ''));
-        $media = trim((string) ($post['media'] ?? ''));
+        $post += ['at' => null, 'networks' => null, 'text' => '', 'comment' => '', 'url' => '', 'media' => ''];
+        $comment = trim((string) $post['comment']);
+        $url = trim((string) $post['url']);
+        $media = trim((string) $post['media']);
 
         return [
-            'at' => $this->moment($post['at'] ?? null),
-            'networks' => \is_array($post['networks'] ?? null) ? array_values(array_map(strval(...), $post['networks'])) : [],
-            'text' => trim((string) ($post['text'] ?? '')),
+            'at' => $this->moment($post['at']),
+            'networks' => \is_array($post['networks']) ? array_values(array_map(strval(...), $post['networks'])) : [],
+            'text' => trim((string) $post['text']),
             'comment' => '' === $comment ? null : $comment,
             'url' => '' === $url ? null : $url,
             'media' => '' === $media ? null : rtrim($baseDir, '/') . '/' . ltrim($media, '/'),

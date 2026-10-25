@@ -35,6 +35,7 @@ export default [
                 Node: "readonly",
                 requestAnimationFrame: "readonly",
                 ResizeObserver: "readonly",
+                Response: "readonly",
                 screen: "readonly",
                 sessionStorage: "readonly",
                 setInterval: "readonly",

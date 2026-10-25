@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.18.1
+
+Calendar panel actions share their checks and request
+
+- Calendar panel: actions share one role, token and post check (25/10/2026)
+- Calendar panel: requests sent through one JS helper (25/10/2026)
+- Publish command: failure line extracted (25/10/2026)
+- Dry run: target without network or content previewed by `previewTarget()` (25/10/2026)
+- Draft importer: missing keys defaulted once (25/10/2026)
+
 ## v2.18.0
 
 LinkedIn first comment, imported drafts, calendar panel actions
