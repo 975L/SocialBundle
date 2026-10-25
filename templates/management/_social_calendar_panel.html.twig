@@ -73,9 +73,12 @@
             {% for media in medias %}
                 <li {% if editable %}data-social-calendar-target="media" data-post-id="{{ post.id }}"{% endif %} data-media-id="{{ media.id }}">
                     {% if media.video %}
-                        <video src="{{ media.publicPath }}" preload="metadata" muted></video>
+                        {# A moment in rather than the first frame, often black, and a play sign over it: a video reads as one at a glance. Focusable and opened by Enter or Space too, a <button> around it keeping the media from being dragged (see mediaTargetConnected) #}
+                        <video src="{{ media.publicPath }}#t=1" preload="metadata" muted tabindex="0" role="button" data-action="click->social-calendar#zoom keydown.enter->social-calendar#zoom keydown.space->social-calendar#zoom" title="{{ 'label.social_calendar_media_play'|trans({}, 'social') }}" aria-label="{{ 'label.social_calendar_media_play'|trans({}, 'social') }}"></video>
+                        <span class="social-calendar-panel-play" aria-hidden="true"><i class="fa fa-play"></i></span>
                     {% else %}
-                        <img src="{{ media.publicPath }}" alt="{{ media.alt }}" loading="lazy" draggable="false">
+                        {# UiBundle's lightbox, the stored file being the only one a media of the post has #}
+                        <twig:c975LUi:Image:Zoom src="{{ media.publicPath }}" highres="{{ media.publicPath }}" alt="{{ media.alt }}" label="{{ 'label.social_calendar_media_zoom'|trans({}, 'social') }}" priority="false" />
                     {% endif %}
                     {% if editable %}
                         <twig:ea:Button type="button" variant="danger" size="sm" icon="fa fa-trash" data-action="social-calendar#removeMedia" data-post-id="{{ post.id }}" data-media-id="{{ media.id }}" data-confirm="{{ 'label.social_calendar_media_remove_confirm'|trans({}, 'social') }}" title="{{ 'label.social_calendar_media_remove'|trans({}, 'social') }}" aria-label="{{ 'label.social_calendar_media_remove'|trans({}, 'social') }}" />
@@ -87,7 +90,7 @@
             <p class="small text-muted mb-0">{{ 'help.social_calendar_medias'|trans({}, 'social') }}</p>
         {% endif %}
     {% elseif post.image %}
-        <img src="{{ post.image }}" alt="" loading="lazy" class="social-calendar-panel-content">
+        <twig:c975LUi:Image:Zoom src="{{ post.image }}" highres="{{ post.image }}" class="social-calendar-panel-content" label="{{ 'label.social_calendar_media_zoom'|trans({}, 'social') }}" priority="false" />
     {% endif %}
 </div>
 

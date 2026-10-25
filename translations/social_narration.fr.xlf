@@ -32,7 +32,7 @@
             </trans-unit>
             <trans-unit id="eg9BzH0">
                 <source>narration.guided_step_social_calendar_panel</source>
-                <target>Cliquez une publication du calendrier : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série, réordonne ou retire ses médias, en ajoute depuis le site ou en y déposant des fichiers, change son contenu, ou la duplique au lendemain.</target>
+                <target>Cliquez une publication du calendrier : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série, réordonne ou retire ses médias, les agrandit ou lit ses vidéos d'un clic, en ajoute depuis le site ou en y déposant des fichiers, change son contenu, ou la duplique au lendemain.</target>
             </trans-unit>
             <trans-unit id="Nu24WA4">
                 <source>narration.guided_step_social_calendar_texts</source>

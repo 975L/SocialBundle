@@ -36,13 +36,13 @@ class SocialCalendarTemplateTest extends TestCase
     {
         $twig = $this->twig();
 
-        $card = static fn (int $id, string $state, \DateTimeImmutable $at): array => ['id' => $id, 'title' => 'La sieste', 'image' => null, 'networks' => ['bluesky'], 'planned_at' => $at, 'state' => $state, 'edit_url' => '/edit/' . $id];
+        $card = static fn (int $id, string $state, \DateTimeImmutable $at): array => ['id' => $id, 'title' => 'La sieste', 'image' => null, 'networks' => ['bluesky'], 'planned_at' => $at, 'state' => $state, 'edit_url' => '/edit/' . $id, 'video' => false];
         $evening = new \DateTimeImmutable('2026-10-04 19:00');
         $planned = new \DateTimeImmutable('2026-10-04 14:15');
         $items = [
             ['kind' => 'planned', 'at' => $planned] + $card(8, 'approved', $planned),
             ['kind' => 'planned', 'at' => $evening] + $card(9, 'draft', $evening),
-            ['kind' => 'planned', 'at' => $evening] + $card(10, 'failed', $evening),
+            ['kind' => 'planned', 'at' => $evening, 'video' => true] + $card(10, 'failed', $evening),
         ];
         $published = [['kind' => 'published', 'at' => $evening->modify('-1 day')] + ['networks' => ['facebook']] + $card(7, 'published', $evening->modify('-2 days'))];
         // The week's two quarters of an hour around the planned post, the first one gone by
@@ -284,7 +284,9 @@ class SocialCalendarTemplateTest extends TestCase
         ];
 
         $draft = $this->panel('draft', $medias, '/social/a.jpg');
-        $this->assertLessThan(strpos($draft, '<video src="/social/b.mp4"'), strpos($draft, '<img src="/social/a.jpg" alt="Le lac"'));
+        $this->assertMatchesRegularExpression('#<a href="/social/a.jpg" class="image-zoom__link" data-action="imageZoom\#open[^"]*" aria-label="label.social_calendar_media_zoom">\s*<img src="/social/a.jpg" [^>]*alt="Le lac".*<video src="/social/b.mp4\#t=1"#s', $draft);
+        $this->assertStringContainsString('tabindex="0" role="button" data-action="click->social-calendar#zoom keydown.enter->social-calendar#zoom keydown.space->social-calendar#zoom"', $draft);
+        $this->assertSame(1, substr_count($draft, 'social-calendar-panel-play'));
         $this->assertSame(2, substr_count($draft, 'data-social-calendar-target="media" data-post-id="7"'));
         $this->assertSame(2, substr_count($draft, 'data-action="social-calendar#removeMedia" data-post-id="7"'));
         $this->assertStringContainsString('data-social-calendar-target="thumbnail" data-post-id="7" data-image="/social/a.jpg"', $draft);
@@ -298,12 +300,12 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringNotContainsString('href="/pick/7"', $published);
     }
 
-    // A post with no media of its own shows the picture of its content
+    // A post with no media of its own shows the picture of its content, opened larger on a click
     public function testThePanelShowsTheContentsPictureWhenThePostHasNoMedia(): void
     {
         $html = $this->panel('draft', [], '/medias/gallery/lac.webp');
 
-        $this->assertStringContainsString('<img src="/medias/gallery/lac.webp" alt="" loading="lazy" class="social-calendar-panel-content">', $html);
+        $this->assertMatchesRegularExpression('#<a href="/medias/gallery/lac.webp" class="image-zoom__link" data-action="imageZoom\#open[^"]*"[^>]*>\s*<img src="/medias/gallery/lac.webp" class="img img-responsive social-calendar-panel-content"#', $html);
         $this->assertStringNotContainsString('social-calendar#removeMedia', $html);
     }
 
@@ -359,5 +361,14 @@ class SocialCalendarTemplateTest extends TestCase
     public function testEscapeClosesThePanel(): void
     {
         $this->assertStringContainsString('data-action="keydown.esc@window->social-calendar#closePanel"', $this->render('week'));
+    }
+
+    // A post a video goes out with says so on its card, its picture showing nothing of it
+    public function testACardSaysAVideoGoesWithThePost(): void
+    {
+        $html = $this->render();
+
+        $this->assertSame(1, substr_count($html, 'social-calendar-card-video'));
+        $this->assertMatchesRegularExpression('/data-panel-id="10"[^>]*>\s*<i class="fa fa-film social-calendar-card-video" role="img" title="label.social_calendar_has_video" aria-label="label.social_calendar_has_video"><\/i>/', $html);
     }
 }

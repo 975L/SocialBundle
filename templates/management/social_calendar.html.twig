@@ -19,6 +19,8 @@
         class="social-calendar-card is-{{ post.state }}"
         {% if draggable %}data-social-calendar-target="item" data-post-id="{{ post.id }}" data-at="{{ post.planned_at|date('c') }}"{% endif %}>
         {% if post.image %}<img src="{{ post.image }}" alt="" loading="lazy">{% endif %}
+        {# A video going out with it, which its picture does not show #}
+        {% if post.video %}{% set video_label = 'label.social_calendar_has_video'|trans({}, 'social') %}<i class="fa fa-film social-calendar-card-video" role="img" title="{{ video_label }}" aria-label="{{ video_label }}"></i>{% endif %}
         <span>{{ post.title }}</span>
         {{ _self.networks(post.networks, connected) }}
     </a>
@@ -135,5 +137,8 @@
 
         {# Filled by social-calendar.js with the panel of the card clicked (see _social_calendar_panel.html.twig) #}
         <aside class="social-calendar-panel" data-social-calendar-target="panel" hidden></aside>
+
+        {# A video of the panel at its own size, filled by social-calendar.js - its pictures open in UiBundle's lightbox #}
+        <dialog class="social-calendar-zoom" data-social-calendar-target="zoom" data-action="click->social-calendar#closeZoom close->social-calendar#clearZoom"></dialog>
     </div>
 {% endblock %}

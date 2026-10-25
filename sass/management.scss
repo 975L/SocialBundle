@@ -391,11 +391,17 @@ $quarter: 1.25rem;
         }
     }
 
+    // UiBundle's link around a picture filling the square as the picture does
+    .image-zoom__link {
+        height: 100%;
+    }
+
     img,
     video {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        cursor: zoom-in;
     }
 
     button {
@@ -435,6 +441,43 @@ $quarter: 1.25rem;
     max-width: 100%;
     max-height: 16rem;
     border-radius: 4px;
+}
+
+// The play sign over a video of the panel, letting the click through to it
+.social-calendar-panel-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.5rem;
+    text-shadow: 0 0 4px rgb(0 0 0 / 80%);
+    pointer-events: none;
+}
+
+// The sign of a video on a card of the calendar
+.social-calendar-card-video {
+    margin-right: .25rem;
+}
+
+// A video of the panel at its own size, over the page and its backdrop - its pictures being UiBundle's lightbox
+.social-calendar-zoom {
+    max-width: 95vw;
+    max-height: 95vh;
+    padding: 0;
+    border: 0;
+    background: transparent;
+
+    &::backdrop {
+        background: rgb(0 0 0 / 80%);
+    }
+
+    video {
+        display: block;
+        max-width: 95vw;
+        max-height: 95vh;
+    }
 }
 
 .social-calendar-panel-body {

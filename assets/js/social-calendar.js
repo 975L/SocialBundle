@@ -11,7 +11,7 @@ import { addSortGesture } from "@c975l/ui-bundle/pointer-sort.js";
 
 // The publications calendar (see management/social_calendar.html.twig): a card dragged onto a quarter of an hour of the week is planned at that moment, onto a day of the month at its own time that day, its approval untouched; a coming moment double-clicked writes a new post there. The gesture is UiBundle's (pointer-sort.js), this controller owning only where a card lands, saved on the spot then the page reloaded, the server computing where every other post falls
 export default class extends Controller {
-    static targets = ["item", "zone", "panel", "planAt", "group", "media", "thumbnail", "badges", "drop"];
+    static targets = ["item", "zone", "panel", "planAt", "group", "media", "thumbnail", "badges", "drop", "zoom"];
     static values = { url: String, token: String, panelUrl: String, mediasUrl: String, uploadUrl: String, textsUrl: String, networksUrl: String, duplicateUrl: String, openId: Number, newUrl: String, failedLabel: String, textsFailedLabel: String };
 
     // A copy just made opens its panel with the page, its id then taken off the address so a reload does not open it again
@@ -113,6 +113,8 @@ export default class extends Controller {
     // Closed by its button or Escape, the calendar taking its whole width back - an Escape typed in a field only closing what the browser opened there, so its unsaved text stays
     closePanel(event) {
         if (event?.type === "keydown" && event.target.closest?.("input, textarea, select")) return;
+        // The escape key closes the picture or the video shown over the panel first, the dialog doing it on its own - UiBundle's for a picture, this controller's for a video
+        if (event?.type === "keydown" && this.element.querySelector("dialog[open]")) return;
         this.panelTarget.hidden = true;
         this.panelTarget.innerHTML = "";
         this.element.classList.remove("social-calendar-has-panel");
@@ -152,6 +154,31 @@ export default class extends Controller {
             },
             onCancel: () => media.parentElement.append(...this.mediaItems),
         });
+
+        // The link UiBundle wraps a picture in is natively draggable, and a native drag would cancel the gesture
+        media.addEventListener("dragstart", (event) => event.preventDefault());
+    }
+
+    // A video of the panel played over the page with its sound and controls, from its start - the panel's own showing a moment in. Its pictures are UiBundle's lightbox (see _social_calendar_panel.html.twig)
+    zoom(event) {
+        event.preventDefault();
+        const shown = document.createElement("video");
+        shown.src = (event.currentTarget.currentSrc || event.currentTarget.src).split("#")[0];
+        shown.controls = true;
+        shown.autoplay = true;
+        this.zoomTarget.replaceChildren(shown);
+        this.zoomTarget.showModal();
+    }
+
+    // A click beside the video closes; a click on it is left to its controls
+    closeZoom(event) {
+        if ("VIDEO" === event.target.tagName) return;
+        this.zoomTarget.close();
+    }
+
+    // Emptied once closed, however it was, so a video stops playing
+    clearZoom() {
+        this.zoomTarget.replaceChildren();
     }
 
     // The ids of the panel's medias, in the order they now stand

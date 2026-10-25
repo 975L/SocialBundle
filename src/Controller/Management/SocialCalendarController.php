@@ -655,6 +655,7 @@ class SocialCalendarController extends AbstractController
             'id' => $post->getId(),
             'title' => $post->getTitle(),
             'image' => $post->getThumbnailUrl(),
+            'video' => $post->hasVideo(),
             // The networks it still goes out on
             'networks' => $post->getTargets()->filter(static fn (SocialPostTarget $target): bool => $target->isPending())->map(static fn (SocialPostTarget $target): string => $target->getNetwork())->getValues(),
             'planned_at' => $post->getPlannedAt(),

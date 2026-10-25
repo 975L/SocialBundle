@@ -100,7 +100,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série, réordonne ou retire ses médias, en ajoute depuis le site ou en y déposant des fichiers, change son contenu, ou la duplique au lendemain.</target>
+                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série, réordonne ou retire ses médias, les agrandit ou lit ses vidéos d'un clic, en ajoute depuis le site ou en y déposant des fichiers, change son contenu, ou la duplique au lendemain.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -1134,6 +1134,14 @@
                 <source>label.social_calendar_feed_renew</source>
                 <target>Renouveler l'adresse</target>
             </trans-unit>
+            <trans-unit id="9jS6kqH">
+                <source>label.social_calendar_has_video</source>
+                <target>Une vidéo l'accompagne</target>
+            </trans-unit>
+            <trans-unit id="GP4H_YZ">
+                <source>label.social_calendar_media_play</source>
+                <target>Lire la vidéo</target>
+            </trans-unit>
             <trans-unit id="ok5Kn2u">
                 <source>label.social_calendar_media_remove</source>
                 <target>Retirer ce média</target>
@@ -1141,6 +1149,10 @@
             <trans-unit id="8DF.bv2">
                 <source>label.social_calendar_media_remove_confirm</source>
                 <target>Retirer ce média de la publication ?</target>
+            </trans-unit>
+            <trans-unit id="I.gKrUL">
+                <source>label.social_calendar_media_zoom</source>
+                <target>Voir en grand</target>
             </trans-unit>
             <trans-unit id="quz2fN2">
                 <source>label.social_calendar_month</source>

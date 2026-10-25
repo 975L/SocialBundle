@@ -490,11 +490,15 @@
 .social-calendar-panel-medias li.ui-dragging {
   opacity: 0.5;
 }
+.social-calendar-panel-medias .image-zoom__link {
+  height: 100%;
+}
 .social-calendar-panel-medias img,
 .social-calendar-panel-medias video {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  cursor: zoom-in;
 }
 .social-calendar-panel-medias button {
   position: absolute;
@@ -527,6 +531,38 @@
   max-width: 100%;
   max-height: 16rem;
   border-radius: 4px;
+}
+
+.social-calendar-panel-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.5rem;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+.social-calendar-card-video {
+  margin-right: 0.25rem;
+}
+
+.social-calendar-zoom {
+  max-width: 95vw;
+  max-height: 95vh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.social-calendar-zoom::backdrop {
+  background: rgba(0, 0, 0, 0.8);
+}
+.social-calendar-zoom video {
+  display: block;
+  max-width: 95vw;
+  max-height: 95vh;
 }
 
 .social-calendar-panel-body {

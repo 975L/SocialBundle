@@ -346,6 +346,12 @@ class SocialPost implements \Stringable
         return $this->imageUrl;
     }
 
+    // Whether a video goes out with it, which no thumbnail shows
+    public function hasVideo(): bool
+    {
+        return $this->medias->exists(static fn (int $key, SocialMedia $media): bool => $media->isVideo());
+    }
+
     /** @return Collection<int, SocialMedia> */
     public function getMedias(): Collection
     {

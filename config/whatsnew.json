@@ -3,6 +3,11 @@
         "date": "2026-10-25",
         "description": [
             {
+                "en": "A post's pictures now open larger and its videos play right in the calendar's panel, and a card shows when a video goes with the post",
+                "fr": "Les images d'une publication s'agrandissent maintenant et ses vidéos se lisent directement dans le panneau du calendrier, et une carte signale quand une vidéo l'accompagne",
+                "es": "Las imágenes de una publicación se amplían ahora y sus vídeos se reproducen directamente en el panel del calendario, y una tarjeta indica cuando la acompaña un vídeo"
+            },
+            {
                 "en": "Each network's text of a post can now be corrected right in the calendar's panel",
                 "fr": "Le texte de chaque réseau se corrige maintenant directement dans le panneau du calendrier",
                 "es": "El texto de cada red se corrige ahora directamente en el panel del calendario"

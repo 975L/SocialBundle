@@ -58,11 +58,12 @@ class TemplateTestKernel extends Kernel
     protected function configureContainer(ContainerConfigurator $container): void
     {
         $easyAdmin = \dirname(__DIR__, 2) . '/vendor/easycorp/easyadmin-bundle/templates';
+        $ui = \dirname(__DIR__, 2) . '/vendor/c975l/core-bundle/UiBundle/templates';
 
         $container->extension('framework', ['test' => true, 'secret' => 'test', 'http_method_override' => false, 'router' => ['enabled' => false], 'assets' => ['enabled' => false], 'csrf_protection' => false, 'translator' => ['enabled' => false]]);
         $container->extension('twig', [
             'strict_variables' => true,
-            'paths' => [\dirname(__DIR__, 2) . '/templates' => 'c975LSocial', $easyAdmin => 'EasyAdmin'],
+            'paths' => [\dirname(__DIR__, 2) . '/templates' => 'c975LSocial', $easyAdmin => 'EasyAdmin', $ui => 'c975LUi'],
         ]);
         $container->extension('twig_component', [
             'anonymous_template_directory' => 'components/',

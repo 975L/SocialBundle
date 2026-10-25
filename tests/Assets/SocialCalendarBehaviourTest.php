@@ -258,6 +258,43 @@ class SocialCalendarBehaviourTest extends JsCase
         $this->assertSame('post=7&remove=2', $sent['body'], 'The media taken off is not the one whose button was clicked.');
     }
 
+    // A video of the panel clicked plays over the page from its start, with its controls, and a click beside it closes it and empties it
+    public function testAVideoOfThePanelPlaysFromItsStartAndCloses(): void
+    {
+        $zoom = $this->calendar(
+            'item("draft").click(); await frame(); await frame();
+             item("playable").click(); await frame();
+             const shown = item("zoom").querySelector("video");
+             const opened = { open: item("zoom").open, controls: shown?.controls, autoplay: shown?.autoplay, src: shown && new URL(shown.src).pathname + new URL(shown.src).hash };
+             item("zoom").click(); await frame();
+
+             return { ...opened, closed: !item("zoom").open, left: item("zoom").children.length, panel: !item("panel").hidden };'
+        );
+
+        $this->assertSame(['open' => true, 'controls' => true, 'autoplay' => true, 'src' => '/v.mp4'], array_intersect_key($zoom, array_flip(['open', 'controls', 'autoplay', 'src'])), 'The video clicked did not play over the page from its start, with its controls.');
+        $this->assertTrue($zoom['closed'], 'A click beside the video did not close it.');
+        $this->assertSame(0, $zoom['left'], 'The video closed was left in the page, still playing.');
+        $this->assertTrue($zoom['panel'], 'Closing the video closed the panel too.');
+    }
+
+    // Escape over a video or a picture of the panel closes that alone, the panel and its unsaved texts kept
+    public function testEscapeOnTheZoomKeepsThePanel(): void
+    {
+        $kept = $this->calendar(
+            'item("draft").click(); await frame(); await frame();
+             item("playable").click(); await frame();
+             window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+             const video = !item("panel").hidden;
+             item("zoom").close(); await frame();
+             item("picture").showModal();
+             window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+
+             return { video, picture: !item("panel").hidden };'
+        );
+
+        $this->assertSame(['video' => true, 'picture' => true], $kept, 'Escape over a video or a picture of the panel closed the panel too.');
+    }
+
     // The networks ticked are sent with the post, the button held meanwhile, and the card takes the badges the panel answers with
     public function testTheNetworksTickedAreSavedAndTheCardTakesTheirBadges(): void
     {
@@ -383,7 +420,7 @@ class SocialCalendarBehaviourTest extends JsCase
                         if (!options) {
                             window.__panel = String(url);
 
-                            return Promise.resolve({ ok: true, text: () => Promise.resolve(\'<input type="datetime-local" data-social-calendar-target="planAt" value="2026-10-05T14:20"><button data-name="plan" data-action="social-calendar#plan" data-post-id="7">Plan</button><button data-name="approve" data-action="social-calendar#place" data-post-id="7" data-to="approve">Approve</button><button data-name="unapprove" data-action="social-calendar#place" data-post-id="7" data-to="unapprove">Unapprove</button><button data-name="close" data-action="social-calendar#closePanel">Close</button><form data-name="networks" data-action="social-calendar#saveNetworks" data-post-id="7"><input type="checkbox" name="networks[]" value="bluesky" checked><input type="checkbox" name="networks[]" value="linkedin" checked><button data-name="save-networks" type="submit">Save</button></form><button data-name="duplicate" data-action="social-calendar#duplicate" data-post-id="7">Duplicate</button><ul class="medias"><li data-name="m1" data-social-calendar-target="media" data-post-id="7" data-media-id="1"></li><li data-name="m2" data-social-calendar-target="media" data-post-id="7" data-media-id="2"></li><li data-name="m3" data-social-calendar-target="media" data-post-id="7" data-media-id="3"></li></ul><button data-name="remove" data-action="social-calendar#removeMedia" data-post-id="7" data-media-id="2" data-confirm="Retirer ?">Remove</button><label data-name="drop" data-social-calendar-target="drop" data-post-id="7" data-uploading="Envoi"><input type="file" multiple data-action="social-calendar#pickFiles"><span class="social-calendar-panel-drop-label">Déposez</span></label>\') });
+                            return Promise.resolve({ ok: true, text: () => Promise.resolve(\'<input type="datetime-local" data-social-calendar-target="planAt" value="2026-10-05T14:20"><button data-name="plan" data-action="social-calendar#plan" data-post-id="7">Plan</button><button data-name="approve" data-action="social-calendar#place" data-post-id="7" data-to="approve">Approve</button><button data-name="unapprove" data-action="social-calendar#place" data-post-id="7" data-to="unapprove">Unapprove</button><button data-name="close" data-action="social-calendar#closePanel">Close</button><form data-name="networks" data-action="social-calendar#saveNetworks" data-post-id="7"><input type="checkbox" name="networks[]" value="bluesky" checked><input type="checkbox" name="networks[]" value="linkedin" checked><button data-name="save-networks" type="submit">Save</button></form><button data-name="duplicate" data-action="social-calendar#duplicate" data-post-id="7">Duplicate</button><ul class="medias"><li data-name="m1" data-social-calendar-target="media" data-post-id="7" data-media-id="1"></li><li data-name="m2" data-social-calendar-target="media" data-post-id="7" data-media-id="2"></li><li data-name="m3" data-social-calendar-target="media" data-post-id="7" data-media-id="3"></li></ul><button data-name="remove" data-action="social-calendar#removeMedia" data-post-id="7" data-media-id="2" data-confirm="Retirer ?">Remove</button><video data-name="playable" src="/v.mp4#t=1" data-action="click->social-calendar#zoom"></video><dialog data-name="picture"></dialog><label data-name="drop" data-social-calendar-target="drop" data-post-id="7" data-uploading="Envoi"><input type="file" multiple data-action="social-calendar#pickFiles"><span class="social-calendar-panel-drop-label">Déposez</span></label>\') });
                         }
                         window.__saves += 1;
                         window.__sent = { url, body: String(options.body), token: options.headers["X-CSRF-Token"] };
@@ -412,6 +449,7 @@ class SocialCalendarBehaviourTest extends JsCase
                     </div>
                 </div>
                 <aside data-name="panel" data-social-calendar-target="panel" hidden></aside>
+                <dialog data-name="zoom" data-social-calendar-target="zoom" data-action="click->social-calendar#closeZoom close->social-calendar#clearZoom"></dialog>
             </div>';
     }
 }

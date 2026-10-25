@@ -186,4 +186,15 @@ class SocialPostTest extends TestCase
         $this->assertSame([$medias['c'], $medias['a']], $post->getMedias()->getValues());
         $this->assertSame('/social/c.jpg', $post->getThumbnailUrl());
     }
+
+    // A video among its medias, which no thumbnail shows
+    public function testAPostKnowsAVideoGoesWithIt(): void
+    {
+        $post = new SocialPost(SocialPost::SOURCE_MANUAL, 'abc', '', '', null, new \DateTimeImmutable());
+        $post->addMedia(SocialMedia::reference($post, 'medias/social/a.jpg', 'image/jpeg'));
+        $this->assertFalse($post->hasVideo());
+
+        $post->addMedia(SocialMedia::reference($post, 'medias/social/a.mp4', 'video/mp4'));
+        $this->assertTrue($post->hasVideo());
+    }
 }

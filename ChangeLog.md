@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.18.2
+
+Calendar panel enlarges pictures and plays videos
+
+- Calendar panel: pictures opened in UiBundle's lightbox (25/10/2026)
+- Calendar panel: videos played over the page, from the keyboard too (25/10/2026)
+- Calendar panel: Escape over a zoom keeps the panel open (25/10/2026)
+- Calendar: a film glyph on a card a video goes with (25/10/2026)
+- Added `SocialPost::hasVideo()` (25/10/2026)
+- Guided projects: panel step mentions the zoom (25/10/2026)
+- Requires `c975l/core-bundle` ^1.79.2 (25/10/2026)
+
 ## v2.18.1
 
 Calendar panel actions share their checks and request

@@ -100,7 +100,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once, reorders or removes its medias, adds some from the site or by dropping files on it, changes its content, or duplicates it to the next day.</target>
+                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once, reorders or removes its medias, enlarges them or plays its videos with a click, adds some from the site or by dropping files on it, changes its content, or duplicates it to the next day.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -1134,6 +1134,14 @@
                 <source>label.social_calendar_feed_renew</source>
                 <target>Renew the address</target>
             </trans-unit>
+            <trans-unit id="9jS6kqH">
+                <source>label.social_calendar_has_video</source>
+                <target>A video goes with it</target>
+            </trans-unit>
+            <trans-unit id="GP4H_YZ">
+                <source>label.social_calendar_media_play</source>
+                <target>Play the video</target>
+            </trans-unit>
             <trans-unit id="ok5Kn2u">
                 <source>label.social_calendar_media_remove</source>
                 <target>Remove this media</target>
@@ -1141,6 +1149,10 @@
             <trans-unit id="8DF.bv2">
                 <source>label.social_calendar_media_remove_confirm</source>
                 <target>Remove this media from the post?</target>
+            </trans-unit>
+            <trans-unit id="I.gKrUL">
+                <source>label.social_calendar_media_zoom</source>
+                <target>See it larger</target>
             </trans-unit>
             <trans-unit id="quz2fN2">
                 <source>label.social_calendar_month</source>
