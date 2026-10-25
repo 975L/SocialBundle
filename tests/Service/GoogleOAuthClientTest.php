@@ -84,7 +84,7 @@ class GoogleOAuthClientTest extends TestCase
 
         $token = $this->createClient($httpClient)->exchangeCode('auth-code', 'https://example.org/callback');
 
-        $this->assertSame('stored-token', $token);
+        $this->assertSame(['refreshToken' => 'stored-token', 'accessToken' => 'short-lived'], $token);
     }
 
     // An authorization granted without offline access answers with an access token alone, which would leave the site connected for an hour and then silently stop

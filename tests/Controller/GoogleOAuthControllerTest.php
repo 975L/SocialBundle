@@ -122,7 +122,7 @@ class GoogleOAuthControllerTest extends TestCase
     public function testCallbackStoresTheRefreshTokenThenTheResolvedListing(): void
     {
         $googleOAuthClient = $this->createStub(GoogleOAuthClient::class);
-        $googleOAuthClient->method('exchangeCode')->willReturn('refresh-token');
+        $googleOAuthClient->method('exchangeCode')->willReturn(['refreshToken' => 'refresh-token', 'accessToken' => 'access-token']);
 
         $resolver = $this->createStub(GoogleBusinessLocationResolver::class);
         $resolver->method('resolveFirst')->willReturn(['accountId' => '123', 'locationId' => '456']);
@@ -189,7 +189,7 @@ class GoogleOAuthControllerTest extends TestCase
     public function testCallbackReportsAFailureToResolveTheListing(): void
     {
         $googleOAuthClient = $this->createStub(GoogleOAuthClient::class);
-        $googleOAuthClient->method('exchangeCode')->willReturn('refresh-token');
+        $googleOAuthClient->method('exchangeCode')->willReturn(['refreshToken' => 'refresh-token', 'accessToken' => 'access-token']);
 
         $resolver = $this->createStub(GoogleBusinessLocationResolver::class);
         $resolver->method('resolveFirst')->willThrowException(new \RuntimeException('The connected Google account manages no Business Profile account.'));
@@ -224,7 +224,7 @@ class GoogleOAuthControllerTest extends TestCase
     public function testCallbackClearsTheTokenWhenTheListingCannotBeResolved(): void
     {
         $googleOAuthClient = $this->createStub(GoogleOAuthClient::class);
-        $googleOAuthClient->method('exchangeCode')->willReturn('refresh-token');
+        $googleOAuthClient->method('exchangeCode')->willReturn(['refreshToken' => 'refresh-token', 'accessToken' => 'access-token']);
 
         $resolver = $this->createStub(GoogleBusinessLocationResolver::class);
         $resolver->method('resolveFirst')->willThrowException(new \RuntimeException('The connected Google account manages no Business Profile account.'));

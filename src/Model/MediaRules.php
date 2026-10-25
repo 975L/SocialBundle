@@ -14,12 +14,13 @@ namespace c975L\SocialBundle\Model;
 final class MediaRules
 {
     /**
-     * @param int          $maxImages  the pictures one post carries at most, 0 for none
-     * @param bool         $video      whether a post may carry a video, one at most
-     * @param bool         $mix        whether pictures and a video go together in one post
-     * @param bool         $required   whether a post goes out with no media at all
-     * @param list<string> $imageTypes the picture types it takes, as uploaded or as sent
-     * @param list<string> $videoTypes the video types it takes
+     * @param int          $maxImages     the pictures one post carries at most, 0 for none
+     * @param bool         $video         whether a post may carry a video, one at most
+     * @param bool         $mix           whether pictures and a video go together in one post
+     * @param bool         $required      whether a post goes out with no media at all
+     * @param list<string> $imageTypes    the picture types it takes, as uploaded or as sent
+     * @param list<string> $videoTypes    the video types it takes
+     * @param bool         $videoRequired whether a post goes out only with a video, the content's picture being no stand-in (YouTube)
      */
     public function __construct(
         public readonly int $maxImages,
@@ -34,6 +35,7 @@ final class MediaRules
         public readonly ?int $maxVideoBytes = null,
         public readonly ?float $minDuration = null,
         public readonly ?float $maxDuration = null,
+        public readonly bool $videoRequired = false,
     ) {
     }
 }

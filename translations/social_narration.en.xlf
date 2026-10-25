@@ -230,6 +230,18 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>Below, pick the shape: wide, square or round button. That is the room the buttons will take under your pages.</target>
             </trans-unit>
+            <trans-unit id="ogVgOWn">
+                <source>narration.guided_step_social_youtube_connect</source>
+                <target>Click "Connect" on the "YouTube" tile, pick the channel's account, then allow access. Then check the channel's name on the tile.</target>
+            </trans-unit>
+            <trans-unit id="BWdu1UR">
+                <source>narration.guided_step_social_youtube_credentials</source>
+                <target>Unless already done, paste the Google client's id and secret, then tick the made-for-kids setting if the channel is a children's one.</target>
+            </trans-unit>
+            <trans-unit id="AEuNUQ3">
+                <source>narration.guided_step_social_youtube_prerequisites</source>
+                <target>This first part happens in the Google Cloud console: enable the YouTube API in the Google client's project, set the consent screen in production, and declare the site's return address.</target>
+            </trans-unit>
             <trans-unit id="._Fe6M5">
                 <source>narration.share_buttons_settings</source>
                 <target>"Share buttons" sets the buttons placed under your pages: which networks, in which order and what they look like.</target>

@@ -122,6 +122,22 @@
                 <source>description.social_series_ending_days</source>
                 <target>Nombre de jours avant la dernière publication d'une série où un e-mail est envoyé à « email-to » pour la prolonger. 0 n'envoie rien.</target>
             </trans-unit>
+            <trans-unit id="..3_lm_">
+                <source>description.social_youtube_channel_id</source>
+                <target>Renseigné par la connexion : la chaîne sur laquelle les vidéos partent.</target>
+            </trans-unit>
+            <trans-unit id="8rXof4B">
+                <source>description.social_youtube_channel_title</source>
+                <target>Renseigné par la connexion : le nom affiché sur la tuile YouTube.</target>
+            </trans-unit>
+            <trans-unit id="ZmDlFm6">
+                <source>description.social_youtube_made_for_kids</source>
+                <target>Coché, chaque vidéo envoyée sur YouTube est déclarée « conçue pour les enfants », ce que YouTube exige d'une chaîne jeunesse. YouTube y coupe alors les commentaires et les notifications.</target>
+            </trans-unit>
+            <trans-unit id=".bHuPqM">
+                <source>description.social_youtube_oauth_refresh_token</source>
+                <target>Renseigné par « Connecter » sur la tuile YouTube de « Connexions ».</target>
+            </trans-unit>
             <trans-unit id="cqh6P23">
                 <source>label.social_ai_guidelines</source>
                 <target>Ton des publications (IA)</target>
@@ -241,6 +257,22 @@
             <trans-unit id="icVmnRG">
                 <source>label.social_series_ending_days</source>
                 <target>Fin d'une série : prévenir (jours avant)</target>
+            </trans-unit>
+            <trans-unit id="xz.l018">
+                <source>label.social_youtube_channel_id</source>
+                <target>Identifiant de la chaîne YouTube</target>
+            </trans-unit>
+            <trans-unit id="9oAMtMh">
+                <source>label.social_youtube_channel_title</source>
+                <target>Nom de la chaîne YouTube</target>
+            </trans-unit>
+            <trans-unit id="hQ4tTEu">
+                <source>label.social_youtube_made_for_kids</source>
+                <target>Vidéos YouTube conçues pour les enfants</target>
+            </trans-unit>
+            <trans-unit id="RLCbNst">
+                <source>label.social_youtube_oauth_refresh_token</source>
+                <target>Jeton YouTube</target>
             </trans-unit>
         </body>
     </file>

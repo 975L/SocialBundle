@@ -122,6 +122,22 @@
                 <source>description.social_series_ending_days</source>
                 <target>Días antes de la última publicación de una serie en que se envía un correo a «email-to» para prolongarla. 0 no envía nada.</target>
             </trans-unit>
+            <trans-unit id="..3_lm_">
+                <source>description.social_youtube_channel_id</source>
+                <target>Lo rellena la conexión: el canal en el que se publican los vídeos.</target>
+            </trans-unit>
+            <trans-unit id="8rXof4B">
+                <source>description.social_youtube_channel_title</source>
+                <target>Lo rellena la conexión: el nombre que muestra la ficha YouTube.</target>
+            </trans-unit>
+            <trans-unit id="ZmDlFm6">
+                <source>description.social_youtube_made_for_kids</source>
+                <target>Marcado, cada vídeo enviado a YouTube se declara «creado para niños», como YouTube exige a un canal infantil. YouTube desactiva entonces los comentarios y las notificaciones.</target>
+            </trans-unit>
+            <trans-unit id=".bHuPqM">
+                <source>description.social_youtube_oauth_refresh_token</source>
+                <target>Lo rellena «Conectar» en la ficha YouTube de «Conexiones».</target>
+            </trans-unit>
             <trans-unit id="cqh6P23">
                 <source>label.social_ai_guidelines</source>
                 <target>Tono de las publicaciones (IA)</target>
@@ -241,6 +257,22 @@
             <trans-unit id="icVmnRG">
                 <source>label.social_series_ending_days</source>
                 <target>Fin de una serie: avisar (días antes)</target>
+            </trans-unit>
+            <trans-unit id="xz.l018">
+                <source>label.social_youtube_channel_id</source>
+                <target>Identificador del canal de YouTube</target>
+            </trans-unit>
+            <trans-unit id="9oAMtMh">
+                <source>label.social_youtube_channel_title</source>
+                <target>Nombre del canal de YouTube</target>
+            </trans-unit>
+            <trans-unit id="hQ4tTEu">
+                <source>label.social_youtube_made_for_kids</source>
+                <target>Vídeos de YouTube creados para niños</target>
+            </trans-unit>
+            <trans-unit id="RLCbNst">
+                <source>label.social_youtube_oauth_refresh_token</source>
+                <target>Token de YouTube</target>
             </trans-unit>
         </body>
     </file>

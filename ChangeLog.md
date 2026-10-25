@@ -1,5 +1,24 @@
 # Changelog
 
+## v2.17.0
+
+YouTube channel joins the networks, Facebook posts Reels
+
+- YouTube: videos uploaded on the connected channel, a vertical one under three minutes becoming a Short (25/10/2026)
+- YouTube: connection from its tile of "Connexions", the channel's name linked (25/10/2026)
+- Added configs `social-youtube-oauth-refresh-token`, `social-youtube-channel-id`, `social-youtube-channel-title` and `social-youtube-made-for-kids` (25/10/2026)
+- YouTube: the text's first line is the title, the rest the description, cut in bytes (25/10/2026)
+- YouTube: `YoutubeHealthCheckProvider` reports a refused refresh token (25/10/2026)
+- YouTube: left out of drafts prepared from a content and of new posts (25/10/2026)
+- Media rules: `videoRequired`, a post without a video refused alone (25/10/2026)
+- Facebook: a vertical video of 3 to 90 s goes out as a Reel (25/10/2026)
+- Facebook: a Reel answered without success stays in error (25/10/2026)
+- `GoogleOAuthClient` takes the scope and the refresh token slug (25/10/2026)
+- `GoogleOAuthClient::exchangeCode()` returns both tokens (25/10/2026) [BC-Break]
+- `MetaGraphClient::VERSION` holds the Graph version (25/10/2026)
+- AI writer: YouTube style, title line then description (25/10/2026)
+- Guided project: "Connecter YouTube" (25/10/2026)
+
 ## v2.16.0
 
 Calendar panel corrects each network's text in place

@@ -236,11 +236,11 @@ class SocialPublisher
         }
     }
 
-    // A post written on its screen, planned at $at and ticked on every network connected - one empty text each, written from the post's text once it is saved (see rewriteTargets())
+    // A post written on its screen, planned at $at and ticked on every network connected but those of videos alone, ticked once a video is added - one empty text each, written from the post's text once it is saved (see rewriteTargets())
     public function createManual(\DateTimeImmutable $at): SocialPost
     {
         $post = new SocialPost(SocialPost::SOURCE_MANUAL, bin2hex(random_bytes(8)), '', '', null, $at);
-        foreach ($this->getConnectedNetworkNames() as $network) {
+        foreach (array_keys($this->withoutVideoOnly($this->networksByName())) as $network) {
             new SocialPostTarget($post, $network, '');
         }
 
@@ -391,8 +391,8 @@ class SocialPublisher
         $post = new SocialPost($sourceType, $content->sourceId, $content->title, $content->url, $content->imageUrl, $plannedAt);
         $this->prepared = null;
 
-        // Every network on a dry run, the configured ones only otherwise: the dry run is what is read before any credential is plugged in
-        $targets = $dryRun ? $this->allNetworks() : $this->networksByName();
+        // Every network on a dry run, the configured ones only otherwise: the dry run is what is read before any credential is plugged in. A content brings no video, so a network of videos alone is left out
+        $targets = $dryRun ? $this->allNetworks() : $this->withoutVideoOnly($this->networksByName());
         // Written by the site's AI in one call where it has one, the template writing whatever it left out - never on a dry run, which costs nothing and shows the template's text
         $written = $dryRun ? [] : $this->writer->write($content, array_map(static fn (NetworkPublisherInterface $network): int => $network->getMaxLength(), $targets));
 
@@ -568,6 +568,17 @@ class SocialPublisher
     private function networksByName(): array
     {
         return array_filter($this->allNetworks(), static fn (NetworkPublisherInterface $network): bool => $network->isConfigured());
+    }
+
+    // The networks a post may go to without a video of its own
+    /**
+     * @param array<string, NetworkPublisherInterface> $networks
+     *
+     * @return array<string, NetworkPublisherInterface>
+     */
+    private function withoutVideoOnly(array $networks): array
+    {
+        return array_filter($networks, static fn (NetworkPublisherInterface $network): bool => !$network->getMediaRules()->videoRequired);
     }
 
     /**

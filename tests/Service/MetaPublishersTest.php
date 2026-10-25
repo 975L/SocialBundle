@@ -173,6 +173,41 @@ class MetaPublishersTest extends TestCase
         $this->assertSame(['file_url' => 'https://example.org/medias/v.mp4', 'description' => 'Texte', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
     }
 
+    // A vertical video of 90 s at most goes out as a reel, in Meta's three phases: started, handed over by its address, published with its text
+    public function testFacebookPostsAVerticalShortVideoAsAReel(): void
+    {
+        $graph = $this->graph([['video_id' => 'r1', 'upload_url' => 'https://rupload.example/r1'], ['success' => true, 'post_id' => '55_r1']]);
+        $reel = new PostMedia('/var/medias/r.mp4', 'https://example.org/medias/r.mp4', 'video/mp4', width: 1080, height: 1920, duration: 25.0);
+
+        $id = new FacebookPublisher($graph, $this->exporter(null), $this->config())->publish('Texte', $this->content(), [$reel]);
+
+        $this->assertSame('55_r1', $id);
+        $this->assertSame(['/55/video_reels', '/55/video_reels'], array_column($this->calls, 'path'));
+        $this->assertSame(['upload_phase' => 'start', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
+        $this->assertSame(['upload_phase' => 'finish', 'video_id' => 'r1', 'video_state' => 'PUBLISHED', 'description' => 'Texte', 'access_token' => 'page-token'], $this->calls[1]['parameters']);
+    }
+
+    // A finish answered without success is no published reel
+    public function testFacebookSaysWhenTheReelWasNotPublished(): void
+    {
+        $this->expectExceptionMessageIsOrContains('Meta did not publish the reel');
+
+        $reel = new PostMedia('/var/medias/r.mp4', 'https://example.org/medias/r.mp4', 'video/mp4', width: 1080, height: 1920, duration: 25.0);
+        new FacebookPublisher($this->graph([['video_id' => 'r1', 'upload_url' => 'https://rupload.example/r1'], ['success' => false]]), $this->exporter(null), $this->config())->publish('Texte', $this->content(), [$reel]);
+    }
+
+    // A landscape video, a long one, or one never measured stays a plain Page video
+    public function testFacebookKeepsOtherVideosAsPlainVideos(): void
+    {
+        $publisher = new FacebookPublisher($this->graph([]), $this->exporter(null), $this->config());
+        $landscape = new PostMedia('/v.mp4', 'https://example.org/v.mp4', 'video/mp4', width: 1920, height: 1080, duration: 25.0);
+        $long = new PostMedia('/v.mp4', 'https://example.org/v.mp4', 'video/mp4', width: 1080, height: 1920, duration: 120.0);
+
+        foreach ([$landscape, $long, $this->video()] as $video) {
+            $this->assertSame('/55/videos', $publisher->preview('Texte', $this->content(), [$video])['path']);
+        }
+    }
+
     // The post's own picture is framed within Instagram's ratios, as the content's image is
     public function testInstagramFramesTheOwnPicture(): void
     {

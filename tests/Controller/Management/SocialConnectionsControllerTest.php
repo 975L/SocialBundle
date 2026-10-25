@@ -16,6 +16,7 @@ use c975L\SocialBundle\Service\BlueskyOAuthClient;
 use c975L\SocialBundle\Service\GoogleOAuthClient;
 use c975L\SocialBundle\Service\LinkedInClient;
 use c975L\SocialBundle\Service\MetaGraphClient;
+use c975L\SocialBundle\Service\YoutubeClient;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,6 +39,8 @@ class SocialConnectionsControllerTest extends TestCase
             'social-bluesky-handle' => ' me.bsky.social ',
             'social-meta-page-id' => '123',
             'social-meta-instagram-id' => '',
+            'social-youtube-channel-id' => 'UC123',
+            'social-youtube-channel-title' => 'Papa Câlin',
         ];
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $key) => $configs[$key] ?? null);
@@ -52,6 +55,9 @@ class SocialConnectionsControllerTest extends TestCase
         $linkedIn->method('isConnected')->willReturn(true);
         $expiresAt = new \DateTimeImmutable('+30 days');
         $linkedIn->method('expiresAt')->willReturn($expiresAt);
+        $youtube = $this->createStub(YoutubeClient::class);
+        $youtube->method('isConfigured')->willReturn(true);
+        $youtube->method('isConnected')->willReturn(true);
 
         $twig = $this->createStub(Environment::class);
         $twig->method('render')->willReturnCallback(function (string $view, array $parameters): string {
@@ -66,7 +72,7 @@ class SocialConnectionsControllerTest extends TestCase
         $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
         $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
 
-        $controller = new SocialConnectionsController($configService, $bluesky, $meta, $google, $linkedIn);
+        $controller = new SocialConnectionsController($configService, $bluesky, $meta, $google, $linkedIn, $youtube);
         $controller->setContainer($container);
         $controller->index(Request::create('https://' . $host . '/management/social-connections'));
 
@@ -88,8 +94,8 @@ class SocialConnectionsControllerTest extends TestCase
     {
         $networks = $this->networks($this->bluesky());
 
-        $this->assertSame(['bluesky', 'meta', 'linkedin', 'google'], array_keys($networks));
-        $this->assertSame(['social_bluesky_oauth_connect', 'social_meta_oauth_connect', 'social_linkedin_oauth_connect', 'social_google_oauth_connect'], array_column($networks, 'route'));
+        $this->assertSame(['bluesky', 'meta', 'linkedin', 'youtube', 'google'], array_keys($networks));
+        $this->assertSame(['social_bluesky_oauth_connect', 'social_meta_oauth_connect', 'social_linkedin_oauth_connect', 'social_youtube_oauth_connect', 'social_google_oauth_connect'], array_column($networks, 'route'));
         $this->assertSame([['icon' => 'fab fa-bluesky', 'name' => 'me.bsky.social', 'url' => 'https://bsky.app/profile/me.bsky.social']], $networks['bluesky']['accounts']);
         $this->assertSame([['icon' => 'fab fa-facebook', 'name' => '123', 'url' => 'https://www.facebook.com/123']], $networks['meta']['accounts']);
         $this->assertTrue($networks['meta']['configured']);
@@ -99,6 +105,15 @@ class SocialConnectionsControllerTest extends TestCase
         $this->assertInstanceOf(\DateTimeImmutable::class, $networks['linkedin']['expires_at']);
         $this->assertFalse($networks['google']['configured']);
         $this->assertSame([], $networks['google']['accounts']);
+    }
+
+    // The channel under its title, linked, so the owner sees which of their channels consented
+    public function testTheYoutubeTileLinksTheChannel(): void
+    {
+        $networks = $this->networks($this->bluesky());
+
+        $this->assertTrue($networks['youtube']['connected']);
+        $this->assertSame([['icon' => 'fab fa-youtube', 'name' => 'Papa Câlin', 'url' => 'https://www.youtube.com/channel/UC123']], $networks['youtube']['accounts']);
     }
 
     // The Page under its name and the Instagram account under its username, each linked - one connected before their names were stored left unnamed and unlinked

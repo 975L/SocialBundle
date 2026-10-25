@@ -28,6 +28,7 @@ class SocialMediaCheckerTest extends TestCase
         $publisher->method('getMediaRules')->willReturnCallback(static fn (string $network): ?MediaRules => match ($network) {
             'bluesky' => new MediaRules(maxImages: 4, video: true, maxImageBytes: 2000000, maxVideoBytes: 300000000, maxDuration: 600.0),
             'instagram' => new MediaRules(maxImages: 10, video: true, mix: true, required: true, videoTypes: ['video/mp4', 'video/quicktime'], minDuration: 3.0),
+            'youtube' => new MediaRules(maxImages: 0, video: true, required: true, imageTypes: [], videoTypes: ['video/mp4', 'video/quicktime'], videoRequired: true),
             default => null,
         });
 
@@ -70,6 +71,14 @@ class SocialMediaCheckerTest extends TestCase
     public function testAMediaIsRequiredWhereTheNetworkSaysSo(): void
     {
         $this->assertSame(['instagram' => ['label.social_media_required']], $this->keys($this->checker()->check($this->post(['bluesky', 'instagram'], []))));
+    }
+
+    // YouTube takes a video only: a picture is no stand-in, and neither is nothing at all
+    public function testAVideoIsRequiredWhereTheNetworkTakesVideosOnly(): void
+    {
+        $this->assertSame(['youtube' => ['label.social_media_video_required']], $this->keys($this->checker()->check($this->post(['youtube'], []))));
+        $this->assertSame(['youtube' => ['label.social_media_video_required', 'label.social_media_too_many']], $this->keys($this->checker()->check($this->post(['youtube'], [['image/jpeg', 1, null]]))));
+        $this->assertSame([], $this->checker()->check($this->post(['youtube'], [['video/mp4', 1, 20.0]])));
     }
 
     // Five pictures are one too many for Bluesky, a picture beside a video too, and a picture over its size

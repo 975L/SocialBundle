@@ -66,6 +66,10 @@
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Elegir las redes que se ofrecen a sus visitantes, su orden y su aspecto</target>
             </trans-unit>
+            <trans-unit id="IsHF91L">
+                <source>description.guided_project_social_youtube_connect</source>
+                <target>La parte de la agencia: el cliente OAuth de Google abierto a YouTube y luego el consentimiento del canal. Se hace una vez.</target>
+            </trans-unit>
             <trans-unit id="0CvXFm7">
                 <source>description.guided_step_social_bluesky_connect</source>
                 <target>Hacer clic en "Conectar" en la ficha "Bluesky" y autorizar el acceso en Bluesky. El sitio guarda la sesión por sí mismo.</target>
@@ -262,6 +266,18 @@
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Botón ancho, cuadrado o redondo: es el espacio que ocupan los botones bajo sus páginas.</target>
             </trans-unit>
+            <trans-unit id="2LBFP3E">
+                <source>description.guided_step_social_youtube_connect</source>
+                <target>Hacer clic en «Conectar» en la ficha «YouTube», elegir la cuenta que tiene el canal (un canal de marca se elige en la lista de Google) y autorizar el acceso. La ficha muestra luego el nombre del canal: comprobar que es el correcto.</target>
+            </trans-unit>
+            <trans-unit id="WMePrm1">
+                <source>description.guided_step_social_youtube_credentials</source>
+                <target>Si no se hizo ya para la ficha de Google, pegar los dos valores del cliente en «social-google-oauth-client-id» y «social-google-oauth-client-secret». Marcar «social-youtube-made-for-kids» para un canal infantil. El token y el canal se rellenan solos en el paso siguiente.</target>
+            </trans-unit>
+            <trans-unit id="7jaXTbn">
+                <source>description.guided_step_social_youtube_prerequisites</source>
+                <target>Esta parte se hace en console.cloud.google.com, en el proyecto del cliente OAuth de Google (el de la ficha de Google o uno nuevo): activar «YouTube Data API v3», añadir los scopes youtube.upload y youtube.readonly a la pantalla de consentimiento y pasarla «En producción», y declarar en el cliente OAuth la dirección del sitio seguida de «/social/youtube/callback». Para que los vídeos salgan públicos, el proyecto también debe pasar la auditoría de la API de YouTube.</target>
+            </trans-unit>
             <trans-unit id="nVJ6Jbx">
                 <source>email.social_post_failed_body</source>
                 <target>Una red rechazó estas publicaciones a su hora. Abra el enlace para ver el motivo y relanzarla, o corregirla antes:</target>
@@ -373,6 +389,18 @@
             <trans-unit id="BmODYyf">
                 <source>flash.social_series_generated</source>
                 <target>%count% borrador(es) creado(s), por revisar y validar.</target>
+            </trans-unit>
+            <trans-unit id="cjgig6f">
+                <source>flash.youtube_connected</source>
+                <target>Canal de YouTube «%name%» conectado.</target>
+            </trans-unit>
+            <trans-unit id="zdX6Mym">
+                <source>flash.youtube_not_configured</source>
+                <target>Rellene primero el identificador y el secreto del cliente OAuth de Google en la configuración.</target>
+            </trans-unit>
+            <trans-unit id="CQahOw1">
+                <source>flash.youtube_refused</source>
+                <target>La conexión con YouTube fue rechazada o interrumpida.</target>
             </trans-unit>
             <trans-unit id="MtGVTQR">
                 <source>help.social_calendar_feed</source>
@@ -565,6 +593,10 @@
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Ajustar los botones de compartir</target>
+            </trans-unit>
+            <trans-unit id="iENBvgq">
+                <source>label.guided_project_social_youtube_connect</source>
+                <target>Conectar el canal de YouTube</target>
             </trans-unit>
             <trans-unit id="FCqhtF4">
                 <source>label.guided_step_social_bluesky_connect</source>
@@ -794,6 +826,18 @@
                 <source>label.guided_step_social_share_buttons_shape</source>
                 <target>Elegir la forma</target>
             </trans-unit>
+            <trans-unit id="DYt2MRn">
+                <source>label.guided_step_social_youtube_connect</source>
+                <target>Iniciar la conexión</target>
+            </trans-unit>
+            <trans-unit id="ZjuJYl5">
+                <source>label.guided_step_social_youtube_credentials</source>
+                <target>Rellenar el cliente y el ajuste infantil</target>
+            </trans-unit>
+            <trans-unit id=".diy02V">
+                <source>label.guided_step_social_youtube_prerequisites</source>
+                <target>Abrir el cliente de Google a YouTube</target>
+            </trans-unit>
             <trans-unit id="lqEFtzf">
                 <source>label.icon</source>
                 <target>Icono</target>
@@ -898,6 +942,14 @@
                 <source>label.info_social_series_prolong</source>
                 <target>«%title%»: %count% borrador(es) más, con los mismos ajustes, tras la última publicación del %date%.</target>
             </trans-unit>
+            <trans-unit id="E9Dv0_T">
+                <source>label.info_youtube_connect</source>
+                <target>Vincula el sitio a un canal de YouTube: una publicación con un vídeo se envía allí, como Short cuando el vídeo es vertical y dura menos de tres minutos.</target>
+            </trans-unit>
+            <trans-unit id="04m7CjR">
+                <source>label.info_youtube_not_configured</source>
+                <target>Rellene primero el identificador y el secreto del cliente OAuth de Google en la configuración («social-google-oauth-client-id» y «social-google-oauth-client-secret»), el mismo cliente que el de la ficha de Google.</target>
+            </trans-unit>
             <trans-unit id="YtqDGiK">
                 <source>label.intro</source>
                 <target>Texto de introducción</target>
@@ -941,6 +993,10 @@
             <trans-unit id="o71OlA1">
                 <source>label.network_off</source>
                 <target>no conectado</target>
+            </trans-unit>
+            <trans-unit id="ROhCU6T">
+                <source>label.network_youtube</source>
+                <target>YouTube</target>
             </trans-unit>
             <trans-unit id="NFkKnJC">
                 <source>label.networks</source>
@@ -1189,6 +1245,10 @@
             <trans-unit id="QH5X4ep">
                 <source>label.social_media_too_many</source>
                 <target>%max% fotos como máximo</target>
+            </trans-unit>
+            <trans-unit id="RuMGVAu">
+                <source>label.social_media_video_required</source>
+                <target>YouTube solo acepta un vídeo: añada uno a la publicación.</target>
             </trans-unit>
             <trans-unit id="kXejKxZ">
                 <source>label.social_media_video_too_big</source>

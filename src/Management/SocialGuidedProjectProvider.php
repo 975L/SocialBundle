@@ -46,6 +46,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->socialPostsProject(),
             $this->blueskyConnectProject(),
             $this->linkedinConnectProject(),
+            $this->youtubeConnectProject(),
             $this->socialCalendarProject(),
         ];
     }
@@ -366,6 +367,40 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
         ];
     }
 
+    // LinkedIn's parcours again, for YouTube: no app of its own, the Google OAuth client the reviews use being enabled for the YouTube API and given a second redirect address, then consenting fills the refresh token and the channel
+    private function youtubeConnectProject(): array
+    {
+        return [
+            'slug' => 'social-youtube-connect',
+            'label' => 'label.guided_project_social_youtube_connect',
+            'description' => 'description.guided_project_social_youtube_connect',
+            'translation_domain' => 'social',
+            'order' => 4100,
+            // The Google client's keys and the "made for kids" setting are configs, with the same three roles as Google's (see googleConnectProject())
+            'role' => $this->restrictedConfigRoles(),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_social_youtube_prerequisites',
+                    'description' => 'description.guided_step_social_youtube_prerequisites',
+                    'narration' => 'narration.guided_step_social_youtube_prerequisites',
+                    'url' => $this->indexUrl(ConfigCrudController::class),
+                ],
+                [
+                    'label' => 'label.guided_step_social_youtube_credentials',
+                    'description' => 'description.guided_step_social_youtube_credentials',
+                    'narration' => 'narration.guided_step_social_youtube_credentials',
+                ],
+                $this->connectionsStep(),
+                [
+                    'label' => 'label.guided_step_social_youtube_connect',
+                    'description' => 'description.guided_step_social_youtube_connect',
+                    'narration' => 'narration.guided_step_social_youtube_connect',
+                    'highlight' => 'a[href*="/social/youtube/connect"]',
+                ],
+            ],
+        ];
+    }
+
     // Meta's parcours again, for LinkedIn: the app is created on linkedin.com/developers, its two keys are restricted configs, then consenting fills the token and the member - for 60 days, LinkedIn handing a self-serve app no refresh token
     private function linkedinConnectProject(): array
     {
@@ -408,7 +443,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_social_calendar',
             'description' => 'description.guided_project_social_calendar',
             'translation_domain' => 'social',
-            'order' => 4100,
+            'order' => 4110,
             // The bar SocialCalendarController states on its own actions
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [

@@ -66,6 +66,10 @@
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Choisir les réseaux proposés à vos visiteurs, leur ordre et leur allure</target>
             </trans-unit>
+            <trans-unit id="IsHF91L">
+                <source>description.guided_project_social_youtube_connect</source>
+                <target>La partie agence : le client OAuth Google ouvert à YouTube, puis le consentement de la chaîne. À faire une fois.</target>
+            </trans-unit>
             <trans-unit id="0CvXFm7">
                 <source>description.guided_step_social_bluesky_connect</source>
                 <target>Cliquer sur "Connecter" dans la tuile "Bluesky", puis autoriser l'accès sur Bluesky. Le site enregistre lui-même la session.</target>
@@ -262,6 +266,18 @@
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Bouton large, carré ou rond : c'est la place que les boutons prennent sous vos pages.</target>
             </trans-unit>
+            <trans-unit id="2LBFP3E">
+                <source>description.guided_step_social_youtube_connect</source>
+                <target>Cliquer sur « Connecter » dans la tuile « YouTube », choisir le compte qui détient la chaîne (une chaîne de marque se choisit dans la liste de Google), puis autoriser l'accès. La tuile affiche ensuite le nom de la chaîne : vérifier que c'est la bonne.</target>
+            </trans-unit>
+            <trans-unit id="WMePrm1">
+                <source>description.guided_step_social_youtube_credentials</source>
+                <target>Si ce n'est pas déjà fait pour la fiche Google, coller les deux valeurs du client dans « social-google-oauth-client-id » et « social-google-oauth-client-secret ». Cocher « social-youtube-made-for-kids » pour une chaîne jeunesse. Le jeton et la chaîne se remplissent tout seuls à l'étape suivante.</target>
+            </trans-unit>
+            <trans-unit id="7jaXTbn">
+                <source>description.guided_step_social_youtube_prerequisites</source>
+                <target>Cette partie se passe sur console.cloud.google.com, dans le projet du client OAuth Google (celui de la fiche Google, ou un nouveau) : activer « YouTube Data API v3 », ajouter les scopes youtube.upload et youtube.readonly à l'écran de consentement et le passer « En production », puis déclarer dans le client OAuth l'adresse du site suivie de « /social/youtube/callback ». Pour que les vidéos sortent en public, le projet doit aussi passer l'audit de l'API YouTube.</target>
+            </trans-unit>
             <trans-unit id="nVJ6Jbx">
                 <source>email.social_post_failed_body</source>
                 <target>Un réseau a refusé ces publications à leur heure. Ouvrez le lien pour voir la raison et la relancer, ou la corriger d'abord :</target>
@@ -373,6 +389,18 @@
             <trans-unit id="BmODYyf">
                 <source>flash.social_series_generated</source>
                 <target>%count% brouillon(s) créé(s), à relire et valider.</target>
+            </trans-unit>
+            <trans-unit id="cjgig6f">
+                <source>flash.youtube_connected</source>
+                <target>Chaîne YouTube « %name% » connectée.</target>
+            </trans-unit>
+            <trans-unit id="zdX6Mym">
+                <source>flash.youtube_not_configured</source>
+                <target>Renseignez d'abord l'identifiant et le secret du client OAuth Google dans la configuration.</target>
+            </trans-unit>
+            <trans-unit id="CQahOw1">
+                <source>flash.youtube_refused</source>
+                <target>La connexion à YouTube a été refusée ou interrompue.</target>
             </trans-unit>
             <trans-unit id="MtGVTQR">
                 <source>help.social_calendar_feed</source>
@@ -565,6 +593,10 @@
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Régler les boutons de partage</target>
+            </trans-unit>
+            <trans-unit id="iENBvgq">
+                <source>label.guided_project_social_youtube_connect</source>
+                <target>Connecter la chaîne YouTube</target>
             </trans-unit>
             <trans-unit id="FCqhtF4">
                 <source>label.guided_step_social_bluesky_connect</source>
@@ -794,6 +826,18 @@
                 <source>label.guided_step_social_share_buttons_shape</source>
                 <target>Choisir la forme</target>
             </trans-unit>
+            <trans-unit id="DYt2MRn">
+                <source>label.guided_step_social_youtube_connect</source>
+                <target>Lancer la connexion</target>
+            </trans-unit>
+            <trans-unit id="ZjuJYl5">
+                <source>label.guided_step_social_youtube_credentials</source>
+                <target>Renseigner le client et le réglage enfants</target>
+            </trans-unit>
+            <trans-unit id=".diy02V">
+                <source>label.guided_step_social_youtube_prerequisites</source>
+                <target>Ouvrir le client Google à YouTube</target>
+            </trans-unit>
             <trans-unit id="lqEFtzf">
                 <source>label.icon</source>
                 <target>Icône</target>
@@ -898,6 +942,14 @@
                 <source>label.info_social_series_prolong</source>
                 <target>« %title% » : %count% brouillon(s) de plus, avec les mêmes réglages, après la dernière publication du %date%.</target>
             </trans-unit>
+            <trans-unit id="E9Dv0_T">
+                <source>label.info_youtube_connect</source>
+                <target>Relie le site à une chaîne YouTube : une publication qui porte une vidéo y est envoyée, en Short quand la vidéo est verticale et dure moins de trois minutes.</target>
+            </trans-unit>
+            <trans-unit id="04m7CjR">
+                <source>label.info_youtube_not_configured</source>
+                <target>Renseignez d'abord l'identifiant et le secret du client OAuth Google dans la configuration (« social-google-oauth-client-id » et « social-google-oauth-client-secret »), le même client que pour la fiche Google.</target>
+            </trans-unit>
             <trans-unit id="YtqDGiK">
                 <source>label.intro</source>
                 <target>Texte d'introduction</target>
@@ -941,6 +993,10 @@
             <trans-unit id="o71OlA1">
                 <source>label.network_off</source>
                 <target>non connecté</target>
+            </trans-unit>
+            <trans-unit id="ROhCU6T">
+                <source>label.network_youtube</source>
+                <target>YouTube</target>
             </trans-unit>
             <trans-unit id="NFkKnJC">
                 <source>label.networks</source>
@@ -1189,6 +1245,10 @@
             <trans-unit id="QH5X4ep">
                 <source>label.social_media_too_many</source>
                 <target>%max% photos au plus</target>
+            </trans-unit>
+            <trans-unit id="RuMGVAu">
+                <source>label.social_media_video_required</source>
+                <target>YouTube ne prend qu'une vidéo : ajoutez-en une à la publication.</target>
             </trans-unit>
             <trans-unit id="kXejKxZ">
                 <source>label.social_media_video_too_big</source>

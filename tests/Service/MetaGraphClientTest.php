@@ -86,4 +86,20 @@ class MetaGraphClientTest extends TestCase
         $this->assertNull($this->client()->pageToken());
         $this->assertSame('token', $this->client(pageToken: 'token')->pageToken());
     }
+
+    // A reel's video handed over at the address its first phase gave out, outside the Graph host
+    public function testAHostedVideoIsHandedOverAtTheUploadAddress(): void
+    {
+        $this->client([new MockResponse('{"success": true}')])->uploadHosted('https://rupload.example/r1', 'https://example.org/r.mp4', 'page-token');
+
+        $this->assertSame(['https://rupload.example/r1'], $this->urls);
+    }
+
+    // A refusal carries Meta's own reason
+    public function testARefusedHostedUploadSaysWhy(): void
+    {
+        $this->expectExceptionMessageIsOrContains('Meta refused the reel upload: File not found');
+
+        $this->client([new MockResponse('{"success": false, "debug_info": {"message": "File not found"}}')])->uploadHosted('https://rupload.example/r1', 'https://example.org/r.mp4', 'page-token');
+    }
 }

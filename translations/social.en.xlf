@@ -66,6 +66,10 @@
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Pick the networks offered to your visitors, their order and their look</target>
             </trans-unit>
+            <trans-unit id="IsHF91L">
+                <source>description.guided_project_social_youtube_connect</source>
+                <target>The agency part: the Google OAuth client opened to YouTube, then the channel's consent. Done once.</target>
+            </trans-unit>
             <trans-unit id="0CvXFm7">
                 <source>description.guided_step_social_bluesky_connect</source>
                 <target>Click "Connect" on the "Bluesky" tile, then grant access on Bluesky. The site stores the session by itself.</target>
@@ -262,6 +266,18 @@
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Wide, square or round button: that is the room the buttons take under your pages.</target>
             </trans-unit>
+            <trans-unit id="2LBFP3E">
+                <source>description.guided_step_social_youtube_connect</source>
+                <target>Click "Connect" on the "YouTube" tile, pick the account holding the channel (a brand channel is picked in Google's list), then allow access. The tile then shows the channel's name: check it is the right one.</target>
+            </trans-unit>
+            <trans-unit id="WMePrm1">
+                <source>description.guided_step_social_youtube_credentials</source>
+                <target>Unless already done for the Google listing, paste the client's two values into "social-google-oauth-client-id" and "social-google-oauth-client-secret". Tick "social-youtube-made-for-kids" for a children's channel. The token and the channel fill themselves in at the next step.</target>
+            </trans-unit>
+            <trans-unit id="7jaXTbn">
+                <source>description.guided_step_social_youtube_prerequisites</source>
+                <target>This part happens on console.cloud.google.com, in the Google OAuth client's project (the Google listing's, or a new one): enable "YouTube Data API v3", add the youtube.upload and youtube.readonly scopes to the consent screen and set it "In production", then declare in the OAuth client the site's address followed by "/social/youtube/callback". For the videos to go out public, the project also has to pass YouTube's API audit.</target>
+            </trans-unit>
             <trans-unit id="nVJ6Jbx">
                 <source>email.social_post_failed_body</source>
                 <target>A network refused these posts at their moment. Open the link to see why and send it again, or correct it first:</target>
@@ -373,6 +389,18 @@
             <trans-unit id="BmODYyf">
                 <source>flash.social_series_generated</source>
                 <target>%count% draft(s) created, to read and approve.</target>
+            </trans-unit>
+            <trans-unit id="cjgig6f">
+                <source>flash.youtube_connected</source>
+                <target>YouTube channel "%name%" connected.</target>
+            </trans-unit>
+            <trans-unit id="zdX6Mym">
+                <source>flash.youtube_not_configured</source>
+                <target>First fill in the Google OAuth client's id and secret in the configuration.</target>
+            </trans-unit>
+            <trans-unit id="CQahOw1">
+                <source>flash.youtube_refused</source>
+                <target>The connection to YouTube was refused or interrupted.</target>
             </trans-unit>
             <trans-unit id="MtGVTQR">
                 <source>help.social_calendar_feed</source>
@@ -565,6 +593,10 @@
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Set the share buttons</target>
+            </trans-unit>
+            <trans-unit id="iENBvgq">
+                <source>label.guided_project_social_youtube_connect</source>
+                <target>Connect the YouTube channel</target>
             </trans-unit>
             <trans-unit id="FCqhtF4">
                 <source>label.guided_step_social_bluesky_connect</source>
@@ -794,6 +826,18 @@
                 <source>label.guided_step_social_share_buttons_shape</source>
                 <target>Pick the shape</target>
             </trans-unit>
+            <trans-unit id="DYt2MRn">
+                <source>label.guided_step_social_youtube_connect</source>
+                <target>Start the connection</target>
+            </trans-unit>
+            <trans-unit id="ZjuJYl5">
+                <source>label.guided_step_social_youtube_credentials</source>
+                <target>Fill in the client and the kids setting</target>
+            </trans-unit>
+            <trans-unit id=".diy02V">
+                <source>label.guided_step_social_youtube_prerequisites</source>
+                <target>Open the Google client to YouTube</target>
+            </trans-unit>
             <trans-unit id="lqEFtzf">
                 <source>label.icon</source>
                 <target>Icon</target>
@@ -898,6 +942,14 @@
                 <source>label.info_social_series_prolong</source>
                 <target>"%title%": %count% more draft(s), with the same settings, after the last post of %date%.</target>
             </trans-unit>
+            <trans-unit id="E9Dv0_T">
+                <source>label.info_youtube_connect</source>
+                <target>Links the site to a YouTube channel: a post carrying a video is sent there, as a Short when the video is vertical and lasts under three minutes.</target>
+            </trans-unit>
+            <trans-unit id="04m7CjR">
+                <source>label.info_youtube_not_configured</source>
+                <target>First fill in the Google OAuth client's id and secret in the configuration ("social-google-oauth-client-id" and "social-google-oauth-client-secret"), the same client as the Google listing's.</target>
+            </trans-unit>
             <trans-unit id="YtqDGiK">
                 <source>label.intro</source>
                 <target>Introduction text</target>
@@ -941,6 +993,10 @@
             <trans-unit id="o71OlA1">
                 <source>label.network_off</source>
                 <target>not connected</target>
+            </trans-unit>
+            <trans-unit id="ROhCU6T">
+                <source>label.network_youtube</source>
+                <target>YouTube</target>
             </trans-unit>
             <trans-unit id="NFkKnJC">
                 <source>label.networks</source>
@@ -1189,6 +1245,10 @@
             <trans-unit id="QH5X4ep">
                 <source>label.social_media_too_many</source>
                 <target>%max% photos at most</target>
+            </trans-unit>
+            <trans-unit id="RuMGVAu">
+                <source>label.social_media_video_required</source>
+                <target>YouTube only takes a video: add one to the post.</target>
             </trans-unit>
             <trans-unit id="kXejKxZ">
                 <source>label.social_media_video_too_big</source>

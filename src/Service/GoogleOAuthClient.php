@@ -15,7 +15,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-// The OAuth half of the Google Business Profile connection, kept apart from GoogleBusinessProfileSource so what talks to Google's token endpoint is one stubable seam - same shape as ConfigBundle's own AiCrawlerListClient
+// The OAuth half of the Google connections, kept apart from GoogleBusinessProfileSource so what talks to Google's token endpoint is one stubable seam - same shape as ConfigBundle's own AiCrawlerListClient. The Business Profile is its default; YoutubeClient passes its own scopes and refresh token slug, a Google token only covering the scopes granted in its consent
 class GoogleOAuthClient
 {
     public const string AUTHORIZATION_ENDPOINT = 'https://accounts.google.com/o/oauth2/v2/auth';
@@ -24,6 +24,9 @@ class GoogleOAuthClient
 
     // The one scope the reviews endpoints need, and a sensitive one: an app requesting it has to be published before its refresh tokens stop expiring every seven days
     public const string SCOPE = 'https://www.googleapis.com/auth/business.manage';
+
+    // Where the Business Profile's refresh token is stored
+    public const string REFRESH_TOKEN = 'social-google-oauth-refresh-token';
 
     // Google issues access tokens for an hour; kept a little short so a request never leaves with one about to expire
     private const int ACCESS_TOKEN_TTL = 3300;
@@ -42,27 +45,28 @@ class GoogleOAuthClient
     }
 
     // Whether the connection was actually made, the stored refresh token being the whole of it - said here rather than read from the config elsewhere, so the slug holding it stays this class's business
-    public function isConnected(): bool
+    public function isConnected(string $refreshTokenSlug = self::REFRESH_TOKEN): bool
     {
-        return null !== $this->refreshToken();
+        return null !== $this->refreshToken($refreshTokenSlug);
     }
 
     // Where the owner is sent to consent. "consent" is forced because Google only returns a refresh token on the first authorization otherwise, leaving a re-connection with nothing to store
-    public function getAuthorizationUrl(string $redirectUri, string $state): string
+    public function getAuthorizationUrl(string $redirectUri, string $state, string $scope = self::SCOPE): string
     {
         return self::AUTHORIZATION_ENDPOINT . '?' . http_build_query([
             'client_id' => $this->clientId(),
             'redirect_uri' => $redirectUri,
             'response_type' => 'code',
-            'scope' => self::SCOPE,
+            'scope' => $scope,
             'access_type' => 'offline',
             'prompt' => 'consent',
             'state' => $state,
         ]);
     }
 
-    // Trades the code the callback received for the long-lived refresh token, the only part worth storing
-    public function exchangeCode(string $code, string $redirectUri): string
+    // Trades the code the callback received for the long-lived refresh token, the only part worth storing - the access token coming along for a caller with something to ask at once
+    /** @return array{refreshToken: string, accessToken: string} */
+    public function exchangeCode(string $code, string $redirectUri): array
     {
         $token = $this->requestToken([
             'code' => $code,
@@ -74,16 +78,16 @@ class GoogleOAuthClient
             throw new \RuntimeException('Google returned no refresh token: the authorization was not granted offline access.');
         }
 
-        return $token['refresh_token'];
+        return ['refreshToken' => $token['refresh_token'], 'accessToken' => (string) ($token['access_token'] ?? '')];
     }
 
     // A short-lived access token, cached for its own lifetime rather than requested per call - a sync paging through reviews would otherwise ask for one on every page
-    public function getAccessToken(): string
+    public function getAccessToken(string $refreshTokenSlug = self::REFRESH_TOKEN): string
     {
-        $refreshToken = $this->refreshToken();
+        $refreshToken = $this->refreshToken($refreshTokenSlug);
 
         if (null === $refreshToken) {
-            throw new \RuntimeException('No Google refresh token stored: connect the site to Google first.');
+            throw new \RuntimeException(sprintf('No Google refresh token stored in "%s": connect to Google first.', $refreshTokenSlug));
         }
 
         return $this->cache->get(
@@ -124,7 +128,7 @@ class GoogleOAuthClient
         $token = json_decode($response->getContent(false), true);
 
         if ($response->getStatusCode() >= 400 || !is_array($token)) {
-            throw new \RuntimeException(sprintf('Google refused the token request (%d): %s', $response->getStatusCode(), $response->getContent(false)));
+            throw new \RuntimeException(sprintf('Google refused the token request (%d): %s', $response->getStatusCode(), is_array($token) ? ($token['error_description'] ?? $token['error'] ?? '') : $response->getContent(false)));
         }
 
         return $token;
@@ -144,9 +148,9 @@ class GoogleOAuthClient
         return is_string($value) && '' !== $value ? $value : null;
     }
 
-    private function refreshToken(): ?string
+    private function refreshToken(string $slug): ?string
     {
-        $value = $this->configService->get('social-google-oauth-refresh-token');
+        $value = $this->configService->get($slug);
 
         return is_string($value) && '' !== $value ? $value : null;
     }

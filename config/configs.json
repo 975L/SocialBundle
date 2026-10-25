@@ -340,5 +340,52 @@
         "group": "social",
         "severity": null,
         "description": "description.social_linkedin_token_expires_at"
+    },
+    {
+        "label": "label.social_youtube_oauth_refresh_token",
+        "slug": "social-youtube-oauth-refresh-token",
+        "feature": true,
+        "sensitive": true,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_youtube_oauth_refresh_token"
+    },
+    {
+        "label": "label.social_youtube_channel_id",
+        "slug": "social-youtube-channel-id",
+        "feature": true,
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_youtube_channel_id"
+    },
+    {
+        "label": "label.social_youtube_channel_title",
+        "slug": "social-youtube-channel-title",
+        "feature": true,
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_youtube_channel_title"
+    },
+    {
+        "label": "label.social_youtube_made_for_kids",
+        "slug": "social-youtube-made-for-kids",
+        "sensitive": false,
+        "restricted": false,
+        "value": "false",
+        "kind": "bool",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_youtube_made_for_kids"
     }
 ]

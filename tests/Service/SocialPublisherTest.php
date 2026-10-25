@@ -17,6 +17,7 @@ use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Enum\SocialPostStatus;
+use c975L\SocialBundle\Model\MediaRules;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Service\SocialPageReader;
@@ -101,12 +102,13 @@ class SocialPublisherTest extends TestCase
         return $source;
     }
 
-    private function createNetwork(string $name, bool $configured = true, ?\Throwable $failure = null): NetworkPublisherInterface
+    private function createNetwork(string $name, bool $configured = true, ?\Throwable $failure = null, bool $videoOnly = false): NetworkPublisherInterface
     {
         $network = $this->createStub(NetworkPublisherInterface::class);
         $network->method('getName')->willReturn($name);
         $network->method('isConfigured')->willReturn($configured);
         $network->method('getMaxLength')->willReturn(300);
+        $network->method('getMediaRules')->willReturn(new MediaRules(maxImages: $videoOnly ? 0 : 4, video: true, videoRequired: $videoOnly));
         $network->method('preview')->willReturnCallback(static fn (string $text): array => ['text' => $text]);
         $network->method('publish')->willReturnCallback(function (string $text, SocialContent $content, array $medias = []) use ($name, $failure): string {
             if (null !== $failure) {
@@ -210,6 +212,17 @@ class SocialPublisherTest extends TestCase
         $this->assertSame([SocialPostStatus::Draft, SocialPostStatus::Draft], $posts[0]->getTargets()->map(static fn (SocialPostTarget $target): SocialPostStatus => $target->getStatus())->getValues());
         $this->assertSame([], $this->published);
         $this->assertSame(['7'], $this->asked['gallery_media']['excluded']);
+    }
+
+    // A content brings no video: a network of videos alone gets no target, nor any text written for it
+    public function testADraftLeavesOutANetworkOfVideosAlone(): void
+    {
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky'), $this->createNetwork('youtube', videoOnly: true)]);
+
+        $posts = $publisher->prepareDrafts([new \DateTimeImmutable('2026-10-06 09:00')]);
+
+        $this->assertSame(['bluesky'], $posts[0]->getNetworks());
+        $this->assertSame(['bluesky'], $this->asked['writer']['networks']);
     }
 
     // No moment asked, no draft
@@ -530,11 +543,11 @@ class SocialPublisherTest extends TestCase
         $this->assertSame('Written', $post->getTargets()->last()->getText());
     }
 
-    // A post written on its screen is planned at the moment given and ticked on every network connected, its texts written from its own once saved
+    // A post written on its screen is planned at the moment given and ticked on every network connected but those of videos alone, its texts written from its own once saved
     public function testAWrittenPostIsTickedOnEveryNetworkConnected(): void
     {
         $at = new \DateTimeImmutable('2026-10-06 09:15');
-        $publisher = $this->createPublisher([], [$this->createNetwork('bluesky'), $this->createNetwork('linkedin', configured: false)]);
+        $publisher = $this->createPublisher([], [$this->createNetwork('bluesky'), $this->createNetwork('linkedin', configured: false), $this->createNetwork('youtube', videoOnly: true)]);
 
         $post = $publisher->createManual($at);
         $this->assertTrue($post->isManual());

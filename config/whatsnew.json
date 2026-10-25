@@ -16,6 +16,16 @@
                 "en": "The posts list now shows them in the order they go out, opening on today's",
                 "fr": "La liste des publications les montre maintenant dans l'ordre où elles partent, ouverte sur celles du jour",
                 "es": "La lista de publicaciones las muestra ahora en el orden en que salen, abierta en las del día"
+            },
+            {
+                "en": "Your videos can now be posted on your YouTube channel, connected in one click from the Connections screen",
+                "fr": "Vos vidéos se publient maintenant sur votre chaîne YouTube, connectée en un clic depuis l'écran Connexions",
+                "es": "Sus vídeos se publican ahora en su canal de YouTube, conectado en un clic desde la pantalla Conexiones"
+            },
+            {
+                "en": "A short vertical video now goes out on Facebook as a Reel, seen beyond your Page's followers",
+                "fr": "Une courte vidéo verticale part maintenant sur Facebook en Reel, vue au-delà des abonnés de votre Page",
+                "es": "Un vídeo vertical corto sale ahora en Facebook como Reel, visto más allá de los seguidores de su Página"
             }
         ]
     },

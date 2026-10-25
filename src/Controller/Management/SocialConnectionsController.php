@@ -15,6 +15,7 @@ use c975L\SocialBundle\Service\BlueskyOAuthClient;
 use c975L\SocialBundle\Service\GoogleOAuthClient;
 use c975L\SocialBundle\Service\LinkedInClient;
 use c975L\SocialBundle\Service\MetaGraphClient;
+use c975L\SocialBundle\Service\YoutubeClient;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,6 +36,7 @@ class SocialConnectionsController extends AbstractController
         private readonly MetaGraphClient $metaGraphClient,
         private readonly GoogleOAuthClient $googleOAuthClient,
         private readonly LinkedInClient $linkedInClient,
+        private readonly YoutubeClient $youtubeClient,
     ) {
     }
 
@@ -48,6 +50,7 @@ class SocialConnectionsController extends AbstractController
                 $this->bluesky($request->getHost()),
                 $this->meta(),
                 $this->linkedIn(),
+                $this->youtube(),
                 $this->google(),
             ],
         ]);
@@ -115,6 +118,22 @@ class SocialConnectionsController extends AbstractController
             'connected' => $this->linkedInClient->isConnected(),
             'accounts' => [],
             'expires_at' => $this->linkedInClient->expiresAt(),
+        ];
+    }
+
+    // The channel the videos go out on, linked so the owner sees at once which one consented - Google's chooser listing a person's channels and brand accounts alike
+    /** @return array<string, mixed> */
+    private function youtube(): array
+    {
+        $channel = $this->value('social-youtube-channel-id');
+
+        return [
+            'name' => 'youtube',
+            'icon' => 'fab fa-youtube',
+            'route' => 'social_youtube_oauth_connect',
+            'configured' => $this->youtubeClient->isConfigured(),
+            'connected' => $this->youtubeClient->isConnected(),
+            'accounts' => $this->accounts(['fab fa-youtube', $this->value('social-youtube-channel-title') ?? $channel, null === $channel ? null : 'https://www.youtube.com/channel/' . $channel]),
         ];
     }
 

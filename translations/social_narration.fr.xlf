@@ -230,6 +230,18 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>En dessous, choisissez la forme : bouton large, carré ou rond. C'est la place que les boutons prendront sous vos pages.</target>
             </trans-unit>
+            <trans-unit id="ogVgOWn">
+                <source>narration.guided_step_social_youtube_connect</source>
+                <target>Cliquez sur « Connecter » dans la tuile « YouTube », choisissez le compte de la chaîne, puis autorisez l'accès. Vérifiez ensuite le nom de la chaîne sur la tuile.</target>
+            </trans-unit>
+            <trans-unit id="BWdu1UR">
+                <source>narration.guided_step_social_youtube_credentials</source>
+                <target>Si ce n'est pas déjà fait, collez l'identifiant et le secret du client Google, puis cochez le réglage des vidéos pour enfants si la chaîne est une chaîne jeunesse.</target>
+            </trans-unit>
+            <trans-unit id="AEuNUQ3">
+                <source>narration.guided_step_social_youtube_prerequisites</source>
+                <target>Cette première partie se passe dans la console Google Cloud : activez l'API YouTube dans le projet du client Google, passez l'écran de consentement en production, et déclarez l'adresse de retour du site.</target>
+            </trans-unit>
             <trans-unit id="._Fe6M5">
                 <source>narration.share_buttons_settings</source>
                 <target>« Boutons de partage » règle les boutons posés sous vos pages : quels réseaux, dans quel ordre et à quoi ils ressemblent.</target>

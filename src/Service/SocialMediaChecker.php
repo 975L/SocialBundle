@@ -45,29 +45,44 @@ class SocialMediaChecker
     private function problems(SocialPost $post, MediaRules $rules): array
     {
         $medias = $post->getMedias()->toArray();
-        $videos = array_values(array_filter($medias, static fn (SocialMedia $media): bool => $media->isVideo()));
-        $images = \count($medias) - \count($videos);
+        $problems = $this->countProblems($post, $medias, $rules);
 
-        // A post prepared from a content goes out with that content's picture when it has none of its own
+        foreach ($medias as $media) {
+            array_push($problems, ...($media->isVideo() ? $this->videoProblems($media, $rules) : $this->imageProblems($media, $rules)));
+        }
+
+        return $problems;
+    }
+
+    // What the post carries as a whole - how many pictures and videos, and whether together - before each media is checked on its own
+    /**
+     * @param list<SocialMedia> $medias
+     *
+     * @return list<TranslatableMessage>
+     */
+    private function countProblems(SocialPost $post, array $medias, MediaRules $rules): array
+    {
+        $videos = \count(array_filter($medias, static fn (SocialMedia $media): bool => $media->isVideo()));
+        $images = \count($medias) - $videos;
+
+        // A network made of videos alone, where neither a picture nor the content's one stands in, says that alone; elsewhere a post prepared from a content goes out with that content's picture when it has none of its own
         $problems = [];
-        if ($rules->required && [] === $medias && null === $post->getImageUrl() && $post->isManual()) {
+        if ($rules->videoRequired && 0 === $videos) {
+            $problems[] = t('label.social_media_video_required', [], 'social');
+        } elseif ($rules->required && [] === $medias && null === $post->getImageUrl() && $post->isManual()) {
             $problems[] = t('label.social_media_required', [], 'social');
         }
         if ($images > $rules->maxImages) {
             $problems[] = t('label.social_media_too_many', ['%max%' => $rules->maxImages], 'social');
         }
-        if ([] !== $videos && !$rules->video) {
+        if ($videos > 0 && !$rules->video) {
             $problems[] = t('label.social_media_no_video', [], 'social');
         }
-        if (\count($videos) > 1) {
+        if ($videos > 1) {
             $problems[] = t('label.social_media_one_video', [], 'social');
         }
-        if ([] !== $videos && $images > 0 && !$rules->mix) {
+        if ($videos > 0 && $images > 0 && !$rules->mix) {
             $problems[] = t('label.social_media_no_mix', [], 'social');
-        }
-
-        foreach ($medias as $media) {
-            array_push($problems, ...($media->isVideo() ? $this->videoProblems($media, $rules) : $this->imageProblems($media, $rules)));
         }
 
         return $problems;

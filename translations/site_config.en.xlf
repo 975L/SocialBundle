@@ -122,6 +122,22 @@
                 <source>description.social_series_ending_days</source>
                 <target>Days before a series' last post when an email is sent to "email-to" to prolong it. 0 sends nothing.</target>
             </trans-unit>
+            <trans-unit id="..3_lm_">
+                <source>description.social_youtube_channel_id</source>
+                <target>Filled by the connection: the channel the videos go out on.</target>
+            </trans-unit>
+            <trans-unit id="8rXof4B">
+                <source>description.social_youtube_channel_title</source>
+                <target>Filled by the connection: the name shown on the YouTube tile.</target>
+            </trans-unit>
+            <trans-unit id="ZmDlFm6">
+                <source>description.social_youtube_made_for_kids</source>
+                <target>Ticked, every video sent to YouTube is declared "made for kids", as YouTube requires of a children's channel. YouTube then turns off its comments and notifications.</target>
+            </trans-unit>
+            <trans-unit id=".bHuPqM">
+                <source>description.social_youtube_oauth_refresh_token</source>
+                <target>Filled by "Connect" on the YouTube tile of "Connections".</target>
+            </trans-unit>
             <trans-unit id="cqh6P23">
                 <source>label.social_ai_guidelines</source>
                 <target>Tone of the posts (AI)</target>
@@ -241,6 +257,22 @@
             <trans-unit id="icVmnRG">
                 <source>label.social_series_ending_days</source>
                 <target>Series ending: warn (days before)</target>
+            </trans-unit>
+            <trans-unit id="xz.l018">
+                <source>label.social_youtube_channel_id</source>
+                <target>YouTube channel id</target>
+            </trans-unit>
+            <trans-unit id="9oAMtMh">
+                <source>label.social_youtube_channel_title</source>
+                <target>YouTube channel name</target>
+            </trans-unit>
+            <trans-unit id="hQ4tTEu">
+                <source>label.social_youtube_made_for_kids</source>
+                <target>YouTube videos made for kids</target>
+            </trans-unit>
+            <trans-unit id="RLCbNst">
+                <source>label.social_youtube_oauth_refresh_token</source>
+                <target>YouTube token</target>
             </trans-unit>
         </body>
     </file>

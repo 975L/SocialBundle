@@ -64,8 +64,8 @@ class SocialGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider()->getGuidedProjects();
 
-        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-connect', 'social-google-reviews', 'social-series', 'social-meta-connect', 'social-posts', 'social-bluesky-connect', 'social-linkedin-connect', 'social-calendar'], array_column($projects, 'slug'));
-        $this->assertSame([4010, 4020, 4030, 4040, 4050, 4060, 4070, 4080, 4090, 4100], array_column($projects, 'order'));
+        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-connect', 'social-google-reviews', 'social-series', 'social-meta-connect', 'social-posts', 'social-bluesky-connect', 'social-linkedin-connect', 'social-youtube-connect', 'social-calendar'], array_column($projects, 'slug'));
+        $this->assertSame([4010, 4020, 4030, 4040, 4050, 4060, 4070, 4080, 4090, 4100, 4110], array_column($projects, 'order'));
     }
 
     public function testEverySlugIsPrefixedWithTheBundleName(): void
@@ -94,6 +94,7 @@ class SocialGuidedProjectProviderTest extends TestCase
             'social-posts' => 'ROLE_EDITOR',
             'social-bluesky-connect' => ['ROLE_ADMIN', 'ROLE_EDITOR'],
             'social-linkedin-connect' => ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR'],
+            'social-youtube-connect' => ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR'],
             'social-calendar' => 'ROLE_EDITOR',
         ], $roles);
     }
@@ -140,7 +141,7 @@ class SocialGuidedProjectProviderTest extends TestCase
 
         // The connection parcours needing keys and the reviews one open on another bundle's screen: the keys are configs, and the reviews are UiBundle's entity whatever platform brought them in
         $this->assertSame(
-            ['SocialLinksCrudController', 'ShareButtonsSettingsCrudController', 'ConfigCrudController', 'ReviewCrudController', 'SocialPostCrudController', 'ConfigCrudController', 'SocialPostCrudController', 'ConfigCrudController'],
+            ['SocialLinksCrudController', 'ShareButtonsSettingsCrudController', 'ConfigCrudController', 'ReviewCrudController', 'SocialPostCrudController', 'ConfigCrudController', 'SocialPostCrudController', 'ConfigCrudController', 'ConfigCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
 

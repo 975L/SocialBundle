@@ -17,9 +17,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class MetaGraphClient
 {
     // The version every call is pinned to, v26.0 being current in September 2026 - bumped here, once, when Meta retires it (see the changelog on developers.facebook.com)
-    public const string GRAPH = 'https://graph.facebook.com/v26.0';
+    public const string VERSION = 'v26.0';
 
-    public const string DIALOG = 'https://www.facebook.com/v26.0/dialog/oauth';
+    public const string GRAPH = 'https://graph.facebook.com/' . self::VERSION;
+
+    public const string DIALOG = 'https://www.facebook.com/' . self::VERSION . '/dialog/oauth';
 
     // Posting on the Page, and on the Instagram account linked to it - business_management lists the Pages held through a business portfolio
     public const string SCOPES = 'business_management,pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish';
@@ -92,6 +94,20 @@ class MetaGraphClient
         }
 
         return $data;
+    }
+
+    // Hands Meta a video it downloads itself, at the upload address a reel's first phase gave out - outside the Graph host, and authorized by the Page token in a header rather than a parameter
+    public function uploadHosted(string $uploadUrl, string $fileUrl, string $token): void
+    {
+        $response = $this->httpClient->request('POST', $uploadUrl, [
+            'headers' => ['Authorization' => 'OAuth ' . $token, 'file_url' => $fileUrl],
+            'timeout' => 60,
+        ]);
+
+        $data = $response->toArray(false);
+        if (200 !== $response->getStatusCode() || true !== ($data['success'] ?? null)) {
+            throw new \RuntimeException(sprintf('Meta refused the reel upload: %s', $data['debug_info']['message'] ?? $data['error']['message'] ?? $response->getStatusCode()));
+        }
     }
 
     // One Page as Meta lists it, read into what the site keeps of it - null for an entry missing its id or its token

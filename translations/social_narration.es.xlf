@@ -230,6 +230,18 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>Debajo, elija la forma: botón ancho, cuadrado o redondo. Es el espacio que ocuparán los botones bajo sus páginas.</target>
             </trans-unit>
+            <trans-unit id="ogVgOWn">
+                <source>narration.guided_step_social_youtube_connect</source>
+                <target>Haga clic en «Conectar» en la ficha «YouTube», elija la cuenta del canal y autorice el acceso. Compruebe luego el nombre del canal en la ficha.</target>
+            </trans-unit>
+            <trans-unit id="BWdu1UR">
+                <source>narration.guided_step_social_youtube_credentials</source>
+                <target>Si no se hizo ya, pegue el identificador y el secreto del cliente de Google y marque el ajuste de vídeos para niños si el canal es infantil.</target>
+            </trans-unit>
+            <trans-unit id="AEuNUQ3">
+                <source>narration.guided_step_social_youtube_prerequisites</source>
+                <target>Esta primera parte se hace en la consola de Google Cloud: active la API de YouTube en el proyecto del cliente de Google, pase la pantalla de consentimiento a producción y declare la dirección de retorno del sitio.</target>
+            </trans-unit>
             <trans-unit id="._Fe6M5">
                 <source>narration.share_buttons_settings</source>
                 <target>«Botones de compartir» ajusta los botones colocados bajo sus páginas: qué redes, en qué orden y qué aspecto tienen.</target>
