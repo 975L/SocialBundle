@@ -908,7 +908,7 @@
             </trans-unit>
             <trans-unit id="G03WcyU">
                 <source>label.info_social_connections</source>
-                <target>Les réseaux auxquels le site se connecte. Facebook, Instagram, LinkedIn et Bluesky reçoivent les publications préparées dans l'écran « Publications » : la publication démarre dès que l'un d'eux est connecté, sans autre réglage à activer. Google donne accès aux avis de votre fiche d'établissement.</target>
+                <target>Les réseaux auxquels le site se connecte. Une fois connectés, ils reçoivent les publications préparées dans l'écran « Publications », sans autre réglage à activer. Google donne accès aux avis de votre fiche d'établissement.</target>
             </trans-unit>
             <trans-unit id="CJ1xpE7">
                 <source>label.info_social_content_change</source>

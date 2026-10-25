@@ -908,7 +908,7 @@
             </trans-unit>
             <trans-unit id="G03WcyU">
                 <source>label.info_social_connections</source>
-                <target>The networks the site connects to. Facebook, Instagram, LinkedIn and Bluesky receive the posts prepared on the "Posts" screen: publishing starts as soon as one of them is connected, nothing else to turn on. Google gives access to the reviews of your Business Profile.</target>
+                <target>The networks the site connects to. Once connected, they receive the posts prepared on the "Posts" screen, nothing else to turn on. Google gives access to the reviews of your Business Profile.</target>
             </trans-unit>
             <trans-unit id="CJ1xpE7">
                 <source>label.info_social_content_change</source>

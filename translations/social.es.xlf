@@ -908,7 +908,7 @@
             </trans-unit>
             <trans-unit id="G03WcyU">
                 <source>label.info_social_connections</source>
-                <target>Las redes a las que se conecta el sitio. Facebook, Instagram, LinkedIn y Bluesky reciben las publicaciones preparadas en la pantalla «Publicaciones»: la publicación empieza en cuanto una de ellas está conectada, sin nada más que activar. Google da acceso a las reseñas de su ficha de empresa.</target>
+                <target>Las redes a las que se conecta el sitio. Una vez conectadas, reciben las publicaciones preparadas en la pantalla «Publicaciones», sin nada más que activar. Google da acceso a las reseñas de su ficha de empresa.</target>
             </trans-unit>
             <trans-unit id="CJ1xpE7">
                 <source>label.info_social_content_change</source>

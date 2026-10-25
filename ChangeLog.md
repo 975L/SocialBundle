@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.17.1
+
+Connections help no longer lists the networks
+
+- Connections: help text no longer names the networks receiving posts (25/10/2026)
+
 ## v2.17.0
 
 YouTube channel joins the networks, Facebook posts Reels
