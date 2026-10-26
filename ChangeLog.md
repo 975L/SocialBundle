@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.18.3
+
+LinkedIn first comment sent through /v2
+
+- LinkedIn: first comment sent through the unversioned `/v2/socialActions` (26/10/2026)
+
 ## v2.18.2
 
 Calendar panel enlarges pictures and plays videos

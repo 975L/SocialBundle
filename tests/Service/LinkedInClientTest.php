@@ -173,17 +173,18 @@ class LinkedInClientTest extends TestCase
         }
     }
 
-    // The comment signed by the member, on the post's encoded urn, its id read from the header - a post LinkedIn does not find yet asked again
+    // The comment signed by the member, on the post's encoded urn through /v2 without the versioned headers, its id read from the body - a post LinkedIn does not find yet asked again
     public function testACommentIsPostedAsTheMemberAndAnswersItsId(): void
     {
         $id = $this->client([
             new MockResponse('{"message": "Not found"}', ['http_code' => 404]),
-            new MockResponse('{}', ['http_code' => 201, 'response_headers' => ['x-restli-id' => '6643']]),
+            new MockResponse('{"id": "6643"}', ['http_code' => 201]),
         ])->createComment('urn:li:share:1', 'Read more: https://example.org');
 
         $this->assertSame('6643', $id);
         $this->assertCount(2, $this->calls);
-        $this->assertSame('https://api.linkedin.com/rest/socialActions/urn%3Ali%3Ashare%3A1/comments', $this->calls[1]['url']);
+        $this->assertSame('https://api.linkedin.com/v2/socialActions/urn%3Ali%3Ashare%3A1/comments', $this->calls[1]['url']);
+        $this->assertNotContains('LinkedIn-Version: ' . LinkedInClient::VERSION, $this->calls[1]['headers']);
         $this->assertSame(['actor' => 'urn:li:person:abc', 'object' => 'urn:li:share:1', 'message' => ['text' => 'Read more: https://example.org']], json_decode((string) $this->calls[1]['body'], true));
     }
 

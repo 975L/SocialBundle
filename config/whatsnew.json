@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-26",
+        "description": [
+            {
+                "en": "The first comment of a LinkedIn post is now published as expected",
+                "fr": "Le premier commentaire d'une publication LinkedIn est maintenant bien publié",
+                "es": "El primer comentario de una publicación de LinkedIn se publica ahora correctamente"
+            }
+        ]
+    },
+    {
         "date": "2026-10-25",
         "description": [
             {

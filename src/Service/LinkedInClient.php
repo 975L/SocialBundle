@@ -205,12 +205,12 @@ class LinkedInClient
         return $urn;
     }
 
-    // Comments the post as the member who posted it, answering the comment's id, which LinkedIn hands back in a header. The text is plain, links written out
+    // Comments the post as the member who posted it, answering the comment's id. The text is plain, links written out. Through the unversioned /v2 endpoint: the versioned /rest one asks a partner permission (Community Management API) that w_member_social alone does not give
     public function createComment(string $postUrn, string $text): string
     {
         for ($attempt = 1;; ++$attempt) {
             try {
-                $response = $this->send('POST', '/rest/socialActions/' . rawurlencode($postUrn) . '/comments', [
+                $response = $this->send('POST', '/v2/socialActions/' . rawurlencode($postUrn) . '/comments', [
                     'actor' => $this->author(),
                     'object' => $postUrn,
                     'message' => ['text' => $text],
@@ -229,7 +229,7 @@ class LinkedInClient
         return $response->getHeaders(false)['x-restli-id'][0] ?? (string) (('' === $response->getContent(false) ? [] : $response->toArray(false))['id'] ?? '');
     }
 
-    // One API call, JSON both ways - the versioned headers sent on /rest only, /v2/userinfo being the OpenID endpoint
+    // One API call, JSON both ways - the versioned headers sent on /rest only, never on the unversioned /v2 endpoints
     /**
      * @param array<string, mixed>|null $json
      *
