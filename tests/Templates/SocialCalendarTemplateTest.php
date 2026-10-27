@@ -418,6 +418,7 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringContainsString('label.social_series_review_approved_button', $html);
         $this->assertStringContainsString('href="/edit/1"', $html);
         $this->assertStringContainsString('href="/prolong"', $html);
+        $this->assertStringContainsString('label.info_social_series_review', $html);
         $this->assertSame(2, substr_count($html, 'class="social-series-review-card'));
     }
 
@@ -454,5 +455,17 @@ class SocialCalendarTemplateTest extends TestCase
     {
         $this->assertMatchesRegularExpression('/id="social-series-filter-todo" checked/', $this->series([$this->seriesCard(1, 'draft'), $this->seriesCard(2, 'approved')]));
         $this->assertMatchesRegularExpression('/id="social-series-filter-all" checked/', $this->series([$this->seriesCard(1, 'approved')]));
+    }
+
+    // Every draft checked to begin with, a box to check or uncheck them all, and one button approving those checked - an approved or failed post having no box
+    public function testTheSeriesApprovesTheDraftsPicked(): void
+    {
+        $html = $this->series([$this->seriesCard(1, 'draft'), $this->seriesCard(2, 'approved'), $this->seriesCard(3, 'failed')]);
+
+        $this->assertSame(1, substr_count($html, 'data-social-calendar-target="pick"'));
+        $this->assertMatchesRegularExpression('/checked value="1" data-social-calendar-target="pick" data-action="social-calendar#syncPicks"/', $html);
+        $this->assertStringContainsString('data-social-calendar-target="pickAll" data-action="social-calendar#pickAll"', $html);
+        $this->assertStringContainsString('data-action="social-calendar#approvePicked"', $html);
+        $this->assertStringNotContainsString('social-calendar#pickAll', $this->series([$this->seriesCard(2, 'approved'), $this->seriesCard(3, 'failed')]));
     }
 }

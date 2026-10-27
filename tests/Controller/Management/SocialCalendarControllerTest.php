@@ -33,6 +33,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -71,6 +73,10 @@ class SocialCalendarControllerTest extends TestCase
     // The networks handed to SocialPublisher::addTargets(), to have their texts written
     /** @var list<string> */
     private array $added = [];
+
+    // What the repository answers: every series with the moment of its last post, ended or not
+    /** @var list<array{series: SocialSeries, lastPlannedAt: \DateTimeImmutable}> */
+    private array $seriesRows = [];
 
     // What the entity manager was handed to persist
     /** @var list<object> */
@@ -194,6 +200,7 @@ class SocialCalendarControllerTest extends TestCase
         // The series of the post, known by the id 3
         $seriesRepository = $this->createStub(SocialSeriesRepository::class);
         $seriesRepository->method('find')->willReturnCallback(fn (mixed $id): ?SocialSeries => 3 === $id ? $this->post->getSeries() : null);
+        $seriesRepository->method('findWithLastPlannedAt')->willReturnCallback(fn (): array => $this->seriesRows);
 
         $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('flush')->willReturnCallback(function (): void {
@@ -244,7 +251,10 @@ class SocialCalendarControllerTest extends TestCase
 
             return 'panel';
         });
-        $services = ['request_stack' => new RequestStack([$request]), 'security.authorization_checker' => $authorizationChecker, 'security.csrf.token_manager' => $csrf, 'twig' => $twig, 'router' => $this->createStub(UrlGeneratorInterface::class)];
+        // A route answered by its name, a redirection needing an address that is not empty
+        $router = $this->createStub(UrlGeneratorInterface::class);
+        $router->method('generate')->willReturnCallback(static fn (string $name): string => '/' . $name);
+        $services = ['request_stack' => new RequestStack([$request]), 'security.authorization_checker' => $authorizationChecker, 'security.csrf.token_manager' => $csrf, 'twig' => $twig, 'router' => $router];
         $container = $this->createStub(ContainerInterface::class);
         $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
         $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
@@ -774,9 +784,10 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertSame(1, $this->flushes);
     }
 
-    private function series(int $id): Response
+    private function series(?string $id): Response
     {
-        $request = Request::create('/', 'GET', ['id' => (string) $id]);
+        $request = Request::create('/', 'GET', null === $id ? [] : ['id' => $id]);
+        $request->setSession(new Session(new MockArraySessionStorage()));
 
         return $this->createController($request)->series($request);
     }
@@ -787,7 +798,7 @@ class SocialCalendarControllerTest extends TestCase
         $other = $this->seriesPost('Other');
         $other->approve();
 
-        $this->series(3);
+        $this->series('3');
 
         $this->assertCount(2, $this->rendered['posts']);
         $this->assertSame(1, $this->rendered['approved']);
@@ -803,6 +814,106 @@ class SocialCalendarControllerTest extends TestCase
     {
         $this->expectException(NotFoundHttpException::class);
 
-        $this->series(99);
+        $this->series('99');
+    }
+
+    // An id of 0 is not found either, rather than read as the menu's entry
+    public function testASeriesIdOfZeroIsNotFound(): void
+    {
+        $this->seriesPost('Other');
+        $this->seriesRows = [['series' => $this->post->getSeries(), 'lastPlannedAt' => $this->plannedAt->modify('+1 day')]];
+
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->series('0');
+    }
+
+    // The menu's entry names no series: the first one still running opens, an ended one left out, its last moment read from the list
+    public function testTheMenuOpensTheFirstSeriesStillRunning(): void
+    {
+        $this->seriesPost('Other');
+        $ended = ['series' => new SocialSeries('Ended', 3, 'daily', 1, [], 'text', 'Text', [], ['bluesky']), 'lastPlannedAt' => new \DateTimeImmutable('-1 day')];
+        $running = ['series' => $this->post->getSeries(), 'lastPlannedAt' => $this->plannedAt->modify('+1 day')];
+        $this->seriesRows = [$ended, $running];
+
+        $this->series(null);
+
+        $this->assertSame($this->post->getSeries(), $this->rendered['series']);
+        $this->assertSame([$running], $this->rendered['others']);
+        $this->assertSame($running['lastPlannedAt'], $this->rendered['last']);
+    }
+
+    // None running: the calendar opens, saying so
+    public function testWithNoSeriesRunningTheMenuOpensTheCalendar(): void
+    {
+        $response = $this->series(null);
+
+        $this->assertSame(Response::HTTP_FOUND, $response->getStatusCode());
+        $this->assertSame('/' . SocialCalendarController::ROUTE, $response->headers->get('Location'));
+    }
+
+    // A series ended, opened by its address, is listed at its place beside the running ones, another ended one left out
+    public function testASeriesEndedIsListedBesideTheRunningOnes(): void
+    {
+        $this->seriesPost('Other');
+        $running = new SocialSeries('Running', 3, 'daily', 1, [], 'text', 'Text', [], ['bluesky']);
+        $this->seriesRows = [
+            ['series' => new SocialSeries('Ended', 3, 'daily', 1, [], 'text', 'Text', [], ['bluesky']), 'lastPlannedAt' => new \DateTimeImmutable('-2 days')],
+            ['series' => $this->post->getSeries(), 'lastPlannedAt' => new \DateTimeImmutable('-1 day')],
+            ['series' => $running, 'lastPlannedAt' => new \DateTimeImmutable('+1 day')],
+        ];
+
+        $this->series('3');
+
+        $this->assertSame([$this->post->getSeries(), $running], array_column($this->rendered['others'], 'series'));
+    }
+
+    // The drafts checked on the series' page are approved, the ones left unchecked staying drafts
+    public function testOnlyTheDraftsPickedAreApproved(): void
+    {
+        $other = $this->seriesPost('Other');
+        $third = $this->seriesPost('Third');
+        foreach ([[$this->post, 42], [$other, 43], [$third, 44]] as [$post, $id]) {
+            new \ReflectionProperty(SocialPost::class, 'id')->setValue($post, $id);
+        }
+
+        $this->assertSame(Response::HTTP_NO_CONTENT, $this->movePicked(['42', '44'])->getStatusCode());
+        $this->assertSame('approved', $this->post->getState());
+        $this->assertSame('draft', $other->getState());
+        $this->assertSame('approved', $third->getState());
+    }
+
+    /** @param list<string> $ids */
+    private function movePicked(array $ids): Response
+    {
+        $request = Request::create('/', 'POST', ['post' => '42', 'to' => 'approve-picked', 'posts' => $ids]);
+        $request->headers->set('X-CSRF-Token', 'valid');
+
+        return $this->createController($request)->move($request);
+    }
+
+    // An empty selection is refused rather than read as the whole series
+    public function testAnEmptySelectionApprovesNothing(): void
+    {
+        $other = $this->seriesPost('Other');
+
+        $this->assertSame(Response::HTTP_BAD_REQUEST, $this->movePicked([])->getStatusCode());
+        $this->assertSame('draft', $other->getState());
+    }
+
+    // A post checked that is no longer a draft is said rather than dropped, the others approved all the same
+    public function testAPickedPostNoLongerADraftIsSaid(): void
+    {
+        $other = $this->seriesPost('Other');
+        foreach ([[$this->post, 42], [$other, 43]] as [$post, $id]) {
+            new \ReflectionProperty(SocialPost::class, 'id')->setValue($post, $id);
+        }
+        $other->approve();
+
+        $response = $this->movePicked(['42', '43']);
+
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        $this->assertSame('label.social_series_review_skipped', $response->getContent());
+        $this->assertSame('approved', $this->post->getState());
     }
 }

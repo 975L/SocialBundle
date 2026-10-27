@@ -76,6 +76,9 @@ class SocialCalendarController extends AbstractController
     // Every coming draft of the post's series approved at once
     private const string TO_APPROVE_SERIES = 'approve-series';
 
+    // The drafts checked on the series' page approved together
+    private const string TO_APPROVE_PICKED = 'approve-picked';
+
     // The three views: a week of tall days, opened first, a single day the same way, or a month of short ones
     public const string WEEK = 'week';
 
@@ -205,12 +208,21 @@ class SocialCalendarController extends AbstractController
     {
         $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
 
-        $series = $this->seriesRepository->find($request->query->getInt('id'));
+        // The menu's entry names no series: the one still running that ends first opens, the calendar when none is - an id named but unknown staying a 404
+        $now = new \DateTimeImmutable();
+        $all = $this->seriesRepository->findWithLastPlannedAt();
+        $running = array_values(array_filter($all, static fn (array $row): bool => $row['lastPlannedAt'] >= $now));
+        $named = $request->query->has('id');
+        $series = $named ? $this->seriesRepository->find($request->query->getInt('id')) : ($running[0]['series'] ?? null);
+        if (!$named && null === $series) {
+            $this->addFlash('info', new TranslatableMessage('flash.social_series_none', [], 'social'));
+
+            return $this->redirectToRoute(self::ROUTE);
+        }
         if (!$series instanceof SocialSeries) {
             throw $this->createNotFoundException();
         }
 
-        $now = new \DateTimeImmutable();
         $cards = array_map(fn (SocialPost $post): array => $this->card($post, self::SERIES) + [
             // The video played at its size, a picture of the post being UiBundle's lightbox
             'video_url' => $post->getVideoUrl(),
@@ -220,7 +232,8 @@ class SocialCalendarController extends AbstractController
         ], $this->postRepository->findComingBySeries($series, $now));
         $states = array_count_values(array_column($cards, 'state'));
 
-        // Its last post, coming or gone, is the one "Prolong" is asked from (see SocialPostCrudController::prolongSeries())
+        // Its last moment read from the list above; its last post, coming or gone, is the one "Prolong" is asked from (see SocialPostCrudController::prolongSeries())
+        $lastPlannedAt = array_values(array_filter($all, static fn (array $row): bool => $row['series'] === $series))[0]['lastPlannedAt'] ?? null;
         $last = $this->postRepository->findOneBy(['series' => $series], ['plannedAt' => 'DESC']);
         $connected = $this->publisher->getConnectedNetworkNames();
 
@@ -229,8 +242,8 @@ class SocialCalendarController extends AbstractController
             'posts' => $cards,
             'approved' => $states['approved'] ?? 0,
             'to_approve' => \count($cards) - ($states['approved'] ?? 0),
-            'last' => $last?->getPlannedAt(),
-            'others' => array_values(array_filter($this->seriesRepository->findWithLastPlannedAt(), static fn (array $row): bool => $row['lastPlannedAt'] >= $now || $row['series'] === $series)),
+            'last' => $lastPlannedAt,
+            'others' => array_values(array_filter($all, static fn (array $row): bool => $row['lastPlannedAt'] >= $now || $row['series'] === $series)),
             'connected' => $connected,
             'offered_networks' => $this->offeredNetworks($connected),
             'move_url' => $this->generateUrl(self::MOVE_ROUTE),
@@ -456,6 +469,13 @@ class SocialCalendarController extends AbstractController
             return $this->approveSeries($post);
         }
 
+        // The drafts checked on the series' page, a selection never empty: none would read as no post rather than as the whole series
+        if (self::TO_APPROVE_PICKED === $to) {
+            $ids = array_map(intval(...), $request->request->all('posts'));
+
+            return [] === $ids ? new Response(null, Response::HTTP_BAD_REQUEST) : $this->approvePicked($post, $ids);
+        }
+
         if ('published' === $post->getState()) {
             return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
@@ -481,10 +501,29 @@ class SocialCalendarController extends AbstractController
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
-    // The series' coming drafts approved, each at its own moment - one whose medias a network does not take left a draft, its reasons said under its title
+    // The series' coming drafts approved, each at its own moment
     private function approveSeries(SocialPost $post): Response
     {
-        $refused = array_map(fn (array $refusal): string => $refusal['post']->getTitle() . "\n" . $this->problemsText($refusal['problems']), $this->approver->approveAll($this->seriesDrafts($post)));
+        return $this->approveDrafts($this->seriesDrafts($post));
+    }
+
+    // The series' drafts among $ids approved, an id no longer one of them (approved meanwhile, refused by a network) said rather than dropped
+    /** @param list<int> $ids */
+    private function approvePicked(SocialPost $post, array $ids): Response
+    {
+        $drafts = array_values(array_filter($this->seriesDrafts($post), static fn (SocialPost $draft): bool => \in_array($draft->getId(), $ids, true)));
+
+        return $this->approveDrafts($drafts, \count(array_unique($ids)) - \count($drafts));
+    }
+
+    // The drafts approved, one whose medias a network does not take staying a draft, its reasons said under its title - $skipped the posts asked for that were no longer drafts
+    /** @param list<SocialPost> $drafts */
+    private function approveDrafts(array $drafts, int $skipped = 0): Response
+    {
+        $refused = array_map(fn (array $refusal): string => $refusal['post']->getTitle() . "\n" . $this->problemsText($refusal['problems']), $this->approver->approveAll($drafts));
+        if ($skipped > 0) {
+            $refused[] = $this->translator->trans('label.social_series_review_skipped', ['%count%' => $skipped], 'social');
+        }
 
         return [] === $refused ? new Response(null, Response::HTTP_NO_CONTENT) : new Response(implode("\n\n", $refused), Response::HTTP_UNPROCESSABLE_ENTITY);
     }

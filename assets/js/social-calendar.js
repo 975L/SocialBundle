@@ -11,7 +11,7 @@ import { addSortGesture } from "@c975l/ui-bundle/pointer-sort.js";
 
 // The publications calendar (see management/social_calendar.html.twig): a card dragged onto a quarter of an hour of the week is planned at that moment, onto a day of the month at its own time that day, its approval untouched; a coming moment double-clicked writes a new post there. The gesture is UiBundle's (pointer-sort.js), this controller owning only where a card lands, saved on the spot then the page reloaded, the server computing where every other post falls
 export default class extends Controller {
-    static targets = ["item", "zone", "panel", "planAt", "group", "media", "thumbnail", "badges", "drop", "zoom"];
+    static targets = ["item", "zone", "panel", "planAt", "group", "media", "thumbnail", "badges", "drop", "zoom", "pick", "pickAll"];
     static values = { url: String, token: String, panelUrl: String, mediasUrl: String, uploadUrl: String, textsUrl: String, networksUrl: String, duplicateUrl: String, openId: Number, newUrl: String, failedLabel: String, textsFailedLabel: String };
 
     // A copy just made opens its panel with the page, its id then taken off the address so a reload does not open it again
@@ -288,6 +288,32 @@ export default class extends Controller {
         form.querySelector("fieldset").disabled = true;
 
         this.send(this.networksUrlValue, body);
+    }
+
+    // The series' page: every draft checked or unchecked at once
+    pickAll(event) {
+        for (const pick of this.pickTargets) pick.checked = event.currentTarget.checked;
+    }
+
+    // The series' page: "Select all" checked when every draft is, half-checked when only some are
+    syncPicks() {
+        if (!this.hasPickAllTarget) return;
+
+        const checked = this.pickTargets.filter((pick) => pick.checked).length;
+        this.pickAllTarget.checked = checked === this.pickTargets.length;
+        this.pickAllTarget.indeterminate = checked > 0 && checked < this.pickTargets.length;
+    }
+
+    // The series' page: the drafts checked approved together, their series found from the first - nothing sent when none is
+    approvePicked(event) {
+        const picked = this.pickTargets.filter((pick) => pick.checked).map((pick) => pick.value);
+        if (0 === picked.length) return;
+
+        const body = new URLSearchParams({ post: picked[0], to: "approve-picked" });
+        for (const id of picked) body.append("posts[]", id);
+        event.currentTarget.disabled = true;
+
+        this.send(this.urlValue, body);
     }
 
     // The post written again the day after, the calendar then opened on the copy's day with its panel

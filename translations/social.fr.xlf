@@ -218,6 +218,10 @@
                 <source>description.guided_step_social_posts_series</source>
                 <target>Prépare plusieurs brouillons d'un coup, chaque jour, semaine ou mois : un même texte, des textes écrits par l'IA à partir d'une consigne, ou les prochains contenus du site. Ils sont ensuite relus et validés, un par un ou ensemble.</target>
             </trans-unit>
+            <trans-unit id="OFmbv9e">
+                <source>description.guided_step_social_series_approve_picked</source>
+                <target>Tous les brouillons sont cochés au départ : décochez ceux à garder en brouillon, puis « Valider la sélection » valide les autres ensemble, chacun à son moment. « Tout sélectionner » les coche ou les décoche tous.</target>
+            </trans-unit>
             <trans-unit id="Sr07Dp3">
                 <source>description.guided_step_social_series_frequency</source>
                 <target>Un brouillon tous les N jours (1 tous les jours, 2 un jour sur deux, 7 toutes les semaines), certains jours de la semaine ou tous les mois, à partir du moment choisi.</target>
@@ -240,7 +244,7 @@
             </trans-unit>
             <trans-unit id="1LrVmDy">
                 <source>description.guided_step_social_series_review</source>
-                <target>Dans le panneau d'un de ses posts, « Voir la série » montre tous ses posts à venir côte à côte : validez-les un à un, cochez ou décochez un réseau sur son badge, agrandissez une image ou lisez une vidéo d'un clic. Les filtres séparent ceux à valider de ceux validés.</target>
+                <target>Le menu « Séries », ou « Voir la série » dans le panneau d'un de ses posts, montre tous ses posts à venir côte à côte : validez-les un à un, cochez ou décochez un réseau sur son badge, agrandissez une image ou lisez une vidéo d'un clic. Les filtres séparent ceux à valider de ceux validés.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -413,6 +417,10 @@
             <trans-unit id="BmODYyf">
                 <source>flash.social_series_generated</source>
                 <target>%count% brouillon(s) créé(s), à relire et valider.</target>
+            </trans-unit>
+            <trans-unit id="wGkF9zA">
+                <source>flash.social_series_none</source>
+                <target>Aucune série en cours : créez-en une avec « Générer une série ».</target>
             </trans-unit>
             <trans-unit id="cjgig6f">
                 <source>flash.youtube_connected</source>
@@ -806,6 +814,10 @@
                 <source>label.guided_step_social_posts_series</source>
                 <target>Générer une série</target>
             </trans-unit>
+            <trans-unit id="OSuwsuF">
+                <source>label.guided_step_social_series_approve_picked</source>
+                <target>Valider la sélection</target>
+            </trans-unit>
             <trans-unit id="auA9NI7">
                 <source>label.guided_step_social_series_frequency</source>
                 <target>Choisir le rythme</target>
@@ -989,6 +1001,10 @@
             <trans-unit id="UQgKT5o">
                 <source>label.info_social_series_prolong</source>
                 <target>« %title% » : %count% brouillon(s) de plus, avec les mêmes réglages, après la dernière publication du %date%.</target>
+            </trans-unit>
+            <trans-unit id="6QJC8SM">
+                <source>label.info_social_series_review</source>
+                <target>Les posts à venir d'une série côte à côte : chacun relu, ses réseaux cochés, puis validé seul ou avec les autres.</target>
             </trans-unit>
             <trans-unit id="E9Dv0_T">
                 <source>label.info_youtube_connect</source>
@@ -1558,6 +1574,10 @@
                 <source>label.social_series_review_all</source>
                 <target>Tous (%count%)</target>
             </trans-unit>
+            <trans-unit id="T.CHxdk">
+                <source>label.social_series_review_approve_picked</source>
+                <target>Valider la sélection</target>
+            </trans-unit>
             <trans-unit id="faaOpFd">
                 <source>label.social_series_review_approved</source>
                 <target>Validés (%count%)</target>
@@ -1574,9 +1594,25 @@
                 <source>label.social_series_review_last</source>
                 <target>Dernier post le %date%</target>
             </trans-unit>
+            <trans-unit id="B075NnB">
+                <source>label.social_series_review_menu</source>
+                <target>Séries</target>
+            </trans-unit>
             <trans-unit id="5ej7CCE">
                 <source>label.social_series_review_others</source>
                 <target>Séries en cours</target>
+            </trans-unit>
+            <trans-unit id="mNaPyds">
+                <source>label.social_series_review_pick</source>
+                <target>Sélectionner « %title% »</target>
+            </trans-unit>
+            <trans-unit id="vQDK.B_">
+                <source>label.social_series_review_pick_all</source>
+                <target>Tout sélectionner</target>
+            </trans-unit>
+            <trans-unit id="ZZMxgeB">
+                <source>label.social_series_review_skipped</source>
+                <target>%count% post(s) n'étaient plus des brouillons à venir : laissés tels quels.</target>
             </trans-unit>
             <trans-unit id="jgSzGJ0">
                 <source>label.social_series_review_text</source>

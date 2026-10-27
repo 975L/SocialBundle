@@ -174,6 +174,10 @@
                 <source>narration.guided_step_social_posts_series</source>
                 <target>«Generar una serie» prepara varios borradores de una vez, a intervalo regular, que revisa y luego valida juntos.</target>
             </trans-unit>
+            <trans-unit id="1n62VPw">
+                <source>narration.guided_step_social_series_approve_picked</source>
+                <target>Todos los borradores están marcados al principio. Desmarque los que quiera conservar como borradores y luego haga clic en «Validar la selección»: los demás se validan juntos, cada uno en su momento.</target>
+            </trans-unit>
             <trans-unit id="fl_JIU5">
                 <source>narration.guided_step_social_series_frequency</source>
                 <target>Elija el ritmo: cada N días, algunos días de la semana, o cada mes.</target>
@@ -200,7 +204,7 @@
             </trans-unit>
             <trans-unit id="1wbZKB1">
                 <source>narration.guided_step_social_series_review</source>
-                <target>En el panel de una de sus publicaciones, haga clic en «Ver la serie»: todas sus publicaciones próximas se muestran una al lado de otra. Valídelas una a una, marque o desmarque una red en su distintivo, amplíe una imagen o reproduzca un vídeo con un clic.</target>
+                <target>Abra «Series» en el menú, o haga clic en «Ver la serie» en el panel de una de sus publicaciones: todas sus publicaciones próximas se muestran una al lado de otra. Valídelas una a una, marque o desmarque una red en su distintivo, amplíe una imagen o reproduzca un vídeo con un clic.</target>
             </trans-unit>
             <trans-unit id="F.zSd24">
                 <source>narration.guided_step_social_series_text</source>
@@ -273,6 +277,10 @@
             <trans-unit id="m6sfKEB">
                 <source>narration.social_posts</source>
                 <target>«Publicaciones» reúne sus publicaciones, escritas aquí o preparadas: revisa cada texto y luego valida o publica.</target>
+            </trans-unit>
+            <trans-unit id="9pWPQRy">
+                <source>narration.social_series_review</source>
+                <target>«Series» muestra los próximos posts de una serie uno al lado del otro. Desmarque los que quiera dejar como borrador y valide todos los demás con un clic.</target>
             </trans-unit>
         </body>
     </file>

@@ -61,12 +61,14 @@ class MenuProviderTest extends TestCase
         $this->assertSame(SocialPostCrudController::class, $menus['social_posts']['controller']);
     }
 
-    // One entry for every network, the connections screen drawing a tile for each, and the calendar - two screens, no entity behind either
+    // One entry for every network, the connections screen drawing a tile for each, the calendar and the series' page - screens, no entity behind any
     public function testGetLinksOffersTheCalendarAndTheConnectionsScreen(): void
     {
         $links = $this->createProvider()->getLinks();
 
-        $this->assertSame(['social_calendar', 'social_connections'], array_keys($links));
+        $this->assertSame(['social_calendar', 'social_series', 'social_connections'], array_keys($links));
+        $this->assertSame(SocialCalendarController::SERIES_ROUTE, $links['social_series']['name']);
+        $this->assertSame('ROLE_EDITOR', $links['social_series']['role']);
         $this->assertSame(SocialCalendarController::ROUTE, $links['social_calendar']['name']);
         $this->assertSame('ROLE_EDITOR', $links['social_calendar']['role']);
         $this->assertSame(SocialConnectionsController::ROUTE, $links['social_connections']['name']);

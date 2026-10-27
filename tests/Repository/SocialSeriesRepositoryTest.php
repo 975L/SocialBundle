@@ -88,4 +88,13 @@ class SocialSeriesRepositoryTest extends TestCase
         $this->assertSame('Photo du soir', $rows[0]['series']->getTitle());
         $this->assertEquals(new \DateTimeImmutable('2026-11-03 21:00'), $rows[0]['lastPlannedAt']);
     }
+
+    // The series ending first comes first, whichever was created first
+    public function testTheSeriesEndingFirstComesFirst(): void
+    {
+        $this->series('Photo du soir', '2026-11-01 21:00', '2026-11-09 21:00');
+        $this->series('Photo du matin', '2026-11-02 09:00', '2026-11-04 09:00');
+
+        $this->assertSame(['Photo du matin', 'Photo du soir'], array_map(static fn (array $row): string => $row['series']->getTitle(), $this->repository->findWithLastPlannedAt()));
+    }
 }

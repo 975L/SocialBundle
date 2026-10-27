@@ -6,6 +6,11 @@
                 "en": "A series' coming posts can now be read side by side on one page, to approve them one by one and tick their networks with a click",
                 "fr": "Les prochaines publications d'une série se relisent maintenant côte à côte sur une seule page, pour les valider une à une et cocher leurs réseaux d'un clic",
                 "es": "Las próximas publicaciones de una serie se revisan ahora una al lado de otra en una sola página, para validarlas una a una y marcar sus redes con un clic"
+            },
+            {
+                "en": "A series' page now opens from the menu, and its drafts are approved together by checking them",
+                "fr": "La page d'une série s'ouvre maintenant depuis le menu, et ses brouillons se valident ensemble en les cochant",
+                "es": "La página de una serie se abre ahora desde el menú, y sus borradores se validan juntos marcándolos"
             }
         ]
     },

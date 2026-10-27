@@ -72,7 +72,7 @@ class MenuProvider implements MenuProviderInterface
         ];
     }
 
-    // The networks the site connects to, gathered on one screen of tiles rather than one link each; the calendar, a screen of its own rather than a list of entities
+    // The networks the site connects to, gathered on one screen of tiles rather than one link each; the calendar and the series' page, screens of their own rather than lists of entities
     public function getLinks(): array
     {
         return [
@@ -84,6 +84,15 @@ class MenuProvider implements MenuProviderInterface
                 'icon' => 'fas fa-calendar-days',
                 'role' => $this->configService->get('site-role-editor'),
                 'description' => 'label.info_social_calendar',
+            ],
+            'social_series' => [
+                'name' => SocialCalendarController::SERIES_ROUTE,
+                'label' => 'label.social_series_review_menu',
+                'narration' => 'narration.social_series_review',
+                'translation_domain' => 'social',
+                'icon' => 'fas fa-layer-group',
+                'role' => $this->configService->get('site-role-editor'),
+                'description' => 'label.info_social_series_review',
             ],
             'social_connections' => [
                 'name' => SocialConnectionsController::ROUTE,

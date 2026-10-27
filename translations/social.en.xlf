@@ -218,6 +218,10 @@
                 <source>description.guided_step_social_posts_series</source>
                 <target>Prepares several drafts at once, every day, week or month: one text, texts written by the AI from an instruction, or the site's next contents. They are then read and approved, one by one or together.</target>
             </trans-unit>
+            <trans-unit id="OFmbv9e">
+                <source>description.guided_step_social_series_approve_picked</source>
+                <target>Every draft is checked to begin with: uncheck those to keep as drafts, then "Approve the selection" approves the others together, each at its own moment. "Select all" checks or unchecks them all.</target>
+            </trans-unit>
             <trans-unit id="Sr07Dp3">
                 <source>description.guided_step_social_series_frequency</source>
                 <target>A draft every N days (1 every day, 2 every other day, 7 every week), on some days of the week or every month, from the moment chosen.</target>
@@ -240,7 +244,7 @@
             </trans-unit>
             <trans-unit id="1LrVmDy">
                 <source>description.guided_step_social_series_review</source>
-                <target>In the panel of one of its posts, "View the series" shows all its coming posts side by side: approve them one by one, tick or untick a network on its badge, enlarge a picture or play a video with a click. The filters set apart those to approve from those approved.</target>
+                <target>The "Series" menu, or "View the series" in the panel of one of its posts, shows all its coming posts side by side: approve them one by one, tick or untick a network on its badge, enlarge a picture or play a video with a click. The filters set apart those to approve from those approved.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -413,6 +417,10 @@
             <trans-unit id="BmODYyf">
                 <source>flash.social_series_generated</source>
                 <target>%count% draft(s) created, to read and approve.</target>
+            </trans-unit>
+            <trans-unit id="wGkF9zA">
+                <source>flash.social_series_none</source>
+                <target>No series is running: create one with "Generate a series".</target>
             </trans-unit>
             <trans-unit id="cjgig6f">
                 <source>flash.youtube_connected</source>
@@ -806,6 +814,10 @@
                 <source>label.guided_step_social_posts_series</source>
                 <target>Generate a series</target>
             </trans-unit>
+            <trans-unit id="OSuwsuF">
+                <source>label.guided_step_social_series_approve_picked</source>
+                <target>Approve the selection</target>
+            </trans-unit>
             <trans-unit id="auA9NI7">
                 <source>label.guided_step_social_series_frequency</source>
                 <target>Choose the pace</target>
@@ -989,6 +1001,10 @@
             <trans-unit id="UQgKT5o">
                 <source>label.info_social_series_prolong</source>
                 <target>"%title%": %count% more draft(s), with the same settings, after the last post of %date%.</target>
+            </trans-unit>
+            <trans-unit id="6QJC8SM">
+                <source>label.info_social_series_review</source>
+                <target>A series' coming posts side by side: each one read, its networks ticked, then approved alone or with the others.</target>
             </trans-unit>
             <trans-unit id="E9Dv0_T">
                 <source>label.info_youtube_connect</source>
@@ -1558,6 +1574,10 @@
                 <source>label.social_series_review_all</source>
                 <target>All (%count%)</target>
             </trans-unit>
+            <trans-unit id="T.CHxdk">
+                <source>label.social_series_review_approve_picked</source>
+                <target>Approve the selection</target>
+            </trans-unit>
             <trans-unit id="faaOpFd">
                 <source>label.social_series_review_approved</source>
                 <target>Approved (%count%)</target>
@@ -1574,9 +1594,25 @@
                 <source>label.social_series_review_last</source>
                 <target>Last post on %date%</target>
             </trans-unit>
+            <trans-unit id="B075NnB">
+                <source>label.social_series_review_menu</source>
+                <target>Series</target>
+            </trans-unit>
             <trans-unit id="5ej7CCE">
                 <source>label.social_series_review_others</source>
                 <target>Running series</target>
+            </trans-unit>
+            <trans-unit id="mNaPyds">
+                <source>label.social_series_review_pick</source>
+                <target>Select "%title%"</target>
+            </trans-unit>
+            <trans-unit id="vQDK.B_">
+                <source>label.social_series_review_pick_all</source>
+                <target>Select all</target>
+            </trans-unit>
+            <trans-unit id="ZZMxgeB">
+                <source>label.social_series_review_skipped</source>
+                <target>%count% post(s) no longer coming drafts: left as they were.</target>
             </trans-unit>
             <trans-unit id="jgSzGJ0">
                 <source>label.social_series_review_text</source>

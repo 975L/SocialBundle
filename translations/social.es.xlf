@@ -218,6 +218,10 @@
                 <source>description.guided_step_social_posts_series</source>
                 <target>Prepara varios borradores de una vez, cada día, semana o mes: un mismo texto, textos escritos por la IA a partir de una consigna, o los próximos contenidos del sitio. Después se revisan y validan, uno a uno o juntos.</target>
             </trans-unit>
+            <trans-unit id="OFmbv9e">
+                <source>description.guided_step_social_series_approve_picked</source>
+                <target>Todos los borradores están marcados al principio: desmarque los que quiera conservar como borradores y luego «Validar la selección» valida los demás juntos, cada uno en su momento. «Seleccionar todo» los marca o desmarca todos.</target>
+            </trans-unit>
             <trans-unit id="Sr07Dp3">
                 <source>description.guided_step_social_series_frequency</source>
                 <target>Un borrador cada N días (1 cada día, 2 un día de cada dos, 7 cada semana), algunos días de la semana o cada mes, desde el momento elegido.</target>
@@ -240,7 +244,7 @@
             </trans-unit>
             <trans-unit id="1LrVmDy">
                 <source>description.guided_step_social_series_review</source>
-                <target>En el panel de una de sus publicaciones, «Ver la serie» muestra todas sus publicaciones próximas una al lado de otra: valídelas una a una, marque o desmarque una red en su distintivo, amplíe una imagen o reproduzca un vídeo con un clic. Los filtros separan las que están por validar de las validadas.</target>
+                <target>El menú «Series», o «Ver la serie» en el panel de una de sus publicaciones, muestra todas sus publicaciones próximas una al lado de otra: valídelas una a una, marque o desmarque una red en su distintivo, amplíe una imagen o reproduzca un vídeo con un clic. Los filtros separan las que están por validar de las validadas.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -413,6 +417,10 @@
             <trans-unit id="BmODYyf">
                 <source>flash.social_series_generated</source>
                 <target>%count% borrador(es) creado(s), por revisar y validar.</target>
+            </trans-unit>
+            <trans-unit id="wGkF9zA">
+                <source>flash.social_series_none</source>
+                <target>Ninguna serie en curso: cree una con «Generar una serie».</target>
             </trans-unit>
             <trans-unit id="cjgig6f">
                 <source>flash.youtube_connected</source>
@@ -806,6 +814,10 @@
                 <source>label.guided_step_social_posts_series</source>
                 <target>Generar una serie</target>
             </trans-unit>
+            <trans-unit id="OSuwsuF">
+                <source>label.guided_step_social_series_approve_picked</source>
+                <target>Validar la selección</target>
+            </trans-unit>
             <trans-unit id="auA9NI7">
                 <source>label.guided_step_social_series_frequency</source>
                 <target>Elegir el ritmo</target>
@@ -989,6 +1001,10 @@
             <trans-unit id="UQgKT5o">
                 <source>label.info_social_series_prolong</source>
                 <target>«%title%»: %count% borrador(es) más, con los mismos ajustes, tras la última publicación del %date%.</target>
+            </trans-unit>
+            <trans-unit id="6QJC8SM">
+                <source>label.info_social_series_review</source>
+                <target>Los próximos posts de una serie uno al lado del otro: cada uno releído, sus redes marcadas y luego validado solo o con los demás.</target>
             </trans-unit>
             <trans-unit id="E9Dv0_T">
                 <source>label.info_youtube_connect</source>
@@ -1558,6 +1574,10 @@
                 <source>label.social_series_review_all</source>
                 <target>Todos (%count%)</target>
             </trans-unit>
+            <trans-unit id="T.CHxdk">
+                <source>label.social_series_review_approve_picked</source>
+                <target>Validar la selección</target>
+            </trans-unit>
             <trans-unit id="faaOpFd">
                 <source>label.social_series_review_approved</source>
                 <target>Validados (%count%)</target>
@@ -1574,9 +1594,25 @@
                 <source>label.social_series_review_last</source>
                 <target>Último post el %date%</target>
             </trans-unit>
+            <trans-unit id="B075NnB">
+                <source>label.social_series_review_menu</source>
+                <target>Series</target>
+            </trans-unit>
             <trans-unit id="5ej7CCE">
                 <source>label.social_series_review_others</source>
                 <target>Series en curso</target>
+            </trans-unit>
+            <trans-unit id="mNaPyds">
+                <source>label.social_series_review_pick</source>
+                <target>Seleccionar «%title%»</target>
+            </trans-unit>
+            <trans-unit id="vQDK.B_">
+                <source>label.social_series_review_pick_all</source>
+                <target>Seleccionar todo</target>
+            </trans-unit>
+            <trans-unit id="ZZMxgeB">
+                <source>label.social_series_review_skipped</source>
+                <target>%count% publicación(es) ya no eran borradores próximos: se dejaron como estaban.</target>
             </trans-unit>
             <trans-unit id="jgSzGJ0">
                 <source>label.social_series_review_text</source>

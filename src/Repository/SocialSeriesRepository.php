@@ -39,7 +39,7 @@ class SocialSeriesRepository extends ServiceEntityRepository
         return null === $last ? null : new \DateTimeImmutable((string) $last);
     }
 
-    // Every series with the moment of its last post, the ones whose posts were all deleted left out - what the ending announcement goes through
+    // Every series with the moment of its last post, the one ending first first, the ones whose posts were all deleted left out - what the ending announcement and the series' page go through
     /** @return list<array{series: SocialSeries, lastPlannedAt: \DateTimeImmutable}> */
     public function findWithLastPlannedAt(): array
     {
@@ -47,6 +47,7 @@ class SocialSeriesRepository extends ServiceEntityRepository
             ->select('s AS series', 'MAX(p.plannedAt) AS lastPlannedAt')
             ->innerJoin(SocialPost::class, 'p', 'ON', 'p.series = s')
             ->groupBy('s.id')
+            ->orderBy('lastPlannedAt', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
 

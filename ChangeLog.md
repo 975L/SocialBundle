@@ -1,5 +1,19 @@
 # Changelog
 
+## v2.19.1
+
+Series page approves the drafts checked, reached from the menu
+
+- Menu: "Séries" opens the running series ending first (27/10/2026)
+- Series page: drafts checked approved together by "Valider la sélection" (27/10/2026)
+- Series page: "Tout sélectionner" follows the drafts checked (27/10/2026)
+- Series page: selection hidden under the "Validés" filter (27/10/2026)
+- Series page: help text under the title (27/10/2026)
+- Calendar move: `approve-picked`, ids no longer drafts answered 422 (27/10/2026)
+- `SocialSeriesRepository::findWithLastPlannedAt()` ordered by last moment (27/10/2026)
+- Series page: an id named but unknown stays a 404 (27/10/2026)
+- Guided projects: series review step points at the menu, selection step added (27/10/2026)
+
 ## v2.19.0
 
 Series page reads a series' coming posts side by side

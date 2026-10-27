@@ -496,10 +496,31 @@ $quarter: 1.25rem;
     gap: .75rem;
 }
 
-/* The radio checked hides the cards it does not show, no script needed */
+/* The radio checked hides the cards it does not show - and the selection with the approved alone, nothing there to approve - no script needed */
 .social-series-review:has(#social-series-filter-todo:checked) .social-series-review-card.is-approved,
-.social-series-review:has(#social-series-filter-done:checked) .social-series-review-card:not(.is-approved) {
+.social-series-review:has(#social-series-filter-done:checked) .social-series-review-card:not(.is-approved),
+.social-series-review:has(#social-series-filter-done:checked) .social-series-review-selection {
     display: none;
+}
+
+.social-series-review-selection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* A draft's checkbox, over the corner of its picture */
+.social-series-review-pick {
+    position: absolute;
+    z-index: 1;
+    top: .4rem;
+    left: .4rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+    box-shadow: 0 0 0 2px rgb(255 255 255 / 80%);
+    cursor: pointer;
 }
 
 .social-series-review-others {

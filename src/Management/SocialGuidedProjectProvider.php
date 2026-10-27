@@ -202,10 +202,18 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => 'form[name="social_series"] button[type="submit"]',
                 ],
                 [
-                    // No highlight: the screen after generating is the calendar, the series' page being reached from a post's panel alone
+                    // The screen after generating is the calendar: the sidebar's "Séries" entry, matched on the href, opens the series ending first - the one just generated when no other runs
                     'label' => 'label.guided_step_social_series_review',
                     'description' => 'description.guided_step_social_series_review',
                     'narration' => 'narration.guided_step_social_series_review',
+                    'highlight' => 'a[href*="/social-calendar/series"]',
+                ],
+                [
+                    // Shown while the series has drafts, which it has just after generating
+                    'label' => 'label.guided_step_social_series_approve_picked',
+                    'description' => 'description.guided_step_social_series_approve_picked',
+                    'narration' => 'narration.guided_step_social_series_approve_picked',
+                    'highlight' => '[data-action="social-calendar#approvePicked"]',
                 ],
                 [
                     // No highlight: the screen after generating is the calendar, and the button only shows on the series' page or on a post of a series

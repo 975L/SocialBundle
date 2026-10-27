@@ -358,6 +358,35 @@ class SocialCalendarBehaviourTest extends JsCase
         $this->assertSame(['Linkedin : refusé', 'Echec'], $alerts, 'A refused network did not say why.');
     }
 
+    // On the series' page, the box above the cards checks or unchecks every draft and follows them, half-checked when only some are, and the button approves those checked, its button held meanwhile
+    public function testTheDraftsPickedOnTheSeriesPageAreApprovedTogether(): void
+    {
+        $sent = $this->calendar(
+            'document.querySelector("[data-controller=social-calendar]").insertAdjacentHTML("beforeend", \'<input type="checkbox" data-name="all" checked data-social-calendar-target="pickAll" data-action="social-calendar#pickAll"><input type="checkbox" checked value="7" data-social-calendar-target="pick" data-action="social-calendar#syncPicks"><input type="checkbox" checked value="8" data-name="p8" data-social-calendar-target="pick" data-action="social-calendar#syncPicks"><input type="checkbox" checked value="9" data-social-calendar-target="pick" data-action="social-calendar#syncPicks"><button data-name="approve-picked" data-action="social-calendar#approvePicked">OK</button>\');
+             await frame(); await frame();
+             item("all").click();
+             const none = [...document.querySelectorAll("[data-social-calendar-target=pick]")].every((pick) => !pick.checked);
+             item("all").click();
+             item("p8").click();
+             const half = item("all").indeterminate && !item("all").checked;
+             item("p8").click();
+             const whole = !item("all").indeterminate && item("all").checked;
+             item("p8").click();
+             item("approve-picked").click();
+             const held = item("approve-picked").disabled;
+             await frame(); await frame();
+
+             return { none, half, whole, url: window.__sent.url, body: window.__sent.body, held };'
+        );
+
+        $this->assertTrue($sent['none'], 'Unchecking the box above the cards left a draft checked.');
+        $this->assertTrue($sent['half'], 'The box above the cards did not show some drafts unchecked.');
+        $this->assertTrue($sent['whole'], 'The box above the cards did not come back checked with every draft.');
+        $this->assertSame(self::URL, $sent['url'], 'The selection was not approved through the move.');
+        $this->assertSame('post=7&to=approve-picked&posts%5B%5D=7&posts%5B%5D=9', $sent['body'], 'What was sent is not the drafts left checked.');
+        $this->assertTrue($sent['held'], 'The button was not held while the selection was approved.');
+    }
+
     // The duplicate is asked for the post, its button held meanwhile
     public function testThePostIsDuplicated(): void
     {
