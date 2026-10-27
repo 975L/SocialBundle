@@ -196,7 +196,11 @@
             </trans-unit>
             <trans-unit id="njw9jnA">
                 <source>narration.guided_step_social_series_prolong</source>
-                <target>When the series comes near its end, an email warns you. Open one of its posts: "Prolong the series" makes as many again after it, at the same pace.</target>
+                <target>When the series comes near its end, an email warns you. At the top of its page, or on the screen of one of its posts, "Prolong the series" makes as many again after it, at the same pace.</target>
+            </trans-unit>
+            <trans-unit id="1wbZKB1">
+                <source>narration.guided_step_social_series_review</source>
+                <target>In the panel of one of its posts, click "View the series": all its coming posts show side by side. Approve them one by one, tick or untick a network on its badge, enlarge a picture or play a video with a click.</target>
             </trans-unit>
             <trans-unit id="F.zSd24">
                 <source>narration.guided_step_social_series_text</source>

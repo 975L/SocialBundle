@@ -574,6 +574,125 @@
   border-radius: 4px;
 }
 
+/* A series' coming posts side by side (management/social_calendar_series.html.twig): small cards, many to a row */
+.social-series-review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+/* The radio checked hides the cards it does not show, no script needed */
+.social-series-review:has(#social-series-filter-todo:checked) .social-series-review-card.is-approved,
+.social-series-review:has(#social-series-filter-done:checked) .social-series-review-card:not(.is-approved) {
+  display: none;
+}
+
+.social-series-review-others {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.social-series-review-text {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 6px;
+}
+.social-series-review-text p {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.social-series-review-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 6px;
+  background: var(--bs-body-bg, #fff);
+  /* Approved: its edge says so at a glance, as on the calendar */
+}
+.social-series-review-card.is-approved {
+  border-color: var(--bs-success, #198754);
+}
+.social-series-review-card.is-failed {
+  border-color: var(--bs-orange, #fd7e14);
+}
+
+/* The picture or the video square, cut to fit - opened at its size by a click */
+.social-series-review-media {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--bs-secondary-bg, #e9ecef);
+}
+.social-series-review-media img,
+.social-series-review-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: zoom-in;
+}
+.social-series-review-media a {
+  display: block;
+  height: 100%;
+}
+
+.social-series-review-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.social-series-review-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A network's badge as its toggle: unticked, dimmed and dashed */
+.social-series-review-networks fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.social-series-review-networks label {
+  cursor: pointer;
+}
+.social-series-review-networks .social-network-badge {
+  width: 24px;
+  height: 24px;
+  border: 1px solid transparent;
+}
+.social-series-review-networks .social-network-badge img {
+  width: 14px;
+  height: 14px;
+}
+.social-series-review-networks input:not(:checked) + label .social-network-badge {
+  background-color: var(--bs-body-bg, #fff);
+  border: 1px dashed var(--bs-border-color, #ced4da);
+  opacity: 0.5;
+}
+.social-series-review-networks input:not(:checked) + label .social-network-badge img {
+  filter: none;
+}
+.social-series-review-networks input:focus-visible + label .social-network-badge {
+  outline: 2px solid var(--bs-primary, #0d6efd);
+  outline-offset: 1px;
+}
+.social-series-review-networks fieldset:disabled label {
+  cursor: default;
+}
+
+.social-series-review-actions {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: auto;
+}
+
 @media (max-width: 767.98px) {
   .social-calendar {
     grid-template-columns: minmax(0, 1fr);

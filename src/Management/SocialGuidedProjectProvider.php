@@ -202,7 +202,13 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => 'form[name="social_series"] button[type="submit"]',
                 ],
                 [
-                    // No highlight: the screen after generating is the calendar, and the button only shows on a post of a series
+                    // No highlight: the screen after generating is the calendar, the series' page being reached from a post's panel alone
+                    'label' => 'label.guided_step_social_series_review',
+                    'description' => 'description.guided_step_social_series_review',
+                    'narration' => 'narration.guided_step_social_series_review',
+                ],
+                [
+                    // No highlight: the screen after generating is the calendar, and the button only shows on the series' page or on a post of a series
                     'label' => 'label.guided_step_social_series_prolong',
                     'description' => 'description.guided_step_social_series_prolong',
                     'narration' => 'narration.guided_step_social_series_prolong',

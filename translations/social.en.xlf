@@ -100,7 +100,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once, reorders or removes its medias, enlarges them or plays its videos with a click, adds some from the site or by dropping files on it, changes its content, or duplicates it to the next day.</target>
+                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once or opens it to read its posts side by side, reorders or removes its medias, enlarges them or plays its videos with a click, adds some from the site or by dropping files on it, changes its content, or duplicates it to the next day.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -236,7 +236,11 @@
             </trans-unit>
             <trans-unit id="YQtvut9">
                 <source>description.guided_step_social_series_prolong</source>
-                <target>An email warns when the series comes near its end. "Prolong the series", on the screen of one of its posts, makes as many again after it, at the same pace.</target>
+                <target>An email warns when the series comes near its end. "Prolong the series", at the top of its page ("View the series" in the panel of one of its posts) or on the screen of a post, makes as many again after it, at the same pace.</target>
+            </trans-unit>
+            <trans-unit id="1LrVmDy">
+                <source>description.guided_step_social_series_review</source>
+                <target>In the panel of one of its posts, "View the series" shows all its coming posts side by side: approve them one by one, tick or untick a network on its badge, enlarge a picture or play a video with a click. The filters set apart those to approve from those approved.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -826,6 +830,10 @@
                 <source>label.guided_step_social_series_prolong</source>
                 <target>Prolong the series</target>
             </trans-unit>
+            <trans-unit id="hccR_22">
+                <source>label.guided_step_social_series_review</source>
+                <target>Read the series</target>
+            </trans-unit>
             <trans-unit id="G5A1L8U">
                 <source>label.guided_step_social_series_text</source>
                 <target>Write the text</target>
@@ -1190,6 +1198,10 @@
                 <source>label.social_calendar_save_texts</source>
                 <target>Save the texts</target>
             </trans-unit>
+            <trans-unit id="Oh3g0mi">
+                <source>label.social_calendar_series_view</source>
+                <target>View the series</target>
+            </trans-unit>
             <trans-unit id="q59uuo1">
                 <source>label.social_calendar_state_approved</source>
                 <target>Approved</target>
@@ -1541,6 +1553,38 @@
             <trans-unit id="UI867RG">
                 <source>label.social_series_prolong</source>
                 <target>Prolong the series</target>
+            </trans-unit>
+            <trans-unit id="hCTzTyg">
+                <source>label.social_series_review_all</source>
+                <target>All (%count%)</target>
+            </trans-unit>
+            <trans-unit id="faaOpFd">
+                <source>label.social_series_review_approved</source>
+                <target>Approved (%count%)</target>
+            </trans-unit>
+            <trans-unit id="KlrVFwi">
+                <source>label.social_series_review_approved_button</source>
+                <target>Approved</target>
+            </trans-unit>
+            <trans-unit id="YJGoSRF">
+                <source>label.social_series_review_empty</source>
+                <target>No coming post in this series.</target>
+            </trans-unit>
+            <trans-unit id="kVjSgHZ">
+                <source>label.social_series_review_last</source>
+                <target>Last post on %date%</target>
+            </trans-unit>
+            <trans-unit id="5ej7CCE">
+                <source>label.social_series_review_others</source>
+                <target>Running series</target>
+            </trans-unit>
+            <trans-unit id="jgSzGJ0">
+                <source>label.social_series_review_text</source>
+                <target>The series' text, used on every post</target>
+            </trans-unit>
+            <trans-unit id="c6beyQV">
+                <source>label.social_series_review_to_approve</source>
+                <target>To approve (%count%)</target>
             </trans-unit>
             <trans-unit id="qCi9qFI">
                 <source>label.social_series_sources</source>

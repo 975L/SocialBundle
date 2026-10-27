@@ -15,7 +15,9 @@ use c975L\SocialBundle\Controller\SocialCalendarFeedController;
 use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
+use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Repository\SocialPostRepository;
+use c975L\SocialBundle\Repository\SocialSeriesRepository;
 use c975L\SocialBundle\Service\ConfigValueWriter;
 use c975L\SocialBundle\Service\SocialCalendarFeed;
 use c975L\SocialBundle\Service\SocialMediaChecker;
@@ -61,6 +63,8 @@ class SocialCalendarController extends AbstractController
 
     private const string FEED_TOKEN_ROUTE = 'management_social_calendar_feed_token';
 
+    public const string SERIES_ROUTE = 'management_social_calendar_series';
+
     // A drag plans a post that goes out under the site's name: checked against a token, like "Publish"
     private const string CSRF_TOKEN = 'social_calendar';
 
@@ -80,6 +84,9 @@ class SocialCalendarController extends AbstractController
     public const string MONTH = 'month';
 
     public const array VIEWS = [self::WEEK, self::DAY, self::MONTH];
+
+    // The series' page, which a post's screens opened from it come back to as well
+    public const string SERIES = 'series';
 
     // How many quarters of an hour a card covers on the grid (a quarter being 1.25rem, a card 38px)
     private const int CARD_HEIGHT = 2;
@@ -101,6 +108,7 @@ class SocialCalendarController extends AbstractController
         private readonly SocialMediaPicker $mediaPicker,
         private readonly SocialPostApprover $approver,
         private readonly SocialPostDuplicator $duplicator,
+        private readonly SocialSeriesRepository $seriesRepository,
     ) {
     }
 
@@ -189,6 +197,47 @@ class SocialCalendarController extends AbstractController
         $token = (string) $this->configService->get(SocialCalendarFeed::TOKEN);
 
         return '' === $token ? null : $this->generateUrl(SocialCalendarFeedController::ROUTE, ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
+    }
+
+    // A series' coming posts side by side, to be read and approved one by one: each picture or video opened at its size, its networks ticked or unticked, its approval given or taken back - through the panel's own move and networks, the page reloaded after each. The other series still running are a click away
+    #[AdminRoute(path: '/social-calendar/series', name: 'social_calendar_series')]
+    public function series(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
+
+        $series = $this->seriesRepository->find($request->query->getInt('id'));
+        if (!$series instanceof SocialSeries) {
+            throw $this->createNotFoundException();
+        }
+
+        $now = new \DateTimeImmutable();
+        $cards = array_map(fn (SocialPost $post): array => $this->card($post, self::SERIES) + [
+            // The video played at its size, a picture of the post being UiBundle's lightbox
+            'video_url' => $post->getVideoUrl(),
+            // Every network the post goes to, pending or not, the toggles ticking them
+            'ticked' => $post->getNetworks(),
+            'editable' => !$post->hasGoneOut(),
+        ], $this->postRepository->findComingBySeries($series, $now));
+        $states = array_count_values(array_column($cards, 'state'));
+
+        // Its last post, coming or gone, is the one "Prolong" is asked from (see SocialPostCrudController::prolongSeries())
+        $last = $this->postRepository->findOneBy(['series' => $series], ['plannedAt' => 'DESC']);
+        $connected = $this->publisher->getConnectedNetworkNames();
+
+        return $this->render('@c975LSocial/management/social_calendar_series.html.twig', [
+            'series' => $series,
+            'posts' => $cards,
+            'approved' => $states['approved'] ?? 0,
+            'to_approve' => \count($cards) - ($states['approved'] ?? 0),
+            'last' => $last?->getPlannedAt(),
+            'others' => array_values(array_filter($this->seriesRepository->findWithLastPlannedAt(), static fn (array $row): bool => $row['lastPlannedAt'] >= $now || $row['series'] === $series)),
+            'connected' => $connected,
+            'offered_networks' => $this->offeredNetworks($connected),
+            'move_url' => $this->generateUrl(self::MOVE_ROUTE),
+            'networks_url' => $this->generateUrl(self::NETWORKS_ROUTE, ['view' => self::WEEK]),
+            'token' => self::CSRF_TOKEN,
+            'prolong_url' => null === $last ? null : $this->postUrl($last, 'prolongSeries', self::SERIES),
+        ]);
     }
 
     // The panel a card opens beside the calendar: when the post goes out, the moment to set it to, its approval, its medias, its texts - the screen of the post a link away, where they are corrected and rephrased
@@ -320,6 +369,11 @@ class SocialCalendarController extends AbstractController
         $this->publisher->addTargets($post, $post->takeAddedNetworks());
         $this->entityManager->flush();
 
+        // The series' page reloads itself, the panel unread
+        if ($request->request->getBoolean('bare')) {
+            return new Response(null, Response::HTTP_NO_CONTENT);
+        }
+
         return $this->renderPanel($post, $this->view($request), problems: $this->mediaChecker->check($post));
     }
 
@@ -361,6 +415,7 @@ class SocialCalendarController extends AbstractController
     private function renderPanel(SocialPost $post, string $view, bool $textsSaved = false, array $problems = []): Response
     {
         $card = $this->card($post, $view);
+        $connected = $this->publisher->getConnectedNetworkNames();
 
         return $this->render('@c975LSocial/management/_social_calendar_panel.html.twig', [
             'post' => $card,
@@ -374,9 +429,10 @@ class SocialCalendarController extends AbstractController
             'texts_saved' => $textsSaved,
             'media_problems' => $this->problemsText($problems),
             'series_drafts' => null === $post->getSeries() ? 0 : $this->postRepository->countComingDraftsBySeries($post->getSeries(), new \DateTimeImmutable()),
-            'connected' => $this->publisher->getConnectedNetworkNames(),
-            // The networks offered to tick, the connected ones in the site's order
-            'offered_networks' => array_values(array_intersect($this->publisher->getNetworkNames(), $this->publisher->getConnectedNetworkNames())),
+            // Its series' posts side by side, to be read one by one
+            'series_url' => null === $post->getSeries() ? null : $this->generateUrl(self::SERIES_ROUTE, ['id' => $post->getSeries()->getId()]),
+            'connected' => $connected,
+            'offered_networks' => $this->offeredNetworks($connected),
             // What the panel's drop zone takes, its file picker offering these alone
             'accepted_types' => implode(',', SocialMedia::ACCEPTED_TYPES),
             'pick_media_url' => $this->mediaPicker->hasLibraries() ? $this->postUrl($post, 'pickMedia', $view) : null,
@@ -463,6 +519,17 @@ class SocialCalendarController extends AbstractController
     private function problemText(string $network, string $reason): string
     {
         return $this->translator->trans('label.social_calendar_text_refused', ['%network%' => ucfirst($network), '%reason%' => $reason], 'social');
+    }
+
+    // The networks offered to tick, the $connected ones in the site's order
+    /**
+     * @param list<string> $connected
+     *
+     * @return list<string>
+     */
+    private function offeredNetworks(array $connected): array
+    {
+        return array_values(array_intersect($this->publisher->getNetworkNames(), $connected));
     }
 
     // The view asked for, the week for anything else

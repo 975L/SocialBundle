@@ -196,7 +196,11 @@
             </trans-unit>
             <trans-unit id="njw9jnA">
                 <source>narration.guided_step_social_series_prolong</source>
-                <target>Cuando la serie se acerca a su fin, un correo le avisa. Abra una de sus publicaciones: «Prolongar la serie» crea otras tantas a continuación, al mismo ritmo.</target>
+                <target>Cuando la serie se acerca a su fin, un correo le avisa. En la parte superior de su página, o en la pantalla de una de sus publicaciones, «Prolongar la serie» crea otras tantas a continuación, al mismo ritmo.</target>
+            </trans-unit>
+            <trans-unit id="1wbZKB1">
+                <source>narration.guided_step_social_series_review</source>
+                <target>En el panel de una de sus publicaciones, haga clic en «Ver la serie»: todas sus publicaciones próximas se muestran una al lado de otra. Valídelas una a una, marque o desmarque una red en su distintivo, amplíe una imagen o reproduzca un vídeo con un clic.</target>
             </trans-unit>
             <trans-unit id="F.zSd24">
                 <source>narration.guided_step_social_series_text</source>

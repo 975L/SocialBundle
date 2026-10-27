@@ -1,0 +1,103 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{# A series' coming posts side by side (see SocialCalendarController::series()): approved, taken back to a draft and their networks ticked through the calendar's own move and networks, the page reloaded after each #}
+{% import '@c975LSocial/management/social_calendar.html.twig' as calendar %}
+
+{% block main %}
+
+    <div class="social-series-review" data-controller="social-calendar"
+        data-social-calendar-url-value="{{ move_url }}"
+        data-social-calendar-token-value="{{ csrf_token(token) }}"
+        data-social-calendar-networks-url-value="{{ networks_url }}"
+        data-social-calendar-failed-label-value="{{ 'label.social_calendar_move_failed'|trans({}, 'social') }}">
+
+        <div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+            <div>
+                <a href="{{ path('management_social_calendar') }}" class="small">{{ 'label.social_calendar'|trans({}, 'social') }}</a>
+                <h1 class="mb-0">{{ series.title }}</h1>
+                {% if last %}<p class="small text-muted mb-0">{{ 'label.social_series_review_last'|trans({'%date%': last|date('d/m/Y H:i')}, 'social') }}</p>{% endif %}
+            </div>
+            {% if prolong_url %}
+                <twig:ea:Button htmlElement="a" href="{{ prolong_url }}" icon="fa fa-forward">{{ 'label.social_series_prolong'|trans({}, 'social') }}</twig:ea:Button>
+            {% endif %}
+        </div>
+
+        {# The other series still running, a click away #}
+        {% if others|length > 1 %}
+            <nav class="social-series-review-others mb-3" aria-label="{{ 'label.social_series_review_others'|trans({}, 'social') }}">
+                {% for row in others %}
+                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar_series', {id: row.series.id}) }}" size="sm" variant="{{ row.series is same as(series) ? 'primary' : 'default' }}">{{ row.series.title }}</twig:ea:Button>
+                {% endfor %}
+            </nav>
+        {% endif %}
+
+        {# The text every post of the series starts from, read once rather than on each card #}
+        {% if series.text is not empty %}
+            <div class="social-series-review-text mb-3">
+                <span class="small text-muted">{{ 'label.social_series_review_text'|trans({}, 'social') }}</span>
+                <p class="mb-0">{{ series.text }}</p>
+            </div>
+        {% endif %}
+
+        {% if posts is empty %}
+            <p class="text-muted">{{ 'label.social_series_review_empty'|trans({}, 'social') }}</p>
+        {% else %}
+            {# Which cards show, without a script: the radio checked hides the others (see management.scss) - every card when none is left to approve #}
+            <div class="social-series-review-filters mb-3" role="radiogroup">
+                {% for filter, label in {todo: 'label.social_series_review_to_approve', done: 'label.social_series_review_approved', all: 'label.social_series_review_all'} %}
+                    <input type="radio" class="btn-check" name="social-series-filter" id="social-series-filter-{{ filter }}"{% if filter == (to_approve > 0 ? 'todo' : 'all') %} checked{% endif %}>
+                    <label class="btn btn-sm btn-outline-secondary" for="social-series-filter-{{ filter }}">{{ label|trans({'%count%': {todo: to_approve, done: approved, all: posts|length}[filter]}, 'social') }}</label>
+                {% endfor %}
+            </div>
+
+            <div class="social-series-review-grid">
+                {% for post in posts %}
+                    <article class="social-series-review-card is-{{ post.state }}">
+                        <div class="social-series-review-media">
+                            {% if post.video_url %}
+                                {# A moment in rather than the first frame, often black, played at its size with its sound by a click, Enter or Space #}
+                                <video src="{{ post.video_url }}#t=1" preload="metadata" muted tabindex="0" role="button" data-action="click->social-calendar#zoom keydown.enter->social-calendar#zoom keydown.space->social-calendar#zoom" title="{{ 'label.social_calendar_media_play'|trans({}, 'social') }}" aria-label="{{ 'label.social_calendar_media_play'|trans({}, 'social') }}"></video>
+                                <span class="social-calendar-panel-play" aria-hidden="true"><i class="fa fa-play"></i></span>
+                            {% elseif post.image %}
+                                <twig:c975LUi:Image:Zoom src="{{ post.image }}" highres="{{ post.image }}" alt="{{ post.title }}" label="{{ 'label.social_calendar_media_zoom'|trans({}, 'social') }}" priority="false" />
+                            {% endif %}
+                        </div>
+
+                        <div class="social-series-review-body">
+                            <div class="d-flex justify-content-between gap-1">
+                                <strong>{{ post.planned_at|date('d/m') }}</strong>
+                                <span class="text-muted">{{ post.planned_at|date('H:i') }}</span>
+                            </div>
+                            <span class="social-series-review-title" title="{{ post.title }}">{{ post.title }}</span>
+
+                            {# Each connected network ticked or unticked by a click on its badge, saved at once #}
+                            {% if offered_networks is not empty %}
+                                <form class="social-series-review-networks" data-action="change->social-calendar#toggleNetworks" data-post-id="{{ post.id }}">
+                                    <fieldset{% if not post.editable %} disabled{% endif %}>
+                                        <legend class="visually-hidden">{{ 'label.social_post_send_on'|trans({}, 'social') }}</legend>
+                                        {% for network in offered_networks %}
+                                            <input type="checkbox" class="visually-hidden" name="networks[]" value="{{ network }}" id="social-series-network-{{ post.id }}-{{ network }}"{% if network in post.ticked %} checked{% endif %}>
+                                            <label for="social-series-network-{{ post.id }}-{{ network }}">{{ calendar.networks([network], connected) }}<span class="visually-hidden">{{ network|capitalize }}</span></label>
+                                        {% endfor %}
+                                    </fieldset>
+                                </form>
+                            {% endif %}
+
+                            <div class="social-series-review-actions">
+                                {% if post.state == 'approved' %}
+                                    <twig:ea:Button type="button" variant="success" size="sm" icon="fa fa-check" class="flex-grow-1" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="unapprove" title="{{ 'label.social_post_unapprove'|trans({}, 'social') }}">{{ 'label.social_series_review_approved_button'|trans({}, 'social') }}</twig:ea:Button>
+                                {% elseif post.state != 'published' %}
+                                    <twig:ea:Button type="button" variant="primary" size="sm" class="flex-grow-1" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve">{{ 'label.social_post_approve'|trans({}, 'social') }}</twig:ea:Button>
+                                {% endif %}
+                                <twig:ea:Button htmlElement="a" href="{{ post.edit_url }}" size="sm" icon="fa fa-pen" title="{{ 'action.edit'|trans({}, 'EasyAdminBundle') }}" aria-label="{{ 'action.edit'|trans({}, 'EasyAdminBundle') }}" />
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {# A video at its own size, filled by social-calendar.js - the pictures open in UiBundle's lightbox #}
+        <dialog class="social-calendar-zoom" data-social-calendar-target="zoom" data-action="click->social-calendar#closeZoom close->social-calendar#clearZoom"></dialog>
+    </div>
+{% endblock %}

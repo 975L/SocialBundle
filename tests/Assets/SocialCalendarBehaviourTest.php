@@ -315,6 +315,49 @@ class SocialCalendarBehaviourTest extends JsCase
         $this->assertFalse($saved['icon'], 'The card kept the badges it had.');
     }
 
+    // A badge clicked on the series' page saves the networks then ticked for its post at once, under the screen's token, its toggles held meanwhile - no panel asked for in answer
+    public function testANetworkTickedOnTheSeriesPageIsSavedAtOnce(): void
+    {
+        $saved = $this->calendar(
+            'document.querySelector("[data-controller=social-calendar]").insertAdjacentHTML("beforeend", \'<form data-name="toggles" data-action="change->social-calendar#toggleNetworks" data-post-id="9"><fieldset><input type="checkbox" name="networks[]" value="bluesky" checked><input data-name="linkedin" type="checkbox" name="networks[]" value="linkedin"></fieldset></form>\');
+             await frame(); await frame();
+             item("linkedin").checked = true;
+             item("linkedin").dispatchEvent(new Event("change", { bubbles: true }));
+             const held = item("toggles").querySelector("fieldset").disabled;
+             await frame(); await frame();
+
+             return { url: window.__sent.url, body: window.__sent.body, token: window.__sent.token, held };'
+        );
+
+        $this->assertSame('/management/social-calendar/networks', $saved['url'], 'The networks were not saved where the screen said to save them.');
+        $this->assertSame('networks%5B%5D=bluesky&networks%5B%5D=linkedin&post=9&bare=1', $saved['body'], 'What was sent is not the networks ticked for the post, no panel asked for.');
+        $this->assertSame('jeton', $saved['token'], 'The networks were sent without the screen\'s token.');
+        $this->assertTrue($saved['held'], 'The toggles were not held while the networks were saved.');
+    }
+
+    // A badge the server refuses on the series' page says its reason, or the screen's own words when it gave none
+    public function testANetworkRefusedOnTheSeriesPageSaysWhy(): void
+    {
+        $alerts = $this->calendar(
+            'const alerts = [];
+             window.alert = (message) => alerts.push(message);
+             document.querySelector("[data-controller=social-calendar]").insertAdjacentHTML("beforeend", \'<form data-name="refused" data-action="change->social-calendar#toggleNetworks" data-post-id="9"><fieldset><input data-name="refused-linkedin" type="checkbox" name="networks[]" value="linkedin"></fieldset></form>\');
+             await frame(); await frame();
+             window.__refusal = "Linkedin : refusé";
+             item("refused-linkedin").dispatchEvent(new Event("change", { bubbles: true }));
+             await frame(); await frame();
+             window.__refusal = "";
+             item("refused").querySelector("fieldset").disabled = false;
+             item("refused-linkedin").dispatchEvent(new Event("change", { bubbles: true }));
+             await frame(); await frame();
+             window.__refusal = undefined;
+
+             return alerts;'
+        );
+
+        $this->assertSame(['Linkedin : refusé', 'Echec'], $alerts, 'A refused network did not say why.');
+    }
+
     // The duplicate is asked for the post, its button held meanwhile
     public function testThePostIsDuplicated(): void
     {

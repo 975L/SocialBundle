@@ -34,6 +34,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Context\CrudContext;
+use EasyCorp\Bundle\EasyAdminBundle\Context\RequestContext;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\BatchActionDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
@@ -204,6 +205,15 @@ class SocialPostCrudControllerTest extends TestCase
     // Same seam as the calendar's tests: AbstractController resolves security, the csrf check, the flashes, Twig and the router through its container, the post coming from EasyAdmin's context
     private function call(SocialPostCrudController $controller, string $action, SocialPost $post, Request $request): Response
     {
+        $this->wire($controller, $request);
+        $context = AdminContext::forTesting(crudContext: CrudContext::forTesting(entityDto: new EntityDto(SocialPost::class, new ClassMetadata(SocialPost::class), null, $post)));
+
+        return $controller->{$action}($context, $request);
+    }
+
+    // The controller given the services its actions reach for, the request being the current one
+    private function wire(SocialPostCrudController $controller, Request $request): void
+    {
         $request->setSession(new Session(new MockArraySessionStorage()));
         $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
         $authorizationChecker->method('isGranted')->willReturn(true);
@@ -229,10 +239,6 @@ class SocialPostCrudControllerTest extends TestCase
         $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
         $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
         $controller->setContainer($container);
-
-        $context = AdminContext::forTesting(crudContext: CrudContext::forTesting(entityDto: new EntityDto(SocialPost::class, new ClassMetadata(SocialPost::class), null, $post)));
-
-        return $controller->{$action}($context, $request);
     }
 
     private function post(): SocialPost
@@ -331,6 +337,43 @@ class SocialPostCrudControllerTest extends TestCase
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('/' . SocialCalendarController::ROUTE . '?date=2026-11-02', $response->getTargetUrl());
+    }
+
+    // Asked from the series' page, the series is prolonged and its page opens again
+    public function testProlongingFromTheSeriesPageOpensItAgain(): void
+    {
+        $series = $this->series();
+        new \ReflectionProperty(SocialSeries::class, 'id')->setValue($series, 3);
+        $generator = $this->createStub(SocialSeriesGenerator::class);
+        $generator->method('prolong')->willReturn([new SocialPost(SocialPost::SOURCE_MANUAL, 'next', 'Next', '', null, new \DateTimeImmutable('2026-11-02 21:00'))]);
+
+        $response = $this->call($this->controller(seriesGenerator: $generator), 'prolongSeries', $this->post()->setSeries($series), Request::create('/?' . SocialCalendarController::FROM . '=' . SocialCalendarController::SERIES, 'POST', ['prolong' => '1', 'token' => 'valid']));
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame('/' . SocialCalendarController::SERIES_ROUTE . '?id=3', $response->getTargetUrl());
+    }
+
+    // A post saved from the series' page goes back to it
+    public function testAPostSavedFromTheSeriesPageGoesBackToIt(): void
+    {
+        $series = $this->series();
+        new \ReflectionProperty(SocialSeries::class, 'id')->setValue($series, 3);
+        $request = Request::create('/?' . SocialCalendarController::FROM . '=' . SocialCalendarController::SERIES, 'POST');
+        $controller = $this->controller();
+        $this->wire($controller, $request);
+        $context = AdminContext::forTesting(RequestContext::forTesting($request), CrudContext::forTesting(entityDto: new EntityDto(SocialPost::class, new ClassMetadata(SocialPost::class), null, $this->post()->setSeries($series))));
+
+        $response = new \ReflectionMethod(SocialPostCrudController::class, 'getRedirectResponseAfterSave')->invoke($controller, $context, Action::EDIT);
+
+        $this->assertSame('/' . SocialCalendarController::SERIES_ROUTE . '?id=3', $response->getTargetUrl());
+    }
+
+    // The confirmation's way back keeps the page the post was opened from
+    public function testProlongingFromTheSeriesPageComesBackToIt(): void
+    {
+        $this->call($this->controller(), 'prolongSeries', $this->post()->setSeries($this->series()), Request::create('/?' . SocialCalendarController::FROM . '=' . SocialCalendarController::SERIES));
+
+        $this->assertSame('/admin/' . Action::EDIT . '?' . SocialCalendarController::FROM . '=' . SocialCalendarController::SERIES, $this->rendered['back_url']);
     }
 
     // A series giving no new draft opens the post again

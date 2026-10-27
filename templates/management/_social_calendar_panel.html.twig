@@ -31,6 +31,9 @@
     {% if series_drafts > own_draft %}
         <twig:ea:Button type="button" variant="success" size="sm" icon="fa fa-layer-group" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve-series">{{ 'label.social_calendar_approve_series'|trans({'%count%': series_drafts}, 'social') }}</twig:ea:Button>
     {% endif %}
+    {% if series_url %}
+        <twig:ea:Button htmlElement="a" href="{{ series_url }}" size="sm" icon="fa fa-table-cells">{{ 'label.social_calendar_series_view'|trans({}, 'social') }}</twig:ea:Button>
+    {% endif %}
     {# Written again the day after, a draft whose panel opens at once - offered on a post gone out as well #}
     <twig:ea:Button type="button" size="sm" icon="fa fa-clone" data-action="social-calendar#duplicate" data-post-id="{{ post.id }}">{{ 'label.social_calendar_duplicate'|trans({}, 'social') }}</twig:ea:Button>
 </div>

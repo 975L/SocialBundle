@@ -18,6 +18,7 @@ use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Repository\SocialPostRepository;
+use c975L\SocialBundle\Repository\SocialSeriesRepository;
 use c975L\SocialBundle\Service\SocialMediaChecker;
 use c975L\SocialBundle\Service\SocialMediaPicker;
 use c975L\SocialBundle\Service\SocialPlanner;
@@ -32,6 +33,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
@@ -95,6 +97,7 @@ class SocialCalendarControllerTest extends TestCase
             $this->createStub(SocialMediaPicker::class),
             $this->createStub(SocialPostApprover::class),
             new SocialPostDuplicator(sys_get_temp_dir()),
+            $this->createStub(SocialSeriesRepository::class),
         );
     }
 
@@ -188,6 +191,10 @@ class SocialCalendarControllerTest extends TestCase
         $postRepository->method('find')->willReturnCallback(fn (mixed $id): ?SocialPost => 42 === $id ? $this->post : null);
         $postRepository->method('findComingBySeries')->willReturnCallback(fn (): array => $this->seriesPosts);
 
+        // The series of the post, known by the id 3
+        $seriesRepository = $this->createStub(SocialSeriesRepository::class);
+        $seriesRepository->method('find')->willReturnCallback(fn (mixed $id): ?SocialSeries => 3 === $id ? $this->post->getSeries() : null);
+
         $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('flush')->willReturnCallback(function (): void {
             ++$this->flushes;
@@ -223,6 +230,7 @@ class SocialCalendarControllerTest extends TestCase
             $this->createStub(SocialMediaPicker::class),
             new SocialPostApprover($this->mediaChecker ?? $this->createStub(SocialMediaChecker::class), $entityManager),
             new SocialPostDuplicator(sys_get_temp_dir()),
+            $seriesRepository,
         );
 
         $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
@@ -729,6 +737,18 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertSame(['facebook'], $this->post->getNetworks());
     }
 
+    // Ticked on the series' page, the networks are saved and nothing is rendered, the page reloading itself
+    public function testTheNetworksTickedOnTheSeriesPageAnswerNoPanel(): void
+    {
+        $request = Request::create('/', 'POST', ['post' => '42', 'networks' => ['linkedin'], 'bare' => '1']);
+        $request->headers->set('X-CSRF-Token', 'valid');
+
+        $this->assertSame(Response::HTTP_NO_CONTENT, $this->createController($request)->networks($request)->getStatusCode());
+        $this->assertSame(['linkedin'], $this->post->getNetworks());
+        $this->assertSame(1, $this->flushes);
+        $this->assertSame([], $this->rendered);
+    }
+
     // A post gone out anywhere keeps its networks, and a forged request changes nothing
     public function testAPostGoneOutAndAForgedRequestKeepTheirNetworks(): void
     {
@@ -752,5 +772,37 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertCount(1, $this->persisted);
         $this->assertInstanceOf(SocialPost::class, $this->persisted[0]);
         $this->assertSame(1, $this->flushes);
+    }
+
+    private function series(int $id): Response
+    {
+        $request = Request::create('/', 'GET', ['id' => (string) $id]);
+
+        return $this->createController($request)->series($request);
+    }
+
+    // The series' coming posts, each with what its card needs, counted by their approval
+    public function testTheSeriesShowsItsComingPostsCounted(): void
+    {
+        $other = $this->seriesPost('Other');
+        $other->approve();
+
+        $this->series(3);
+
+        $this->assertCount(2, $this->rendered['posts']);
+        $this->assertSame(1, $this->rendered['approved']);
+        $this->assertSame(1, $this->rendered['to_approve']);
+        $this->assertSame(['bluesky'], $this->rendered['posts'][0]['ticked']);
+        $this->assertNull($this->rendered['posts'][0]['video_url']);
+        $this->assertTrue($this->rendered['posts'][0]['editable']);
+        $this->assertSame(['bluesky', 'linkedin'], $this->rendered['offered_networks']);
+    }
+
+    // A series that does not exist is not found
+    public function testAnUnknownSeriesIsNotFound(): void
+    {
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->series(99);
     }
 }

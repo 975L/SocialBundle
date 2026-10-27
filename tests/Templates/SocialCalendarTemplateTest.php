@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Tests\Templates;
 use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
+use c975L\SocialBundle\Entity\SocialSeries;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 
@@ -83,7 +84,7 @@ class SocialCalendarTemplateTest extends TestCase
 
     // The panel of a post in the given state, its approval being what the state offers - with the medias given, the content's picture otherwise
     /** @param list<SocialMedia> $medias */
-    private function panel(string $state, array $medias = [], ?string $image = null, bool $editable = true, int $seriesDrafts = 0, string $plannedAt = '2026-10-04 19:00', bool $textsSaved = false, string $mediaProblems = ''): string
+    private function panel(string $state, array $medias = [], ?string $image = null, bool $editable = true, int $seriesDrafts = 0, string $plannedAt = '2026-10-04 19:00', bool $textsSaved = false, string $mediaProblems = '', ?string $seriesUrl = null): string
     {
         $post = new SocialPost('gallery_media', '42', 'La sieste', 'https://example.org/42', null, new \DateTimeImmutable($plannedAt));
         $target = new SocialPostTarget($post, 'bluesky', 'Le texte de Bluesky');
@@ -104,6 +105,7 @@ class SocialCalendarTemplateTest extends TestCase
             'texts_saved' => $textsSaved,
             'media_problems' => $mediaProblems,
             'series_drafts' => $seriesDrafts,
+            'series_url' => $seriesUrl,
             'connected' => ['bluesky'],
             'offered_networks' => ['bluesky', 'facebook'],
             'accepted_types' => 'image/jpeg,video/mp4',
@@ -370,5 +372,87 @@ class SocialCalendarTemplateTest extends TestCase
 
         $this->assertSame(1, substr_count($html, 'social-calendar-card-video'));
         $this->assertMatchesRegularExpression('/data-panel-id="10"[^>]*>\s*<i class="fa fa-film social-calendar-card-video" role="img" title="label.social_calendar_has_video" aria-label="label.social_calendar_has_video"><\/i>/', $html);
+    }
+
+    // The panel of a post of a series leads to its posts side by side, one of no series to nothing
+    public function testThePanelOfASeriesPostLeadsToTheSeries(): void
+    {
+        $this->assertStringContainsString('href="/series/3"', $this->panel('draft', seriesUrl: '/series/3'));
+        $this->assertStringNotContainsString('label.social_calendar_series_view', $this->panel('draft'));
+    }
+
+    // A series' coming posts side by side, each with its approval, its networks to tick and its picture or video to open
+    /** @param list<array<string, mixed>> $posts */
+    private function series(array $posts): string
+    {
+        $series = new SocialSeries('Photo du jour', 3, 'days', 1, [], 'text', "Photo du jour\n#photo", [], ['bluesky']);
+
+        return $this->twig()->render('@c975LSocial/management/social_calendar_series.html.twig', [
+            'series' => $series,
+            'posts' => $posts,
+            'approved' => \count(array_filter($posts, static fn (array $post): bool => 'approved' === $post['state'])),
+            'to_approve' => \count(array_filter($posts, static fn (array $post): bool => 'approved' !== $post['state'])),
+            'last' => new \DateTimeImmutable('2026-12-05 09:00'),
+            'others' => [['series' => $series, 'lastPlannedAt' => new \DateTimeImmutable('2026-12-05 09:00')], ['series' => new SocialSeries('N&B', 3, 'days', 1, [], 'text', 'N&B', [], ['bluesky']), 'lastPlannedAt' => new \DateTimeImmutable('2026-10-30 15:00')]],
+            'connected' => ['bluesky', 'facebook'],
+            'offered_networks' => ['bluesky', 'facebook'],
+            'move_url' => '/move',
+            'networks_url' => '/networks',
+            'token' => 'social_calendar',
+            'prolong_url' => '/prolong',
+        ]);
+    }
+
+    /** @return array<string, mixed> */
+    private function seriesCard(int $id, string $state, ?string $videoUrl = null, bool $editable = true): array
+    {
+        return ['id' => $id, 'title' => 'Feuilles ' . $id, 'image' => '/photo-' . $id . '.webp', 'video' => null !== $videoUrl, 'video_url' => $videoUrl, 'networks' => ['bluesky'], 'ticked' => ['bluesky'], 'planned_at' => new \DateTimeImmutable('2026-11-0' . $id . ' 09:00'), 'state' => $state, 'edit_url' => '/edit/' . $id, 'editable' => $editable];
+    }
+
+    public function testTheSeriesShowsEachPostWithItsApproval(): void
+    {
+        $html = $this->series([$this->seriesCard(1, 'draft'), $this->seriesCard(2, 'approved')]);
+
+        $this->assertMatchesRegularExpression('/data-post-id="1" data-to="approve"/', $html);
+        $this->assertMatchesRegularExpression('/data-post-id="2" data-to="unapprove"/', $html);
+        $this->assertStringContainsString('label.social_series_review_approved_button', $html);
+        $this->assertStringContainsString('href="/edit/1"', $html);
+        $this->assertStringContainsString('href="/prolong"', $html);
+        $this->assertSame(2, substr_count($html, 'class="social-series-review-card'));
+    }
+
+    // Each connected network a toggle, ticked when the post goes there, saved on a change
+    public function testTheSeriesTicksEachPostsNetworks(): void
+    {
+        $html = $this->series([$this->seriesCard(1, 'draft')]);
+
+        $this->assertStringContainsString('data-action="change->social-calendar#toggleNetworks" data-post-id="1"', $html);
+        $this->assertMatchesRegularExpression('/value="bluesky" id="social-series-network-1-bluesky" checked>/', $html);
+        $this->assertMatchesRegularExpression('/value="facebook" id="social-series-network-1-facebook">/', $html);
+    }
+
+    // A picture opens in UiBundle's lightbox, a video plays at its size
+    public function testTheSeriesOpensPicturesAndVideos(): void
+    {
+        $html = $this->series([$this->seriesCard(1, 'draft'), $this->seriesCard(2, 'draft', '/video-2.mp4')]);
+
+        $this->assertStringContainsString('src="/video-2.mp4#t=1"', $html);
+        $this->assertStringContainsString('click->social-calendar#zoom', $html);
+        $this->assertStringContainsString('/photo-1.webp', $html);
+        $this->assertStringContainsString('data-social-calendar-target="zoom"', $html);
+    }
+
+    // A post gone out somewhere keeps its networks, and a series with nothing to come says so
+    public function testTheSeriesLocksAPostGoneOutAndSaysWhenEmpty(): void
+    {
+        $this->assertMatchesRegularExpression('/<fieldset disabled>/', $this->series([$this->seriesCard(1, 'draft', editable: false)]));
+        $this->assertStringContainsString('label.social_series_review_empty', $this->series([]));
+    }
+
+    // The cards left to approve show first, every card when none is left
+    public function testTheSeriesFiltersOnWhatIsLeftToApprove(): void
+    {
+        $this->assertMatchesRegularExpression('/id="social-series-filter-todo" checked/', $this->series([$this->seriesCard(1, 'draft'), $this->seriesCard(2, 'approved')]));
+        $this->assertMatchesRegularExpression('/id="social-series-filter-all" checked/', $this->series([$this->seriesCard(1, 'approved')]));
     }
 }

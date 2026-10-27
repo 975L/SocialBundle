@@ -352,6 +352,12 @@ class SocialPost implements \Stringable
         return $this->medias->exists(static fn (int $key, SocialMedia $media): bool => $media->isVideo());
     }
 
+    // The first video's public path, null when the post has none
+    public function getVideoUrl(): ?string
+    {
+        return $this->medias->findFirst(static fn (int $key, SocialMedia $media): bool => $media->isVideo())?->getPublicPath();
+    }
+
     /** @return Collection<int, SocialMedia> */
     public function getMedias(): Collection
     {

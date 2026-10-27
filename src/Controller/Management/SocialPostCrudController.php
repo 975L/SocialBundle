@@ -138,7 +138,7 @@ class SocialPostCrudController extends AbstractCrudController
         return $this->redirect($this->adminUrlGenerator->set('page', $page)->generateUrl());
     }
 
-    // A post opened from the calendar goes back to it once saved, in the view it was opened from, on the period it is now planned in
+    // A post opened from the calendar goes back to it once saved, in the view it was opened from, on the period it is now planned in - or to its series' page, opened from there
     #[\Override]
     protected function getRedirectResponseAfterSave(AdminContext $context, string $action): RedirectResponse
     {
@@ -147,6 +147,10 @@ class SocialPostCrudController extends AbstractCrudController
         $button = $context->getRequest()->request->all()['ea']['newForm']['btn'] ?? null;
         if (!$post instanceof SocialPost || null === $from || \in_array($button, [Action::SAVE_AND_CONTINUE, Action::SAVE_AND_ADD_ANOTHER], true)) {
             return parent::getRedirectResponseAfterSave($context, $action);
+        }
+
+        if (SocialCalendarController::SERIES === $from && null !== $post->getSeries()) {
+            return $this->redirectToRoute(SocialCalendarController::SERIES_ROUTE, ['id' => $post->getSeries()->getId()]);
         }
 
         return $this->redirectToRoute(SocialCalendarController::ROUTE, ['date' => $post->getPlannedAt()->format('Y-m-d'), 'view' => $from]);
@@ -579,7 +583,7 @@ class SocialPostCrudController extends AbstractCrudController
         ]);
     }
 
-    // Confirms, then makes as many drafts again after the series' last post, with its settings, and shows them on the calendar
+    // Confirms, then makes as many drafts again after the series' last post, with its settings, and shows them on the calendar - or on the series' page, asked from there
     #[AdminRoute('/{entityId}/prolong-series')]
     public function prolongSeries(AdminContext $context, Request $request): Response
     {
@@ -600,6 +604,9 @@ class SocialPostCrudController extends AbstractCrudController
             }
 
             $this->addFlash('success', t('flash.social_series_generated', ['%count%' => \count($posts)], 'social'));
+            if (SocialCalendarController::SERIES === $this->from($request)) {
+                return $this->redirectToRoute(SocialCalendarController::SERIES_ROUTE, ['id' => $series->getId()]);
+            }
 
             return $this->redirectToRoute(SocialCalendarController::ROUTE, ['date' => $posts[0]->getPlannedAt()->format('Y-m-d')]);
         }
@@ -607,7 +614,7 @@ class SocialPostCrudController extends AbstractCrudController
         return $this->render('@c975LSocial/management/social_series_prolong.html.twig', [
             'series' => $series,
             'last' => $this->seriesRepository->findLastPlannedAt($series),
-            'back_url' => $this->editUrl($post),
+            'back_url' => $this->editUrl($post, $this->from($request)),
         ]);
     }
 
@@ -803,12 +810,12 @@ class SocialPostCrudController extends AbstractCrudController
         return (null === $from ? $url : $url->set(SocialCalendarController::FROM, $from))->generateUrl();
     }
 
-    // The calendar's view the screen was opened from, null when it was not
+    // The calendar's view the screen was opened from, or the series' page, null when it was neither
     private function from(Request $request): ?string
     {
         $from = $request->query->getString(SocialCalendarController::FROM);
 
-        return \in_array($from, SocialCalendarController::VIEWS, true) ? $from : null;
+        return \in_array($from, [...SocialCalendarController::VIEWS, SocialCalendarController::SERIES], true) ? $from : null;
     }
 
     private function indexUrl(): string

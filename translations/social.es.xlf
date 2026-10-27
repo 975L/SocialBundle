@@ -100,7 +100,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Haga clic en una publicación: su panel cambia su fecha y hora, la valida o la devuelve a borrador, valida de una vez toda su serie, reordena o quita sus medios, los amplía o reproduce sus vídeos con un clic, añade otros desde el sitio o soltando archivos en él, cambia su contenido, o la duplica al día siguiente.</target>
+                <target>Haga clic en una publicación: su panel cambia su fecha y hora, la valida o la devuelve a borrador, valida de una vez toda su serie o la abre para releer sus publicaciones una al lado de otra, reordena o quita sus medios, los amplía o reproduce sus vídeos con un clic, añade otros desde el sitio o soltando archivos en él, cambia su contenido, o la duplica al día siguiente.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -236,7 +236,11 @@
             </trans-unit>
             <trans-unit id="YQtvut9">
                 <source>description.guided_step_social_series_prolong</source>
-                <target>Un correo avisa cuando la serie se acerca a su fin. «Prolongar la serie», en la pantalla de una de sus publicaciones, crea otras tantas a continuación, al mismo ritmo.</target>
+                <target>Un correo avisa cuando la serie se acerca a su fin. «Prolongar la serie», en la parte superior de su página («Ver la serie» en el panel de una de sus publicaciones) o en la pantalla de una publicación, crea otras tantas a continuación, al mismo ritmo.</target>
+            </trans-unit>
+            <trans-unit id="1LrVmDy">
+                <source>description.guided_step_social_series_review</source>
+                <target>En el panel de una de sus publicaciones, «Ver la serie» muestra todas sus publicaciones próximas una al lado de otra: valídelas una a una, marque o desmarque una red en su distintivo, amplíe una imagen o reproduzca un vídeo con un clic. Los filtros separan las que están por validar de las validadas.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -826,6 +830,10 @@
                 <source>label.guided_step_social_series_prolong</source>
                 <target>Prolongar la serie</target>
             </trans-unit>
+            <trans-unit id="hccR_22">
+                <source>label.guided_step_social_series_review</source>
+                <target>Releer la serie</target>
+            </trans-unit>
             <trans-unit id="G5A1L8U">
                 <source>label.guided_step_social_series_text</source>
                 <target>Escribir el texto</target>
@@ -1190,6 +1198,10 @@
                 <source>label.social_calendar_save_texts</source>
                 <target>Guardar los textos</target>
             </trans-unit>
+            <trans-unit id="Oh3g0mi">
+                <source>label.social_calendar_series_view</source>
+                <target>Ver la serie</target>
+            </trans-unit>
             <trans-unit id="q59uuo1">
                 <source>label.social_calendar_state_approved</source>
                 <target>Validada</target>
@@ -1541,6 +1553,38 @@
             <trans-unit id="UI867RG">
                 <source>label.social_series_prolong</source>
                 <target>Prolongar la serie</target>
+            </trans-unit>
+            <trans-unit id="hCTzTyg">
+                <source>label.social_series_review_all</source>
+                <target>Todos (%count%)</target>
+            </trans-unit>
+            <trans-unit id="faaOpFd">
+                <source>label.social_series_review_approved</source>
+                <target>Validados (%count%)</target>
+            </trans-unit>
+            <trans-unit id="KlrVFwi">
+                <source>label.social_series_review_approved_button</source>
+                <target>Validado</target>
+            </trans-unit>
+            <trans-unit id="YJGoSRF">
+                <source>label.social_series_review_empty</source>
+                <target>Ningún post próximo en esta serie.</target>
+            </trans-unit>
+            <trans-unit id="kVjSgHZ">
+                <source>label.social_series_review_last</source>
+                <target>Último post el %date%</target>
+            </trans-unit>
+            <trans-unit id="5ej7CCE">
+                <source>label.social_series_review_others</source>
+                <target>Series en curso</target>
+            </trans-unit>
+            <trans-unit id="jgSzGJ0">
+                <source>label.social_series_review_text</source>
+                <target>Texto de la serie, retomado en cada post</target>
+            </trans-unit>
+            <trans-unit id="c6beyQV">
+                <source>label.social_series_review_to_approve</source>
+                <target>Por validar (%count%)</target>
             </trans-unit>
             <trans-unit id="qCi9qFI">
                 <source>label.social_series_sources</source>

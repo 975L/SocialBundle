@@ -1,5 +1,19 @@
 # Changelog
 
+## v2.19.0
+
+Series page reads a series' coming posts side by side
+
+- Calendar: series page, its coming posts side by side (27/10/2026)
+- Series page: posts approved one by one, networks ticked on their badges (27/10/2026)
+- Series page: filters to approve, approved, all - all when none is left (27/10/2026)
+- Series page: other series still running a click away (27/10/2026)
+- Calendar panel: "Voir la série" opens the series page (27/10/2026)
+- Post screen and "Prolonger" opened from the series page come back to it (27/10/2026)
+- Calendar networks: `bare=1` answers 204 without the panel (27/10/2026)
+- Added `SocialPost::getVideoUrl()` (27/10/2026)
+- Guided projects: series review step, panel and prolong steps updated (27/10/2026)
+
 ## v2.18.3
 
 LinkedIn first comment sent through /v2

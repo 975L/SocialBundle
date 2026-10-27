@@ -279,6 +279,17 @@ export default class extends Controller {
         this.postPanel(this.networksUrlValue, body).catch(() => this.saved(false));
     }
 
+    // A network's badge clicked on the series' page (see social_calendar_series.html.twig): the networks then ticked saved at once, the page reloaded to show what was - no panel there to answer into, so none asked for; a refusal says its reason when the server gives one
+    toggleNetworks(event) {
+        const form = event.currentTarget;
+        const body = new URLSearchParams(new FormData(form));
+        body.set("post", form.dataset.postId);
+        body.set("bare", "1");
+        form.querySelector("fieldset").disabled = true;
+
+        this.send(this.networksUrlValue, body);
+    }
+
     // The post written again the day after, the calendar then opened on the copy's day with its panel
     duplicate(event) {
         const button = event.currentTarget;
@@ -321,11 +332,12 @@ export default class extends Controller {
 
     // A refusal said, then the page reloaded either way: it shows what was actually saved, and where every other post now falls
     save(post, to) {
-        fetch(this.urlValue, {
-            method: "POST",
-            headers: { "X-CSRF-Token": this.tokenValue },
-            body: new URLSearchParams({ post, to }),
-        })
+        this.send(this.urlValue, new URLSearchParams({ post, to }));
+    }
+
+    // The body sent under the screen's token, then saved() told how it went - with the server's reason for a refusal
+    send(url, body) {
+        fetch(url, { method: "POST", headers: { "X-CSRF-Token": this.tokenValue }, body })
             .then((response) => (response.ok ? this.saved(true) : response.text().then((reason) => this.saved(false, reason))))
             .catch(() => this.saved(false));
     }

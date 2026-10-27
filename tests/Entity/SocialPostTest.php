@@ -197,4 +197,16 @@ class SocialPostTest extends TestCase
         $post->addMedia(SocialMedia::reference($post, 'medias/social/a.mp4', 'video/mp4'));
         $this->assertTrue($post->hasVideo());
     }
+
+    // The first video among its medias, none without one
+    public function testAPostGivesItsFirstVideo(): void
+    {
+        $post = new SocialPost(SocialPost::SOURCE_MANUAL, 'abc', '', '', null, new \DateTimeImmutable());
+        $post->addMedia(SocialMedia::reference($post, 'medias/social/a.jpg', 'image/jpeg'));
+        $this->assertNull($post->getVideoUrl());
+
+        $post->addMedia(SocialMedia::reference($post, 'medias/social/a.mp4', 'video/mp4'));
+        $post->addMedia(SocialMedia::reference($post, 'medias/social/b.mp4', 'video/mp4'));
+        $this->assertSame(SocialMedia::reference($post, 'medias/social/a.mp4', 'video/mp4')->getPublicPath(), $post->getVideoUrl());
+    }
 }
