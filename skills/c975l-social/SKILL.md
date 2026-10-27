@@ -260,7 +260,7 @@ each keeping the content it was picked from (`SocialMedia::setSource()`), which 
 `Service\SocialSeriesGenerator` makes a series of drafts (one text, `SocialPostWriter::variants()`, or
 the sources), every N days, some weekdays or every month (counted from the first moment, the last day of a
 shorter month), keeping nothing when no draft is made; `prolong()` makes as many again after its last post,
-and `c975l:social:series:ending` emails the series ending soon, once per end. On a draft from a
+and `c975l:social:series:ending` emails the series ending soon, once per end, each linking to its `social_calendar_series` page (an imported one to the calendar's week of its last post). On a draft from a
 `BrowsableSocialContentSourceInterface` source, `SocialPublisher::redraw()`/`changeContent()` move it to
 another free content and write its texts again (a post with its own text keeps it);
 `Service\SocialContentStatusProvider` tells the owning bundle which contents are reserved or published,

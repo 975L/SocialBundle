@@ -39,7 +39,7 @@ class SeriesEndingCommandTest extends TestCase
 
             return $error;
         });
-        $mailer->method('url')->willReturnCallback(static fn (string $route, array $parameters): string => 'https://example.org/management/social-calendar?date=' . $parameters['date']);
+        $mailer->method('url')->willReturnCallback(static fn (string $route, array $parameters): string => 'https://example.org/' . $route . '?' . http_build_query($parameters));
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
 
@@ -48,10 +48,13 @@ class SeriesEndingCommandTest extends TestCase
 
     private function series(): SocialSeries
     {
-        return new SocialSeries('Photo du soir', 7, 'days', 1, [], 'text', 'Photo du soir', [], ['bluesky']);
+        $series = new SocialSeries('Photo du soir', 7, 'days', 1, [], 'text', 'Photo du soir', [], ['bluesky']);
+        new \ReflectionProperty(SocialSeries::class, 'id')->setValue($series, 5);
+
+        return $series;
     }
 
-    // A series ending within the delay is announced once, with a link to its last week; the next night says nothing more
+    // A series ending within the delay is announced once, with a link to its page, where it is prolonged; the next night says nothing more
     public function testASeriesEndingIsAnnouncedOnce(): void
     {
         $rows = [['series' => $this->series(), 'lastPlannedAt' => new \DateTimeImmutable('+2 days 21:00')]];
@@ -59,13 +62,13 @@ class SeriesEndingCommandTest extends TestCase
         $this->assertSame(Command::SUCCESS, $this->tester($rows)->execute([]));
         $this->assertCount(1, $this->sent);
         $this->assertStringContainsString('Photo du soir', $this->sent[0]);
-        $this->assertStringContainsString('https://example.org/management/social-calendar?date=', $this->sent[0]);
+        $this->assertStringContainsString('https://example.org/management_social_calendar_series?id=5', $this->sent[0]);
 
         $this->tester($rows)->execute([]);
         $this->assertCount(1, $this->sent);
     }
 
-    // An imported series ending says so, its next drafts being imported rather than prolonged
+    // An imported series ending says so, its next drafts being imported rather than prolonged - its link leading to the calendar's week of its last one
     public function testAnImportedSeriesEndingSaysItIsImported(): void
     {
         $series = new SocialSeries('Bundles', 2, 'days', 1, [], 'import', '', [], ['linkedin']);
@@ -73,6 +76,7 @@ class SeriesEndingCommandTest extends TestCase
         $this->tester([['series' => $series, 'lastPlannedAt' => new \DateTimeImmutable('+2 days 21:00')]])->execute([]);
 
         $this->assertStringContainsString('Bundles (email.social_series_ending_import)', $this->sent[0]);
+        $this->assertStringContainsString('https://example.org/management_social_calendar?date=', $this->sent[0]);
     }
 
     // An announcement not sent is a warning, not a failure alerting every night, and is tried again the next night

@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.19.2
+
+Series ending email links to the series page
+
+- Series ending email: each series links to its page, imported ones to the calendar (27/10/2026)
+- Series ending email: body text points at the series page (27/10/2026)
+
 ## v2.19.1
 
 Series page approves the drafts checked, reached from the menu

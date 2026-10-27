@@ -94,10 +94,12 @@ class SeriesEndingCommand extends Command
         return Command::SUCCESS;
     }
 
-    // The series, its last moment and the calendar's week holding it - absolute, a console having no request to take the host from
+    // The series, its last moment and where to go on - its page, "Prolonger la série" at the top, or for imported drafts the calendar's week holding the last one - absolute, a console having no request to take the host from
     private function line(SocialSeries $series, \DateTimeImmutable $lastPlannedAt): string
     {
-        $url = $this->mailer->url(SocialCalendarController::ROUTE, ['date' => $lastPlannedAt->format('Y-m-d')]);
+        $url = SocialSeriesGenerator::MODE_IMPORT === $series->getMode()
+            ? $this->mailer->url(SocialCalendarController::ROUTE, ['date' => $lastPlannedAt->format('Y-m-d')])
+            : $this->mailer->url(SocialCalendarController::SERIES_ROUTE, ['id' => $series->getId()]);
 
         // Imported drafts are not prolonged: the next ones are imported in turn
         $title = SocialSeriesGenerator::MODE_IMPORT === $series->getMode() ? $series->getTitle() . ' (' . $this->translator->trans('email.social_series_ending_import', [], 'social') . ')' : $series->getTitle();

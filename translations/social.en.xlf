@@ -312,7 +312,7 @@
             </trans-unit>
             <trans-unit id="fFRxt4W">
                 <source>email.social_series_ending_body</source>
-                <target>These series are reaching their last post. Open one of their posts, then "Prolong the series" to go on with the same settings:</target>
+                <target>These series are reaching their last post. Each link opens its page, where "Prolong the series" goes on with the same settings:</target>
             </trans-unit>
             <trans-unit id="cV8_CqX">
                 <source>email.social_series_ending_import</source>

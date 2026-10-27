@@ -11,6 +11,11 @@
                 "en": "A series' page now opens from the menu, and its drafts are approved together by checking them",
                 "fr": "La page d'une série s'ouvre maintenant depuis le menu, et ses brouillons se valident ensemble en les cochant",
                 "es": "La página de una serie se abre ahora desde el menú, y sus borradores se validan juntos marcándolos"
+            },
+            {
+                "en": "The email announcing a series' end now opens its page, where it is prolonged in one click",
+                "fr": "L'e-mail annonçant la fin d'une série ouvre maintenant sa page, où elle se prolonge en un clic",
+                "es": "El correo que anuncia el final de una serie abre ahora su página, donde se prolonga con un clic"
             }
         ]
     },

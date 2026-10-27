@@ -312,7 +312,7 @@
             </trans-unit>
             <trans-unit id="fFRxt4W">
                 <source>email.social_series_ending_body</source>
-                <target>Ces séries arrivent à leur dernière publication. Ouvrez l'une de leurs publications puis « Prolonger la série » pour continuer avec les mêmes réglages :</target>
+                <target>Ces séries arrivent à leur dernière publication. Le lien de chacune ouvre sa page, où « Prolonger la série » continue avec les mêmes réglages :</target>
             </trans-unit>
             <trans-unit id="cV8_CqX">
                 <source>email.social_series_ending_import</source>
