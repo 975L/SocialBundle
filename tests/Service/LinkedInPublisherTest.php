@@ -35,10 +35,12 @@ class LinkedInPublisherTest extends TestCase
         @unlink($this->picture);
     }
 
-    private function publisher(?string $image, bool $uploadFails = false): LinkedInPublisher
+    private function publisher(?string $image, bool $uploadFails = false, bool $page = false): LinkedInPublisher
     {
         $client = $this->createStub(LinkedInClient::class);
         $client->method('author')->willReturn('urn:li:person:abc');
+        $client->method('isPage')->willReturn($page);
+        $client->method('createReshare')->willReturnCallback(static fn (string $postUrn, string $commentary): string => $postUrn . '/' . $commentary);
         $uploads = 0;
         $client->method('uploadImage')->willReturnCallback(static function () use ($uploadFails, &$uploads): string {
             return $uploadFails ? throw new \RuntimeException('Refused') : 'urn:li:image:' . ++$uploads;
@@ -61,6 +63,14 @@ class LinkedInPublisherTest extends TestCase
     public function testTheFirstCommentGoesUnderThePost(): void
     {
         $this->assertSame('urn:li:share:1/Read more', $this->publisher(null)->comment('urn:li:share:1', 'Read more'));
+    }
+
+    // Only a Page's post is shared again on the member's profile, its text escaped as a post's
+    public function testAPagesPostIsResharedWithItsTextEscaped(): void
+    {
+        $this->assertFalse($this->publisher(null)->canReshare());
+        $this->assertTrue($this->publisher(null, page: true)->canReshare());
+        $this->assertSame('urn:li:share:1/Our \\(new\\) post', $this->publisher(null, page: true)->reshare('urn:li:share:1', 'Our (new) post'));
     }
 
     private function content(): SocialContent

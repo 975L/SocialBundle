@@ -132,6 +132,20 @@ class SocialConnectionsControllerTest extends TestCase
         $this->assertSame(['label.social_meta_page_instagram_linked', null], [$instagram['name']->getMessage(), $instagram['url']]);
     }
 
+    // A profile shows no account, a Page its name linked to its LinkedIn page - one connected before its name was stored shown by its id - both buttons offered either way
+    public function testTheLinkedInTileLinksThePage(): void
+    {
+        $profile = $this->networks($this->bluesky())['linkedin'];
+        $this->assertSame([], $profile['accounts']);
+        $this->assertTrue($profile['page_button']);
+
+        $named = $this->networks($this->bluesky(), configs: ['social-linkedin-organization-id' => '111', 'social-linkedin-organization-name' => '975L']);
+        $this->assertSame([['icon' => 'fab fa-linkedin', 'name' => '975L', 'url' => 'https://www.linkedin.com/company/111/']], $named['linkedin']['accounts']);
+
+        $unnamed = $this->networks($this->bluesky(), configs: ['social-linkedin-organization-id' => '111']);
+        $this->assertSame('111', $unnamed['linkedin']['accounts'][0]['name']);
+    }
+
     // A connection from before the current permissions is flagged, for the tile to ask for a new one
     public function testTheBlueskyTileFlagsOutdatedPermissions(): void
     {

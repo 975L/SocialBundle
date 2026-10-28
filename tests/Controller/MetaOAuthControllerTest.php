@@ -15,17 +15,14 @@ use c975L\SocialBundle\Controller\Management\SocialMetaPageController;
 use c975L\SocialBundle\Controller\MetaOAuthController;
 use c975L\SocialBundle\Service\MetaGraphClient;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Contracts\Translation\TranslatableInterface;
 
 class MetaOAuthControllerTest extends TestCase
 {
+    use ControllerTestTrait;
+
     private const array PAGE = ['pageId' => '55', 'name' => 'Papa Câlin', 'pageToken' => 'page-token', 'instagramId' => '77', 'instagram' => 'papacalin'];
 
     private const array OTHER_PAGE = ['pageId' => '11', 'name' => 'Other', 'pageToken' => 'other-token', 'instagramId' => null, 'instagram' => null];
@@ -54,39 +51,6 @@ class MetaOAuthControllerTest extends TestCase
         $controller->setContainer($this->createContainer($request));
 
         return $controller;
-    }
-
-    private function createContainer(Request $request): ContainerInterface
-    {
-        $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
-        $authorizationChecker->method('isGranted')->willReturn(true);
-
-        $router = $this->createStub(UrlGeneratorInterface::class);
-        $router->method('generate')->willReturnCallback(static fn (string $route): string => '/' . $route);
-
-        $services = [
-            'request_stack' => new RequestStack([$request]),
-            'security.authorization_checker' => $authorizationChecker,
-            'router' => $router,
-        ];
-
-        $container = $this->createStub(ContainerInterface::class);
-        $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
-        $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
-
-        return $container;
-    }
-
-    // The flashes by type, a translatable one read as its key
-    private function flashes(Request $request): array
-    {
-        $session = $request->getSession();
-        \assert($session instanceof Session);
-
-        return array_map(
-            static fn (array $messages): array => array_map(static fn ($message) => $message instanceof TranslatableInterface ? $message->getMessage() : $message, $messages),
-            $session->getFlashBag()->all()
-        );
     }
 
     private function callbackRequest(): Request

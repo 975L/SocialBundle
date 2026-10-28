@@ -15,7 +15,7 @@ use c975L\ConfigBundle\Management\HealthCheckProviderInterface;
 use c975L\SocialBundle\Service\LinkedInClient;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// The LinkedIn token ends on its own after 60 days, LinkedIn handing a self-serve app no refresh token: the posts then fail one after the other. Said a fortnight ahead, while reconnecting is one click, and again once it is too late. Read from the config only, no call to LinkedIn
+// The LinkedIn token ends on its own after 60 days, LinkedIn handing no refresh token: the posts then fail one after the other. Said a fortnight ahead, while reconnecting is one click, and again once it is too late. Read from the config only, no call to LinkedIn
 class LinkedInHealthCheckProvider implements HealthCheckProviderInterface
 {
     public const string KIND = 'social-linkedin';
@@ -46,12 +46,13 @@ class LinkedInHealthCheckProvider implements HealthCheckProviderInterface
             'url' => 'linkedin',
             'label' => 'LinkedIn',
             'details' => ['expiresAt' => $expiresAt->format(\DateTimeInterface::ATOM)],
-            'editUrl' => $this->urlGenerator->generate('social_linkedin_oauth_connect'),
+            // The connection the site has, made again: a Page's consent for a Page, the profile's otherwise
+            'editUrl' => $this->urlGenerator->generate('social_linkedin_oauth_connect', $this->linkedInClient->isPage() ? ['page' => 1] : []),
         ];
 
         return [match (true) {
-            $expiresAt <= new \DateTimeImmutable() => [...$row, 'status' => HealthCheckResult::STATUS_ERROR, 'summary' => 'The LinkedIn token expired on ' . $expiresAt->format('d/m/Y') . ': nothing goes out there until the profile is connected again.'],
-            $expiresAt <= new \DateTimeImmutable(self::NOTICE) => [...$row, 'status' => HealthCheckResult::STATUS_WARNING, 'summary' => 'The LinkedIn token expires on ' . $expiresAt->format('d/m/Y') . ': connect the profile again before then.'],
+            $expiresAt <= new \DateTimeImmutable() => [...$row, 'status' => HealthCheckResult::STATUS_ERROR, 'summary' => 'The LinkedIn token expired on ' . $expiresAt->format('d/m/Y') . ': nothing goes out there until LinkedIn is connected again.'],
+            $expiresAt <= new \DateTimeImmutable(self::NOTICE) => [...$row, 'status' => HealthCheckResult::STATUS_WARNING, 'summary' => 'The LinkedIn token expires on ' . $expiresAt->format('d/m/Y') . ': connect LinkedIn again before then.'],
             default => [...$row, 'status' => HealthCheckResult::STATUS_OK, 'summary' => 'The LinkedIn token is valid until ' . $expiresAt->format('d/m/Y') . '.'],
         }];
     }

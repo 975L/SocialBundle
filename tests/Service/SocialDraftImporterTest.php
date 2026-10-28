@@ -42,12 +42,14 @@ class SocialDraftImporterTest extends TestCase
         rmdir($this->dir);
     }
 
-    // LinkedIn taking a first comment, Bluesky none - both connected
+    // LinkedIn taking a first comment and a reshare, Bluesky a story alone - both connected
     private function importer(): SocialDraftImporter
     {
         $publisher = $this->createStub(SocialPublisher::class);
         $publisher->method('getConnectedNetworkNames')->willReturn(['bluesky', 'linkedin']);
         $publisher->method('supportsComment')->willReturnCallback(static fn (string $network): bool => 'linkedin' === $network);
+        $publisher->method('supportsReshare')->willReturnCallback(static fn (string $network): bool => 'linkedin' === $network);
+        $publisher->method('supportsStory')->willReturnCallback(static fn (string $network): bool => 'bluesky' === $network);
         $publisher->method('createManual')->willReturnCallback(static function (\DateTimeImmutable $at): SocialPost {
             $post = new SocialPost(SocialPost::SOURCE_MANUAL, 'id', '', '', null, $at);
             new SocialPostTarget($post, 'bluesky', '');
@@ -109,5 +111,21 @@ class SocialDraftImporterTest extends TestCase
         }
         $this->assertSame(['linkedin' => 'Read more: https://example.org'], $comments);
         $this->assertFileExists($this->dir . '/card.png');
+    }
+
+    // A reshare and a story kept only on the networks offering them, never one that could only fail
+    public function testReshareAndStoryAreKeptWhereTheNetworkOffersThem(): void
+    {
+        $importer = $this->importer();
+        $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 09:30';
+        $read = $importer->read(['title' => 'T', 'posts' => [['at' => $at, 'networks' => ['bluesky', 'linkedin'], 'text' => 'One idea', 'reshare' => ' Shared ', 'story' => true]]], $this->dir);
+        $this->assertSame([], $read['errors']);
+
+        $targets = [];
+        foreach ($importer->import('T', $read['drafts'])[0]->getTargets() as $target) {
+            $targets[$target->getNetwork()] = [$target->getReshare(), $target->isStory()];
+        }
+
+        $this->assertSame(['bluesky' => [null, true], 'linkedin' => ['Shared', false]], $targets);
     }
 }

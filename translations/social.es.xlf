@@ -144,15 +144,15 @@
             </trans-unit>
             <trans-unit id="2BLT8wV">
                 <source>description.guided_step_social_linkedin_connect</source>
-                <target>Hacer clic en «Conectar» en la ficha «LinkedIn» y autorizar el acceso con la cuenta de LinkedIn del perfil. El sitio guarda por sí mismo el token y el perfil.</target>
+                <target>Hacer clic en «Conectar un perfil» en la ficha «LinkedIn», o en «Conectar una Página» con una app de Página, y autorizar el acceso con la cuenta de LinkedIn correspondiente. El sitio guarda por sí mismo el token, el miembro y, si procede, la Página, que se elige en la pantalla siguiente cuando la cuenta administra varias.</target>
             </trans-unit>
             <trans-unit id="w.Eq8PT">
                 <source>description.guided_step_social_linkedin_credentials</source>
-                <target>Buscar «social-linkedin-client-id» y «social-linkedin-client-secret» en la lista, y pegar allí los dos valores de la aplicación. El secreto solo aparece con el botón «Ver datos sensibles». El token y el perfil se rellenan solos en el paso siguiente.</target>
+                <target>Buscar «social-linkedin-client-id» y «social-linkedin-client-secret» en la lista, y pegar allí los dos valores de la aplicación. El secreto solo aparece con el botón «Ver datos sensibles». El token y la cuenta se rellenan solos en el paso siguiente.</target>
             </trans-unit>
             <trans-unit id="h8ze_vb">
                 <source>description.guided_step_social_linkedin_prerequisites</source>
-                <target>Esta parte se hace en linkedin.com/developers: crear una aplicación vinculada a una Página de LinkedIn que usted administra, añadirle los productos «Share on LinkedIn» y «Sign In with LinkedIn using OpenID Connect», y declarar como URL de redirección la dirección del sitio seguida de «/social/linkedin/callback». Volver aquí con el identificador y la clave secreta de la aplicación.</target>
+                <target>Esta parte se hace en linkedin.com/developers: crear una aplicación vinculada a una Página de LinkedIn que usted administra, añadirle los productos «Share on LinkedIn» y «Sign In with LinkedIn using OpenID Connect», y declarar como URL de redirección la dirección del sitio seguida de «/social/linkedin/callback». Para publicar en una Página en lugar de en un perfil, crear una aplicación aparte con el único producto «Community Management API», que LinkedIn concede tras examinar la solicitud. Volver aquí con el identificador y la clave secreta de la aplicación.</target>
             </trans-unit>
             <trans-unit id="vgXH0gX">
                 <source>description.guided_step_social_links_display_label</source>
@@ -304,7 +304,7 @@
             </trans-unit>
             <trans-unit id="fcDzyeM">
                 <source>email.social_linkedin_reminder_body</source>
-                <target>El acceso del sitio a su perfil de LinkedIn termina el %date%, ya que LinkedIn solo lo concede por 60 días. Después, ya no se publica nada allí. Haga clic en «Connecter» en la ficha LinkedIn de «Connexions»:</target>
+                <target>El acceso del sitio a LinkedIn termina el %date%, ya que LinkedIn solo lo concede por 60 días. Después, ya no se publica nada allí. En la ficha LinkedIn de «Connexions», haga clic en «Connecter un profil» o en «Connecter une Page», según la cuenta en la que publica el sitio:</target>
             </trans-unit>
             <trans-unit id="D5AHhy9">
                 <source>email.social_linkedin_reminder_subject</source>
@@ -321,6 +321,14 @@
             <trans-unit id="fKPJ625">
                 <source>email.social_post_failed_subject</source>
                 <target>%count% publicación(es) rechazada(s) por una red</target>
+            </trans-unit>
+            <trans-unit id="cEP13_X">
+                <source>email.social_post_reshare_failed</source>
+                <target>la publicación salió, su difusión en su perfil fue rechazada (%error%): solo se reenviará la difusión</target>
+            </trans-unit>
+            <trans-unit id="VNA_ep4">
+                <source>email.social_post_story_failed</source>
+                <target>la publicación salió, su historia fue rechazada (%error%): solo se reenviará la historia</target>
             </trans-unit>
             <trans-unit id="fFRxt4W">
                 <source>email.social_series_ending_body</source>
@@ -350,13 +358,29 @@
                 <source>flash.linkedin_connected</source>
                 <target>Perfil de LinkedIn de %name% conectado, hasta el %date%.</target>
             </trans-unit>
+            <trans-unit id="JwEE9Ar">
+                <source>flash.linkedin_no_page</source>
+                <target>La cuenta de LinkedIn de %name% no administra ninguna Página: no se ha modificado nada.</target>
+            </trans-unit>
             <trans-unit id="r5XMty8">
                 <source>flash.linkedin_not_configured</source>
                 <target>Rellene primero el ID y el secreto de su app de LinkedIn en la configuración.</target>
             </trans-unit>
+            <trans-unit id="O5Ratfy">
+                <source>flash.linkedin_page_connected</source>
+                <target>Página de LinkedIn %name% conectada, hasta el %date%.</target>
+            </trans-unit>
+            <trans-unit id="8bBT9e3">
+                <source>flash.linkedin_page_invalid</source>
+                <target>No se pudo guardar esta elección: recargue la página y elija de nuevo.</target>
+            </trans-unit>
             <trans-unit id="kYVRLNI">
                 <source>flash.linkedin_refused</source>
                 <target>La conexión con LinkedIn ha sido rechazada o interrumpida.</target>
+            </trans-unit>
+            <trans-unit id="yx.oG_O">
+                <source>flash.linkedin_wrong_app</source>
+                <target>La aplicación de LinkedIn configurada no permite este tipo de conexión: utilice el otro botón, o la aplicación prevista para él.</target>
             </trans-unit>
             <trans-unit id="iOFL8AK">
                 <source>flash.meta_connected</source>
@@ -486,9 +510,17 @@
                 <source>help.social_post_planned_at</source>
                 <target>La fecha y hora en que sale la publicación una vez validada, al cuarto de hora.</target>
             </trans-unit>
+            <trans-unit id="SXWNZZj">
+                <source>help.social_post_reshare</source>
+                <target>La publicación sale en la Página y luego se comparte en su perfil con este texto encima. Vacío, no se comparte.</target>
+            </trans-unit>
             <trans-unit id="PoY.WA0">
                 <source>help.social_post_send_on</source>
                 <target>Desmarque una red para no publicar allí; marque una para que se le escriba un texto, visible la próxima vez que abra la publicación. Una red en gris no está conectada: vea «Conexiones».</target>
+            </trans-unit>
+            <trans-unit id="UvEM6_l">
+                <source>help.social_post_story</source>
+                <target>Justo después de la publicación, su imagen sale también como historia, visible 24 h: encuadrada en 9:16 (1080 × 1920) sobre el fondo del sitio, sin texto ni enlace a la publicación, que la API no permite. La primera imagen de la publicación, si no la del contenido; un vídeo no va.</target>
             </trans-unit>
             <trans-unit id="BPzQBuz">
                 <source>help.social_post_text</source>
@@ -525,6 +557,14 @@
             <trans-unit id="h7bW5vi">
                 <source>label.connection_connect</source>
                 <target>Conectar</target>
+            </trans-unit>
+            <trans-unit id="gzBt7O4">
+                <source>label.connection_connect_page</source>
+                <target>Conectar una Página</target>
+            </trans-unit>
+            <trans-unit id="DBPgQhx">
+                <source>label.connection_connect_profile</source>
+                <target>Conectar un perfil</target>
             </trans-unit>
             <trans-unit id="aIBoIFC">
                 <source>label.connection_connected</source>
@@ -632,7 +672,7 @@
             </trans-unit>
             <trans-unit id="M.lArB1">
                 <source>label.guided_project_social_linkedin_connect</source>
-                <target>Conectar el perfil de LinkedIn</target>
+                <target>Conectar LinkedIn</target>
             </trans-unit>
             <trans-unit id="__S_HiT">
                 <source>label.guided_project_social_links</source>
@@ -826,6 +866,10 @@
                 <source>label.guided_step_social_posts_publish</source>
                 <target>Publicar</target>
             </trans-unit>
+            <trans-unit id="P5REh5X">
+                <source>label.guided_step_social_posts_reshare</source>
+                <target>Compartir en su perfil</target>
+            </trans-unit>
             <trans-unit id="M9j6s0Y">
                 <source>label.guided_step_social_posts_save</source>
                 <target>Guardar</target>
@@ -833,6 +877,10 @@
             <trans-unit id="IhPZtGG">
                 <source>label.guided_step_social_posts_series</source>
                 <target>Generar una serie</target>
+            </trans-unit>
+            <trans-unit id="8rAjvT7">
+                <source>label.guided_step_social_posts_story</source>
+                <target>Publicar también como historia</target>
             </trans-unit>
             <trans-unit id="OSuwsuF">
                 <source>label.guided_step_social_series_approve_picked</source>
@@ -956,7 +1004,7 @@
             </trans-unit>
             <trans-unit id="0cTMFAS">
                 <source>label.info_linkedin_connect</source>
-                <target>Vincula el sitio a su perfil personal de LinkedIn. El acceso dura 60 días: vuelva a conectarse antes de que caduque.</target>
+                <target>Vincula el sitio a su perfil personal de LinkedIn, o a una Página que usted administra con una app propia. El acceso dura 60 días: vuelva a conectarse antes de que caduque.</target>
             </trans-unit>
             <trans-unit id="95gY_Ya">
                 <source>label.info_linkedin_not_configured</source>
@@ -993,6 +1041,10 @@
             <trans-unit id="CJ1xpE7">
                 <source>label.info_social_content_change</source>
                 <target>«%title%»: sacar otro contenido al azar en la misma categoría, o elegir uno entre los que no están reservados ni publicados. El anterior queda libre.</target>
+            </trans-unit>
+            <trans-unit id="lvU0n1T">
+                <source>label.info_social_linkedin_page</source>
+                <target>Esta cuenta de LinkedIn administra varias Páginas: elija aquella en la que publica el sitio.</target>
             </trans-unit>
             <trans-unit id="RKLGNte">
                 <source>label.info_social_links</source>
@@ -1242,6 +1294,14 @@
                 <source>label.social_calendar_retry_nothing</source>
                 <target>Nada que volver a enviar en esta red: recargue la página.</target>
             </trans-unit>
+            <trans-unit id="IlTsjzj">
+                <source>label.social_calendar_retry_reshare</source>
+                <target>Volver a enviar la difusión en %network%</target>
+            </trans-unit>
+            <trans-unit id="rVjecu_">
+                <source>label.social_calendar_retry_story</source>
+                <target>Volver a enviar la historia en %network%</target>
+            </trans-unit>
             <trans-unit id="Tbz6Hmi">
                 <source>label.social_calendar_save_networks</source>
                 <target>Guardar las redes</target>
@@ -1329,6 +1389,18 @@
             <trans-unit id=".AP7YxM">
                 <source>label.social_content_redraw</source>
                 <target>Sacar otra</target>
+            </trans-unit>
+            <trans-unit id="hqYGPbp">
+                <source>label.social_linkedin_page</source>
+                <target>Elegir la Página de LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="XCvVrcB">
+                <source>label.social_linkedin_page_current</source>
+                <target>Página actual</target>
+            </trans-unit>
+            <trans-unit id="MBLODuu">
+                <source>label.social_linkedin_page_pick</source>
+                <target>Elegir esta Página</target>
             </trans-unit>
             <trans-unit id="Eyn1gXP">
                 <source>label.social_links</source>
@@ -1474,6 +1546,10 @@
                 <source>label.social_post_publish</source>
                 <target>Publicar</target>
             </trans-unit>
+            <trans-unit id="pvdNhMC">
+                <source>label.social_post_reshare</source>
+                <target>Compartir en mi perfil</target>
+            </trans-unit>
             <trans-unit id="k5F77xT">
                 <source>label.social_post_retry</source>
                 <target>Relanzar la publicación</target>
@@ -1509,6 +1585,10 @@
             <trans-unit id="1TUVASP">
                 <source>label.social_post_status_published</source>
                 <target>Publicada</target>
+            </trans-unit>
+            <trans-unit id="LOFdBAg">
+                <source>label.social_post_story</source>
+                <target>También como historia</target>
             </trans-unit>
             <trans-unit id="dlGt4a2">
                 <source>label.social_post_text</source>

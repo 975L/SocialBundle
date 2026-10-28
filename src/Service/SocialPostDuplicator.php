@@ -15,10 +15,11 @@ use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Namer\SocialMediaNamer;
 
-// A post written again a day later, a draft of no series holding the same content, texts and medias - on the networks still connected only. An upload gets a file of its own, deleted with its own media; a file of the site's own stays a reference to it
+// A post written again a day later, a draft of no series holding the same content, texts and medias - on the networks still connected only, with a reshare or a story where the network still offers it. An upload gets a file of its own, deleted with its own media; a file of the site's own stays a reference to it
 class SocialPostDuplicator
 {
     public function __construct(
+        private readonly SocialPublisher $socialPublisher,
         private readonly string $projectDir,
     ) {
     }
@@ -36,8 +37,13 @@ class SocialPostDuplicator
         $copy->setText($post->getText());
 
         foreach ($post->getTargets() as $target) {
-            if (\in_array($target->getNetwork(), $networks, true)) {
-                new SocialPostTarget($copy, $target->getNetwork(), $target->getText())->setComment($target->getComment());
+            // A reshare or a story only where the network still offers it, the same as an imported draft, never one that could only fail
+            $network = $target->getNetwork();
+            if (\in_array($network, $networks, true)) {
+                new SocialPostTarget($copy, $network, $target->getText())
+                    ->setComment($target->getComment())
+                    ->setReshare($this->socialPublisher->supportsReshare($network) ? $target->getReshare() : null)
+                    ->setStory($this->socialPublisher->supportsStory($network) && $target->isStory());
             }
         }
 

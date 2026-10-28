@@ -61,6 +61,88 @@ class LinkedInClientTest extends TestCase
         $this->assertSame('https://api.linkedin.com/v2/userinfo', $this->calls[1]['url']);
     }
 
+    // A profile asks what OpenID Connect gives, a Page what the Community Management API gives - its app having no OpenID Connect
+    public function testTheConsentAsksTheScopesOfTheConnection(): void
+    {
+        parse_str((string) parse_url($this->client()->getAuthorizationUrl('https://example.org/social/linkedin/callback', 'state'), \PHP_URL_QUERY), $profile);
+        parse_str((string) parse_url($this->client()->getAuthorizationUrl('https://example.org/social/linkedin/callback', 'state', true), \PHP_URL_QUERY), $page);
+
+        $this->assertSame(['openid profile w_member_social', 'https://example.org/social/linkedin/callback', 'id'], [$profile['scope'], $profile['redirect_uri'], $profile['client_id']]);
+        $this->assertSame(['r_basicprofile w_member_social w_organization_social rw_organization_admin', 'https://example.org/social/linkedin/callback'], [$page['scope'], $page['redirect_uri']]);
+    }
+
+    // A Page's connection reads the member through /v2/me, then the Pages they administer or post for as content administrator, LinkedIn naming each as "organization" or as "organizationTarget", and their names in one call
+    public function testAPageConnectionKeepsTheMemberAndThePagesTheyAdminister(): void
+    {
+        $connection = $this->client([
+            new MockResponse('{"access_token": "new-token", "expires_in": 5184000}'),
+            new MockResponse('{"id": "xyz", "localizedFirstName": "Laurent", "localizedLastName": "Marquet"}'),
+            new MockResponse('{"elements": [{"organization": "urn:li:organization:111", "role": "ADMINISTRATOR"}, {"organizationTarget": "urn:li:organization:222", "role": "CONTENT_ADMINISTRATOR"}, {"organization": "urn:li:organization:333", "role": "ANALYST"}]}'),
+            new MockResponse('{"results": {"111": {"localizedName": "975L"}, "222": {"localizedName": "EIPT"}}}'),
+        ])->connect('code', 'https://example.org/social/linkedin/callback', true);
+
+        $this->assertSame(['new-token', 'xyz', 'Laurent Marquet'], [$connection['accessToken'], $connection['memberId'], $connection['name']]);
+        $this->assertSame([['id' => '111', 'name' => '975L'], ['id' => '222', 'name' => 'EIPT']], $connection['organizations']);
+        $this->assertSame('https://api.linkedin.com/v2/me', $this->calls[1]['url']);
+        $this->assertSame('https://api.linkedin.com/rest/organizationAcls?q=roleAssignee&state=APPROVED&count=100', $this->calls[2]['url']);
+        $this->assertContains('LinkedIn-Version: ' . LinkedInClient::VERSION, $this->calls[2]['headers']);
+        $this->assertContains('X-Restli-Protocol-Version: 2.0.0', $this->calls[2]['headers']);
+        $this->assertSame('https://api.linkedin.com/rest/organizations?ids=List(111,222)', $this->calls[3]['url']);
+        $this->assertCount(4, $this->calls);
+    }
+
+    // A Page's name LinkedIn will not say is its id, and a member without names is their id: neither fails the connection
+    public function testANameLinkedInWillNotSayFallsBackOnTheId(): void
+    {
+        $connection = $this->client([
+            new MockResponse('{"access_token": "new-token", "expires_in": 5184000}'),
+            new MockResponse('{"id": "xyz"}'),
+            new MockResponse('{"elements": [{"organization": "urn:li:organization:111", "role": "ADMINISTRATOR"}]}'),
+            new MockResponse('{"message": "Not enough permissions"}', ['http_code' => 403]),
+        ])->connect('code', 'https://example.org/social/linkedin/callback', true);
+
+        $this->assertSame('xyz', $connection['name']);
+        $this->assertSame([['id' => '111', 'name' => '111']], $connection['organizations']);
+    }
+
+    // A member administering no Page gets no Page, for the callback to refuse - a profile's connection asking for none at all
+    public function testAMemberAdministeringNoPageGetsNone(): void
+    {
+        $page = $this->client([
+            new MockResponse('{"access_token": "new-token", "expires_in": 5184000}'),
+            new MockResponse('{"id": "xyz"}'),
+            new MockResponse('{"elements": []}'),
+        ])->connect('code', 'https://example.org/social/linkedin/callback', true);
+        $this->assertSame([], $page['organizations']);
+
+        $this->calls = [];
+        $profile = $this->client([
+            new MockResponse('{"access_token": "new-token", "expires_in": 5184000}'),
+            new MockResponse('{"sub": "xyz"}'),
+        ])->connect('code', 'https://example.org/social/linkedin/callback');
+        $this->assertSame([], $profile['organizations']);
+        $this->assertCount(2, $this->calls);
+    }
+
+    // The posts go out as the Page once one is connected, as the member otherwise
+    public function testTheAuthorIsThePageWhenOneIsConnected(): void
+    {
+        $this->assertSame('urn:li:person:abc', $this->client()->author());
+        $this->assertFalse($this->client()->isPage());
+        $this->assertSame('urn:li:organization:111', $this->client(config: ['social-linkedin-organization-id' => '111'])->author());
+        $this->assertTrue($this->client(config: ['social-linkedin-organization-id' => '111'])->isPage());
+    }
+
+    // What a connection writes, the Page's two configs only when there is one
+    public function testTheConnectionValuesCarryThePageWhenThereIsOne(): void
+    {
+        $connection = ['accessToken' => 'token', 'memberId' => 'xyz', 'expiresAt' => new \DateTimeImmutable('2026-12-02T10:00:00+01:00')];
+        $values = ['social-linkedin-access-token' => 'token', 'social-linkedin-member-id' => 'xyz', 'social-linkedin-token-expires-at' => '2026-12-02T10:00:00+01:00'];
+
+        $this->assertSame($values, LinkedInClient::connectionValues($connection));
+        $this->assertSame($values + ['social-linkedin-organization-id' => '111', 'social-linkedin-organization-name' => '975L'], LinkedInClient::connectionValues($connection, ['id' => '111', 'name' => '975L']));
+    }
+
     // A refused code says why, rather than storing nothing silently
     public function testARefusedCodeSaysWhy(): void
     {
@@ -137,6 +219,40 @@ class LinkedInClientTest extends TestCase
         $this->assertSame(['GET', 'https://api.linkedin.com/rest/videos/urn%3Ali%3Avideo%3A1'], [$this->calls[5]['method'], $this->calls[5]['url']]);
     }
 
+    // A video still processing after its 30 asks stops the post, rather than spending the daily quota of the development tier on it
+    public function testAVideoStillProcessingStopsAfterItsAttempts(): void
+    {
+        $path = (string) tempnam(sys_get_temp_dir(), 'linkedin');
+        file_put_contents($path, '0123');
+
+        try {
+            $this->client([
+                new MockResponse('{"value": {"video": "urn:li:video:1", "uploadInstructions": [{"uploadUrl": "https://upload.example.org/1", "firstByte": 0, "lastByte": 3}]}}'),
+                new MockResponse('', ['http_code' => 200, 'response_headers' => ['etag' => 'tag-1']]),
+                new MockResponse('', ['http_code' => 200]),
+                ...array_fill(0, 40, new MockResponse('{"status": "PROCESSING"}')),
+            ])->uploadVideo($path);
+            $this->fail('The video still processing should have been thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertStringContainsString('still processing', $exception->getMessage());
+        } finally {
+            @unlink($path);
+        }
+
+        $this->assertCount(3 + 30, $this->calls);
+    }
+
+    // The upload's owner is the post's author, the Page once one is connected
+    public function testAnImageOfAPageIsOwnedByThePage(): void
+    {
+        $this->client([
+            new MockResponse('{"value": {"uploadUrl": "https://upload.example.org/1", "image": "urn:li:image:1"}}'),
+            new MockResponse('', ['http_code' => 201]),
+        ], ['social-linkedin-organization-id' => '111'])->uploadImage('bytes');
+
+        $this->assertSame('urn:li:organization:111', json_decode((string) $this->calls[0]['body'], true)['initializeUploadRequest']['owner']);
+    }
+
     // A video LinkedIn could not process is not put in a post
     public function testAVideoLinkedInCouldNotProcessStopsThePost(): void
     {
@@ -188,6 +304,14 @@ class LinkedInClientTest extends TestCase
         $this->assertSame(['actor' => 'urn:li:person:abc', 'object' => 'urn:li:share:1', 'message' => ['text' => 'Read more: https://example.org']], json_decode((string) $this->calls[1]['body'], true));
     }
 
+    // A Page's post is commented with the Page as actor, its author
+    public function testACommentOfAPageIsSignedByThePage(): void
+    {
+        $this->client([new MockResponse('{"id": "6643"}', ['http_code' => 201])], ['social-linkedin-organization-id' => '111'])->createComment('urn:li:share:1', 'Text');
+
+        $this->assertSame('urn:li:organization:111', json_decode((string) $this->calls[0]['body'], true)['actor']);
+    }
+
     // Refused every time, the comment says why
     public function testACommentRefusedEveryTimeSaysWhy(): void
     {
@@ -199,14 +323,7 @@ class LinkedInClientTest extends TestCase
     // Any refusal but a post not found yet fails at once, rather than waiting to fail the same
     public function testACommentRefusedForAnotherReasonIsNotAskedAgain(): void
     {
-        try {
-            $this->client([new MockResponse('{"message": "Not enough permissions"}', ['http_code' => 403])])->createComment('urn:li:share:1', 'Text');
-            $this->fail('The refusal should have been thrown.');
-        } catch (\RuntimeException $exception) {
-            $this->assertStringContainsString('Not enough permissions', $exception->getMessage());
-        }
-
-        $this->assertCount(1, $this->calls);
+        $this->assertRefusedAtOnce('createComment');
     }
 
     // A comment created without its id in the header is still out, never sent again
@@ -215,5 +332,49 @@ class LinkedInClientTest extends TestCase
         $id = $this->client([new MockResponse('', ['http_code' => 201])])->createComment('urn:li:share:1', 'Text');
 
         $this->assertSame('', $id);
+    }
+
+    // The Page's post shared again by the member on their own profile, its text above it, its urn read from the header - a post LinkedIn does not find yet asked again
+    public function testAReshareIsPostedAsTheMemberAndAnswersItsUrn(): void
+    {
+        $urn = $this->client([
+            new MockResponse('{"message": "Not found"}', ['http_code' => 404]),
+            new MockResponse('', ['http_code' => 201, 'response_headers' => ['x-restli-id' => 'urn:li:share:2']]),
+        ], ['social-linkedin-organization-id' => '111'])->createReshare('urn:li:share:1', 'Our new post');
+
+        $this->assertSame('urn:li:share:2', $urn);
+        $this->assertCount(2, $this->calls);
+        $this->assertSame('https://api.linkedin.com/rest/posts', $this->calls[1]['url']);
+        $body = json_decode((string) $this->calls[1]['body'], true);
+        $this->assertSame('urn:li:person:abc', $body['author']);
+        $this->assertSame('Our new post', $body['commentary']);
+        $this->assertSame(['parent' => 'urn:li:share:1'], $body['reshareContext']);
+    }
+
+    // A reshare created without its id in the header is still out, never sent again
+    public function testAReshareWithoutIdHeaderIsStillPosted(): void
+    {
+        $urn = $this->client([new MockResponse('', ['http_code' => 201])], ['social-linkedin-organization-id' => '111'])->createReshare('urn:li:share:1', 'Text');
+
+        $this->assertSame('', $urn);
+    }
+
+    // Any refusal but a post not found yet fails at once, rather than resharing twice
+    public function testAReshareRefusedForAnotherReasonIsNotAskedAgain(): void
+    {
+        $this->assertRefusedAtOnce('createReshare');
+    }
+
+    // A call about a post refused with a 403, thrown at once without being asked again
+    private function assertRefusedAtOnce(string $method): void
+    {
+        try {
+            $this->client([new MockResponse('{"message": "Not enough permissions"}', ['http_code' => 403])])->{$method}('urn:li:share:1', 'Text');
+            $this->fail('The refusal should have been thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertStringContainsString('Not enough permissions', $exception->getMessage());
+        }
+
+        $this->assertCount(1, $this->calls);
     }
 }

@@ -44,6 +44,7 @@ class MetaPublishersTest extends TestCase
     {
         $exporter = $this->createStub(SocialImageExporter::class);
         $exporter->method('jpegUrl')->willReturn($jpegUrl);
+        $exporter->method('storyUrl')->willReturn(null === $jpegUrl ? null : str_replace('.jpg', '-story.jpg', $jpegUrl));
 
         return $exporter;
     }
@@ -127,6 +128,45 @@ class MetaPublishersTest extends TestCase
         $this->assertSame(['image_url' => 'https://example.org/medias/social/a.jpg', 'caption' => 'Texte', 'alt_text' => 'Le lac au matin', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
         $this->assertSame('/77/media_publish', $this->calls[3]['path']);
         $this->assertSame('c1', $this->calls[3]['parameters']['creation_id']);
+    }
+
+    // A Page story: the vertical picture uploaded unpublished, then made a story
+    public function testFacebookPublishesAPhotoStory(): void
+    {
+        $id = new FacebookPublisher($this->graph([['id' => '9'], ['success' => true, 'post_id' => '55_10']]), $this->exporter('https://example.org/medias/social/a.jpg'), $this->config())->story($this->content());
+
+        $this->assertSame('55_10', $id);
+        $this->assertSame(['/55/photos', '/55/photo_stories'], array_column($this->calls, 'path'));
+        $this->assertSame(['url' => 'https://example.org/medias/social/a-story.jpg', 'published' => 'false', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
+        $this->assertSame('9', $this->calls[1]['parameters']['photo_id']);
+    }
+
+    // A 200 that does not say the story went out leaves it to be sent again
+    public function testFacebookSaysWhenTheStoryWasNotPublished(): void
+    {
+        $this->expectExceptionMessageIsOrContains('did not publish the story');
+
+        new FacebookPublisher($this->graph([['id' => '9'], ['success' => false]]), $this->exporter('https://example.org/medias/social/a.jpg'), $this->config())->story($this->content());
+    }
+
+    // No picture, no story
+    public function testAStoryTakesAPicture(): void
+    {
+        $this->expectExceptionMessageIsOrContains('A story takes a picture');
+
+        new InstagramPublisher($this->graph([]), $this->exporter(null), $this->config(), 0)->story($this->content());
+    }
+
+    // An Instagram story: a STORIES container of the vertical picture, no caption, waited for, then published
+    public function testInstagramPublishesAStory(): void
+    {
+        $graph = $this->graph([['id' => 'c1'], ['status_code' => 'FINISHED'], ['id' => 's1']]);
+
+        $id = new InstagramPublisher($graph, $this->exporter('https://example.org/medias/social/a.jpg'), $this->config(), 0)->story($this->content());
+
+        $this->assertSame('s1', $id);
+        $this->assertSame(['media_type' => 'STORIES', 'image_url' => 'https://example.org/medias/social/a-story.jpg', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
+        $this->assertSame('/77/media_publish', $this->calls[2]['path']);
     }
 
     public function testInstagramSaysWhenItCouldNotProcessTheImage(): void

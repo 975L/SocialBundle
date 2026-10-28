@@ -68,11 +68,11 @@
             </trans-unit>
             <trans-unit id="BANWhG0">
                 <source>description.social_linkedin_access_token</source>
-                <target>Filled by "Connect" on the LinkedIn tile of "Connections". Valid for 60 days: connect again before it expires.</target>
+                <target>Filled by the connection on the LinkedIn tile of "Connections". Valid for 60 days: connect again before it expires.</target>
             </trans-unit>
             <trans-unit id="XIOiN6Y">
                 <source>description.social_linkedin_client_id</source>
-                <target>Client ID of the app created on linkedin.com/developers, with the "Share on LinkedIn" and "Sign In with LinkedIn using OpenID Connect" products.</target>
+                <target>Client ID of the app created on linkedin.com/developers: with the "Share on LinkedIn" and "Sign In with LinkedIn using OpenID Connect" products for a profile, with the "Community Management API" alone for a Page.</target>
             </trans-unit>
             <trans-unit id="2nDJLVA">
                 <source>description.social_linkedin_client_secret</source>
@@ -80,7 +80,15 @@
             </trans-unit>
             <trans-unit id="hNZKcg8">
                 <source>description.social_linkedin_member_id</source>
-                <target>Filled by the connection: the profile the posts go out on.</target>
+                <target>Filled by the connection: the member connected, on whose profile the posts go out when no Page is connected.</target>
+            </trans-unit>
+            <trans-unit id="gcgVIxi">
+                <source>description.social_linkedin_organization_id</source>
+                <target>Filled by "Connect a Page": the Page the posts go out on, picked at the connection when the account administers several. Empty, they go out on the member's profile.</target>
+            </trans-unit>
+            <trans-unit id="eGCpWt7">
+                <source>description.social_linkedin_organization_name</source>
+                <target>Filled by the connection: the Page's name, shown on the LinkedIn tile of "Connections".</target>
             </trans-unit>
             <trans-unit id="36ObS3d">
                 <source>description.social_linkedin_token_expires_at</source>
@@ -221,6 +229,14 @@
             <trans-unit id="W6z9srG">
                 <source>label.social_linkedin_member_id</source>
                 <target>LinkedIn member</target>
+            </trans-unit>
+            <trans-unit id="6Jue2Sy">
+                <source>label.social_linkedin_organization_id</source>
+                <target>LinkedIn Page</target>
+            </trans-unit>
+            <trans-unit id="cTdwkFS">
+                <source>label.social_linkedin_organization_name</source>
+                <target>LinkedIn Page name</target>
             </trans-unit>
             <trans-unit id="VNIF16G">
                 <source>label.social_linkedin_token_expires_at</source>

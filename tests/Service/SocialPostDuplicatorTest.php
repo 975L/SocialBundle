@@ -16,6 +16,7 @@ use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Namer\SocialMediaNamer;
 use c975L\SocialBundle\Service\SocialPostDuplicator;
+use c975L\SocialBundle\Service\SocialPublisher;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -45,6 +46,29 @@ class SocialPostDuplicatorTest extends TestCase
         return $post;
     }
 
+    // The duplicator, a reshare offered on LinkedIn alone and a story on Facebook alone
+    private function duplicator(): SocialPostDuplicator
+    {
+        $publisher = $this->createStub(SocialPublisher::class);
+        $publisher->method('supportsReshare')->willReturnCallback(static fn (string $network): bool => 'linkedin' === $network);
+        $publisher->method('supportsStory')->willReturnCallback(static fn (string $network): bool => 'facebook' === $network);
+
+        return new SocialPostDuplicator($publisher, $this->projectDir);
+    }
+
+    // A reshare or a story copied only where the network still offers it, never one that could only fail
+    public function testTheCopyKeepsReshareAndStoryWhereTheNetworkOffersThem(): void
+    {
+        $post = $this->post('+2 days 09:30');
+        new SocialPostTarget($post, 'linkedin', 'LinkedIn text')->setReshare('Shared')->setStory(true);
+        new SocialPostTarget($post, 'facebook', 'Facebook text')->setReshare('Shared')->setStory(true);
+
+        $targets = $this->duplicator()->duplicate($post, ['linkedin', 'facebook'])->getTargets()->getValues();
+
+        $this->assertSame(['Shared', false], [$targets[0]->getReshare(), $targets[0]->isStory()]);
+        $this->assertSame([null, true], [$targets[1]->getReshare(), $targets[1]->isStory()]);
+    }
+
     // The texts and first comments copied as they read, on the connected networks only, every one a draft again - one gone out as well
     public function testTheCopyIsADraftOfNoSeriesTheDayAfter(): void
     {
@@ -54,7 +78,7 @@ class SocialPostDuplicatorTest extends TestCase
         $bluesky->setComment('Read more');
         new SocialPostTarget($post, 'facebook', 'Facebook text');
 
-        $copy = new SocialPostDuplicator($this->projectDir)->duplicate($post, ['bluesky', 'linkedin']);
+        $copy = $this->duplicator()->duplicate($post, ['bluesky', 'linkedin']);
 
         $this->assertEquals($post->getPlannedAt()->modify('+1 day'), $copy->getPlannedAt());
         $this->assertSame('draft', $copy->getState());
@@ -67,7 +91,7 @@ class SocialPostDuplicatorTest extends TestCase
     // A post whose next day is gone already is copied to tomorrow, at its time of day
     public function testAPastPostIsCopiedToTomorrow(): void
     {
-        $copy = new SocialPostDuplicator($this->projectDir)->duplicate($this->post('-10 days 18:45'), []);
+        $copy = $this->duplicator()->duplicate($this->post('-10 days 18:45'), []);
 
         $this->assertEquals(new \DateTimeImmutable('tomorrow 18:45'), $copy->getPlannedAt());
     }
@@ -85,7 +109,7 @@ class SocialPostDuplicatorTest extends TestCase
         $gone = new SocialMedia($post);
         $post->addMedia($gone->setFilename(SocialMediaNamer::DIRECTORY . '/gone.jpg'));
 
-        $medias = new SocialPostDuplicator($this->projectDir)->duplicate($post, [])->getMedias()->getValues();
+        $medias = $this->duplicator()->duplicate($post, [])->getMedias()->getValues();
 
         $this->assertCount(2, $medias);
         [$copiedUpload, $copiedReference] = $medias;

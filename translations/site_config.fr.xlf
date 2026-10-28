@@ -68,11 +68,11 @@
             </trans-unit>
             <trans-unit id="BANWhG0">
                 <source>description.social_linkedin_access_token</source>
-                <target>Renseigné par « Connecter » sur la tuile LinkedIn de « Connexions ». Valable 60 jours : il faut se reconnecter avant son expiration.</target>
+                <target>Renseigné par la connexion de la tuile LinkedIn de « Connexions ». Valable 60 jours : il faut se reconnecter avant son expiration.</target>
             </trans-unit>
             <trans-unit id="XIOiN6Y">
                 <source>description.social_linkedin_client_id</source>
-                <target>Client ID de l'app créée sur linkedin.com/developers, avec les produits « Share on LinkedIn » et « Sign In with LinkedIn using OpenID Connect ».</target>
+                <target>Client ID de l'app créée sur linkedin.com/developers : avec les produits « Share on LinkedIn » et « Sign In with LinkedIn using OpenID Connect » pour un profil, avec le seul « Community Management API » pour une Page.</target>
             </trans-unit>
             <trans-unit id="2nDJLVA">
                 <source>description.social_linkedin_client_secret</source>
@@ -80,7 +80,15 @@
             </trans-unit>
             <trans-unit id="hNZKcg8">
                 <source>description.social_linkedin_member_id</source>
-                <target>Renseigné par la connexion : le profil sur lequel les publications partent.</target>
+                <target>Renseigné par la connexion : le membre connecté, sur le profil duquel les publications partent quand aucune Page n'est connectée.</target>
+            </trans-unit>
+            <trans-unit id="gcgVIxi">
+                <source>description.social_linkedin_organization_id</source>
+                <target>Renseignée par « Connecter une Page » : la Page sur laquelle les publications partent, choisie à la connexion quand le compte en administre plusieurs. Vide, elles partent sur le profil du membre.</target>
+            </trans-unit>
+            <trans-unit id="eGCpWt7">
+                <source>description.social_linkedin_organization_name</source>
+                <target>Renseigné par la connexion : le nom de la Page, affiché sur la tuile LinkedIn de « Connexions ».</target>
             </trans-unit>
             <trans-unit id="36ObS3d">
                 <source>description.social_linkedin_token_expires_at</source>
@@ -221,6 +229,14 @@
             <trans-unit id="W6z9srG">
                 <source>label.social_linkedin_member_id</source>
                 <target>Membre LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="6Jue2Sy">
+                <source>label.social_linkedin_organization_id</source>
+                <target>Page LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="cTdwkFS">
+                <source>label.social_linkedin_organization_name</source>
+                <target>Nom de la Page LinkedIn</target>
             </trans-unit>
             <trans-unit id="VNIF16G">
                 <source>label.social_linkedin_token_expires_at</source>

@@ -15,17 +15,14 @@ use c975L\SocialBundle\Controller\YoutubeOAuthController;
 use c975L\SocialBundle\Service\ConfigValueWriter;
 use c975L\SocialBundle\Service\YoutubeClient;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Contracts\Translation\TranslatableInterface;
 
 class YoutubeOAuthControllerTest extends TestCase
 {
+    use ControllerTestTrait;
+
     private function createRequest(array $query = []): Request
     {
         $request = new Request($query);
@@ -50,39 +47,6 @@ class YoutubeOAuthControllerTest extends TestCase
         $controller->setContainer($this->createContainer($request));
 
         return $controller;
-    }
-
-    private function createContainer(Request $request): ContainerInterface
-    {
-        $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
-        $authorizationChecker->method('isGranted')->willReturn(true);
-
-        $router = $this->createStub(UrlGeneratorInterface::class);
-        $router->method('generate')->willReturnCallback(static fn (string $route): string => '/' . $route);
-
-        $services = [
-            'request_stack' => new RequestStack([$request]),
-            'security.authorization_checker' => $authorizationChecker,
-            'router' => $router,
-        ];
-
-        $container = $this->createStub(ContainerInterface::class);
-        $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
-        $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
-
-        return $container;
-    }
-
-    // The flashes by type, a translatable one read as its key
-    private function flashes(Request $request): array
-    {
-        $session = $request->getSession();
-        \assert($session instanceof Session);
-
-        return array_map(
-            static fn (array $messages): array => array_map(static fn ($message) => $message instanceof TranslatableInterface ? $message->getMessage() : $message, $messages),
-            $session->getFlashBag()->all()
-        );
     }
 
     private function callbackRequest(): Request

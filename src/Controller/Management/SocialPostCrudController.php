@@ -465,7 +465,7 @@ class SocialPostCrudController extends AbstractCrudController
 
         return $this->render('@c975LSocial/management/social_post_retry.html.twig', [
             'post' => $post,
-            'failed' => $post->getTargets()->filter(static fn (SocialPostTarget $target): bool => SocialPostStatus::Failed === $target->getStatus() || $target->isCommentPending()),
+            'failed' => $post->getTargets()->filter(static fn (SocialPostTarget $target): bool => SocialPostStatus::Failed === $target->getStatus() || $target->isFollowUpPending()),
             'edit_url' => $this->editUrl($post),
         ]);
     }
@@ -726,9 +726,15 @@ class SocialPostCrudController extends AbstractCrudController
                 default => $this->addFlash('danger', t('flash.social_post_failed', $parameters, 'social')),
             };
 
-            // A post out whose first comment was refused, said right after the network it went to
+            // A post out whose first comment, reshare or story was refused, said right after the network it went to
             if (isset($result['comment_error'])) {
                 $this->addFlash('warning', t('email.social_post_comment_failed', ['%error%' => (string) $result['comment_error']], 'social'));
+            }
+            if (isset($result['reshare_error'])) {
+                $this->addFlash('warning', t('email.social_post_reshare_failed', ['%error%' => (string) $result['reshare_error']], 'social'));
+            }
+            if (isset($result['story_error'])) {
+                $this->addFlash('warning', t('email.social_post_story_failed', ['%error%' => (string) $result['story_error']], 'social'));
             }
         }
     }

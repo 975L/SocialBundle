@@ -55,6 +55,14 @@
                             {% elseif network.site_url is defined and network.site_url %}
                                 {# Bluesky knows the site by "site-url" only: started from here, it would refuse the connection #}
                                 <p class="card-text small">{{ ('label.connection_wrong_host'|trans({'%url%': network.site_url}, 'social')) }}</p>
+                            {% elseif network.page_button ?? false %}
+                                {# LinkedIn posts on the member's profile or on a Page they administer, each its own consent through the same route #}
+                                <twig:ea:Button htmlElement="a" href="{{ path(network.route) }}" variant="{{ network.connected ? 'default' : 'primary' }}">
+                                    {{ ('label.connection_connect_profile'|trans({}, 'social')) }}
+                                </twig:ea:Button>
+                                <twig:ea:Button htmlElement="a" href="{{ path(network.route, {page: 1}) }}" variant="{{ network.connected ? 'default' : 'primary' }}">
+                                    {{ ('label.connection_connect_page'|trans({}, 'social')) }}
+                                </twig:ea:Button>
                             {% else %}
                                 <twig:ea:Button htmlElement="a" href="{{ path(network.route) }}" variant="{{ network.connected and not (network.outdated ?? false) ? 'default' : 'primary' }}">
                                     {{ (network.connected ? 'label.connection_reconnect' : 'label.connection_connect')|trans({}, 'social') }}

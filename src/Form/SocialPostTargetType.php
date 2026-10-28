@@ -14,6 +14,7 @@ use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Service\SocialPublisher;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -64,6 +65,27 @@ class SocialPostTargetType extends AbstractType
                     'required' => false,
                     'disabled' => null !== $target->getCommentId(),
                     'attr' => ['rows' => 2],
+                ]);
+            }
+
+            // Offered on a network posting as a Page, the text the post is shared again with on the member's own profile - left empty, it is not. Still shown while a text is held, for one the network no longer takes to be emptied
+            if ($this->socialPublisher->supportsReshare($target->getNetwork()) || null !== $target->getReshare()) {
+                $event->getForm()->add('reshare', TextareaType::class, [
+                    'label' => t('label.social_post_reshare', [], 'social'),
+                    'help' => null === $target->getReshareError() ? t('help.social_post_reshare', [], 'social') : t('email.social_post_reshare_failed', ['%error%' => $target->getReshareError()], 'social'),
+                    'required' => false,
+                    'disabled' => null !== $target->getReshareId(),
+                    'attr' => ['rows' => 2],
+                ]);
+            }
+
+            // Offered on a network showing the post's picture as a story too, for 24 hours and without a link to the post
+            if ($this->socialPublisher->supportsStory($target->getNetwork())) {
+                $event->getForm()->add('story', CheckboxType::class, [
+                    'label' => t('label.social_post_story', [], 'social'),
+                    'help' => null === $target->getStoryError() ? t('help.social_post_story', [], 'social') : t('email.social_post_story_failed', ['%error%' => $target->getStoryError()], 'social'),
+                    'required' => false,
+                    'disabled' => null !== $target->getStoryId(),
                 ]);
             }
         });

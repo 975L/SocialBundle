@@ -3,6 +3,21 @@
         "date": "2026-10-28",
         "description": [
             {
+                "en": "Posts can now go out on a LinkedIn Page rather than on a profile",
+                "fr": "Les publications peuvent maintenant partir sur une Page LinkedIn plutôt que sur un profil",
+                "es": "Las publicaciones pueden salir ahora en una Página de LinkedIn en lugar de en un perfil"
+            },
+            {
+                "en": "A post on the LinkedIn Page can be reshared on your own profile with a text of your own",
+                "fr": "Une publication sur la Page LinkedIn peut être repartagée sur votre propre profil avec un texte à vous",
+                "es": "Una publicación en la Página de LinkedIn puede compartirse en su propio perfil con un texto suyo"
+            },
+            {
+                "en": "A post's picture can go out as a story on Facebook and Instagram too",
+                "fr": "L'image d'une publication peut aussi partir en story sur Facebook et Instagram",
+                "es": "La imagen de una publicación puede salir también como historia en Facebook e Instagram"
+            },
+            {
                 "en": "A post refused by a network can now be sent again from its panel on the calendar, after correcting its text if needed",
                 "fr": "Une publication refusée par un réseau se renvoie maintenant depuis son panneau du calendrier, après en avoir corrigé le texte si besoin",
                 "es": "Una publicación rechazada por una red se vuelve a enviar ahora desde su panel del calendario, tras corregir su texto si hace falta"

@@ -7,7 +7,18 @@
     <p><strong>{{ post.title }}</strong> - {{ post.plannedAt|date('d/m/Y H:i') }}</p>
 
     {% for target in failed %}
-        <twig:ea:Alert variant="warning" role="status" class="small mb-2">{{ target.network|capitalize }} : {{ target.commentPending ? 'email.social_post_comment_failed'|trans({'%error%': target.commentError}, 'social') : target.error }}</twig:ea:Alert>
+        {% if target.status.value == 'failed' %}
+            <twig:ea:Alert variant="warning" role="status" class="small mb-2">{{ target.network|capitalize }} : {{ target.error }}</twig:ea:Alert>
+        {% endif %}
+        {% if target.commentPending %}
+            <twig:ea:Alert variant="warning" role="status" class="small mb-2">{{ target.network|capitalize }} : {{ 'email.social_post_comment_failed'|trans({'%error%': target.commentError}, 'social') }}</twig:ea:Alert>
+        {% endif %}
+        {% if target.resharePending %}
+            <twig:ea:Alert variant="warning" role="status" class="small mb-2">{{ target.network|capitalize }} : {{ 'email.social_post_reshare_failed'|trans({'%error%': target.reshareError}, 'social') }}</twig:ea:Alert>
+        {% endif %}
+        {% if target.storyPending %}
+            <twig:ea:Alert variant="warning" role="status" class="small mb-2">{{ target.network|capitalize }} : {{ 'email.social_post_story_failed'|trans({'%error%': target.storyError}, 'social') }}</twig:ea:Alert>
+        {% endif %}
     {% else %}
         <p class="text-muted">{{ 'label.social_post_retry_none'|trans({}, 'social') }}</p>
     {% endfor %}

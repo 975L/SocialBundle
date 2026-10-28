@@ -110,24 +110,31 @@ class PublishCommand extends Command
         }
     }
 
-    // A refused target's line of the email, null for one that went out - a post gone out whose first comment was refused having one too, the comment alone being sent again
+    // A refused target's line of the email, null for one that went out - a post gone out whose first comment, reshare or story was refused having one too, every refusal said since all of them are sent again
     /** @param array<string, mixed> $result */
     private function failureLine(array $result): ?string
     {
-        $result += ['status' => null, 'comment_error' => null, 'post' => 0, 'network' => '', 'message' => ''];
-        $commentError = $result['comment_error'];
-        if (SocialPostStatus::Failed->value !== $result['status'] && null === $commentError) {
+        $result += ['status' => null, 'comment_error' => null, 'reshare_error' => null, 'story_error' => null, 'post' => 0, 'network' => '', 'message' => ''];
+        $followUps = array_filter([
+            'email.social_post_comment_failed' => $result['comment_error'],
+            'email.social_post_reshare_failed' => $result['reshare_error'],
+            'email.social_post_story_failed' => $result['story_error'],
+        ], static fn (mixed $error): bool => null !== $error);
+        if (SocialPostStatus::Failed->value !== $result['status'] && [] === $followUps) {
             return null;
         }
 
         $id = (int) $result['post'];
         $post = $this->postRepository->find($id);
+        $reasons = SocialPostStatus::Failed->value === $result['status']
+            ? [(string) $result['message']]
+            : array_map(fn (string $key, mixed $error): string => $this->translator->trans($key, ['%error%' => $error], 'social'), array_keys($followUps), $followUps);
 
         return sprintf(
             "- %s - %s : %s\n  %s",
             $post instanceof SocialPost ? $post->getTitle() : '#' . $id,
             ucfirst((string) $result['network']),
-            null === $commentError ? (string) $result['message'] : $this->translator->trans('email.social_post_comment_failed', ['%error%' => $commentError], 'social'),
+            implode(' ; ', $reasons),
             $this->mailer->url('management_social_post_retry_post', ['entityId' => $id]),
         );
     }

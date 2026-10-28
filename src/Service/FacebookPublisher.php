@@ -12,12 +12,13 @@ namespace c975L\SocialBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
+use c975L\SocialBundle\Contract\StoryPublisherInterface;
 use c975L\SocialBundle\Model\MediaRules;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\UiBundle\Model\SocialContent;
 
 // Posts on the site's Facebook Page, never on a personal profile: the post's own pictures or video when it has some, else a photo with its text when the content has an image, a link otherwise - Facebook then drawing the page's own preview
-class FacebookPublisher implements NetworkPublisherInterface
+class FacebookPublisher implements NetworkPublisherInterface, StoryPublisherInterface
 {
     // What a Page post accepts
     private const int MAX_LENGTH = 63206;
@@ -89,6 +90,22 @@ class FacebookPublisher implements NetworkPublisherInterface
     public function preview(string $text, SocialContent $content, array $medias = []): array
     {
         return $this->request($text, $content, $medias);
+    }
+
+    // The story's id (developers.facebook.com/docs/page-stories-api): the picture framed 9:16 uploaded unpublished - a photo already used by a published post being refused - then made a Page story
+    public function story(SocialContent $content): string
+    {
+        $imageUrl = $this->imageExporter->storyUrl($content) ?? throw new \RuntimeException('A story takes a picture, and this post has none.');
+        $token = ['access_token' => (string) $this->metaGraphClient->pageToken()];
+        $photo = $this->metaGraphClient->request('POST', '/' . $this->pageId() . '/photos', ['url' => $imageUrl, 'published' => 'false', ...$token]);
+        $story = $this->metaGraphClient->request('POST', '/' . $this->pageId() . '/photo_stories', ['photo_id' => (string) $photo['id'], ...$token]);
+
+        // A story said out by either its success or its id, never sent twice for a missing one
+        if (true !== ($story['success'] ?? null) && !isset($story['post_id'])) {
+            throw new \RuntimeException('Meta did not publish the story.');
+        }
+
+        return (string) ($story['post_id'] ?? $photo['id']);
     }
 
     // A reel in Meta's three phases: a session started on the Page, the video's file sent, then published with its text

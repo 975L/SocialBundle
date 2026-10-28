@@ -12,12 +12,13 @@ namespace c975L\SocialBundle\Service;
 
 use c975L\SocialBundle\Contract\FirstCommentPublisherInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
+use c975L\SocialBundle\Contract\ProfileResharePublisherInterface;
 use c975L\SocialBundle\Model\MediaRules;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\UiBundle\Model\SocialContent;
 
-// Posts on the connected member's own LinkedIn profile, as an article card - the link, its title and the content's image, which LinkedIn does not fetch itself from an API post and is uploaded first - or with the post's own pictures or video. A Company Page is out of reach of a self-serve app (see LinkedInClient)
-class LinkedInPublisher implements NetworkPublisherInterface, FirstCommentPublisherInterface
+// Posts on the connected member's own LinkedIn profile, or on the Page connected instead (see LinkedInClient::author()), as an article card - the link, its title and the content's image, which LinkedIn does not fetch itself from an API post and is uploaded first - or with the post's own pictures or video
+class LinkedInPublisher implements NetworkPublisherInterface, FirstCommentPublisherInterface, ProfileResharePublisherInterface
 {
     // What a post's commentary accepts
     private const int MAX_LENGTH = 3000;
@@ -85,6 +86,18 @@ class LinkedInPublisher implements NetworkPublisherInterface, FirstCommentPublis
     public function comment(string $postId, string $text): string
     {
         return $this->linkedInClient->createComment($postId, $text);
+    }
+
+    // A Page's post shared again by the member who connected it, so it reaches their own network as well
+    public function canReshare(): bool
+    {
+        return $this->linkedInClient->isPage();
+    }
+
+    // The reshare's urn, its text escaped the same as a post's
+    public function reshare(string $postId, string $text): string
+    {
+        return $this->linkedInClient->createReshare($postId, $this->commentary($text));
     }
 
     public function preview(string $text, SocialContent $content, array $medias = []): array

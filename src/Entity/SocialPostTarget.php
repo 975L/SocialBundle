@@ -51,6 +51,30 @@ class SocialPostTarget
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $commentError = null;
 
+    // The text the post is shared again with on the connected member's own profile, when it goes out as a Page (see ProfileResharePublisherInterface)
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $reshare = null;
+
+    // What the network calls the reshare once it is there - never sent twice
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $reshareId = null;
+
+    // The network's refusal of the reshare, the post itself staying published: only the reshare is sent again
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $reshareError = null;
+
+    // Whether the post's picture goes out as a story too, right after the post (see StoryPublisherInterface)
+    #[ORM\Column(options: ['default' => false])]
+    private bool $story = false;
+
+    // What the network calls the story once it is there - never sent twice
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $storyId = null;
+
+    // The network's refusal of the story, the post itself staying published: only the story is sent again
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $storyError = null;
+
     public function __construct(
         #[ORM\ManyToOne(targetEntity: SocialPost::class, inversedBy: 'targets')]
         #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -148,6 +172,91 @@ class SocialPostTarget
     public function markCommentFailed(string $error): void
     {
         $this->commentError = $error;
+    }
+
+    public function getReshare(): ?string
+    {
+        return $this->reshare;
+    }
+
+    public function setReshare(?string $reshare): self
+    {
+        $reshare = trim((string) $reshare);
+        $this->reshare = '' === $reshare ? null : $reshare;
+
+        return $this;
+    }
+
+    public function getReshareId(): ?string
+    {
+        return $this->reshareId;
+    }
+
+    public function getReshareError(): ?string
+    {
+        return $this->reshareError;
+    }
+
+    // Published, with a reshare still to send - the post never sent again for it
+    public function isResharePending(): bool
+    {
+        return SocialPostStatus::Published === $this->status && null !== $this->reshare && null === $this->reshareId;
+    }
+
+    public function markReshared(string $reshareId): void
+    {
+        $this->reshareId = $reshareId;
+        $this->reshareError = null;
+    }
+
+    public function markReshareFailed(string $error): void
+    {
+        $this->reshareError = $error;
+    }
+
+    public function isStory(): bool
+    {
+        return $this->story;
+    }
+
+    public function setStory(bool $story): self
+    {
+        $this->story = $story;
+
+        return $this;
+    }
+
+    public function getStoryId(): ?string
+    {
+        return $this->storyId;
+    }
+
+    public function getStoryError(): ?string
+    {
+        return $this->storyError;
+    }
+
+    // Published, with a story still to send - the post never sent again for it
+    public function isStoryPending(): bool
+    {
+        return SocialPostStatus::Published === $this->status && $this->story && null === $this->storyId;
+    }
+
+    public function markStoried(string $storyId): void
+    {
+        $this->storyId = $storyId;
+        $this->storyError = null;
+    }
+
+    public function markStoryFailed(string $error): void
+    {
+        $this->storyError = $error;
+    }
+
+    // Published, with its first comment, its reshare or its story still to send, what "Send again" then does alone
+    public function isFollowUpPending(): bool
+    {
+        return $this->isCommentPending() || $this->isResharePending() || $this->isStoryPending();
     }
 
     // Whether "Publish" still has something to do here - a published target is never sent twice

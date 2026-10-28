@@ -269,6 +269,20 @@ class SocialPostCrudControllerTest extends TestCase
         $this->assertSame('/admin/' . Action::EDIT, $this->rendered['edit_url']);
     }
 
+    // A post gone out whose reshare or story was refused is listed too, that alone being sent again
+    public function testRetryingShowsATargetWhoseFollowUpWasRefused(): void
+    {
+        $post = $this->post();
+        $target = new SocialPostTarget($post, 'facebook', 'Text')->setStory(true);
+        $target->markPublished('ext-1');
+        $target->markStoryFailed('Throttled');
+        new SocialPostTarget($post, 'linkedin', 'Text')->markPublished('ext-2');
+
+        $this->call($this->controller(socialPublisher: $this->createStub(SocialPublisher::class)), 'retryPost', $post, Request::create('/'));
+
+        $this->assertSame([$target], array_values($this->rendered['failed']->toArray()));
+    }
+
     // Confirmed, only the refused targets are sent again - never the whole post - and the post is opened
     public function testRetryingSendsTheRefusedTargetsAgain(): void
     {

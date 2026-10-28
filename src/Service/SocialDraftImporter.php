@@ -16,7 +16,7 @@ use c975L\SocialBundle\Entity\SocialSeries;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
-// Drafts written elsewhere - each its own text, picture and first comment, which no series draws from the site's contents - made at once from a JSON file (see c975l:social:draft), as one series so that its ending is announced like any other. Never sent before being read and approved, as every draft
+// Drafts written elsewhere - each its own text, picture, first comment, reshare on the member's profile and story, which no series draws from the site's contents - made at once from a JSON file (see c975l:social:draft), as one series so that its ending is announced like any other. Never sent before being read and approved, as every draft
 class SocialDraftImporter
 {
     public function __construct(
@@ -31,7 +31,7 @@ class SocialDraftImporter
     /**
      * @param array<mixed, mixed> $data
      *
-     * @return array{errors: list<string>, drafts: list<array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, url: ?string, media: ?string}>}
+     * @return array{errors: list<string>, drafts: list<array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: ?string}>}
      */
     public function read(array $data, string $baseDir): array
     {
@@ -62,12 +62,13 @@ class SocialDraftImporter
     /**
      * @param array<mixed, mixed> $post
      *
-     * @return array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, url: ?string, media: ?string}
+     * @return array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: ?string}
      */
     private function draft(array $post, string $baseDir): array
     {
-        $post += ['at' => null, 'networks' => null, 'text' => '', 'comment' => '', 'url' => '', 'media' => ''];
+        $post += ['at' => null, 'networks' => null, 'text' => '', 'comment' => '', 'reshare' => '', 'story' => false, 'url' => '', 'media' => ''];
         $comment = trim((string) $post['comment']);
+        $reshare = trim((string) $post['reshare']);
         $url = trim((string) $post['url']);
         $media = trim((string) $post['media']);
 
@@ -76,6 +77,8 @@ class SocialDraftImporter
             'networks' => \is_array($post['networks']) ? array_values(array_map(strval(...), $post['networks'])) : [],
             'text' => trim((string) $post['text']),
             'comment' => '' === $comment ? null : $comment,
+            'reshare' => '' === $reshare ? null : $reshare,
+            'story' => true === $post['story'],
             'url' => '' === $url ? null : $url,
             'media' => '' === $media ? null : rtrim($baseDir, '/') . '/' . ltrim($media, '/'),
         ];
@@ -83,8 +86,8 @@ class SocialDraftImporter
 
     // What is wrong with a draft, $name saying which post of the file it is
     /**
-     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, url: ?string, media: ?string} $draft
-     * @param list<string>                                                                                                         $connected
+     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: ?string} $draft
+     * @param list<string>                                                                                                                                        $connected
      *
      * @return list<string>
      */
@@ -111,7 +114,7 @@ class SocialDraftImporter
 
     // The series and its drafts, saved - each picture copied, the file given being left where it is
     /**
-     * @param list<array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, url: ?string, media: ?string}> $drafts
+     * @param list<array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: ?string}> $drafts
      *
      * @return list<SocialPost>
      */
@@ -133,6 +136,12 @@ class SocialDraftImporter
             foreach ($post->getTargets() as $target) {
                 if ($this->socialPublisher->supportsComment($target->getNetwork())) {
                     $target->setComment($draft['comment']);
+                }
+                if ($this->socialPublisher->supportsReshare($target->getNetwork())) {
+                    $target->setReshare($draft['reshare']);
+                }
+                if ($this->socialPublisher->supportsStory($target->getNetwork())) {
+                    $target->setStory($draft['story']);
                 }
             }
             if (null !== $draft['media']) {

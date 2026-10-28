@@ -14,7 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-// Everything that talks to LinkedIn: the connection of the member whose profile the posts go out on, then the calls LinkedInPublisher makes with the token it stores - one stubable seam, same shape as MetaGraphClient. The app is the member's own, with the two self-serve products "Share on LinkedIn" and "Sign In with LinkedIn using OpenID Connect": no review, but no refresh token either, so the token lasts its 60 days and the member connects again
+// Everything that talks to LinkedIn: the connection of the member whose profile, or whose Page, the posts go out on, then the calls LinkedInPublisher makes with the token it stores - one stubable seam, same shape as MetaGraphClient. A profile is reached through an app with the two self-serve products "Share on LinkedIn" and "Sign In with LinkedIn using OpenID Connect", a Page through an app with the "Community Management API" alone, which LinkedIn wants as the only product of its app: no refresh token either way, so the token lasts its 60 days and the member connects again
 class LinkedInClient
 {
     public const string AUTHORIZE = 'https://www.linkedin.com/oauth/v2/authorization';
@@ -29,16 +29,22 @@ class LinkedInClient
     // Posting as the member, and reading who the member is
     public const string SCOPES = 'openid profile w_member_social';
 
-    // LinkedIn processes an uploaded video before a post may carry it: asked again this many times, this many seconds apart
-    private const int VIDEO_STATUS_ATTEMPTS = 100;
+    // Posting as a Page the member administers, and reading who the member is and which Pages they administer - an app of the Community Management API having no OpenID Connect to ask "openid profile" of
+    public const string PAGE_SCOPES = 'r_basicprofile w_member_social w_organization_social rw_organization_admin';
 
-    // A post just created is not always found at once by the comments API
-    private const int COMMENT_ATTEMPTS = 5;
+    // LinkedIn processes an uploaded video before a post may carry it: asked again this many times, this many seconds apart - about five minutes in 30 calls, the development tier of the Community Management API counting every one of them in its daily quota
+    private const int VIDEO_STATUS_ATTEMPTS = 30;
+
+    // A post just created is not always found at once by the comments API, nor to be shared again
+    private const int FOUND_ATTEMPTS = 5;
+
+    // The seconds between two of them
+    private const int FOUND_DELAY = 3;
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly ConfigServiceInterface $configService,
-        private readonly int $statusDelay = 3,
+        private readonly int $statusDelay = 10,
     ) {
     }
 
@@ -68,26 +74,33 @@ class LinkedInClient
         }
     }
 
-    // The member the posts go out as, "urn:li:person:<id>"
-    public function author(): string
+    // Whether the posts go out on a Page rather than on the member's profile
+    public function isPage(): bool
     {
-        return 'urn:li:person:' . $this->memberId();
+        return '' !== $this->config('social-linkedin-organization-id');
     }
 
-    public function getAuthorizationUrl(string $redirectUri, string $state): string
+    // The Page the posts go out as, "urn:li:organization:<id>", once one is connected - the member otherwise, "urn:li:person:<id>"
+    public function author(): string
+    {
+        return $this->isPage() ? 'urn:li:organization:' . $this->config('social-linkedin-organization-id') : 'urn:li:person:' . $this->memberId();
+    }
+
+    // LinkedIn's consent page, asking what a profile or a Page needs
+    public function getAuthorizationUrl(string $redirectUri, string $state, bool $page = false): string
     {
         return self::AUTHORIZE . '?' . http_build_query([
             'response_type' => 'code',
             'client_id' => $this->config('social-linkedin-client-id'),
             'redirect_uri' => $redirectUri,
             'state' => $state,
-            'scope' => self::SCOPES,
+            'scope' => $page ? self::PAGE_SCOPES : self::SCOPES,
         ]);
     }
 
-    // Trades the code the callback received for the token, then asks who the member is - what the posts are signed with
-    /** @return array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable, name: string} */
-    public function connect(string $code, string $redirectUri): array
+    // Trades the code the callback received for the token, then asks who the member is - what the posts are signed with - and, for a Page, which Pages they administer, none being for the caller to refuse
+    /** @return array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable, name: string, organizations: list<array{id: string, name: string}>} */
+    public function connect(string $code, string $redirectUri, bool $page = false): array
     {
         $response = $this->httpClient->request('POST', self::TOKEN, [
             'body' => [
@@ -105,17 +118,103 @@ class LinkedInClient
         }
 
         $accessToken = (string) $token['access_token'];
+        [$memberId, $name] = $page ? $this->pageMember($accessToken) : $this->profileMember($accessToken);
+
+        return [
+            'accessToken' => $accessToken,
+            'memberId' => $memberId,
+            'expiresAt' => new \DateTimeImmutable('+' . (int) ($token['expires_in'] ?? 0) . ' seconds'),
+            'name' => $name,
+            'organizations' => $page ? $this->organizations($accessToken) : [],
+        ];
+    }
+
+    // The member's id and name through OpenID Connect, the profile app's
+    /** @return array{0: string, 1: string} */
+    private function profileMember(string $accessToken): array
+    {
         $member = $this->request('GET', '/v2/userinfo', null, $accessToken);
         if (!isset($member['sub'])) {
             throw new \RuntimeException('LinkedIn did not say which member is connected.');
         }
 
-        return [
-            'accessToken' => $accessToken,
-            'memberId' => (string) $member['sub'],
-            'expiresAt' => new \DateTimeImmutable('+' . (int) ($token['expires_in'] ?? 0) . ' seconds'),
-            'name' => (string) ($member['name'] ?? $member['sub']),
+        return [(string) $member['sub'], (string) ($member['name'] ?? $member['sub'])];
+    }
+
+    // The member's id and name through /v2/me, the one r_basicprofile opens to a Page app - its name read when LinkedIn gives it, the id otherwise
+    /** @return array{0: string, 1: string} */
+    private function pageMember(string $accessToken): array
+    {
+        $member = $this->request('GET', '/v2/me', null, $accessToken);
+        if (!isset($member['id'])) {
+            throw new \RuntimeException('LinkedIn did not say which member is connected.');
+        }
+
+        $name = trim((string) ($member['localizedFirstName'] ?? '') . ' ' . (string) ($member['localizedLastName'] ?? ''));
+
+        return [(string) $member['id'], '' === $name ? (string) $member['id'] : $name];
+    }
+
+    // The Pages the member administers or posts for as a content administrator, each with its name - LinkedIn's examples giving the Page as "organization" or as "organizationTarget", both read
+    /** @return list<array{id: string, name: string}> */
+    private function organizations(string $accessToken): array
+    {
+        $acls = $this->request('GET', '/rest/organizationAcls?q=roleAssignee&state=APPROVED&count=100', null, $accessToken)['elements'] ?? [];
+        $ids = [];
+        foreach (\is_array($acls) ? $acls : [] as $acl) {
+            $urn = \is_array($acl) && \in_array($acl['role'] ?? null, ['ADMINISTRATOR', 'CONTENT_ADMINISTRATOR'], true) ? (string) ($acl['organization'] ?? $acl['organizationTarget'] ?? '') : '';
+            if (str_starts_with($urn, 'urn:li:organization:')) {
+                $ids[] = substr($urn, \strlen('urn:li:organization:'));
+            }
+        }
+
+        $ids = array_values(array_unique($ids));
+        $names = [] === $ids ? [] : $this->organizationNames($ids, $accessToken);
+
+        return array_map(static fn (string $id): array => ['id' => $id, 'name' => $names[$id] ?? $id], $ids);
+    }
+
+    // The Pages' names in one call, a Page LinkedIn will not name left out for its id to stand in: the name is only what the screens show, never worth failing the connection
+    /**
+     * @param list<string> $ids
+     *
+     * @return array<string, string>
+     */
+    private function organizationNames(array $ids, string $accessToken): array
+    {
+        try {
+            $results = $this->request('GET', '/rest/organizations?ids=List(' . implode(',', array_map(rawurlencode(...), $ids)) . ')', null, $accessToken)['results'] ?? [];
+        } catch (\Exception) {
+            return [];
+        }
+
+        $names = [];
+        foreach (\is_array($results) ? $results : [] as $id => $organization) {
+            $name = \is_array($organization) ? trim((string) ($organization['localizedName'] ?? '')) : '';
+            if ('' !== $name) {
+                $names[(string) $id] = $name;
+            }
+        }
+
+        return $names;
+    }
+
+    // The configs a connection writes, all at once: the token, the member - whom isConnected() reads, a Page connected or not - and its end, plus the Page picked when there is one
+    /**
+     * @param array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable} $connection
+     * @param array{id: string, name: string}|null                                        $organization
+     *
+     * @return array<string, string>
+     */
+    public static function connectionValues(array $connection, ?array $organization = null): array
+    {
+        $values = [
+            'social-linkedin-access-token' => $connection['accessToken'],
+            'social-linkedin-member-id' => $connection['memberId'],
+            'social-linkedin-token-expires-at' => $connection['expiresAt']->format(\DateTimeInterface::ATOM),
         ];
+
+        return null === $organization ? $values : $values + ['social-linkedin-organization-id' => $organization['id'], 'social-linkedin-organization-name' => $organization['name']];
     }
 
     // Uploads an image for a post, answering the urn the post refers to it by
@@ -205,28 +304,58 @@ class LinkedInClient
         return $urn;
     }
 
-    // Comments the post as the member who posted it, answering the comment's id. The text is plain, links written out. Through the unversioned /v2 endpoint: the versioned /rest one asks a partner permission (Community Management API) that w_member_social alone does not give
+    // Shares the post again as the member who connected the Page, on their own profile, $commentary above it - answering the reshare's urn. Asked again while LinkedIn does not find the post yet, the same as a comment
+    public function createReshare(string $postUrn, string $commentary): string
+    {
+        $response = $this->whenFound(fn (): ResponseInterface => $this->send('POST', '/rest/posts', [
+            'author' => 'urn:li:person:' . $this->memberId(),
+            'commentary' => $commentary,
+            'visibility' => 'PUBLIC',
+            'distribution' => ['feedDistribution' => 'MAIN_FEED', 'targetEntities' => [], 'thirdPartyDistributionChannels' => []],
+            'lifecycleState' => 'PUBLISHED',
+            'isReshareDisabledByAuthor' => false,
+            'reshareContext' => ['parent' => $postUrn],
+        ], (string) $this->accessToken()));
+
+        // The reshare is out whether or not its id comes back, so a missing one must not have it sent again
+        return $response->getHeaders(false)['x-restli-id'][0] ?? '';
+    }
+
+    // Comments the post as its author, the member or the Page, answering the comment's id. The text is plain, links written out. Through the unversioned /v2 endpoint: the versioned /rest one asks a partner permission (Community Management API) that w_member_social alone does not give - whether /v2 takes a Page as actor is to be seen once LinkedIn grants a Page app
     public function createComment(string $postUrn, string $text): string
     {
-        for ($attempt = 1;; ++$attempt) {
-            try {
-                $response = $this->send('POST', '/v2/socialActions/' . rawurlencode($postUrn) . '/comments', [
-                    'actor' => $this->author(),
-                    'object' => $postUrn,
-                    'message' => ['text' => $text],
-                ], (string) $this->accessToken());
-                break;
-            } catch (\RuntimeException $exception) {
-                // Only a post LinkedIn does not find yet is worth asking again, anything else would fail the same or post the comment twice
-                if ($attempt >= self::COMMENT_ATTEMPTS || 404 !== $exception->getCode()) {
-                    throw $exception;
-                }
-                sleep($this->statusDelay);
-            }
-        }
+        $response = $this->whenFound(fn (): ResponseInterface => $this->send('POST', '/v2/socialActions/' . rawurlencode($postUrn) . '/comments', [
+            'actor' => $this->author(),
+            'object' => $postUrn,
+            'message' => ['text' => $text],
+        ], (string) $this->accessToken()));
 
         // The comment is out whether or not its id comes back, so a missing one must not have it sent again
         return $response->getHeaders(false)['x-restli-id'][0] ?? (string) (('' === $response->getContent(false) ? [] : $response->toArray(false))['id'] ?? '');
+    }
+
+    // A call about a post just created, asked again while LinkedIn does not find it yet
+    /**
+     * @template T
+     *
+     * @param callable(): T $call
+     *
+     * @return T
+     */
+    private function whenFound(callable $call): mixed
+    {
+        for ($attempt = 1;; ++$attempt) {
+            try {
+                return $call();
+            } catch (\RuntimeException $exception) {
+                // Only a post LinkedIn does not find yet is worth asking again, anything else would fail the same or send it twice
+                if ($attempt >= self::FOUND_ATTEMPTS || 404 !== $exception->getCode()) {
+                    throw $exception;
+                }
+                // A few seconds are enough for a post to be found, the longer delay being the video's
+                sleep(min($this->statusDelay, self::FOUND_DELAY));
+            }
+        }
     }
 
     // One API call, JSON both ways - the versioned headers sent on /rest only, never on the unversioned /v2 endpoints

@@ -76,7 +76,7 @@
             </trans-unit>
             <trans-unit id="xmLlJfS">
                 <source>narration.guided_step_social_linkedin_connect</source>
-                <target>Click "Connect" on the "LinkedIn" tile, then grant access with the profile's LinkedIn account. The site stores the token and the profile by itself.</target>
+                <target>Click "Connect a profile" on the "LinkedIn" tile, or "Connect a Page" to post on a Page, then grant access with your LinkedIn account. The site stores the token and the account by itself.</target>
             </trans-unit>
             <trans-unit id="zUH7tGI">
                 <source>narration.guided_step_social_linkedin_credentials</source>
@@ -84,7 +84,7 @@
             </trans-unit>
             <trans-unit id="ocfaM9d">
                 <source>narration.guided_step_social_linkedin_prerequisites</source>
-                <target>This first part happens at LinkedIn: create an app attached to a Page you administer, add it the sharing and sign-in products, and declare the site's return address. Come back here with the ID and the secret.</target>
+                <target>This first part happens at LinkedIn: create an app attached to a Page you administer, add it the sharing and sign-in products, and declare the site's return address. To post on a Page, create a separate app instead with the Community Management API alone, which LinkedIn grants after review. Come back here with the ID and the secret.</target>
             </trans-unit>
             <trans-unit id="O5SVDU.">
                 <source>narration.guided_step_social_links_display_label</source>
@@ -170,6 +170,10 @@
                 <source>narration.guided_step_social_posts_publish</source>
                 <target>Back on the list, the paper-plane button sends the post to every network that has not taken it yet. A network refusing keeps its message, and another click tries it again.</target>
             </trans-unit>
+            <trans-unit id="v7cw4FF">
+                <source>narration.guided_step_social_posts_reshare</source>
+                <target>When LinkedIn posts on a Page, the post can also be reshared on your own profile: write the text that goes with it, or leave it empty not to reshare it.</target>
+            </trans-unit>
             <trans-unit id="TYtSWhL">
                 <source>narration.guided_step_social_posts_save</source>
                 <target>Save with the button at the bottom of the form.</target>
@@ -177,6 +181,10 @@
             <trans-unit id="CxfcrdE">
                 <source>narration.guided_step_social_posts_series</source>
                 <target>"Generate a series" prepares several drafts at once, at a steady pace, which you read and then approve together.</target>
+            </trans-unit>
+            <trans-unit id="wkywWSr">
+                <source>narration.guided_step_social_posts_story</source>
+                <target>On Facebook and Instagram, tick “Also as a story” for the post's picture to go out as a story too, for 24 hours, with no text nor link. A post without a picture makes none.</target>
             </trans-unit>
             <trans-unit id="1n62VPw">
                 <source>narration.guided_step_social_series_approve_picked</source>

@@ -133,10 +133,21 @@
             {% else %}
                 <div class="social-calendar-panel-body">{{ target.text }}</div>
             {% endif %}
-            {# A network that refused the post, or its first comment: why, then sent again at once on it alone #}
-            {% if target.status.value == 'failed' or target.commentPending %}
-                <p class="small text-danger mb-1">{{ target.commentPending ? 'email.social_post_comment_failed'|trans({'%error%': target.commentError}, 'social') : target.error }}</p>
-                <twig:ea:Button type="button" variant="warning" size="sm" icon="fa fa-paper-plane" data-action="social-calendar#retry" data-post-id="{{ post.id }}" data-network="{{ target.network }}">{{ (target.commentPending ? 'label.social_calendar_retry_comment' : 'label.social_calendar_retry')|trans({'%network%': target.network|capitalize}, 'social') }}</twig:ea:Button>
+            {# A network that refused the post, its first comment, its reshare or its story: why, then sent again at once on it alone #}
+            {% if target.status.value == 'failed' or target.followUpPending %}
+                {% if target.status.value == 'failed' %}
+                    <p class="small text-danger mb-1">{{ target.error }}</p>
+                {% endif %}
+                {% if target.commentPending %}
+                    <p class="small text-danger mb-1">{{ 'email.social_post_comment_failed'|trans({'%error%': target.commentError}, 'social') }}</p>
+                {% endif %}
+                {% if target.resharePending %}
+                    <p class="small text-danger mb-1">{{ 'email.social_post_reshare_failed'|trans({'%error%': target.reshareError}, 'social') }}</p>
+                {% endif %}
+                {% if target.storyPending %}
+                    <p class="small text-danger mb-1">{{ 'email.social_post_story_failed'|trans({'%error%': target.storyError}, 'social') }}</p>
+                {% endif %}
+                <twig:ea:Button type="button" variant="warning" size="sm" icon="fa fa-paper-plane" data-action="social-calendar#retry" data-post-id="{{ post.id }}" data-network="{{ target.network }}">{{ (target.status.value == 'failed' ? 'label.social_calendar_retry' : (target.commentPending ? 'label.social_calendar_retry_comment' : (target.resharePending ? 'label.social_calendar_retry_reshare' : 'label.social_calendar_retry_story')))|trans({'%network%': target.network|capitalize}, 'social') }}</twig:ea:Button>
             {% endif %}
         </div>
     {% endfor %}

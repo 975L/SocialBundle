@@ -107,18 +107,21 @@ class SocialConnectionsController extends AbstractController
         ];
     }
 
-    // The member's own profile, its token lasting 60 days - the date it ends shown, the reconnection being the owner's to make
+    // The member's own profile or a Page they administer, from two buttons of the same route - the Page linked once connected, its token lasting 60 days either way, the date it ends shown, the reconnection being the owner's to make
     /** @return array<string, mixed> */
     private function linkedIn(): array
     {
+        $organization = $this->value('social-linkedin-organization-id');
+
         return [
             'name' => 'linkedin',
             'icon' => 'fab fa-linkedin',
             'route' => 'social_linkedin_oauth_connect',
             'configured' => $this->linkedInClient->isConfigured(),
             'connected' => $this->linkedInClient->isConnected(),
-            'accounts' => [],
+            'accounts' => $this->accounts(['fab fa-linkedin', null === $organization ? null : ($this->value('social-linkedin-organization-name') ?? $organization), null === $organization ? null : 'https://www.linkedin.com/company/' . $organization . '/']),
             'expires_at' => $this->linkedInClient->expiresAt(),
+            'page_button' => true,
         ];
     }
 

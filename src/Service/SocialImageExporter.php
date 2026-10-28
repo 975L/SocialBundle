@@ -29,6 +29,10 @@ class SocialImageExporter
     // The side of the one square every network gets, "social-image-format" set to "square"
     private const int SQUARE = 1080;
 
+    // A story's picture as Meta recommends it, 9:16 at 1080 x 1920, whatever the site's format
+    private const float STORY_RATIO = 9 / 16;
+    private const int STORY_WIDTH = 1080;
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly SiteUrlResolver $siteUrlResolver,
@@ -64,25 +68,34 @@ class SocialImageExporter
     // The public url of a JPEG copy whose width/height ratio lies between the two given, null when the content has no image or the site no "site-url" to serve it from. Written once per image and range, the next post of the same picture finding it there
     public function jpegUrl(SocialContent $content, float $minRatio = 0.0, float $maxRatio = \PHP_FLOAT_MAX): ?string
     {
+        // The square stands within every range a network accepts, Instagram's included
+        $square = $this->isSquare();
+
+        return $square ? $this->writeJpeg($content, 1.0, 1.0, self::SQUARE) : $this->writeJpeg($content, $minRatio, $maxRatio, null);
+    }
+
+    // The public url of the content's image framed as a story, 9:16 at 1080 x 1920 with bands rather than cropped - null as jpegUrl() is
+    public function storyUrl(SocialContent $content): ?string
+    {
+        return $this->writeJpeg($content, self::STORY_RATIO, self::STORY_RATIO, self::STORY_WIDTH);
+    }
+
+    // Writes the JPEG copy once per image, range and width, answering its public url
+    private function writeJpeg(SocialContent $content, float $minRatio, float $maxRatio, ?int $width): ?string
+    {
         $siteUrl = $this->siteUrlResolver->siteUrl();
         $bytes = null === $siteUrl ? null : $this->read($content);
         if (null === $bytes) {
             return null;
         }
 
-        // The square stands within every range a network accepts, Instagram's included
-        $square = $this->isSquare();
-        if ($square) {
-            [$minRatio, $maxRatio] = [1.0, 1.0];
-        }
-
-        $name = self::DIRECTORY . '/' . sha1($bytes . $minRatio . $maxRatio . implode(',', $this->bandColor())) . '.jpg';
+        $name = self::DIRECTORY . '/' . sha1($bytes . $minRatio . $maxRatio . $width . implode(',', $this->bandColor())) . '.jpg';
         $path = $this->projectDir . '/public/' . $name;
         if (!is_file($path)) {
             if (!is_dir(\dirname($path))) {
                 mkdir(\dirname($path), 0o775, true);
             }
-            file_put_contents($path, $this->toJpeg($bytes, $minRatio, $maxRatio, $square ? self::SQUARE : null));
+            file_put_contents($path, $this->toJpeg($bytes, $minRatio, $maxRatio, $width));
         }
 
         return $siteUrl . '/' . $name;
@@ -105,7 +118,7 @@ class SocialImageExporter
         return 1 === preg_match('/^[0-9a-f]{6}$/i', $color) ? [(int) hexdec(substr($color, 0, 2)), (int) hexdec(substr($color, 2, 2)), (int) hexdec(substr($color, 4, 2))] : self::BAND_COLOR;
     }
 
-    // Draws the picture centred on a canvas stretched to the nearest accepted ratio, on the site's background, then scaled down to MAX_WIDTH - or, $size given, onto a square of that side
+    // Draws the picture centred on a canvas stretched to the nearest accepted ratio, on the site's background, then scaled down to MAX_WIDTH - or, $size given, to that width
     private function toJpeg(string $bytes, float $minRatio, float $maxRatio, ?int $size = null): string
     {
         $source = imagecreatefromstring($bytes);

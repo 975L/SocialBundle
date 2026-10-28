@@ -12,12 +12,13 @@ namespace c975L\SocialBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
+use c975L\SocialBundle\Contract\StoryPublisherInterface;
 use c975L\SocialBundle\Model\MediaRules;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\UiBundle\Model\SocialContent;
 
 // Posts on the Instagram professional account linked to the site's Facebook Page, with the Page's own token. Instagram takes nothing without a picture or a video: one picture as a JPEG within its range of ratios (see SocialImageExporter), one video as a reel, several as a carousel. A link in a caption is not clickable on Instagram: a template meant for it says so ("link in bio") rather than relying on the url
-class InstagramPublisher implements NetworkPublisherInterface
+class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInterface
 {
     // What a caption accepts
     private const int MAX_LENGTH = 2200;
@@ -101,6 +102,17 @@ class InstagramPublisher implements NetworkPublisherInterface
         $published = $this->metaGraphClient->request('POST', '/' . $this->instagramId() . '/media_publish', ['creation_id' => $containerId, ...$token]);
 
         return (string) $published['id'];
+    }
+
+    // The story's id: a STORIES container of the picture framed 9:16 (JPEG, 8 MB, no caption nor link sticker through the API), waited for, then published
+    public function story(SocialContent $content): string
+    {
+        $imageUrl = $this->imageExporter->storyUrl($content) ?? throw new \RuntimeException('A story takes a picture, and this post has none.');
+        $token = ['access_token' => (string) $this->metaGraphClient->pageToken()];
+        $containerId = $this->create(['media_type' => 'STORIES', 'image_url' => $imageUrl], $token);
+        $this->wait($containerId, $token, 'story');
+
+        return (string) $this->metaGraphClient->request('POST', '/' . $this->instagramId() . '/media_publish', ['creation_id' => $containerId, ...$token])['id'];
     }
 
     public function preview(string $text, SocialContent $content, array $medias = []): array

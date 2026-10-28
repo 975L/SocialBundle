@@ -296,6 +296,18 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'narration' => 'narration.guided_step_social_posts_comment',
                 ],
                 [
+                    // No highlight either, the field shown on a network posting as a Page alone
+                    'label' => 'label.guided_step_social_posts_reshare',
+                    'description' => 'help.social_post_reshare',
+                    'narration' => 'narration.guided_step_social_posts_reshare',
+                ],
+                [
+                    // No highlight either, the box shown on a network taking stories alone
+                    'label' => 'label.guided_step_social_posts_story',
+                    'description' => 'help.social_post_story',
+                    'narration' => 'narration.guided_step_social_posts_story',
+                ],
+                [
                     'label' => 'label.guided_step_social_posts_save',
                     'narration' => 'narration.guided_step_social_posts_save',
                     'highlight' => '.action-saveAndReturn',
@@ -427,7 +439,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
         ];
     }
 
-    // Meta's parcours again, for LinkedIn: the app is created on linkedin.com/developers, its two keys are restricted configs, then consenting fills the token and the member - for 60 days, LinkedIn handing a self-serve app no refresh token
+    // Meta's parcours again, for LinkedIn: the app is created on linkedin.com/developers, its two keys are restricted configs, then consenting fills the token and the member, and the Page when it is a Page app - for 60 days, LinkedIn handing no refresh token
     private function linkedinConnectProject(): array
     {
         return [

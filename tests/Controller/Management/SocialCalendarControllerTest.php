@@ -109,7 +109,7 @@ class SocialCalendarControllerTest extends TestCase
             $this->createStub(TranslatorInterface::class),
             $this->createStub(SocialMediaPicker::class),
             $this->createStub(SocialPostApprover::class),
-            new SocialPostDuplicator(sys_get_temp_dir()),
+            new SocialPostDuplicator($this->createStub(SocialPublisher::class), sys_get_temp_dir()),
             $this->createStub(SocialSeriesRepository::class),
         );
     }
@@ -248,7 +248,7 @@ class SocialCalendarControllerTest extends TestCase
             $translator,
             $this->createStub(SocialMediaPicker::class),
             new SocialPostApprover($this->mediaChecker ?? $this->createStub(SocialMediaChecker::class), $entityManager),
-            new SocialPostDuplicator(sys_get_temp_dir()),
+            new SocialPostDuplicator($this->createStub(SocialPublisher::class), sys_get_temp_dir()),
             $seriesRepository,
         );
 

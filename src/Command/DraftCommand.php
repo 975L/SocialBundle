@@ -35,7 +35,7 @@ class DraftCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('file', InputArgument::REQUIRED, 'The JSON file: {"title": "...", "posts": [{"at": "2026-11-02 09:30", "networks": ["linkedin"], "text": "...", "comment": "...", "media": "card.png", "url": "..."}]}')
+            ->addArgument('file', InputArgument::REQUIRED, 'The JSON file: {"title": "...", "posts": [{"at": "2026-11-02 09:30", "networks": ["linkedin"], "text": "...", "comment": "...", "reshare": "...", "story": true, "media": "card.png", "url": "..."}]}')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Check the file and list the drafts without writing anything')
         ;
     }

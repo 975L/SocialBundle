@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// The LinkedIn token ends on its own after 60 days, LinkedIn handing a self-serve app no refresh token: "email-to" is told 14 days ahead, then 3, while reconnecting is one click - the health check only saying so on its own screen. Scheduled nightly (see SocialMaintenanceTaskProvider), one email on each of those days
+// The LinkedIn token ends on its own after 60 days, LinkedIn handing no refresh token: "email-to" is told 14 days ahead, then 3, while reconnecting is one click - the health check only saying so on its own screen. Scheduled nightly (see SocialMaintenanceTaskProvider), one email on each of those days
 #[AsCommand(
     name: 'c975l:social:linkedin:reminder',
     description: 'Emails a reminder to connect LinkedIn again before its token expires',

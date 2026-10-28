@@ -43,4 +43,21 @@ class LinkedInHealthCheckProviderTest extends TestCase
         $this->assertSame(HealthCheckResult::STATUS_WARNING, $this->checkStatus('+10 days'));
         $this->assertSame(HealthCheckResult::STATUS_ERROR, $this->checkStatus('-1 day'));
     }
+
+    // The reconnection asks again what the site is connected with: a Page's consent for a Page, the profile's otherwise
+    public function testTheReconnectionAsksForThePageWhenOneIsConnected(): void
+    {
+        foreach ([true => ['page' => 1], false => []] as $page => $parameters) {
+            $client = $this->createStub(LinkedInClient::class);
+            $client->method('isConfigured')->willReturn(true);
+            $client->method('isPage')->willReturn((bool) $page);
+            $client->method('expiresAt')->willReturn(new \DateTimeImmutable('+30 days'));
+            $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
+            $urlGenerator->method('generate')->willReturnCallback(static fn (string $route, array $query = []): string => $route . '?' . http_build_query($query));
+
+            $checks = new LinkedInHealthCheckProvider($client, $urlGenerator)->runChecks();
+
+            $this->assertSame('social_linkedin_oauth_connect?' . http_build_query($parameters), $checks[0]['editUrl'] ?? null);
+        }
+    }
 }

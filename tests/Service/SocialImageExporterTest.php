@@ -88,6 +88,15 @@ class SocialImageExporterTest extends TestCase
         $this->assertEqualsWithDelta(0.8, $size[0] / $size[1], 0.01);
     }
 
+    // A story is 9:16 at 1080 x 1920 whatever the picture, a site's square included, the picture framed with bands
+    public function testAStoryIsFramedVertically(): void
+    {
+        $content = new SocialContent('1', 'Title', 'https://example.org', imagePath: $this->webp(2000, 900));
+
+        $this->assertSame([1080, 1920], \array_slice($this->exported((string) $this->exporter()->storyUrl($content)), 0, 2));
+        $this->assertSame([1080, 1920], \array_slice($this->exported((string) $this->exporter(format: 'square')->storyUrl($content)), 0, 2));
+    }
+
     public function testAContentWithoutImageOrSiteUrlHasNoJpeg(): void
     {
         $this->assertNull($this->exporter()->jpegUrl(new SocialContent('1', 'Title', 'https://example.org')));

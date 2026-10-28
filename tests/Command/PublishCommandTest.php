@@ -173,4 +173,12 @@ class PublishCommandTest extends TestCase
         $this->assertCount(1, $this->mailed);
         $this->assertStringContainsString("- Photo du soir - Linkedin : email.social_post_comment_failed\n  https://example.org/management/social-post/7/retry-post", $this->mailed[0]);
     }
+
+    // A comment and a reshare both refused are both said, both being sent again
+    public function testEveryRefusedFollowUpIsEmailed(): void
+    {
+        $this->createTester(['#7 linkedin' => ['status' => 'published', 'message' => 'urn:li:share:1', 'comment_error' => 'Throttled', 'reshare_error' => 'Throttled', 'post' => 7, 'network' => 'linkedin']])->execute([]);
+
+        $this->assertStringContainsString('- Photo du soir - Linkedin : email.social_post_comment_failed ; email.social_post_reshare_failed', $this->mailed[0]);
+    }
 }

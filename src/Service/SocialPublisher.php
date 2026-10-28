@@ -13,6 +13,8 @@ namespace c975L\SocialBundle\Service;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use c975L\SocialBundle\Contract\FirstCommentPublisherInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
+use c975L\SocialBundle\Contract\ProfileResharePublisherInterface;
+use c975L\SocialBundle\Contract\StoryPublisherInterface;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Enum\SocialPostStatus;
@@ -169,8 +171,8 @@ class SocialPublisher
             foreach ($post->getTargets() as $target) {
                 if ($target->isPending()) {
                     $this->send($networks[$target->getNetwork()] ?? null, $target, $content);
-                } elseif ($target->isCommentPending()) {
-                    $this->sendComment($networks[$target->getNetwork()] ?? null, $target);
+                } elseif ($target->isFollowUpPending()) {
+                    $this->sendFollowUps($networks[$target->getNetwork()] ?? null, $target, $content);
                 }
                 $report[$target->getNetwork()] = $this->report($target);
             }
@@ -218,9 +220,9 @@ class SocialPublisher
                 }
 
                 $network = $all[$target->getNetwork()] ?? null;
-                // A post gone out whose comment a network refused: the comment alone is sent again
-                if (!$dryRun && SocialPostStatus::Failed === $status && $target->isCommentPending()) {
-                    $this->sendComment($network, $target);
+                // A post gone out whose comment, reshare or story a network refused: those alone are sent again
+                if (!$dryRun && SocialPostStatus::Failed === $status && $target->isFollowUpPending()) {
+                    $this->sendFollowUps($network, $target, $content);
                     $report[$target->getNetwork()] = $this->report($target);
                     continue;
                 }
@@ -540,8 +542,20 @@ class SocialPublisher
             return;
         }
 
+        $this->sendFollowUps($network, $target, $content);
+    }
+
+    // What follows a post gone out, each refusal kept on the target without touching the post: its first comment, its reshare on the member's profile, then its story
+    private function sendFollowUps(?NetworkPublisherInterface $network, SocialPostTarget $target, ?SocialContent $content): void
+    {
         if ($target->isCommentPending()) {
             $this->sendComment($network, $target);
+        }
+        if ($target->isResharePending()) {
+            $this->sendReshare($network, $target);
+        }
+        if ($target->isStoryPending()) {
+            $this->sendStory($network, $target, $content);
         }
     }
 
@@ -575,6 +589,61 @@ class SocialPublisher
         }
     }
 
+    // The post shared again on the member's profile, said refused when the network no longer posts as a Page, so the retry screen gives a reason
+    private function sendReshare(?NetworkPublisherInterface $network, SocialPostTarget $target): void
+    {
+        if (!$network instanceof ProfileResharePublisherInterface || !$network->canReshare()) {
+            $target->markReshareFailed('The network no longer posts as a Page.');
+
+            return;
+        }
+
+        try {
+            $target->markReshared($network->reshare((string) $target->getExternalId(), (string) $target->getReshare()));
+        } catch (\Throwable $exception) {
+            $this->logger->error('Social reshare failed on {network}: {message}', ['network' => $target->getNetwork(), 'message' => $exception->getMessage()]);
+            $target->markReshareFailed($exception->getMessage());
+        }
+    }
+
+    // The post's picture as a story: its first own picture, the content's image otherwise - a video left out, a story through the API taking a picture here
+    private function sendStory(?NetworkPublisherInterface $network, SocialPostTarget $target, ?SocialContent $content): void
+    {
+        if (!$network instanceof StoryPublisherInterface || null === $content) {
+            $target->markStoryFailed(null === $content ? 'The content of this post no longer exists.' : 'The network is no longer connected.');
+
+            return;
+        }
+
+        // A post with no picture at all can never make a story, so the box is unticked rather than failing on every retry, its reason kept
+        $storyContent = $this->storyContent($target, $content);
+        if (null === $storyContent->imagePath && null === $storyContent->imageUrl) {
+            $target->markStoryFailed('A story takes a picture, and this post has none.');
+            $target->setStory(false);
+
+            return;
+        }
+
+        try {
+            $target->markStoried($network->story($storyContent));
+        } catch (\Throwable $exception) {
+            $this->logger->error('Social story failed on {network}: {message}', ['network' => $target->getNetwork(), 'message' => $exception->getMessage()]);
+            $target->markStoryFailed($exception->getMessage());
+        }
+    }
+
+    // The content whose image the story shows, the post's first own picture when it has one
+    private function storyContent(SocialPostTarget $target, SocialContent $content): SocialContent
+    {
+        foreach ($this->mediasOf($target->getPost()) as $media) {
+            if (!$media->isVideo()) {
+                return new SocialContent($content->sourceId, $content->title, $content->url, imagePath: $media->path, imageAlt: $media->alt);
+            }
+        }
+
+        return $content;
+    }
+
     // A target's dry run, the first comment it would be answered with beside the post - or why it would not go, nothing to send it with
     /** @return array<string, mixed> */
     private function previewTarget(?NetworkPublisherInterface $network, SocialPostTarget $target, ?SocialContent $content): array
@@ -587,6 +656,12 @@ class SocialPublisher
         if ($network instanceof FirstCommentPublisherInterface && null !== $target->getComment()) {
             $preview['payload']['first_comment'] = $target->getComment();
         }
+        if (null !== $target->getReshare() && $this->supportsReshare($target->getNetwork())) {
+            $preview['payload']['profile_reshare'] = $target->getReshare();
+        }
+        if ($target->isStory() && $network instanceof StoryPublisherInterface) {
+            $preview['payload']['story'] = true;
+        }
 
         return $preview;
     }
@@ -595,6 +670,20 @@ class SocialPublisher
     public function supportsComment(string $network): bool
     {
         return ($this->allNetworks()[$network] ?? null) instanceof FirstCommentPublisherInterface;
+    }
+
+    // Whether a network shows the post as a story too, which the post's screen then offers
+    public function supportsStory(string $network): bool
+    {
+        return ($this->allNetworks()[$network] ?? null) instanceof StoryPublisherInterface;
+    }
+
+    // Whether a network posts as a Page it can share again on the member's profile, which the post's screen then offers
+    public function supportsReshare(string $network): bool
+    {
+        $publisher = $this->allNetworks()[$network] ?? null;
+
+        return $publisher instanceof ProfileResharePublisherInterface && $publisher->canReshare();
     }
 
     /**
@@ -606,6 +695,8 @@ class SocialPublisher
             'status' => $target->getStatus()->value,
             'message' => (string) ($target->getExternalId() ?? $target->getError()),
             'comment_error' => $target->getCommentError(),
+            'reshare_error' => $target->getReshareError(),
+            'story_error' => $target->getStoryError(),
         ], static fn (?string $value): bool => null !== $value);
     }
 

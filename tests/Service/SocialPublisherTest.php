@@ -14,6 +14,8 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use c975L\SocialBundle\Contract\FirstCommentPublisherInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
+use c975L\SocialBundle\Contract\ProfileResharePublisherInterface;
+use c975L\SocialBundle\Contract\StoryPublisherInterface;
 use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
@@ -30,6 +32,7 @@ use c975L\UiBundle\Contract\ScopedSocialContentSourceInterface;
 use c975L\UiBundle\Contract\SocialContentSourceInterface;
 use c975L\UiBundle\Model\SocialContent;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -50,7 +53,7 @@ class SocialPublisherTest extends TestCase
 
     private ?LockFactory $lockFactory = null;
 
-    private function createSource(string $type, ?string $nextId, ?int $repeatAfterDays = null, bool $gone = false): SocialContentSourceInterface
+    private function createSource(string $type, ?string $nextId, ?int $repeatAfterDays = null, bool $gone = false, bool $pictureless = false): SocialContentSourceInterface
     {
         $source = $this->createStub(SocialContentSourceInterface::class);
         $source->method('getSourceType')->willReturn($type);
@@ -60,7 +63,7 @@ class SocialPublisherTest extends TestCase
 
             return null === $nextId ? null : new SocialContent($nextId, 'Title ' . $nextId, 'https://example.org/' . $nextId);
         });
-        $source->method('getContent')->willReturnCallback(static fn (string $id): ?SocialContent => $gone ? null : new SocialContent($id, 'Fresh', 'https://example.org/' . $id, imagePath: '/moved.webp'));
+        $source->method('getContent')->willReturnCallback(static fn (string $id): ?SocialContent => $gone ? null : new SocialContent($id, 'Fresh', 'https://example.org/' . $id, imagePath: $pictureless ? null : '/moved.webp'));
 
         return $source;
     }
@@ -685,15 +688,24 @@ class SocialPublisherTest extends TestCase
         $this->assertSame(['bluesky:https://example.org/medias/a.jpg,https://example.org/medias/b.jpg'], $this->published);
     }
 
+    // A connected network that also does $contract, its limits those of $name, previewed as its text and link
+    /** @param class-string $contract */
+    private function createFollowingNetwork(string $contract, string $name, int $maxLength, int $maxImages): NetworkPublisherInterface & Stub
+    {
+        $network = $this->createStubForIntersectionOfInterfaces([NetworkPublisherInterface::class, $contract]);
+        $network->method('getName')->willReturn($name);
+        $network->method('isConfigured')->willReturn(true);
+        $network->method('getMaxLength')->willReturn($maxLength);
+        $network->method('getMediaRules')->willReturn(new MediaRules(maxImages: $maxImages, video: true));
+        $network->method('preview')->willReturnCallback(static fn (string $text, SocialContent $content): array => ['text' => $text, 'url' => $content->url]);
+
+        return $network;
+    }
+
     // A network answering its posts with a first comment: what it was sent and commented recorded in $this->published, a refused comment thrown while $commentFailures lasts
     private function createCommentingNetwork(int $commentFailures = 0): NetworkPublisherInterface
     {
-        $network = $this->createStubForIntersectionOfInterfaces([NetworkPublisherInterface::class, FirstCommentPublisherInterface::class]);
-        $network->method('getName')->willReturn('linkedin');
-        $network->method('isConfigured')->willReturn(true);
-        $network->method('getMaxLength')->willReturn(3000);
-        $network->method('getMediaRules')->willReturn(new MediaRules(maxImages: 20, video: true));
-        $network->method('preview')->willReturnCallback(static fn (string $text, SocialContent $content): array => ['text' => $text, 'url' => $content->url]);
+        $network = $this->createFollowingNetwork(FirstCommentPublisherInterface::class, 'linkedin', 3000, 20);
         $network->method('publish')->willReturnCallback(function (string $text, SocialContent $content): string {
             $this->published[] = 'post:' . $content->url;
 
@@ -709,6 +721,142 @@ class SocialPublisherTest extends TestCase
         });
 
         return $network;
+    }
+
+    // A network posting as a Page and sharing it again on the member's profile: what it was sent and reshared recorded in $this->published, a refused reshare thrown while $reshareFailures lasts
+    private function createResharingNetwork(int $reshareFailures = 0, bool $page = true): NetworkPublisherInterface
+    {
+        $network = $this->createFollowingNetwork(ProfileResharePublisherInterface::class, 'linkedin', 3000, 20);
+        $network->method('canReshare')->willReturn($page);
+        $network->method('publish')->willReturnCallback(function (string $text, SocialContent $content): string {
+            $this->published[] = 'post:' . $content->url;
+
+            return 'urn:li:share:1';
+        });
+        $network->method('reshare')->willReturnCallback(function (string $postId, string $text) use (&$reshareFailures): string {
+            if ($reshareFailures-- > 0) {
+                throw new \RuntimeException('Throttled');
+            }
+            $this->published[] = 'reshare:' . $postId . ':' . $text;
+
+            return 'urn:li:share:2';
+        });
+
+        return $network;
+    }
+
+    // The reshare goes right after the Page's post, the post keeping its link card
+    public function testAReshareFollowsThePost(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'linkedin', 'Text')->setReshare('Our new post');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createResharingNetwork()]);
+
+        $report = $publisher->publish($post);
+
+        $this->assertSame(['post:https://example.org/42', 'reshare:urn:li:share:1:Our new post'], $this->published);
+        $this->assertSame(['status' => 'published', 'message' => 'urn:li:share:1'], $report['linkedin']);
+        $this->assertSame('urn:li:share:2', $post->getTargets()->first()->getReshareId());
+        $this->assertTrue($publisher->supportsReshare('linkedin'));
+    }
+
+    // A refused reshare leaves the post published, and sending it again sends the reshare alone
+    public function testARefusedReshareKeepsThePostAndOnlyTheReshareIsSentAgain(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'linkedin', 'Text')->setReshare('Our new post');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createResharingNetwork(1)]);
+
+        $report = $publisher->publish($post);
+        $this->assertSame(['status' => 'published', 'message' => 'urn:li:share:1', 'reshare_error' => 'Throttled'], $report['linkedin']);
+
+        $report = $publisher->retryFailed($post);
+
+        $this->assertSame(['post:https://example.org/42', 'reshare:urn:li:share:1:Our new post'], $this->published);
+        $this->assertSame(['status' => 'published', 'message' => 'urn:li:share:1'], $report['linkedin'] ?? null);
+    }
+
+    // A network back on a profile reshares nothing, the reshare said refused with its reason
+    public function testAReshareWithoutPageSaysWhy(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'linkedin', 'Text')->setReshare('Our new post');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createResharingNetwork(page: false)]);
+
+        $report = $publisher->publish($post);
+
+        $this->assertSame('The network no longer posts as a Page.', $report['linkedin']['reshare_error'] ?? null);
+        $this->assertSame(['post:https://example.org/42'], $this->published);
+        $this->assertFalse($publisher->supportsReshare('linkedin'));
+    }
+
+    // A network showing the post as a story too: what it was sent recorded in $this->published, a refused story thrown while $storyFailures lasts
+    private function createStoryNetwork(int $storyFailures = 0): NetworkPublisherInterface
+    {
+        $network = $this->createFollowingNetwork(StoryPublisherInterface::class, 'instagram', 2200, 10);
+        $network->method('publish')->willReturnCallback(function (): string {
+            $this->published[] = 'post';
+
+            return 'm1';
+        });
+        $network->method('story')->willReturnCallback(function (SocialContent $content) use (&$storyFailures): string {
+            if ($storyFailures-- > 0) {
+                throw new \RuntimeException('Throttled');
+            }
+            $this->published[] = 'story:' . $content->imagePath . $content->imageUrl;
+
+            return 's1';
+        });
+
+        return $network;
+    }
+
+    // The story goes right after the post, with the content's image when the post has none of its own
+    public function testAStoryFollowsThePost(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', 'https://example.org/42.jpg', new \DateTimeImmutable());
+        new SocialPostTarget($post, 'instagram', 'Text')->setStory(true);
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createStoryNetwork()]);
+
+        $report = $publisher->publish($post);
+
+        $this->assertSame('post', $this->published[0]);
+        $this->assertSame('story:/moved.webp', $this->published[1]);
+        $this->assertSame(['status' => 'published', 'message' => 'm1'], $report['instagram']);
+        $this->assertSame('s1', $post->getTargets()->first()->getStoryId());
+        $this->assertTrue($publisher->supportsStory('instagram'));
+    }
+
+    // A refused story leaves the post published, and sending it again sends the story alone
+    public function testARefusedStoryKeepsThePostAndOnlyTheStoryIsSentAgain(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'instagram', 'Text')->setStory(true);
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createStoryNetwork(1)]);
+
+        $report = $publisher->publish($post);
+        $this->assertSame('Throttled', $report['instagram']['story_error'] ?? null);
+
+        $report = $publisher->retryFailed($post);
+
+        $this->assertCount(2, $this->published);
+        $this->assertSame(['status' => 'published', 'message' => 'm1'], $report['instagram'] ?? null);
+        $this->assertFalse($publisher->supportsStory('linkedin'));
+    }
+
+    // A post without any picture can never make a story: the box is unticked with its reason, never left waiting for a retry
+    public function testAStoryWithoutPictureIsUntickedWithItsReason(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        $target = new SocialPostTarget($post, 'instagram', 'Text')->setStory(true);
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null, pictureless: true)], [$this->createStoryNetwork()]);
+
+        $publisher->publish($post);
+
+        $this->assertSame(['post'], $this->published);
+        $this->assertFalse($target->isStory());
+        $this->assertFalse($target->isFollowUpPending());
+        $this->assertSame('A story takes a picture, and this post has none.', $target->getStoryError());
     }
 
     // The first comment goes right after the post, which leaves its link out so that it goes out as a picture rather than a link card

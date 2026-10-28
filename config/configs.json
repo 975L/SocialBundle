@@ -348,6 +348,30 @@
         "description": "description.social_linkedin_member_id"
     },
     {
+        "label": "label.social_linkedin_organization_id",
+        "slug": "social-linkedin-organization-id",
+        "feature": true,
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_linkedin_organization_id"
+    },
+    {
+        "label": "label.social_linkedin_organization_name",
+        "slug": "social-linkedin-organization-name",
+        "feature": true,
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_linkedin_organization_name"
+    },
+    {
         "label": "label.social_linkedin_token_expires_at",
         "slug": "social-linkedin-token-expires-at",
         "feature": true,

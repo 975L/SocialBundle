@@ -68,11 +68,11 @@
             </trans-unit>
             <trans-unit id="BANWhG0">
                 <source>description.social_linkedin_access_token</source>
-                <target>Lo rellena «Conectar» en la ficha LinkedIn de «Conexiones». Válido 60 días: hay que volver a conectarse antes de que caduque.</target>
+                <target>Lo rellena la conexión de la ficha LinkedIn de «Conexiones». Válido 60 días: hay que volver a conectarse antes de que caduque.</target>
             </trans-unit>
             <trans-unit id="XIOiN6Y">
                 <source>description.social_linkedin_client_id</source>
-                <target>Client ID de la app creada en linkedin.com/developers, con los productos «Share on LinkedIn» y «Sign In with LinkedIn using OpenID Connect».</target>
+                <target>Client ID de la app creada en linkedin.com/developers: con los productos «Share on LinkedIn» y «Sign In with LinkedIn using OpenID Connect» para un perfil, solo con «Community Management API» para una Página.</target>
             </trans-unit>
             <trans-unit id="2nDJLVA">
                 <source>description.social_linkedin_client_secret</source>
@@ -80,7 +80,15 @@
             </trans-unit>
             <trans-unit id="hNZKcg8">
                 <source>description.social_linkedin_member_id</source>
-                <target>Lo rellena la conexión: el perfil en el que salen las publicaciones.</target>
+                <target>Lo rellena la conexión: el miembro conectado, en cuyo perfil salen las publicaciones cuando no hay ninguna Página conectada.</target>
+            </trans-unit>
+            <trans-unit id="gcgVIxi">
+                <source>description.social_linkedin_organization_id</source>
+                <target>La rellena «Conectar una Página»: la Página en la que salen las publicaciones, elegida en la conexión cuando la cuenta administra varias. Vacía, salen en el perfil del miembro.</target>
+            </trans-unit>
+            <trans-unit id="eGCpWt7">
+                <source>description.social_linkedin_organization_name</source>
+                <target>Lo rellena la conexión: el nombre de la Página, mostrado en la ficha LinkedIn de «Conexiones».</target>
             </trans-unit>
             <trans-unit id="36ObS3d">
                 <source>description.social_linkedin_token_expires_at</source>
@@ -221,6 +229,14 @@
             <trans-unit id="W6z9srG">
                 <source>label.social_linkedin_member_id</source>
                 <target>Miembro de LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="6Jue2Sy">
+                <source>label.social_linkedin_organization_id</source>
+                <target>Página de LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="cTdwkFS">
+                <source>label.social_linkedin_organization_name</source>
+                <target>Nombre de la Página de LinkedIn</target>
             </trans-unit>
             <trans-unit id="VNIF16G">
                 <source>label.social_linkedin_token_expires_at</source>

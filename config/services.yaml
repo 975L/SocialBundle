@@ -82,6 +82,8 @@ services:
               template: '@c975LSocial/blocks/SocialLinks.html.twig'
               category: 'label.category_navigation'
               pickable: false
+              # The intro above the icons, translated per locale like any block's text (see ContentTranslator)
+              translatable: 'intro'
               cacheable: true
 
     # Pickable pointer to the singleton above - no data of its own, so it can be dropped on any page without re-defining the links (see SocialLinksDisplayType / SocialLinksDisplay.html.twig)

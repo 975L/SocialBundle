@@ -76,7 +76,7 @@
             </trans-unit>
             <trans-unit id="xmLlJfS">
                 <source>narration.guided_step_social_linkedin_connect</source>
-                <target>Cliquez sur « Connecter » dans la tuile « LinkedIn », puis autorisez l'accès avec le compte LinkedIn du profil. Le site enregistre lui-même le jeton et le profil.</target>
+                <target>Cliquez sur « Connecter un profil » dans la tuile « LinkedIn », ou sur « Connecter une Page » pour publier sur une Page, puis autorisez l'accès avec votre compte LinkedIn. Le site enregistre lui-même le jeton et le compte.</target>
             </trans-unit>
             <trans-unit id="zUH7tGI">
                 <source>narration.guided_step_social_linkedin_credentials</source>
@@ -84,7 +84,7 @@
             </trans-unit>
             <trans-unit id="ocfaM9d">
                 <source>narration.guided_step_social_linkedin_prerequisites</source>
-                <target>Cette première partie se passe chez LinkedIn : créez une application rattachée à une Page que vous administrez, ajoutez-lui les produits de partage et de connexion, et déclarez l'adresse de retour du site. Revenez ici avec l'identifiant et la clé secrète.</target>
+                <target>Cette première partie se passe chez LinkedIn : créez une application rattachée à une Page que vous administrez, ajoutez-lui les produits de partage et de connexion, et déclarez l'adresse de retour du site. Pour publier sur une Page, créez plutôt une application à part avec la seule Community Management API, que LinkedIn accorde après examen. Revenez ici avec l'identifiant et la clé secrète.</target>
             </trans-unit>
             <trans-unit id="O5SVDU.">
                 <source>narration.guided_step_social_links_display_label</source>
@@ -170,6 +170,10 @@
                 <source>narration.guided_step_social_posts_publish</source>
                 <target>De retour sur la liste, le bouton en forme d'avion en papier envoie la publication sur chaque réseau qui ne l'a pas encore reçue. Un réseau qui refuse garde son message, et un nouveau clic le retente.</target>
             </trans-unit>
+            <trans-unit id="v7cw4FF">
+                <source>narration.guided_step_social_posts_reshare</source>
+                <target>Quand LinkedIn publie sur une Page, la publication peut aussi être repartagée sur votre propre profil : écrivez le texte qui l'accompagne, ou laissez vide pour ne pas la repartager.</target>
+            </trans-unit>
             <trans-unit id="TYtSWhL">
                 <source>narration.guided_step_social_posts_save</source>
                 <target>Enregistrez avec le bouton en bas du formulaire.</target>
@@ -177,6 +181,10 @@
             <trans-unit id="CxfcrdE">
                 <source>narration.guided_step_social_posts_series</source>
                 <target>« Générer une série » prépare plusieurs brouillons d'un coup, à intervalle régulier, que vous relisez puis validez ensemble.</target>
+            </trans-unit>
+            <trans-unit id="wkywWSr">
+                <source>narration.guided_step_social_posts_story</source>
+                <target>Sur Facebook et Instagram, cochez « Aussi en story » pour que l'image de la publication parte aussi en story pendant 24 heures, sans texte ni lien. Une publication sans image n'en fait pas.</target>
             </trans-unit>
             <trans-unit id="1n62VPw">
                 <source>narration.guided_step_social_series_approve_picked</source>

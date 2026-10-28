@@ -12,20 +12,18 @@ namespace c975L\SocialBundle\Tests\Controller;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\LinkedInOAuthController;
+use c975L\SocialBundle\Controller\Management\SocialLinkedInPageController;
 use c975L\SocialBundle\Service\ConfigValueWriter;
 use c975L\SocialBundle\Service\LinkedInClient;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Contracts\Translation\TranslatableInterface;
 
 class LinkedInOAuthControllerTest extends TestCase
 {
+    use ControllerTestTrait;
+
     private function createRequest(array $query = []): Request
     {
         $request = new Request($query);
@@ -52,45 +50,34 @@ class LinkedInOAuthControllerTest extends TestCase
         return $controller;
     }
 
-    private function createContainer(Request $request): ContainerInterface
-    {
-        $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
-        $authorizationChecker->method('isGranted')->willReturn(true);
-
-        $router = $this->createStub(UrlGeneratorInterface::class);
-        $router->method('generate')->willReturnCallback(static fn (string $route): string => '/' . $route);
-
-        $services = [
-            'request_stack' => new RequestStack([$request]),
-            'security.authorization_checker' => $authorizationChecker,
-            'router' => $router,
-        ];
-
-        $container = $this->createStub(ContainerInterface::class);
-        $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
-        $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
-
-        return $container;
-    }
-
-    // The flashes by type, a translatable one read as its key
-    private function flashes(Request $request): array
-    {
-        $session = $request->getSession();
-        \assert($session instanceof Session);
-
-        return array_map(
-            static fn (array $messages): array => array_map(static fn ($message) => $message instanceof TranslatableInterface ? $message->getMessage() : $message, $messages),
-            $session->getFlashBag()->all()
-        );
-    }
-
-    private function callbackRequest(): Request
+    private function callbackRequest(bool $page = false): Request
     {
         $request = $this->createRequest(['code' => 'auth-code', 'state' => 'expected-state']);
         $request->getSession()->set('social_linkedin_oauth_state', 'expected-state');
+        $request->getSession()->set('social_linkedin_oauth_page', $page);
 
         return $request;
+    }
+
+    // A client whose connection answers the given Pages, its mode checked
+    /** @param list<array{id: string, name: string}> $organizations */
+    private function connectingClient(array $organizations, bool $page = true): LinkedInClient
+    {
+        $linkedInClient = $this->createMock(LinkedInClient::class);
+        $linkedInClient->expects($this->once())->method('connect')->with('auth-code', $this->anything(), $page)->willReturn(['accessToken' => 'token', 'memberId' => 'abc', 'expiresAt' => new \DateTimeImmutable('2026-12-02T10:00:00+01:00'), 'name' => 'Laurent', 'organizations' => $organizations]);
+
+        return $linkedInClient;
+    }
+
+    // A writer keeping what it is asked to write
+    private function recordingWriter(array &$written): ConfigValueWriter
+    {
+        $configValueWriter = $this->createStub(ConfigValueWriter::class);
+        $configValueWriter->method('write')->willReturnCallback(function (array $values) use (&$written): void {
+            $written[] = $values;
+        });
+
+        return $configValueWriter;
     }
 
     public function testConnectStoresAStateAndSendsItAlongToLinkedIn(): void
@@ -101,6 +88,19 @@ class LinkedInOAuthControllerTest extends TestCase
 
         $this->assertStringStartsWith('https://www.linkedin.com/', $response->getTargetUrl());
         $this->assertNotEmpty($request->getSession()->get('social_linkedin_oauth_state'));
+    }
+
+    // "Connecter une Page" asks the Page's consent, and keeps the mode for the callback
+    public function testConnectForAPageAsksThePageScopesAndKeepsTheMode(): void
+    {
+        $linkedInClient = $this->createMock(LinkedInClient::class);
+        $linkedInClient->method('isConfigured')->willReturn(true);
+        $linkedInClient->expects($this->once())->method('getAuthorizationUrl')->with($this->anything(), $this->anything(), true)->willReturn('https://www.linkedin.com/oauth/v2/authorization?state=x');
+        $request = $this->createRequest(['page' => '1']);
+
+        $this->createController($request, $linkedInClient)->connect($request);
+
+        $this->assertTrue($request->getSession()->get('social_linkedin_oauth_page'));
     }
 
     public function testConnectRefusesWhenTheAppKeysAreMissing(): void
@@ -115,22 +115,95 @@ class LinkedInOAuthControllerTest extends TestCase
         $this->assertSame(['danger' => ['flash.linkedin_not_configured']], $this->flashes($request));
     }
 
+    // A profile's connection stores the token, the member and the end, and empties a Page connected before - or the posts would still go out on it
     public function testCallbackStoresTheTokenTheMemberAndTheEnd(): void
     {
-        $linkedInClient = $this->createStub(LinkedInClient::class);
-        $linkedInClient->method('connect')->willReturn(['accessToken' => 'token', 'memberId' => 'abc', 'expiresAt' => new \DateTimeImmutable('2026-12-02T10:00:00+01:00'), 'name' => 'Laurent']);
+        $written = [];
+        $request = $this->callbackRequest();
+        $this->createController($request, $this->connectingClient([], false), $this->recordingWriter($written))->callback($request);
 
+        $this->assertSame([
+            ['social-linkedin-access-token' => 'token', 'social-linkedin-member-id' => 'abc', 'social-linkedin-token-expires-at' => '2026-12-02T10:00:00+01:00'],
+            ['social-linkedin-organization-id' => null, 'social-linkedin-organization-name' => null],
+        ], $written);
+        $this->assertSame(['success' => ['flash.linkedin_connected']], $this->flashes($request));
+        $this->assertNull($request->getSession()->get('social_linkedin_oauth_page'));
+    }
+
+    // A site not yet through load-all has no Page to empty: the profile still connects
+    public function testCallbackOfAProfileConnectsWithoutThePageConfigs(): void
+    {
         $written = [];
         $configValueWriter = $this->createStub(ConfigValueWriter::class);
         $configValueWriter->method('write')->willReturnCallback(function (array $values) use (&$written): void {
+            if (\array_key_exists('social-linkedin-organization-id', $values)) {
+                throw new \RuntimeException('The config "social-linkedin-organization-id" is not declared.');
+            }
             $written[] = $values;
         });
 
         $request = $this->callbackRequest();
-        $this->createController($request, $linkedInClient, $configValueWriter)->callback($request);
+        $this->createController($request, $this->connectingClient([], false), $configValueWriter)->callback($request);
 
-        $this->assertSame([['social-linkedin-access-token' => 'token', 'social-linkedin-member-id' => 'abc', 'social-linkedin-token-expires-at' => '2026-12-02T10:00:00+01:00']], $written);
+        $this->assertCount(1, $written);
         $this->assertSame(['success' => ['flash.linkedin_connected']], $this->flashes($request));
+    }
+
+    // A member administering a single Page has nothing to pick: everything stored at once
+    public function testCallbackOfASinglePageStoresEverything(): void
+    {
+        $written = [];
+        $request = $this->callbackRequest(true);
+        $response = $this->createController($request, $this->connectingClient([['id' => '111', 'name' => '975L']]), $this->recordingWriter($written))->callback($request);
+
+        $this->assertSame([[
+            'social-linkedin-access-token' => 'token',
+            'social-linkedin-member-id' => 'abc',
+            'social-linkedin-token-expires-at' => '2026-12-02T10:00:00+01:00',
+            'social-linkedin-organization-id' => '111',
+            'social-linkedin-organization-name' => '975L',
+        ]], $written);
+        $this->assertSame(['success' => ['flash.linkedin_page_connected']], $this->flashes($request));
+        $this->assertSame('/management_social_connections', $response->getTargetUrl());
+    }
+
+    // Several Pages: the whole connection held for "Choisir la Page LinkedIn", nothing written until one is picked
+    public function testCallbackOfSeveralPagesHoldsTheConnectionForThePicker(): void
+    {
+        $written = [];
+        $request = $this->callbackRequest(true);
+        $response = $this->createController($request, $this->connectingClient([['id' => '111', 'name' => '975L'], ['id' => '222', 'name' => 'EIPT']]), $this->recordingWriter($written))->callback($request);
+
+        $this->assertSame([], $written);
+        $this->assertSame('/' . SocialLinkedInPageController::ROUTE, $response->getTargetUrl());
+        $held = $request->getSession()->get(SocialLinkedInPageController::SESSION_CONNECTION);
+        $this->assertGreaterThan(time(), $held['expires']);
+        $this->assertSame(['expiresAt' => '2026-12-02T10:00:00+01:00', 'accessToken' => 'token', 'memberId' => 'abc', 'name' => 'Laurent', 'organizations' => [['id' => '111', 'name' => '975L'], ['id' => '222', 'name' => 'EIPT']]], $held['connection']);
+    }
+
+    // A member administering no Page is told so, the working connection left as it was
+    public function testCallbackOfAMemberAdministeringNoPageWritesNothing(): void
+    {
+        $configValueWriter = $this->createMock(ConfigValueWriter::class);
+        $configValueWriter->expects($this->never())->method('write');
+
+        $request = $this->callbackRequest(true);
+        $response = $this->createController($request, $this->connectingClient([]), $configValueWriter)->callback($request);
+
+        $this->assertSame(['danger' => ['flash.linkedin_no_page']], $this->flashes($request));
+        $this->assertSame('/management_social_connections', $response->getTargetUrl());
+    }
+
+    // A connection held by an earlier one never picked from does not outlive the next
+    public function testCallbackDropsAConnectionHeldBefore(): void
+    {
+        $written = [];
+        $request = $this->callbackRequest();
+        $request->getSession()->set(SocialLinkedInPageController::SESSION_CONNECTION, ['expires' => time() + 600, 'connection' => []]);
+
+        $this->createController($request, $this->connectingClient([], false), $this->recordingWriter($written))->callback($request);
+
+        $this->assertNull($request->getSession()->get(SocialLinkedInPageController::SESSION_CONNECTION));
     }
 
     public function testCallbackRefusesAStateTheSessionNeverIssued(): void
@@ -144,6 +217,20 @@ class LinkedInOAuthControllerTest extends TestCase
         $this->createController($request, configValueWriter: $configValueWriter)->callback($request);
 
         $this->assertSame(['danger' => ['flash.linkedin_refused']], $this->flashes($request));
+    }
+
+    // A consent refused for scopes the app was not granted says the app is the wrong one, nothing being written
+    public function testCallbackSaysWhenTheAppIsTheWrongOne(): void
+    {
+        $configValueWriter = $this->createMock(ConfigValueWriter::class);
+        $configValueWriter->expects($this->never())->method('write');
+
+        $request = $this->createRequest(['error' => 'unauthorized_scope_error', 'state' => 'expected-state']);
+        $request->getSession()->set('social_linkedin_oauth_state', 'expected-state');
+
+        $this->createController($request, configValueWriter: $configValueWriter)->callback($request);
+
+        $this->assertSame(['danger' => ['flash.linkedin_wrong_app']], $this->flashes($request));
     }
 
     // A failure on a reconnection leaves the working connection as it was, nothing having been written yet

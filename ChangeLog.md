@@ -1,5 +1,28 @@
 # Changelog
 
+## v2.20.0
+
+LinkedIn posts on a Page, reshares and stories added
+
+- LinkedIn: posts on a Page through a Community Management API app, configs `social-linkedin-organization-id` and `-name` (28/10/2026)
+- LinkedIn tile: "Connect a profile" and "Connect a Page" buttons (28/10/2026)
+- Added screen "Choisir la Page LinkedIn", `SocialLinkedInPageController` (28/10/2026)
+- LinkedIn: Pages of an administrator or content administrator, names read in one call (28/10/2026)
+- LinkedIn: wrong app for the button said on the callback (28/10/2026)
+- LinkedIn health check reconnects a Page through its own consent (28/10/2026)
+- Added `ProfileResharePublisherInterface`: a Page's post reshared on the member's profile [Needs db update] (28/10/2026)
+- Added `StoryPublisherInterface`: the post's picture as a Facebook or Instagram story [Needs db update] (28/10/2026)
+- Added `SocialImageExporter::storyUrl()`, picture framed 9:16 (28/10/2026)
+- Story unticked on a post without any picture (28/10/2026)
+- Refused reshare or story sent again alone, `SocialPostTarget::isFollowUpPending()` (28/10/2026)
+- Retry screen and email list every refused follow-up (28/10/2026)
+- Reshare field kept on the form while it holds a text (28/10/2026)
+- JSON drafts take `reshare` and `story` (28/10/2026)
+- Duplicated post keeps reshare and story where the network offers them (28/10/2026)
+- Guided projects: reshare and story steps, Page app in the LinkedIn prerequisites (28/10/2026)
+- Social links block: intro translatable per locale (28/10/2026)
+- README, skill: LinkedIn Page, reshare, story (28/10/2026)
+
 ## v2.19.5
 
 Calendar feed links each event to its post
