@@ -61,6 +61,8 @@ class SocialCalendarController extends AbstractController
 
     private const string DUPLICATE_ROUTE = 'management_social_calendar_duplicate';
 
+    private const string RETRY_ROUTE = 'management_social_calendar_retry';
+
     private const string FEED_TOKEN_ROUTE = 'management_social_calendar_feed_token';
 
     public const string SERIES_ROUTE = 'management_social_calendar_series';
@@ -168,6 +170,7 @@ class SocialCalendarController extends AbstractController
             'texts_url' => $this->generateUrl(self::TEXTS_ROUTE, ['view' => $view]),
             'networks_url' => $this->generateUrl(self::NETWORKS_ROUTE, ['view' => $view]),
             'duplicate_url' => $this->generateUrl(self::DUPLICATE_ROUTE, ['view' => $view]),
+            'retry_url' => $this->generateUrl(self::RETRY_ROUTE, ['view' => $view]),
             // The post whose panel opens with the page, a copy just made
             'open_id' => $request->query->getInt('post'),
             // A double click on a coming moment writes a post there, the screen of a new post opening on it
@@ -404,6 +407,28 @@ class SocialCalendarController extends AbstractController
         $this->entityManager->flush();
 
         return new Response($this->generateUrl(self::ROUTE, ['view' => $this->view($request), 'date' => $copy->getPlannedAt()->format('Y-m-d'), 'post' => $copy->getId()]));
+    }
+
+    // The network a post was refused on sent again at once, the others left as they are - the panel answered with the target's new status, or its new refusal
+    #[AdminRoute(path: '/social-calendar/retry', name: 'social_calendar_retry', options: ['methods' => ['POST']])]
+    public function retry(Request $request): Response
+    {
+        $post = $this->postedPost($request);
+        if ($post instanceof Response) {
+            return $post;
+        }
+
+        $report = $this->publisher->retryFailed($post, $request->request->getString('network'));
+        if (null === $report) {
+            return new Response($this->translator->trans('flash.social_post_publishing', [], 'social'), Response::HTTP_CONFLICT);
+        }
+
+        // Nothing sent: a network not among the post's, or no longer refused there - a panel read before another tab or the scheduler sent it
+        if ([] === $report) {
+            return new Response($this->translator->trans('label.social_calendar_retry_nothing', [], 'social'), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return $this->renderPanel($post, $this->view($request));
     }
 
     // The post a panel's action is sent for, once the editor's role and the panel's token checked - the refusal answered instead, a post not found or, $editable, gone out on a network being one

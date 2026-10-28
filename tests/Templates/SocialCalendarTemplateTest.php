@@ -73,6 +73,7 @@ class SocialCalendarTemplateTest extends TestCase
             'texts_url' => '/texts',
             'networks_url' => '/networks',
             'duplicate_url' => '/duplicate',
+            'retry_url' => '/retry',
             'open_id' => 0,
             'new_url' => '/new',
             'series_url' => '/series',
@@ -91,6 +92,16 @@ class SocialCalendarTemplateTest extends TestCase
         // A post published has gone out on its network, as the panel reads it
         if ('published' === $state) {
             $target->markPublished('ext-42');
+        }
+        if ('failed' === $state) {
+            $target->markFailed('Missing required scope');
+        }
+        // Gone out, its first comment refused
+        if ('commented' === $state) {
+            $target->setComment('Le lien');
+            $target->markPublished('ext-42');
+            $target->markCommentFailed('Comment refused');
+            $state = 'published';
         }
 
         return $this->twig()->render('@c975LSocial/management/_social_calendar_panel.html.twig', [
@@ -111,6 +122,29 @@ class SocialCalendarTemplateTest extends TestCase
             'accepted_types' => 'image/jpeg,video/mp4',
             'networks' => $post->getNetworks(),
         ]);
+    }
+
+    // A refused network named on the badge, its reason and its own button to send it again under its text
+    public function testARefusedNetworkIsNamedAndOfferedAgain(): void
+    {
+        $html = $this->panel('failed');
+
+        $this->assertStringContainsString('label.social_calendar_state_failed_on', $html);
+        $this->assertStringContainsString('data-post-id="7" data-state="failed"', $html);
+        $this->assertStringContainsString('Missing required scope', $html);
+        $this->assertStringContainsString('data-action="social-calendar#retry" data-post-id="7" data-network="bluesky"', $html);
+        $this->assertStringContainsString('label.social_calendar_retry', $html);
+        $this->assertStringNotContainsString('social-calendar#retry', $this->panel('approved'));
+    }
+
+    // A first comment refused on a post gone out says only the comment goes again, its button too
+    public function testARefusedCommentIsOfferedAgainAsTheCommentAlone(): void
+    {
+        $html = $this->panel('commented');
+
+        $this->assertStringContainsString('email.social_post_comment_failed', $html);
+        $this->assertStringContainsString('label.social_calendar_retry_comment', $html);
+        $this->assertStringContainsString('data-action="social-calendar#retry" data-post-id="7" data-network="bluesky"', $html);
     }
 
     // The day: the week's grid narrowed to one column, its button pressed - a day's heading in the week and in the month opening it
@@ -339,13 +373,13 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringNotContainsString('label.social_calendar_save_networks', $frozen);
     }
 
-    // Any post is offered to be duplicated, one gone out as well, and its card's badges come with the panel
+    // Any post is offered to be duplicated, one gone out as well, and its card's badges and state come with the panel
     public function testThePanelOffersTheDuplicateAndTheCardsBadges(): void
     {
         foreach (['draft', 'published'] as $state) {
             $this->assertStringContainsString('data-action="social-calendar#duplicate" data-post-id="7"', $this->panel($state, editable: 'draft' === $state));
         }
-        $this->assertMatchesRegularExpression('#<template data-social-calendar-target="badges" data-post-id="7">\s*<span class="social-network-badges">#', $this->panel('draft'));
+        $this->assertMatchesRegularExpression('#<template data-social-calendar-target="badges" data-post-id="7" data-state="draft">\s*<span class="social-network-badges">#', $this->panel('draft'));
     }
 
     // A post still to go out offers a zone to drop its own pictures and videos on, its file picker taking the accepted types alone - not one gone out

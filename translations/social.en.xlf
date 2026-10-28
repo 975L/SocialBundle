@@ -104,7 +104,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once or opens it to read its posts side by side, reorders or removes its medias, enlarges them or plays its videos with a click, adds some from the site or by dropping files on it, changes its content, or duplicates it to the next day.</target>
+                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once or opens it to read its posts side by side, reorders or removes its medias, enlarges them or plays its videos with a click, adds some from the site or by dropping files on it, changes its content, sends it again at once on a network that refused it, or duplicates it to the next day.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -1226,6 +1226,22 @@
                 <source>label.social_calendar_previous</source>
                 <target>Previous</target>
             </trans-unit>
+            <trans-unit id="S_ODLRf">
+                <source>label.social_calendar_retry</source>
+                <target>Post again on %network%</target>
+            </trans-unit>
+            <trans-unit id="ceizl1c">
+                <source>label.social_calendar_retry_comment</source>
+                <target>Send the comment again on %network%</target>
+            </trans-unit>
+            <trans-unit id="rQdsc_U">
+                <source>label.social_calendar_retry_failed</source>
+                <target>The post could not be sent again.</target>
+            </trans-unit>
+            <trans-unit id="3xEccVy">
+                <source>label.social_calendar_retry_nothing</source>
+                <target>Nothing to send again on this network: reload the page.</target>
+            </trans-unit>
             <trans-unit id="Tbz6Hmi">
                 <source>label.social_calendar_save_networks</source>
                 <target>Save networks</target>
@@ -1249,6 +1265,10 @@
             <trans-unit id="T6Xt2Wg">
                 <source>label.social_calendar_state_failed</source>
                 <target>Failed</target>
+            </trans-unit>
+            <trans-unit id="gifHQBY">
+                <source>label.social_calendar_state_failed_on</source>
+                <target>Failed: %networks%</target>
             </trans-unit>
             <trans-unit id="1FWwu6R">
                 <source>label.social_calendar_state_published</source>

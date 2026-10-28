@@ -2,7 +2,13 @@
 {% import '@c975LSocial/management/social_calendar.html.twig' as calendar %}
 {# The full screen of the post a link away, for what the panel leaves to it: the text every network's own is cut from, rephrased #}
 <div class="social-calendar-panel-head">
-    <twig:ea:Badge color="{{ {published: 'secondary', approved: 'success', failed: 'warning', draft: 'danger'}[state] }}">{{ ('label.social_calendar_state_' ~ state)|trans({}, 'social') }}</twig:ea:Badge>
+    <twig:ea:Badge color="{{ {published: 'secondary', approved: 'success', failed: 'warning', draft: 'danger'}[state] }}">
+        {%- if state == 'failed' -%}
+            {{ 'label.social_calendar_state_failed_on'|trans({'%networks%': targets|filter(target => target.status.value == 'failed')|map(target => target.network|capitalize)|join(', ')}, 'social') }}
+        {%- else -%}
+            {{ ('label.social_calendar_state_' ~ state)|trans({}, 'social') }}
+        {%- endif -%}
+    </twig:ea:Badge>
     <div class="d-flex gap-2">
         <twig:ea:Button htmlElement="a" href="{{ post.edit_url }}" size="sm" icon="fa fa-up-right-from-square">{{ 'label.social_calendar_edit_texts'|trans({}, 'social') }}</twig:ea:Button>
         <twig:ea:Button type="button" size="sm" data-action="social-calendar#closePanel">{{ 'label.social_calendar_close'|trans({}, 'social') }}</twig:ea:Button>
@@ -16,8 +22,8 @@
     <twig:ea:Alert variant="warning" role="status" class="small">{{ media_problems|nl2br }}</twig:ea:Alert>
 {% endif %}
 
-{# The card's network badges as they now read, which the card on the calendar takes #}
-<template data-social-calendar-target="badges" data-post-id="{{ post.id }}">{{ calendar.networks(post.networks, connected) }}</template>
+{# The card's network badges and state as they now read, which the card on the calendar takes #}
+<template data-social-calendar-target="badges" data-post-id="{{ post.id }}" data-state="{{ state }}">{{ calendar.networks(post.networks, connected) }}</template>
 
 {# Its approval first - the series' too, offered on any of its posts -, then its moment: picked in the field, then saved by its own button #}
 <div class="d-flex flex-wrap gap-2">
@@ -126,6 +132,11 @@
                 <textarea class="form-control" id="social-calendar-text-{{ target.id }}" name="texts[{{ target.id }}]" rows="6" required {% if max_lengths[key] %}maxlength="{{ max_lengths[key] }}"{% endif %}>{{ target.text }}</textarea>
             {% else %}
                 <div class="social-calendar-panel-body">{{ target.text }}</div>
+            {% endif %}
+            {# A network that refused the post, or its first comment: why, then sent again at once on it alone #}
+            {% if target.status.value == 'failed' or target.commentPending %}
+                <p class="small text-danger mb-1">{{ target.commentPending ? 'email.social_post_comment_failed'|trans({'%error%': target.commentError}, 'social') : target.error }}</p>
+                <twig:ea:Button type="button" variant="warning" size="sm" icon="fa fa-paper-plane" data-action="social-calendar#retry" data-post-id="{{ post.id }}" data-network="{{ target.network }}">{{ (target.commentPending ? 'label.social_calendar_retry_comment' : 'label.social_calendar_retry')|trans({'%network%': target.network|capitalize}, 'social') }}</twig:ea:Button>
             {% endif %}
         </div>
     {% endfor %}

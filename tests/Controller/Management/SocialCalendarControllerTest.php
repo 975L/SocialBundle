@@ -82,6 +82,13 @@ class SocialCalendarControllerTest extends TestCase
     /** @var list<object> */
     private array $persisted = [];
 
+    // The networks SocialPublisher::retryFailed() was asked for, and what it answers - null while another "Publish" holds the post
+    /** @var list<?string> */
+    private array $retried = [];
+
+    /** @var ?array<string, array<string, mixed>> */
+    private ?array $retryReport = ['bluesky' => ['ok' => true]];
+
     protected function setUp(): void
     {
         $this->plannedAt = new \DateTimeImmutable('+1 day 09:30');
@@ -214,6 +221,11 @@ class SocialCalendarControllerTest extends TestCase
         $publisher->method('getMaxLength')->willReturnCallback(fn (): ?int => $this->maxLength);
         $publisher->method('getNetworkNames')->willReturn(['bluesky', 'facebook', 'linkedin']);
         $publisher->method('getConnectedNetworkNames')->willReturnCallback(fn (): array => $this->connected);
+        $publisher->method('retryFailed')->willReturnCallback(function (SocialPost $post, ?string $network): ?array {
+            $this->retried[] = $network;
+
+            return $this->retryReport;
+        });
         $publisher->method('addTargets')->willReturnCallback(function (SocialPost $post, array $networks): void {
             $this->added = $networks;
             foreach ($networks as $network) {
@@ -782,6 +794,45 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertCount(1, $this->persisted);
         $this->assertInstanceOf(SocialPost::class, $this->persisted[0]);
         $this->assertSame(1, $this->flushes);
+    }
+
+    private function retry(string $token = 'valid'): Response
+    {
+        $request = Request::create('/', 'POST', ['post' => '42', 'network' => 'bluesky']);
+        $request->headers->set('X-CSRF-Token', $token);
+
+        return $this->createController($request)->retry($request);
+    }
+
+    // The network named alone is sent again, the panel answered as it now reads - not without the panel's token
+    public function testARefusedNetworkIsSentAgainAlone(): void
+    {
+        $this->assertSame(Response::HTTP_FORBIDDEN, $this->retry('forged')->getStatusCode());
+        $this->assertSame([], $this->retried);
+
+        $this->assertSame(Response::HTTP_OK, $this->retry()->getStatusCode());
+        $this->assertSame(['bluesky'], $this->retried);
+        $this->assertSame($this->post->getTargets(), $this->rendered['targets']);
+    }
+
+    // A post another "Publish" is sending is refused with the reason
+    public function testARetryWhileThePostIsSendingIsRefused(): void
+    {
+        $this->retryReport = null;
+        $response = $this->retry();
+
+        $this->assertSame(Response::HTTP_CONFLICT, $response->getStatusCode());
+        $this->assertSame('flash.social_post_publishing', $response->getContent());
+    }
+
+    // A network not among the post's, or no longer refused there, sends nothing: refused with the reason rather than answered as if sent
+    public function testARetrySendingNothingIsRefused(): void
+    {
+        $this->retryReport = [];
+        $response = $this->retry();
+
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        $this->assertSame('label.social_calendar_retry_nothing', $response->getContent());
     }
 
     private function series(?string $id): Response

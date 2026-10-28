@@ -104,7 +104,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série ou l'ouvre pour en relire les posts côte à côte, réordonne ou retire ses médias, les agrandit ou lit ses vidéos d'un clic, en ajoute depuis le site ou en y déposant des fichiers, change son contenu, ou la duplique au lendemain.</target>
+                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série ou l'ouvre pour en relire les posts côte à côte, réordonne ou retire ses médias, les agrandit ou lit ses vidéos d'un clic, en ajoute depuis le site ou en y déposant des fichiers, change son contenu, renvoie sur-le-champ un réseau qui l'a refusée, ou la duplique au lendemain.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -1226,6 +1226,22 @@
                 <source>label.social_calendar_previous</source>
                 <target>Précédent</target>
             </trans-unit>
+            <trans-unit id="S_ODLRf">
+                <source>label.social_calendar_retry</source>
+                <target>Republier sur %network%</target>
+            </trans-unit>
+            <trans-unit id="ceizl1c">
+                <source>label.social_calendar_retry_comment</source>
+                <target>Renvoyer le commentaire sur %network%</target>
+            </trans-unit>
+            <trans-unit id="rQdsc_U">
+                <source>label.social_calendar_retry_failed</source>
+                <target>La publication n'a pas pu être renvoyée.</target>
+            </trans-unit>
+            <trans-unit id="3xEccVy">
+                <source>label.social_calendar_retry_nothing</source>
+                <target>Rien à renvoyer sur ce réseau : rechargez la page.</target>
+            </trans-unit>
             <trans-unit id="Tbz6Hmi">
                 <source>label.social_calendar_save_networks</source>
                 <target>Enregistrer les réseaux</target>
@@ -1249,6 +1265,10 @@
             <trans-unit id="T6Xt2Wg">
                 <source>label.social_calendar_state_failed</source>
                 <target>En échec</target>
+            </trans-unit>
+            <trans-unit id="gifHQBY">
+                <source>label.social_calendar_state_failed_on</source>
+                <target>En échec : %networks%</target>
             </trans-unit>
             <trans-unit id="1FWwu6R">
                 <source>label.social_calendar_state_published</source>

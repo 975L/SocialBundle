@@ -1,5 +1,19 @@
 # Changelog
 
+## v2.19.4
+
+Calendar panel sends a refused network again
+
+- Calendar panel: "Republier" sends a refused network again alone, route `social_calendar_retry` (28/10/2026)
+- Calendar panel: a refused first comment says so, its button sending the comment only (28/10/2026)
+- Calendar panel: texts corrected saved before the retry (28/10/2026)
+- Calendar panel: a retry sending nothing answered 422 with its reason (28/10/2026)
+- Calendar panel: card state follows the panel (28/10/2026)
+- Calendar panel: failed badge lists its networks through a translation (28/10/2026)
+- `SocialPublisher::retryFailed()` takes an optional network (28/10/2026)
+- Guided projects: calendar panel step mentions the retry (28/10/2026)
+- README, skill: calendar retry (28/10/2026)
+
 ## v2.19.3
 
 Bluesky asks to reconnect when its permissions are out of date

@@ -104,7 +104,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Haga clic en una publicación: su panel cambia su fecha y hora, la valida o la devuelve a borrador, valida de una vez toda su serie o la abre para releer sus publicaciones una al lado de otra, reordena o quita sus medios, los amplía o reproduce sus vídeos con un clic, añade otros desde el sitio o soltando archivos en él, cambia su contenido, o la duplica al día siguiente.</target>
+                <target>Haga clic en una publicación: su panel cambia su fecha y hora, la valida o la devuelve a borrador, valida de una vez toda su serie o la abre para releer sus publicaciones una al lado de otra, reordena o quita sus medios, los amplía o reproduce sus vídeos con un clic, añade otros desde el sitio o soltando archivos en él, cambia su contenido, la vuelve a enviar al momento en una red que la rechazó, o la duplica al día siguiente.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -1226,6 +1226,22 @@
                 <source>label.social_calendar_previous</source>
                 <target>Anterior</target>
             </trans-unit>
+            <trans-unit id="S_ODLRf">
+                <source>label.social_calendar_retry</source>
+                <target>Volver a publicar en %network%</target>
+            </trans-unit>
+            <trans-unit id="ceizl1c">
+                <source>label.social_calendar_retry_comment</source>
+                <target>Volver a enviar el comentario en %network%</target>
+            </trans-unit>
+            <trans-unit id="rQdsc_U">
+                <source>label.social_calendar_retry_failed</source>
+                <target>La publicación no se pudo volver a enviar.</target>
+            </trans-unit>
+            <trans-unit id="3xEccVy">
+                <source>label.social_calendar_retry_nothing</source>
+                <target>Nada que volver a enviar en esta red: recargue la página.</target>
+            </trans-unit>
             <trans-unit id="Tbz6Hmi">
                 <source>label.social_calendar_save_networks</source>
                 <target>Guardar las redes</target>
@@ -1249,6 +1265,10 @@
             <trans-unit id="T6Xt2Wg">
                 <source>label.social_calendar_state_failed</source>
                 <target>Fallida</target>
+            </trans-unit>
+            <trans-unit id="gifHQBY">
+                <source>label.social_calendar_state_failed_on</source>
+                <target>Fallida: %networks%</target>
             </trans-unit>
             <trans-unit id="1FWwu6R">
                 <source>label.social_calendar_state_published</source>

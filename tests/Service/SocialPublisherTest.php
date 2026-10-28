@@ -468,6 +468,20 @@ class SocialPublisherTest extends TestCase
         $this->assertSame(SocialPostStatus::Draft, $post->getTargets()->last()->getStatus());
     }
 
+    // Sent again from the calendar panel for one network, the other refused ones wait their turn
+    public function testRetryingOneNetworkLeavesTheOtherRefusedOnes(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'bluesky', 'Text')->markFailed('Down');
+        new SocialPostTarget($post, 'other', 'Text')->markFailed('Down');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createNetwork('bluesky'), $this->createNetwork('other')]);
+
+        $report = $publisher->retryFailed($post, 'bluesky');
+
+        $this->assertSame(['bluesky'], array_keys((array) $report));
+        $this->assertSame(SocialPostStatus::Failed, $post->getTargets()->last()->getStatus());
+    }
+
     // A second click while the first "Publish" still waits on the networks sends nothing: the targets are still pending, and would go out twice
     public function testAPostBeingPublishedIsNotSentAgain(): void
     {

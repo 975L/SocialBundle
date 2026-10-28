@@ -182,11 +182,11 @@ class SocialPublisher
         }
     }
 
-    // The refusal email's "Send again": only the targets a network refused, a draft never reviewed staying a draft - null while a "Publish" of the same post is sending it
+    // The refusal email's "Send again", or the calendar panel's for $network alone: only the targets a network refused, a draft never reviewed staying a draft - null while a "Publish" of the same post is sending it
     /** @return ?array<string, array<string, mixed>> */
-    public function retryFailed(SocialPost $post): ?array
+    public function retryFailed(SocialPost $post, ?string $network = null): ?array
     {
-        return $this->sendTargets($post, array_values(array_map(static fn (SocialPostTarget $target): string => $target->getNetwork(), $post->getTargets()->toArray())), SocialPostStatus::Failed, false);
+        return $this->sendTargets($post, null === $network ? $post->getNetworks() : [$network], SocialPostStatus::Failed, false);
     }
 
     // Sends the post's targets in $status on the given networks - null while a "Publish" of the same post is sending it

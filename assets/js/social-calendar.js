@@ -12,7 +12,7 @@ import { addSortGesture } from "@c975l/ui-bundle/pointer-sort.js";
 // The publications calendar (see management/social_calendar.html.twig): a card dragged onto a quarter of an hour of the week is planned at that moment, onto a day of the month at its own time that day, its approval untouched; a coming moment double-clicked writes a new post there. The gesture is UiBundle's (pointer-sort.js), this controller owning only where a card lands, saved on the spot then the page reloaded, the server computing where every other post falls
 export default class extends Controller {
     static targets = ["item", "zone", "panel", "planAt", "group", "media", "thumbnail", "badges", "drop", "zoom", "pick", "pickAll"];
-    static values = { url: String, token: String, panelUrl: String, mediasUrl: String, uploadUrl: String, textsUrl: String, networksUrl: String, duplicateUrl: String, openId: Number, newUrl: String, failedLabel: String, textsFailedLabel: String };
+    static values = { url: String, token: String, panelUrl: String, mediasUrl: String, uploadUrl: String, textsUrl: String, networksUrl: String, duplicateUrl: String, retryUrl: String, openId: Number, newUrl: String, failedLabel: String, textsFailedLabel: String, retryFailedLabel: String };
 
     // A copy just made opens its panel with the page, its id then taken off the address so a reload does not open it again
     connect() {
@@ -327,10 +327,35 @@ export default class extends Controller {
             .catch(() => this.saved(false));
     }
 
-    // The panel read again says the post's networks as they now are, which its card on the calendar takes
+    // A refused network sent again at once from its text, the button held while it goes - texts corrected in the panel saved first, so the correction is what goes out - the panel answered with its new status, a refusal saying the server's reason
+    retry(event) {
+        const button = event.currentTarget;
+        const form = button.closest("form");
+        button.disabled = true;
+        const refused = (label) => (response) => {
+            const say = (reason = "") => {
+                button.disabled = false;
+                window.alert("" !== reason ? reason : label);
+            };
+            return response instanceof Response ? response.text().then(say) : say();
+        };
+        const send = () => this.postPanel(this.retryUrlValue, new URLSearchParams({ post: button.dataset.postId, network: button.dataset.network })).catch(refused(this.retryFailedLabelValue));
+
+        if (![...form.querySelectorAll("textarea")].some((text) => text.value !== text.defaultValue)) return send();
+
+        const texts = new URLSearchParams(new FormData(form));
+        texts.set("post", button.dataset.postId);
+        this.postPanel(this.textsUrlValue, texts).then(send, refused(this.textsFailedLabelValue));
+    }
+
+    // The panel read again says the post's networks and state as they now are, which its card on the calendar takes - whether it can be dragged changing only with the page, the server refusing a move of a post gone out anyway
     badgesTargetConnected(badges) {
         const card = this.element.querySelector(`[data-panel-id="${badges.dataset.postId}"]`);
-        const current = card?.querySelector(":scope > .social-network-badges");
+        if (!card) return;
+
+        card.classList.remove("is-draft", "is-approved", "is-failed", "is-published");
+        card.classList.add(`is-${badges.dataset.state}`);
+        const current = card.querySelector(":scope > .social-network-badges");
         const updated = badges.content.firstElementChild;
         if (current && updated) current.replaceWith(updated.cloneNode(true));
     }

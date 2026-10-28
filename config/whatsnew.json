@@ -3,6 +3,11 @@
         "date": "2026-10-28",
         "description": [
             {
+                "en": "A post refused by a network can now be sent again from its panel on the calendar, after correcting its text if needed",
+                "fr": "Une publication refusée par un réseau se renvoie maintenant depuis son panneau du calendrier, après en avoir corrigé le texte si besoin",
+                "es": "Una publicación rechazada por una red se vuelve a enviar ahora desde su panel del calendario, tras corregir su texto si hace falta"
+            },
+            {
                 "en": "The Bluesky tile and an email now say when the account has to be connected again to post videos",
                 "fr": "La tuile Bluesky et un e-mail signalent maintenant quand le compte doit être reconnecté pour publier des vidéos",
                 "es": "La ficha de Bluesky y un correo indican ahora cuándo hay que volver a conectar la cuenta para publicar vídeos"
