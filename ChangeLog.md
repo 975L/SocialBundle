@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.19.3
+
+Bluesky asks to reconnect when its permissions are out of date
+
+- Bluesky tile: warning when connected before the current permissions (28/10/2026)
+- Added command `c975l:social:bluesky:reminder`, nightly, once per permissions list (28/10/2026)
+- Bluesky session keeps the scope asked for, not the server's answer (28/10/2026)
+- Bluesky session writes share one lock, marking a disconnected session doing nothing (28/10/2026)
+- Guided projects: Bluesky reconnection step added (28/10/2026)
+- README: publishing first, screenshots, screen names in English (28/10/2026)
+
 ## v2.19.2
 
 Series ending email links to the series page

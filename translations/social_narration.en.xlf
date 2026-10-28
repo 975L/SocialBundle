@@ -4,11 +4,15 @@
         <body>
             <trans-unit id="6v0WkQM">
                 <source>narration.guided_step_social_bluesky_connect</source>
-                <target>Click "Connect" on the "Bluesky" tile, then grant access on Bluesky. The site stores the session by itself.</target>
+                <target>Click "Connect" (or "Reconnect") on the "Bluesky" tile, then grant access on Bluesky. The site stores the session by itself.</target>
             </trans-unit>
             <trans-unit id="SiT0_lg">
                 <source>narration.guided_step_social_bluesky_handle</source>
                 <target>Last, if you wish, search for "social-bluesky-handle" in the configuration and name the linked account: the next connection will offer it at once. Left empty, you will pick it on Bluesky's page.</target>
+            </trans-unit>
+            <trans-unit id="b7uR4Ny">
+                <source>narration.guided_step_social_bluesky_outdated</source>
+                <target>And if one day the "Bluesky" tile flags outdated permissions, or an email reminds you of it, simply connect again with "Reconnect".</target>
             </trans-unit>
             <trans-unit id="ba1QolF">
                 <source>narration.guided_step_social_calendar_feed</source>

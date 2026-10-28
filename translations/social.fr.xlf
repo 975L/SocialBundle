@@ -28,7 +28,7 @@
             </trans-unit>
             <trans-unit id="hc2yGuH">
                 <source>description.guided_project_social_bluesky_connect</source>
-                <target>Relier le site à votre compte Bluesky, sans application à créer ni mot de passe à saisir. À faire une fois, puis à nouveau si l'accès est retiré.</target>
+                <target>Relier le site à votre compte Bluesky, sans application à créer ni mot de passe à saisir. À faire une fois, puis à nouveau si l'accès est retiré ou si la tuile signale des autorisations périmées.</target>
             </trans-unit>
             <trans-unit id="DmlLCtb">
                 <source>description.guided_project_social_calendar</source>
@@ -72,11 +72,15 @@
             </trans-unit>
             <trans-unit id="0CvXFm7">
                 <source>description.guided_step_social_bluesky_connect</source>
-                <target>Cliquer sur "Connecter" dans la tuile "Bluesky", puis autoriser l'accès sur Bluesky. Le site enregistre lui-même la session.</target>
+                <target>Cliquer sur "Connecter" (ou "Reconnecter") dans la tuile "Bluesky", puis autoriser l'accès sur Bluesky. Le site enregistre lui-même la session.</target>
             </trans-unit>
             <trans-unit id="opsSET4">
                 <source>description.guided_step_social_bluesky_handle</source>
                 <target>Facultatif, dans la configuration : chercher « social-bluesky-handle » et y mettre l'identifiant du compte, par exemple exemple.bsky.social, pour que la prochaine connexion le propose d'emblée. Laissé vide, le compte se choisit sur la page de Bluesky.</target>
+            </trans-unit>
+            <trans-unit id="pX_uYzK">
+                <source>description.guided_step_social_bluesky_outdated</source>
+                <target>Si la tuile "Bluesky" signale des autorisations périmées (un e-mail le rappelle aussi), recommencer l'étape de connexion avec "Reconnecter".</target>
             </trans-unit>
             <trans-unit id="6i891bK">
                 <source>description.guided_step_social_calendar_feed</source>
@@ -289,6 +293,14 @@
             <trans-unit id="7jaXTbn">
                 <source>description.guided_step_social_youtube_prerequisites</source>
                 <target>Cette partie se passe sur console.cloud.google.com, dans le projet du client OAuth Google (celui de la fiche Google, ou un nouveau) : activer « YouTube Data API v3 », ajouter les scopes youtube.upload et youtube.readonly à l'écran de consentement et le passer « En production », puis déclarer dans le client OAuth l'adresse du site suivie de « /social/youtube/callback ». Pour que les vidéos sortent en public, le projet doit aussi passer l'audit de l'API YouTube.</target>
+            </trans-unit>
+            <trans-unit id="SPQyqak">
+                <source>email.social_bluesky_reminder_body</source>
+                <target>Bluesky demande désormais des autorisations que la connexion du site n'a pas reçues (l'envoi de vidéos, par exemple) : les publications qui en ont besoin y sont refusées. Cliquez sur « Reconnecter » dans la tuile Bluesky de « Connexions » et acceptez le nouveau consentement :</target>
+            </trans-unit>
+            <trans-unit id="StIQtBJ">
+                <source>email.social_bluesky_reminder_subject</source>
+                <target>Reconnectez Bluesky</target>
             </trans-unit>
             <trans-unit id="fcDzyeM">
                 <source>email.social_linkedin_reminder_body</source>
@@ -538,6 +550,10 @@
                 <source>label.connection_reconnect</source>
                 <target>Reconnecter</target>
             </trans-unit>
+            <trans-unit id="bc8ME_G">
+                <source>label.connection_scope_outdated</source>
+                <target>La connexion date d'avant les autorisations actuelles (vidéos comprises) : reconnectez-la pour que tout y parte.</target>
+            </trans-unit>
             <trans-unit id="JQ_3soN">
                 <source>label.connection_wrong_host</source>
                 <target>Bluesky ne connaît le site que par son adresse : connectez-le depuis %url%.</target>
@@ -649,6 +665,10 @@
             <trans-unit id="WAKi3s4">
                 <source>label.guided_step_social_bluesky_handle</source>
                 <target>Indiquer le compte</target>
+            </trans-unit>
+            <trans-unit id="AU4DMuj">
+                <source>label.guided_step_social_bluesky_outdated</source>
+                <target>Reconnecter si besoin</target>
             </trans-unit>
             <trans-unit id="TL21sYA">
                 <source>label.guided_step_social_calendar_feed</source>

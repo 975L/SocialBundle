@@ -28,7 +28,7 @@
             </trans-unit>
             <trans-unit id="hc2yGuH">
                 <source>description.guided_project_social_bluesky_connect</source>
-                <target>Link the site to your Bluesky account, with no app to create and no password to type. Done once, then again if the access is withdrawn.</target>
+                <target>Link the site to your Bluesky account, with no app to create and no password to type. Done once, then again if the access is withdrawn or the tile flags outdated permissions.</target>
             </trans-unit>
             <trans-unit id="DmlLCtb">
                 <source>description.guided_project_social_calendar</source>
@@ -72,11 +72,15 @@
             </trans-unit>
             <trans-unit id="0CvXFm7">
                 <source>description.guided_step_social_bluesky_connect</source>
-                <target>Click "Connect" on the "Bluesky" tile, then grant access on Bluesky. The site stores the session by itself.</target>
+                <target>Click "Connect" (or "Reconnect") on the "Bluesky" tile, then grant access on Bluesky. The site stores the session by itself.</target>
             </trans-unit>
             <trans-unit id="opsSET4">
                 <source>description.guided_step_social_bluesky_handle</source>
                 <target>Optional, in the configuration: search for "social-bluesky-handle" and put the account's handle in it, for instance example.bsky.social, for the next connection to offer it at once. Left empty, the account is picked on Bluesky's page.</target>
+            </trans-unit>
+            <trans-unit id="pX_uYzK">
+                <source>description.guided_step_social_bluesky_outdated</source>
+                <target>If the "Bluesky" tile flags outdated permissions (an email reminds of it too), go through the connection step again with "Reconnect".</target>
             </trans-unit>
             <trans-unit id="6i891bK">
                 <source>description.guided_step_social_calendar_feed</source>
@@ -289,6 +293,14 @@
             <trans-unit id="7jaXTbn">
                 <source>description.guided_step_social_youtube_prerequisites</source>
                 <target>This part happens on console.cloud.google.com, in the Google OAuth client's project (the Google listing's, or a new one): enable "YouTube Data API v3", add the youtube.upload and youtube.readonly scopes to the consent screen and set it "In production", then declare in the OAuth client the site's address followed by "/social/youtube/callback". For the videos to go out public, the project also has to pass YouTube's API audit.</target>
+            </trans-unit>
+            <trans-unit id="SPQyqak">
+                <source>email.social_bluesky_reminder_body</source>
+                <target>Bluesky now needs permissions the site's connection was not granted (uploading videos, for instance): the posts needing them are refused there. Click "Reconnect" on the Bluesky tile of "Connections" and accept the new consent:</target>
+            </trans-unit>
+            <trans-unit id="StIQtBJ">
+                <source>email.social_bluesky_reminder_subject</source>
+                <target>Connect Bluesky again</target>
             </trans-unit>
             <trans-unit id="fcDzyeM">
                 <source>email.social_linkedin_reminder_body</source>
@@ -538,6 +550,10 @@
                 <source>label.connection_reconnect</source>
                 <target>Reconnect</target>
             </trans-unit>
+            <trans-unit id="bc8ME_G">
+                <source>label.connection_scope_outdated</source>
+                <target>The connection predates the current permissions (videos included): connect it again for everything to go out there.</target>
+            </trans-unit>
             <trans-unit id="JQ_3soN">
                 <source>label.connection_wrong_host</source>
                 <target>Bluesky only knows the site by its address: connect it from %url%.</target>
@@ -649,6 +665,10 @@
             <trans-unit id="WAKi3s4">
                 <source>label.guided_step_social_bluesky_handle</source>
                 <target>Name the account</target>
+            </trans-unit>
+            <trans-unit id="AU4DMuj">
+                <source>label.guided_step_social_bluesky_outdated</source>
+                <target>Reconnect when needed</target>
             </trans-unit>
             <trans-unit id="TL21sYA">
                 <source>label.guided_step_social_calendar_feed</source>

@@ -91,7 +91,8 @@ class BlueskyOAuthClientTest extends TestCase
             str_starts_with($url, 'https://bsky.social/oauth/') && 'n-as' !== $nonce => $this->json(['error' => 'use_dpop_nonce'], 400, ['DPoP-Nonce' => 'n-as']),
             str_starts_with($url, 'https://pds.example/xrpc/') && $this->pdsNonce !== $nonce => $this->json(['error' => 'use_dpop_nonce'], 401, ['DPoP-Nonce' => $this->pdsNonce, 'WWW-Authenticate' => 'DPoP error="use_dpop_nonce"']),
             'https://bsky.social/oauth/par' === $url => $this->json(['request_uri' => 'urn:ietf:params:oauth:request_uri:req-1', 'expires_in' => 300], 201),
-            'https://bsky.social/oauth/token' === $url => $this->json(['access_token' => 'access-' . \count($this->requests), 'refresh_token' => 'refresh-' . \count($this->requests), 'expires_in' => 1800, 'sub' => 'did:plc:abc', 'token_type' => 'DPoP']),
+            // A scope of its own syntax, as a server without granular permissions answers - the site has to keep what it asked for
+            'https://bsky.social/oauth/token' === $url => $this->json(['access_token' => 'access-' . \count($this->requests), 'refresh_token' => 'refresh-' . \count($this->requests), 'expires_in' => 1800, 'scope' => 'atproto', 'sub' => 'did:plc:abc', 'token_type' => 'DPoP']),
             'https://pds.example/xrpc/com.atproto.repo.createRecord' === $url => $this->json(['uri' => 'at://did:plc:abc/app.bsky.feed.post/3k']),
             'https://pds.example/xrpc/com.atproto.repo.uploadBlob' === $url => $this->json(['blob' => ['$type' => 'blob']]),
             default => new MockResponse('', ['http_code' => 404]),
@@ -187,7 +188,34 @@ class BlueskyOAuthClientTest extends TestCase
         $this->assertSame('did:plc:abc', $session['did']);
         $this->assertSame('https://pds.example', $session['pds']);
         $this->assertStringStartsWith('access-', $session['accessToken']);
+        $this->assertSame(BlueskyOAuthClient::SCOPE, $session['scope']);
         $this->assertTrue($this->createClient()->isConnected());
+        $this->assertFalse($this->createClient()->needsReconnection());
+    }
+
+    // A session granted fewer permissions than SCOPE, or from before the scope was kept, has to be connected again - told once, the mark kept beside the tokens
+    public function testASessionWithAnOlderScopeNeedsReconnection(): void
+    {
+        $session = [...$this->pending(), 'did' => 'did:plc:abc', 'pds' => 'https://pds.example', 'accessToken' => 'a', 'refreshToken' => 'r', 'expiresAt' => time() + 1800];
+        $this->config[BlueskyOAuthClient::SESSION_SLUG] = (string) json_encode($session);
+        $this->assertTrue($this->createClient()->needsReconnection());
+
+        $this->config[BlueskyOAuthClient::SESSION_SLUG] = (string) json_encode([...$session, 'scope' => 'atproto repo:app.bsky.feed.post?action=create blob:image/*']);
+        $client = $this->createClient();
+        $this->assertTrue($client->needsReconnection());
+        $this->assertFalse($client->isReconnectionNotified());
+
+        $client->markReconnectionNotified();
+        $this->assertTrue($client->isReconnectionNotified());
+        $this->assertSame('r', json_decode((string) $this->config[BlueskyOAuthClient::SESSION_SLUG], true)['refreshToken']);
+    }
+
+    // Disconnected between the check and the mark: nothing left to mark, nor to remind of
+    public function testMarkingADisconnectedSessionDoesNothing(): void
+    {
+        $this->createClient()->markReconnectionNotified();
+
+        $this->assertSame([], $this->written);
     }
 
     // The callback's issuer has to be the server the request was pushed to

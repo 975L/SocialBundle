@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-28",
+        "description": [
+            {
+                "en": "The Bluesky tile and an email now say when the account has to be connected again to post videos",
+                "fr": "La tuile Bluesky et un e-mail signalent maintenant quand le compte doit être reconnecté pour publier des vidéos",
+                "es": "La ficha de Bluesky y un correo indican ahora cuándo hay que volver a conectar la cuenta para publicar vídeos"
+            }
+        ]
+    },
+    {
         "date": "2026-10-27",
         "description": [
             {

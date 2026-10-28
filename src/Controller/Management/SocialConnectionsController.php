@@ -76,6 +76,7 @@ class SocialConnectionsController extends AbstractController
             'connected' => $this->blueskyOAuthClient->isConnected(),
             'accounts' => $this->accounts(['fab fa-bluesky', $handle, null === $handle ? null : 'https://bsky.app/profile/' . $handle]),
             'site_url' => $siteUrl,
+            'outdated' => $this->blueskyOAuthClient->needsReconnection(),
         ];
     }
 

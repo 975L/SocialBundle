@@ -4,11 +4,15 @@
         <body>
             <trans-unit id="6v0WkQM">
                 <source>narration.guided_step_social_bluesky_connect</source>
-                <target>Haga clic en «Conectar» en la ficha «Bluesky», luego autorice el acceso en Bluesky. El sitio guarda la sesión por sí mismo.</target>
+                <target>Haga clic en «Conectar» (o «Reconectar») en la ficha «Bluesky», luego autorice el acceso en Bluesky. El sitio guarda la sesión por sí mismo.</target>
             </trans-unit>
             <trans-unit id="SiT0_lg">
                 <source>narration.guided_step_social_bluesky_handle</source>
                 <target>Por último, si lo desea, busque «social-bluesky-handle» en la configuración e indique la cuenta vinculada: la próxima conexión la propondrá directamente. Vacío, la elegirá en la página de Bluesky.</target>
+            </trans-unit>
+            <trans-unit id="b7uR4Ny">
+                <source>narration.guided_step_social_bluesky_outdated</source>
+                <target>Y si un día la ficha «Bluesky» indica permisos caducados, o un correo se lo recuerda, simplemente vuelva a conectar con «Reconectar».</target>
             </trans-unit>
             <trans-unit id="ba1QolF">
                 <source>narration.guided_step_social_calendar_feed</source>

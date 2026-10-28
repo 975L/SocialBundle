@@ -45,6 +45,10 @@
                             <p class="card-text small text-warning">{{ ('label.connection_instagram_missing'|trans({}, 'social')) }}</p>
                         {% endif %}
 
+                        {% if network.connected and (network.outdated ?? false) %}
+                            <p class="card-text small text-warning">{{ ('label.connection_scope_outdated'|trans({}, 'social')) }}</p>
+                        {% endif %}
+
                         <div class="mt-auto">
                             {% if not network.configured %}
                                 <p class="card-text small">{{ ('label.info_' ~ network.name ~ '_not_configured')|trans({}, 'social') }}</p>
@@ -52,7 +56,7 @@
                                 {# Bluesky knows the site by "site-url" only: started from here, it would refuse the connection #}
                                 <p class="card-text small">{{ ('label.connection_wrong_host'|trans({'%url%': network.site_url}, 'social')) }}</p>
                             {% else %}
-                                <twig:ea:Button htmlElement="a" href="{{ path(network.route) }}" variant="{{ network.connected ? 'default' : 'primary' }}">
+                                <twig:ea:Button htmlElement="a" href="{{ path(network.route) }}" variant="{{ network.connected and not (network.outdated ?? false) ? 'default' : 'primary' }}">
                                     {{ (network.connected ? 'label.connection_reconnect' : 'label.connection_connect')|trans({}, 'social') }}
                                 </twig:ea:Button>
                             {% endif %}

@@ -79,10 +79,11 @@ class SocialConnectionsControllerTest extends TestCase
         return array_column($this->rendered['networks'], null, 'name');
     }
 
-    private function bluesky(bool $siteHost = true): BlueskyOAuthClient
+    private function bluesky(bool $siteHost = true, bool $outdated = false): BlueskyOAuthClient
     {
         $bluesky = $this->createStub(BlueskyOAuthClient::class);
         $bluesky->method('isSiteHost')->willReturn($siteHost);
+        $bluesky->method('needsReconnection')->willReturn($outdated);
         $bluesky->method('isConnected')->willReturn(true);
         $bluesky->method('siteUrl')->willReturn('https://site.example');
 
@@ -129,6 +130,13 @@ class SocialConnectionsControllerTest extends TestCase
         $instagram = $unnamed['meta']['accounts'][1];
         $this->assertInstanceOf(TranslatableMessage::class, $instagram['name']);
         $this->assertSame(['label.social_meta_page_instagram_linked', null], [$instagram['name']->getMessage(), $instagram['url']]);
+    }
+
+    // A connection from before the current permissions is flagged, for the tile to ask for a new one
+    public function testTheBlueskyTileFlagsOutdatedPermissions(): void
+    {
+        $this->assertFalse($this->networks($this->bluesky())['bluesky']['outdated']);
+        $this->assertTrue($this->networks($this->bluesky(outdated: true))['bluesky']['outdated']);
     }
 
     // On the site's own address there is nothing to warn about; anywhere else the tile names the address to connect from

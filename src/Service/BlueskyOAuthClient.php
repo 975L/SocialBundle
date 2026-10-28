@@ -23,7 +23,7 @@ class BlueskyOAuthClient
     // Where an account is asked for when no handle is known: Bluesky's own entryway, which lets the owner pick the account on its page
     public const string ENTRYWAY = 'https://bsky.social';
 
-    // Posting and uploading its image, nothing else - the owner reads this list on the consent page
+    // Posting and uploading its images and videos, nothing else - the owner reads this list on the consent page. Asking for more here flags every existing connection as to connect again (see needsReconnection())
     public const string SCOPE = 'atproto repo:app.bsky.feed.post?action=create blob:image/* blob:video/*';
 
     public const string KEY_SLUG = 'social-bluesky-oauth-key';
@@ -32,6 +32,9 @@ class BlueskyOAuthClient
 
     // A token refreshed this many seconds before it expires, so it never runs out between the check and the call
     private const int EXPIRY_MARGIN = 60;
+
+    // The lock both the token refresh and the reminder mark take (see writeSession()), so neither overwrites a session the other just wrote
+    private const string REFRESH_LOCK = 'social_bluesky_oauth_refresh';
 
     // The DPoP nonces each server handed out, by origin: kept for the process, a stale one only costing a retry to a request without a body - call() reads the nonce of the moment before sending one
     /** @var array<string, string> */
@@ -57,6 +60,26 @@ class BlueskyOAuthClient
     public function getDid(): ?string
     {
         return $this->session()['did'] ?? null;
+    }
+
+    // Connected under another SCOPE than the current one - a session from before "scope" was kept counting as one: a refresh keeping the scope consented to, only a new consent brings the missing permissions
+    public function needsReconnection(): bool
+    {
+        $session = $this->session();
+
+        return null !== $session && self::SCOPE !== ($session['scope'] ?? null);
+    }
+
+    // Whether "email-to" was already told the connection lacks the permissions of the current SCOPE
+    public function isReconnectionNotified(): bool
+    {
+        return self::SCOPE === ($this->session()['notifiedScope'] ?? null);
+    }
+
+    // Kept in the session, nothing to keep once disconnected meanwhile
+    public function markReconnectionNotified(): void
+    {
+        $this->writeSession(static fn (array $session): array => [...$session, 'notifiedScope' => self::SCOPE]);
     }
 
     // What the site serves as its client id: the url of this very document
@@ -177,6 +200,8 @@ class BlueskyOAuthClient
             'issuer' => $pending['issuer'],
             'tokenEndpoint' => $pending['tokenEndpoint'],
             'dpopKey' => $pending['dpopKey'],
+            // The permissions asked for at the consent rather than the server's answer, whose syntax varies from a server to another: what needsReconnection() compares to SCOPE
+            'scope' => self::SCOPE,
         ];
         $this->configValueWriter->write([
             self::SESSION_SLUG => (string) json_encode([...$session, ...$this->tokens($tokens)]),
@@ -216,12 +241,8 @@ class BlueskyOAuthClient
             return $session;
         }
 
-        $lock = $this->lockFactory->createLock('social_bluesky_oauth_refresh');
-        $lock->acquire(true);
-        try {
+        return $this->writeSession(function (array $session): array {
             // Another process may have refreshed the pair while this one waited or kept its configs in memory
-            $this->configService->invalidateCache();
-            $session = $this->session() ?? throw new \RuntimeException('Bluesky is not connected.');
             if ((int) $session['expiresAt'] > time() + self::EXPIRY_MARGIN) {
                 return $session;
             }
@@ -232,10 +253,34 @@ class BlueskyOAuthClient
                 'client_id' => $this->clientId(),
                 ...$this->clientAssertion((string) $session['issuer']),
             ]]);
-            $session = [...$session, ...$this->tokens($this->data($response, 'the refreshed tokens'))];
-            $this->configValueWriter->write([self::SESSION_SLUG => (string) json_encode($session)]);
 
-            return $session;
+            return [...$session, ...$this->tokens($this->data($response, 'the refreshed tokens'))];
+        }) ?? throw new \RuntimeException('Bluesky is not connected.');
+    }
+
+    // The session changed under the refresh lock and from a fresh read, so a pair refreshed meanwhile is never overwritten by the one read before - written only when the change gave something else, null once disconnected
+    /**
+     * @param callable(array<string, mixed>): array<string, mixed> $change
+     *
+     * @return array<string, mixed>|null
+     */
+    private function writeSession(callable $change): ?array
+    {
+        $lock = $this->lockFactory->createLock(self::REFRESH_LOCK);
+        $lock->acquire(true);
+        try {
+            $this->configService->invalidateCache();
+            $session = $this->session();
+            if (null === $session) {
+                return null;
+            }
+
+            $changed = $change($session);
+            if ($changed !== $session) {
+                $this->configValueWriter->write([self::SESSION_SLUG => (string) json_encode($changed)]);
+            }
+
+            return $changed;
         } finally {
             $lock->release();
         }

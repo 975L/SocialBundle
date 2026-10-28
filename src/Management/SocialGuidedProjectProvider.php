@@ -383,6 +383,12 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'description' => 'description.guided_step_social_bluesky_handle',
                     'narration' => 'narration.guided_step_social_bluesky_handle',
                 ],
+                [
+                    // No url nor highlight: the same connection step again, once the tile or the reminder email flags outdated permissions
+                    'label' => 'label.guided_step_social_bluesky_outdated',
+                    'description' => 'description.guided_step_social_bluesky_outdated',
+                    'narration' => 'narration.guided_step_social_bluesky_outdated',
+                ],
             ],
         ];
     }

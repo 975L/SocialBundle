@@ -4,11 +4,15 @@
         <body>
             <trans-unit id="6v0WkQM">
                 <source>narration.guided_step_social_bluesky_connect</source>
-                <target>Cliquez sur « Connecter » dans la tuile « Bluesky », puis autorisez l'accès sur Bluesky. Le site enregistre lui-même la session.</target>
+                <target>Cliquez sur « Connecter » (ou « Reconnecter ») dans la tuile « Bluesky », puis autorisez l'accès sur Bluesky. Le site enregistre lui-même la session.</target>
             </trans-unit>
             <trans-unit id="SiT0_lg">
                 <source>narration.guided_step_social_bluesky_handle</source>
                 <target>Enfin, si vous le souhaitez, cherchez « social-bluesky-handle » dans la configuration et indiquez le compte relié : la prochaine connexion le proposera d'emblée. Laissé vide, vous le choisirez sur la page de Bluesky.</target>
+            </trans-unit>
+            <trans-unit id="b7uR4Ny">
+                <source>narration.guided_step_social_bluesky_outdated</source>
+                <target>Et si un jour la tuile « Bluesky » signale des autorisations périmées, ou qu'un e-mail vous le rappelle, recommencez simplement la connexion avec « Reconnecter ».</target>
             </trans-unit>
             <trans-unit id="ba1QolF">
                 <source>narration.guided_step_social_calendar_feed</source>
