@@ -47,7 +47,10 @@ class SocialCalendarFeedTest extends TestCase
         $this->assertStringContainsString("DTSTART:20261010T190000Z\r\nDTEND:20261010T191500Z\r\n", $ics);
         $this->assertStringContainsString('SUMMARY:[Brouillon] Photo du soir\, en noir\; et blanc', $ics);
         $this->assertStringContainsString("STATUS:TENTATIVE\r\n", $ics);
-        $this->assertStringContainsString('URL:https://example.org/management/social-calendar?date=2026-10-10', $ics);
+        $this->assertStringContainsString("URL:https://example.org/management/social-calendar?date=2026-10-10&post=7\r\n", $ics);
+
+        // The link also closes the description, unfolded
+        $this->assertStringContainsString('\nhttps://example.org/management/social-calendar?date=2026-10-10&post=7', str_replace("\r\n ", '', $ics));
 
         // Folded at 75 octets, a character never cut in two
         foreach (explode("\r\n", $ics) as $line) {

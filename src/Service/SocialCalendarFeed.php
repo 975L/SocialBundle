@@ -66,7 +66,8 @@ class SocialCalendarFeed
         $start = $post->getPlannedAt()->setTimezone(new \DateTimeZone('UTC'));
         $state = $this->translator->trans('label.social_calendar_state_' . $post->getState(), [], 'social');
         $networks = implode(', ', array_map(static fn (SocialPostTarget $target): string => ucfirst($target->getNetwork()), $post->getTargets()->getValues()));
-        $url = $calendarUrl . (str_contains($calendarUrl, '?') ? '&' : '?') . 'date=' . $post->getPlannedAt()->format('Y-m-d');
+        // The back-office calendar on the post's day, its panel open
+        $url = $calendarUrl . (str_contains($calendarUrl, '?') ? '&' : '?') . 'date=' . $post->getPlannedAt()->format('Y-m-d') . '&post=' . $post->getId();
 
         return [
             'BEGIN:VEVENT',
@@ -75,7 +76,8 @@ class SocialCalendarFeed
             'DTSTART:' . $start->format('Ymd\THis\Z'),
             'DTEND:' . $start->modify('+15 minutes')->format('Ymd\THis\Z'),
             'SUMMARY:' . $this->escape('[' . $state . '] ' . $post->getTitle()),
-            'DESCRIPTION:' . $this->escape(trim($networks . "\n\n" . ($post->getText() ?? $post->getUrl()))),
+            // The link repeated in the description, Outlook and Google showing no URL property
+            'DESCRIPTION:' . $this->escape(trim($networks . "\n\n" . ($post->getText() ?? $post->getUrl())) . "\n\n" . $url),
             'URL:' . $url,
             // A draft is not decided yet: the clients showing it apart do so
             'STATUS:' . ('draft' === $post->getState() ? 'TENTATIVE' : 'CONFIRMED'),

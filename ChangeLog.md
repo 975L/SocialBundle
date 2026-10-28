@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.19.5
+
+Calendar feed links each event to its post
+
+- Calendar feed: event links to the back-office calendar with the post's panel open, link repeated in the description (28/10/2026)
+
 ## v2.19.4
 
 Calendar panel sends a refused network again
