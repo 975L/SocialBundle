@@ -17,4 +17,7 @@
 
     /* The glyphs of the fills that paint no dark badge under them (transparent, outline, minimal). They are black <img> that only invert, so they follow the page: left alone here, turned white by the bundle's own dark-mode rule. Set to invert(1) for a design painting a dark band (--social-share-background) while the site stays light - the one case neither currentColor nor the theme can tell */
     /* --social-share-icon-filter: none; */
+
+    /* The room above and below the Google reviews block - its cards, their gap and their colors are UiBundle's review tokens, in themes/ui.css */
+    /* --google-reviews-margin-block: 2rem; */
 }

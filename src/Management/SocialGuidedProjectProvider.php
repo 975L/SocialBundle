@@ -138,7 +138,14 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '.action-edit',
                 ],
                 [
-                    // No highlight: the block is added from the page being composed, wherever the editor wants the reviews to show
+                    // UiBundle's "displayed" switch, the one way to take an imported review off the site - its column named by EasyAdmin after the property
+                    'label' => 'label.guided_step_social_google_hide',
+                    'description' => 'description.guided_step_social_google_hide',
+                    'narration' => 'narration.guided_step_social_google_hide',
+                    'highlight' => 'tr[data-id] td[data-column="displayed"]',
+                ],
+                [
+                    // No highlight: the "google_reviews" block is added from the page being composed, wherever the editor wants the reviews to show
                     'label' => 'label.guided_step_social_google_display',
                     'description' => 'description.guided_step_social_google_display',
                     'narration' => 'narration.guided_step_social_google_display',

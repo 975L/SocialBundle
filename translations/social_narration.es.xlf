@@ -16,7 +16,7 @@
             </trans-unit>
             <trans-unit id="ba1QolF">
                 <source>narration.guided_step_social_calendar_feed</source>
-                <target>Para ver sus publicaciones en su propia agenda, despliegue «Suscribirse desde una agenda», cree la dirección y péguela en Outlook, Evolution o Google Calendar. Manténgala secreta: renovarla anula la anterior.</target>
+                <target>Para ver sus publicaciones en su propia agenda, despliegue «Suscribirse desde una agenda», cree la dirección y péguela en Outlook, Evolution o Google Calendar. Manténgala secreta: renovarla anula la anterior. Y si varios sitios publican en las mismas cuentas, pegue sus direcciones en uno solo de ellos: lo verá todo en el mismo lugar.</target>
             </trans-unit>
             <trans-unit id="2tNlQez">
                 <source>narration.guided_step_social_calendar_move</source>
@@ -56,7 +56,11 @@
             </trans-unit>
             <trans-unit id="MTrI4M.">
                 <source>narration.guided_step_social_google_display</source>
-                <target>Para terminar, en la página que prefiera, añada un bloque «colección» y elija la fuente «opiniones de clientes». Las opiniones se muestran con su valoración, su fecha y el enlace a la opinión original.</target>
+                <target>Para terminar, en la página que elija, añada el bloque Opiniones de Google. Muestra las opiniones visibles en carrusel, con su nota media y el enlace a su ficha de Google. Mientras no haya ninguna opinión que mostrar, no aparece.</target>
+            </trans-unit>
+            <trans-unit id="6AlnlAN">
+                <source>narration.guided_step_social_google_hide</source>
+                <target>En cada fila, el interruptor Mostrada oculta la opinión en el sitio, o la vuelve a mostrar, con un clic. Una opinión oculta lo sigue estando: la importación nocturna no la vuelve a publicar.</target>
             </trans-unit>
             <trans-unit id="Ies79nd">
                 <source>narration.guided_step_social_google_prerequisites</source>

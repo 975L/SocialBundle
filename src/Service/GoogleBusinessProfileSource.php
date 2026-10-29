@@ -19,6 +19,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class GoogleBusinessProfileSource implements ReviewsReplySourceInterface
 {
     public const string NAME = 'google';
+    // The config holding the listing's public address, linked under the reviews and given to search engines
+    public const string LISTING_URL = 'social-google-listing-url';
 
     private const string API_BASE = 'https://mybusiness.googleapis.com/v4';
 
@@ -112,8 +114,8 @@ class GoogleBusinessProfileSource implements ReviewsReplySourceInterface
             repliedAt: $repliedAt,
             // Left null on purpose: the v4 API only returns the review's resource name ("accounts/1/locations/2/reviews/3"), never a public permalink a visitor could follow
             sourceUrl: null,
-            // Google ties every review to a signed-in account, which is the only verification a listing offers
-            verified: true,
+            // Google Maps itself says its reviews are not verified: a signed-in account wrote it, which proves no purchase - the site's badge saying otherwise would contradict the platform (L111-7-2)
+            verified: false,
         );
     }
 

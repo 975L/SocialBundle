@@ -1,5 +1,31 @@
 # Changelog
 
+## v2.21.0
+
+Calendar gathers the posts of the sites sharing its accounts
+
+- Added config `social-calendar-shared-feeds`: other sites' calendar feeds, as json (29/10/2026)
+- Added `SocialSharedCalendar`: feeds asked at once with a short timeout, kept in cache (29/10/2026)
+- Shared calendar: an address refused said apart from a feed down (29/10/2026)
+- Added `SocialCalendarParser`: minimal reader of the bundle's own iCalendar feed (29/10/2026)
+- Calendar: other sites' posts greyed and read-only, opening on their site (29/10/2026)
+- Calendar: feeds left unread said under the legend (29/10/2026)
+- Added `SocialSharedCalendarAlertProvider`: feeds left unread on the dashboard (29/10/2026)
+- Calendar feed: other sites' posts added, `?own=1` for its own posts only (29/10/2026)
+- Calendar feed: networks as `CATEGORIES` (29/10/2026)
+- Guided project, help, README, skill: shared calendar (29/10/2026)
+- Added `google_reviews` block: displayed Google reviews as a carousel, with their average and source (29/10/2026)
+- Added `GoogleReviewsExtension` (`social_google_reviews()`) and `GoogleReviewsCacheInvalidationListener` (29/10/2026)
+- `ReviewSynchronizer`: status of an already imported review left untouched (29/10/2026)
+- Google reviews imported as not verified (29/10/2026)
+- Block gallery: Google reviews showcase (29/10/2026)
+- Guided project, help, README, skill: Google reviews block, hiding a review (29/10/2026)
+- Google reviews carousel: controls from UiBundle's `Slider/_controls.html.twig` (29/10/2026)
+- Added `GoogleBusinessProfileSource::LISTING_URL` (29/10/2026)
+- `share_buttons_display` block: missing anchor tolerated (29/10/2026)
+- Spanish: Google reviews called "opiniones" throughout (29/10/2026)
+- Requires `c975l/core-bundle` ^1.80.1 (29/10/2026)
+
 ## v2.20.1
 
 Dashboard warns of drafts due, series posts open the panel

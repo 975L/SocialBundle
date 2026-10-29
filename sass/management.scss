@@ -164,6 +164,21 @@
         }
     }
 
+    /* Another site's post: only read, faded behind this site's own, its site's name first */
+    &.is-shared {
+        background: var(--bs-tertiary-bg, #f8f9fa);
+        border-style: dotted;
+        border-color: var(--bs-secondary, #6c757d);
+        color: var(--bs-secondary-color, #6c757d);
+        opacity: .75;
+        cursor: pointer;
+    }
+
+    > .social-calendar-card-site {
+        flex: none;
+        font-weight: 600;
+    }
+
     > img {
         width: 28px;
         height: 28px;

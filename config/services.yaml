@@ -117,3 +117,20 @@ services:
               pickable: true
               # Its render depends on the current request's URL (see ShareButtonsExtension:: renderShareButtons()), not its own data - caching it under its own block id would reuse the first page's share URL on every other page the same block instance is placed on
               cacheable: false
+
+    # The imported Google reviews left displayed by UiBundle's moderation list, as a carousel with their average and where they come from (see GoogleReviewsExtension / GoogleReviews.html.twig) - renders nothing at all while there is none
+    social.block.google_reviews:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: google_reviews
+              label: "block.google_reviews"
+              description: "block.google_reviews_description"
+              translation_domain: 'social'
+              form: c975L\SocialBundle\Form\Block\GoogleReviewsType
+              template: '@c975LSocial/blocks/GoogleReviews.html.twig'
+              category: 'label.category_sections'
+              pickable: true
+              translatable: 'title'
+              # Its render is the reviews', so its entry carries their "ui_reviews" tag (see SocialBlockCacheTagProvider), emptied on every flush touching a review and when the listing url changes (see GoogleReviewsCacheInvalidationListener)
+              cacheable: true

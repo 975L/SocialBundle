@@ -29,7 +29,7 @@ class SocialCalendarFeedController extends AbstractController
     ) {
     }
 
-    // A wrong or withdrawn address answers as a page that does not exist, telling nothing of the feed
+    // A wrong or withdrawn address answers as a page that does not exist, telling nothing of the feed. "?own=1" is how another site reads it: its own posts only, never the ones it shares in turn
     #[Route('/social/calendar/{token}.ics', name: self::ROUTE, requirements: ['token' => '[a-f0-9]{64}'], methods: ['GET'])]
     public function feed(Request $request, string $token): Response
     {
@@ -37,7 +37,7 @@ class SocialCalendarFeedController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        $ics = $this->feed->build($request->getHost(), $this->generateUrl(SocialCalendarController::ROUTE, [], UrlGeneratorInterface::ABSOLUTE_URL));
+        $ics = $this->feed->build($request->getHost(), $this->generateUrl(SocialCalendarController::ROUTE, [], UrlGeneratorInterface::ABSOLUTE_URL), $request->query->getBoolean('own'));
 
         return new Response($ics, Response::HTTP_OK, [
             'Content-Type' => 'text/calendar; charset=utf-8',

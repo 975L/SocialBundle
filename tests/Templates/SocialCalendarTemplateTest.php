@@ -20,20 +20,17 @@ use Twig\Environment;
 // The calendar rendered for real, EasyAdmin's components included: a filter, a macro call or a component prop that does not exist only shows once the template runs, which a test reading its source would never see
 class SocialCalendarTemplateTest extends TestCase
 {
-    private static ?TemplateTestKernel $kernel = null;
-
-    // The kernel's Twig, booted once for the class - in debug, so a change to the kernel rebuilds its container
+    // The kernel's Twig (see TemplateTestKernel::twig())
     private function twig(): Environment
     {
-        if (null === self::$kernel) {
-            self::$kernel = new TemplateTestKernel('test', true);
-            self::$kernel->boot();
-        }
-
-        return self::$kernel->getContainer()->get('test.service_container')->get('twig');
+        return TemplateTestKernel::twig();
     }
 
-    private function render(string $view = 'month', ?string $feedUrl = null): string
+    /**
+     * @param list<array<string, mixed>>                $shared       other sites' posts, on the 4th
+     * @param list<array{site: string, reason: string}> $sharedErrors
+     */
+    private function render(string $view = 'month', ?string $feedUrl = null, array $shared = [], array $sharedErrors = []): string
     {
         $twig = $this->twig();
 
@@ -44,6 +41,7 @@ class SocialCalendarTemplateTest extends TestCase
             ['kind' => 'planned', 'at' => $planned] + $card(8, 'approved', $planned),
             ['kind' => 'planned', 'at' => $evening] + $card(9, 'draft', $evening),
             ['kind' => 'planned', 'at' => $evening, 'video' => true] + $card(10, 'failed', $evening),
+            ...$shared,
         ];
         $published = [['kind' => 'published', 'at' => $evening->modify('-1 day')] + ['networks' => ['facebook']] + $card(7, 'published', $evening->modify('-2 days'))];
         // The week's two quarters of an hour around the planned post, the first one gone by
@@ -80,6 +78,7 @@ class SocialCalendarTemplateTest extends TestCase
             'token' => 'social_calendar',
             'feed_url' => $feedUrl,
             'feed_token_url' => '/management/social-calendar/feed',
+            'shared_errors' => $sharedErrors,
         ]);
     }
 
@@ -210,6 +209,22 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertSame(3, substr_count($html, 'data-social-calendar-target="item"'));
         $this->assertStringNotContainsString('data-post-id="7"', $html);
         $this->assertStringContainsString('data-post-id="9" data-at="' . new \DateTimeImmutable('2026-10-04 19:00')->format('c') . '"', $html);
+    }
+
+    // Another site's post is only read: greyed, its site's name on it, a link opening it there - nothing dragging it, opening the panel or writing a post on a double click. One with no link is no link. A feed unread is said in small
+    public function testAnotherSitesPostIsReadOnly(): void
+    {
+        $at = new \DateTimeImmutable('2026-10-04 10:00');
+        $shared = static fn (?string $url): array => ['kind' => 'shared', 'at' => $at, 'site' => 'run.as', 'title' => '[Approuvé] Raccourcir', 'url' => $url, 'networks' => ['bluesky']];
+        $html = $this->render('month', null, [$shared('https://run.as/c?post=3'), $shared(null)], [['site' => 'edlo.eu', 'reason' => 'unreachable']]);
+
+        $this->assertMatchesRegularExpression('#<a href="https://run.as/c\?post=3" target="_blank" rel="noopener" class="social-calendar-card is-shared" title="run.as">\s*<small class="social-calendar-card-site">run.as</small>#', $html);
+        $this->assertStringContainsString('<span class="social-calendar-card is-shared" title="run.as">', $html);
+        $this->assertSame(3, substr_count($html, 'data-social-calendar-target="item"'));
+        $this->assertSame(4, substr_count($html, 'data-panel-card'));
+        $this->assertStringContainsString('social-calendar-shared-errors', $html);
+        $this->assertStringContainsString('label.social_calendar_shared_unreachable', $html);
+        $this->assertStringNotContainsString('social-calendar-shared-errors', $this->render());
     }
 
     // Each network shows as its own glyph on its colour, greyed while the site is not connected to it - one without a glyph keeps its initial

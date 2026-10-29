@@ -1,0 +1,47 @@
+{# The Google reviews as a carousel: their average above, one card per review drawn by UiBundle's own ReviewItem.html.twig, and where they come from below. Fed by blocks/GoogleReviews.html.twig, or by sample reviews in the block gallery (see GalleryShowcaseProvider) #}
+{# Usage: include('@c975LSocial/reviews/GoogleReviews.html.twig', {id: '', anchorId: '', title: '', duration: 5, reviews: social_google_reviews(limit)}) #}
+{% set items = reviews.items %}
+{% set itemTemplate = '@c975LUi/collection/ReviewItem.html.twig' %}
+{# A headingless <section> is invalid HTML #}
+{% set tag = title ? 'section' : 'div' %}
+<{{ tag }} class="google-reviews"{% if anchorId %} id="{{ anchorId }}"{% endif %}>
+    <div class="section-wrap">
+        <div class="google-reviews__head">
+            {% if title %}<h2 class="section-title">{{ title }}</h2>{% endif %}
+            {# Over every displayed review, never over the "limit" first ones (see GoogleReviewsExtension). Out of five like each card, the icons rounded and the figure itself carrying the decimal #}
+            {% if reviews.average %}
+                <p class="google-reviews__average">
+                    <span class="google-reviews__score" aria-hidden="true">{{ reviews.average|format_number({fraction_digit: 1}) }}</span>
+                    <span class="rating rating--star" aria-hidden="true">
+                        {% for star in 1..5 %}<span class="rating-star{{ star <= reviews.average|round ? ' rating-star--on' : '' }}"></span>{% endfor %}
+                    </span>
+                    <span class="google-reviews__count" aria-hidden="true">{{ 'label.google_reviews_count'|trans({'%count%': reviews.count}, 'social') }}</span>
+                    <span class="visuallyhidden">{{ 'label.google_reviews_average'|trans({'%average%': reviews.average|format_number({fraction_digit: 1}), '%count%': reviews.count}, 'social') }}</span>
+                </p>
+            {% endif %}
+        </div>
+
+        {# One review needs no carousel #}
+        {% if items|length == 1 %}
+            {{ include(itemTemplate, items|first, with_context = false) }}
+        {% else %}
+            {# UiBundle's slider controller, laid out as a row (sass/_google-reviews.scss): one card in view on a phone, two on a tablet, three on a computer. Its controls are the Slider component's own, whose template only takes medias #}
+            <section id="{{ id }}" class="slider slider-freeflow google-reviews__slider" aria-label="{{ 'label.google_reviews_slider'|trans({}, 'social') }}" data-controller="slider" data-slider-id="{{ id }}" data-slider-duration="{{ duration|default(0) * 1000 }}">
+                <ul class="slider-list">
+                    {% for item in items %}
+                        <li class="slider-item">{{ include(itemTemplate, item, with_context = false) }}</li>
+                    {% endfor %}
+                </ul>
+                {{ include('@c975LUi/components/Slider/_controls.html.twig', {count: items|length, duration: duration|default(0)}, with_context = false) }}
+            </section>
+        {% endif %}
+
+        {# Always printed, the link aside: the reviews can be hidden one by one, so the visitor is told where they come from and where to read them all (L111-7-2, D111-17) #}
+        <p class="google-reviews__source">
+            {{ 'label.google_reviews_source'|trans({}, 'social') }}
+            {% if reviews.listingUrl %}
+                <a href="{{ reviews.listingUrl }}" target="_blank" rel="noopener noreferrer">{{ 'label.google_reviews_see_all'|trans({}, 'social') }}</a>
+            {% endif %}
+        </p>
+    </div>
+</{{ tag }}>

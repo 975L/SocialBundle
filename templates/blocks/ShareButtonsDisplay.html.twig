@@ -1,2 +1,2 @@
 {# Pointer kind holding no data of its own, always rendering the site-wide singleton; its only field is the anchor #}
-{{ share_buttons_default(anchor_id) }}
+{{ share_buttons_default(anchor_id|default(null)) }}

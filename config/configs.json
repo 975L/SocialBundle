@@ -156,6 +156,17 @@
         "description": "description.social_calendar_ics_token"
     },
     {
+        "label": "label.social_calendar_shared_feeds",
+        "slug": "social-calendar-shared-feeds",
+        "sensitive": true,
+        "restricted": true,
+        "value": null,
+        "kind": "json",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_calendar_shared_feeds"
+    },
+    {
         "label": "label.social_series_ending_days",
         "slug": "social-series-ending-days",
         "sensitive": false,

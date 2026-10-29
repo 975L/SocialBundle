@@ -16,7 +16,7 @@
             </trans-unit>
             <trans-unit id="ba1QolF">
                 <source>narration.guided_step_social_calendar_feed</source>
-                <target>Pour retrouver vos publications dans votre propre agenda, dépliez « S'abonner depuis un agenda », créez l'adresse et collez-la dans Outlook, Evolution ou Google Agenda. Gardez-la secrète : la renouveler coupe l'ancienne.</target>
+                <target>Pour retrouver vos publications dans votre propre agenda, dépliez « S'abonner depuis un agenda », créez l'adresse et collez-la dans Outlook, Evolution ou Google Agenda. Gardez-la secrète : la renouveler coupe l'ancienne. Et si plusieurs sites publient sur les mêmes comptes, collez leurs adresses dans un seul d'entre eux : vous verrez tout au même endroit.</target>
             </trans-unit>
             <trans-unit id="2tNlQez">
                 <source>narration.guided_step_social_calendar_move</source>
@@ -56,7 +56,11 @@
             </trans-unit>
             <trans-unit id="MTrI4M.">
                 <source>narration.guided_step_social_google_display</source>
-                <target>Pour finir, sur la page de votre choix, ajoutez un block « collection » et choisissez la source « avis clients ». Les avis s'affichent avec leur note, leur date et le lien vers l'avis d'origine.</target>
+                <target>Pour finir, sur la page de votre choix, ajoutez le bloc « Avis Google ». Il montre les avis affichés en carrousel, avec leur note moyenne et le lien vers votre fiche Google. Tant qu'aucun avis n'est à montrer, il n'apparaît pas.</target>
+            </trans-unit>
+            <trans-unit id="6AlnlAN">
+                <source>narration.guided_step_social_google_hide</source>
+                <target>Au bout de chaque ligne, l'interrupteur Affiché masque l'avis sur le site, ou le réaffiche, en un clic. Un avis masqué le reste : l'import de la nuit ne le republie pas.</target>
             </trans-unit>
             <trans-unit id="Ies79nd">
                 <source>narration.guided_step_social_google_prerequisites</source>

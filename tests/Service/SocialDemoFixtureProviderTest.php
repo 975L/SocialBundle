@@ -44,12 +44,12 @@ class SocialDemoFixtureProviderTest extends TestCase
         $this->assertNotSame($fixtures[0]->getExternalId(), $fixtures[1]->getExternalId());
     }
 
-    // An imported review is already public where it was written: the screen exists to answer it, not to let it through
+    // An imported review is already public where it was written: the screen exists to answer it, not to let it through - and, like every Google review, it is not verified
     public function testTheyAreShownRatherThanWaitingToBe(): void
     {
         foreach ($this->fixtures() as $review) {
             $this->assertSame(ReviewStatus::Published, $review->getStatus());
-            $this->assertTrue($review->isVerified());
+            $this->assertFalse($review->isVerified());
         }
     }
 

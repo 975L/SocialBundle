@@ -21,6 +21,26 @@
                 "en": "A post duplicated from a series' page brings you back to that page",
                 "fr": "Un post dupliqué depuis la page d'une série vous ramène sur cette page",
                 "es": "Una publicación duplicada desde la página de una serie le devuelve a esa página"
+            },
+            {
+                "en": "The calendar can also show, greyed, the posts of your other sites publishing on the same accounts, and one calendar subscription then gives them all",
+                "fr": "Le calendrier peut aussi montrer, en grisé, les publications de vos autres sites qui publient sur les mêmes comptes, et un seul abonnement d'agenda les donne alors toutes",
+                "es": "El calendario también puede mostrar, en gris, las publicaciones de sus otros sitios que publican en las mismas cuentas, y una sola suscripción de agenda las da entonces todas"
+            },
+            {
+                "en": "When another site's calendar address has been renewed, the calendar says so and asks for the new one to be pasted",
+                "fr": "Quand l'adresse du calendrier d'un autre site a été renouvelée, le calendrier le dit et demande de recoller la nouvelle",
+                "es": "Cuando la dirección del calendario de otro sitio se ha renovado, el calendario lo indica y pide pegar la nueva"
+            },
+            {
+                "en": "A \"Google reviews\" block shows your listing's reviews as a carousel on any page, with their average rating and a link to Google",
+                "fr": "Un bloc « Avis Google » montre les avis de votre fiche en carrousel sur n'importe quelle page, avec leur note moyenne et un lien vers Google",
+                "es": "Un bloque «Opiniones de Google» muestra las opiniones de su ficha en carrusel en cualquier página, con su nota media y un enlace a Google"
+            },
+            {
+                "en": "A Google review hidden from the reviews list stays hidden: the nightly import no longer shows it again",
+                "fr": "Un avis Google masqué depuis la liste des avis le reste : l'import de la nuit ne le réaffiche plus",
+                "es": "Una opinión de Google oculta desde la lista de opiniones lo sigue estando: la importación nocturna ya no la vuelve a mostrar"
             }
         ]
     },

@@ -34,6 +34,10 @@
                 <source>description.social_calendar_ics_token</source>
                 <target>Parte secreta de la dirección del flujo iCal de las publicaciones, creada o renovada desde el calendario. Vacía: sin flujo.</target>
             </trans-unit>
+            <trans-unit id="MS1ymuK">
+                <source>description.social_calendar_shared_feeds</source>
+                <target>Los demás sitios que publican en las mismas cuentas, en JSON: {"Nombre": "dirección de su flujo iCal"}. Sus publicaciones se muestran en gris en el calendario y se añaden al flujo de este sitio.</target>
+            </trans-unit>
             <trans-unit id="qi3JaGX">
                 <source>description.social_enable_share_buttons</source>
                 <target>Muestra automáticamente los botones de compartir en cada página (ajustes en "Botones para compartir").</target>
@@ -182,6 +186,10 @@
                 <source>label.social_calendar_ics_token</source>
                 <target>Calendario: clave de la suscripción iCal</target>
             </trans-unit>
+            <trans-unit id="mvJRLvP">
+                <source>label.social_calendar_shared_feeds</source>
+                <target>Calendario: sitios compartidos</target>
+            </trans-unit>
             <trans-unit id="Dfr17Uy">
                 <source>label.social_enable_share_buttons</source>
                 <target>Activar botones para compartir</target>
@@ -200,15 +208,15 @@
             </trans-unit>
             <trans-unit id="hZffD1Y">
                 <source>label.social_google_oauth_client_id</source>
-                <target>Identificador de cliente OAuth de Google (reseñas)</target>
+                <target>Identificador de cliente OAuth de Google (opiniones)</target>
             </trans-unit>
             <trans-unit id="iJJMfbS">
                 <source>label.social_google_oauth_client_secret</source>
-                <target>Secreto de cliente OAuth de Google (reseñas)</target>
+                <target>Secreto de cliente OAuth de Google (opiniones)</target>
             </trans-unit>
             <trans-unit id="sWcVVas">
                 <source>label.social_google_oauth_refresh_token</source>
-                <target>Token de actualización de Google (reseñas)</target>
+                <target>Token de actualización de Google (opiniones)</target>
             </trans-unit>
             <trans-unit id="NHvPdOc">
                 <source>label.social_image_format</source>

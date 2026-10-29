@@ -44,7 +44,7 @@ class SocialCalendarFeedControllerTest extends TestCase
         $feed = $this->createMock(SocialCalendarFeed::class);
         $feed->method('isToken')->willReturnCallback(static fn (string $token): bool => self::TOKEN === $token);
         $feed->expects($this->once())->method('build')
-            ->with('example.org', 'https://example.org/management/social-calendar')
+            ->with('example.org', 'https://example.org/management/social-calendar', false)
             ->willReturn("BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n");
 
         $response = $this->controller($feed)->feed(Request::create('https://example.org/social/calendar/' . self::TOKEN . '.ics'), self::TOKEN);
@@ -55,6 +55,18 @@ class SocialCalendarFeedControllerTest extends TestCase
         $this->assertSame('inline; filename="social-calendar.ics"', $response->headers->get('Content-Disposition'));
         $this->assertStringContainsString('private', (string) $response->headers->get('Cache-Control'));
         $this->assertSame('noindex', $response->headers->get('X-Robots-Tag'));
+    }
+
+    // Another site reads the feed with "?own=1": its own posts only, never the ones it shares in turn
+    public function testAnotherSiteAsksForTheOwnPostsOnly(): void
+    {
+        $feed = $this->createMock(SocialCalendarFeed::class);
+        $feed->method('isToken')->willReturn(true);
+        $feed->expects($this->once())->method('build')
+            ->with('example.org', 'https://example.org/management/social-calendar', true)
+            ->willReturn("BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n");
+
+        $this->controller($feed)->feed(Request::create('https://example.org/social/calendar/' . self::TOKEN . '.ics?own=1'), self::TOKEN);
     }
 
     // A wrong or withdrawn address answers as a page that does not exist, the feed never built

@@ -16,7 +16,7 @@
             </trans-unit>
             <trans-unit id="ba1QolF">
                 <source>narration.guided_step_social_calendar_feed</source>
-                <target>To see your posts in your own calendar, unfold "Subscribe from a calendar", create the address and paste it into Outlook, Evolution or Google Calendar. Keep it secret: renewing it cuts the former one.</target>
+                <target>To see your posts in your own calendar, unfold "Subscribe from a calendar", create the address and paste it into Outlook, Evolution or Google Calendar. Keep it secret: renewing it cuts the former one. And if several sites post on the same accounts, paste their addresses into one of them: you will see everything in one place.</target>
             </trans-unit>
             <trans-unit id="2tNlQez">
                 <source>narration.guided_step_social_calendar_move</source>
@@ -56,7 +56,11 @@
             </trans-unit>
             <trans-unit id="MTrI4M.">
                 <source>narration.guided_step_social_google_display</source>
-                <target>Finally, on the page of your choice, add a collection block and pick the customer reviews source. The reviews are shown with their rating, their date and the link to the original review.</target>
+                <target>To finish, on the page of your choice, add the Google reviews block. It shows the displayed reviews as a carousel, with their average rating and the link to your Google listing. As long as no review is there to show, it does not appear.</target>
+            </trans-unit>
+            <trans-unit id="6AlnlAN">
+                <source>narration.guided_step_social_google_hide</source>
+                <target>On each row, the Displayed switch hides the review from the site, or shows it again, in one click. A hidden review stays hidden: the nightly import does not publish it again.</target>
             </trans-unit>
             <trans-unit id="Ies79nd">
                 <source>narration.guided_step_social_google_prerequisites</source>

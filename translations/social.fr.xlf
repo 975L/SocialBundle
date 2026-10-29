@@ -2,6 +2,14 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="fr" datatype="plaintext" original="social.fr.xlf">
         <body>
+            <trans-unit id="H7R6pn9">
+                <source>block.google_reviews</source>
+                <target>Avis Google</target>
+            </trans-unit>
+            <trans-unit id="Zc6TsoF">
+                <source>block.google_reviews_description</source>
+                <target>Carrousel des avis importés de la fiche Google, avec leur note moyenne</target>
+            </trans-unit>
             <trans-unit id="7SpI0nW">
                 <source>block.share_buttons_display</source>
                 <target>Boutons de partage</target>
@@ -40,7 +48,7 @@
             </trans-unit>
             <trans-unit id="VNxe2Mo">
                 <source>description.guided_project_social_google_reviews</source>
-                <target>Modérer ce que Google a rapporté, y répondre, et poser les avis sur une page.</target>
+                <target>Lire ce que Google a rapporté, y répondre, masquer un avis, et poser le bloc des avis sur une page.</target>
             </trans-unit>
             <trans-unit id="1Qxr9lg">
                 <source>description.guided_project_social_linkedin_connect</source>
@@ -84,7 +92,7 @@
             </trans-unit>
             <trans-unit id="6i891bK">
                 <source>description.guided_step_social_calendar_feed</source>
-                <target>Dépliez « S'abonner depuis un agenda » et créez l'adresse secrète : collée dans Outlook, Evolution ou Google Agenda, elle y montre les publications prévues. La renouveler coupe l'ancienne.</target>
+                <target>Dépliez « S'abonner depuis un agenda » et créez l'adresse secrète : collée dans Outlook, Evolution ou Google Agenda, elle y montre les publications prévues. La renouveler coupe l'ancienne. Plusieurs sites publient sur les mêmes comptes ? Collez leurs adresses dans « Calendrier : sites partagés » d'un seul : son calendrier et son flux montrent alors tout.</target>
             </trans-unit>
             <trans-unit id="y3lKM_7">
                 <source>description.guided_step_social_calendar_move</source>
@@ -124,7 +132,11 @@
             </trans-unit>
             <trans-unit id="RJQ_vuA">
                 <source>description.guided_step_social_google_display</source>
-                <target>Sur la page voulue, ajouter un bloc "Collection" et choisir la source "Avis clients". Les avis s'affichent avec leur note, leur date et le lien vers l'avis d'origine.</target>
+                <target>Sur la page voulue, ajouter le bloc « Avis Google » : un carrousel des avis affichés, avec leur note moyenne et le lien vers la fiche Google. Sans avis à montrer, il n'apparaît pas. Le bouton « masquer » de sa barre le retire de la page.</target>
+            </trans-unit>
+            <trans-unit id="a8hhPTh">
+                <source>description.guided_step_social_google_hide</source>
+                <target>L'interrupteur Affiché de la ligne masque l'avis sur le site, ou le réaffiche, en un clic. Un avis masqué le reste : l'import de la nuit ne le republie pas. Le bloc rappelle que les avis viennent de Google et renvoie vers tous les autres.</target>
             </trans-unit>
             <trans-unit id="6xgYazB">
                 <source>description.guided_step_social_google_prerequisites</source>
@@ -484,7 +496,7 @@
             </trans-unit>
             <trans-unit id="MtGVTQR">
                 <source>help.social_calendar_feed</source>
-                <target>Copiez cette adresse dans votre agenda : Evolution, Nouveau puis Agenda « Sur le web » ; Google Agenda, Autres agendas puis « À partir de l'URL » (visible ensuite sur Android) ; Outlook, Ajouter un calendrier puis « S'abonner à partir du web ». Lecture seule, mise à jour par l'agenda à son rythme. Gardez-la secrète : la renouveler coupe l'ancienne.</target>
+                <target>Copiez cette adresse dans votre agenda : Evolution, Nouveau puis Agenda « Sur le web » ; Google Agenda, Autres agendas puis « À partir de l'URL » (visible ensuite sur Android) ; Outlook, Ajouter un calendrier puis « S'abonner à partir du web ». Lecture seule, mise à jour par l'agenda à son rythme. Gardez-la secrète : la renouveler coupe l'ancienne. Pour un calendrier commun à plusieurs sites, collez l'adresse de chacun dans « Calendrier : sites partagés » du site qui les réunit.</target>
             </trans-unit>
             <trans-unit id="hs5kZPn">
                 <source>help.social_calendar_feed_none</source>
@@ -646,6 +658,30 @@
                 <source>label.fill_transparent</source>
                 <target>Transparent</target>
             </trans-unit>
+            <trans-unit id="2Lwfwsw">
+                <source>label.gallery_showcase_google_reviews</source>
+                <target>Avis Google</target>
+            </trans-unit>
+            <trans-unit id="EtUmQgH">
+                <source>label.gallery_showcase_google_reviews_description</source>
+                <target>Les avis de la fiche Google en carrousel, avec leur note moyenne et leur provenance.</target>
+            </trans-unit>
+            <trans-unit id="hZcDv5c">
+                <source>label.gallery_showcase_google_reviews_sample_1</source>
+                <target>Accueil chaleureux et travail soigné, je recommande sans hésiter.</target>
+            </trans-unit>
+            <trans-unit id="4rcDWYJ">
+                <source>label.gallery_showcase_google_reviews_sample_2</source>
+                <target>Rapide, clair sur les prix, et le résultat est parfait.</target>
+            </trans-unit>
+            <trans-unit id="BZjPMO7">
+                <source>label.gallery_showcase_google_reviews_sample_3</source>
+                <target>Très bon service, un peu d'attente pour le rendez-vous.</target>
+            </trans-unit>
+            <trans-unit id="iWUyO.e">
+                <source>label.gallery_showcase_google_reviews_sample_4</source>
+                <target>Toujours de bon conseil, on y revient les yeux fermés.</target>
+            </trans-unit>
             <trans-unit id="QI77jSF">
                 <source>label.gallery_showcase_share_buttons</source>
                 <target>Boutons de partage</target>
@@ -661,6 +697,46 @@
             <trans-unit id="nECqDP1">
                 <source>label.gallery_showcase_social_links_description</source>
                 <target>Styles disponibles pour les liens vers les réseaux sociaux.</target>
+            </trans-unit>
+            <trans-unit id="uPwqG0b">
+                <source>label.google_reviews_average</source>
+                <target>Note moyenne : %average% sur 5, sur %count% avis</target>
+            </trans-unit>
+            <trans-unit id="RfNflLq">
+                <source>label.google_reviews_count</source>
+                <target>%count% avis</target>
+            </trans-unit>
+            <trans-unit id="sFFqrHJ">
+                <source>label.google_reviews_duration</source>
+                <target>Secondes entre deux défilements</target>
+            </trans-unit>
+            <trans-unit id=".Q7GrOI">
+                <source>label.google_reviews_duration_help</source>
+                <target>0 pour un défilement manuel, avec les flèches.</target>
+            </trans-unit>
+            <trans-unit id="IhVUFIX">
+                <source>label.google_reviews_limit</source>
+                <target>Nombre d'avis</target>
+            </trans-unit>
+            <trans-unit id=".Qlrbbe">
+                <source>label.google_reviews_limit_help</source>
+                <target>Les plus récents d'abord. Laissé vide, tous les avis affichés sont montrés.</target>
+            </trans-unit>
+            <trans-unit id="qSa3Ka2">
+                <source>label.google_reviews_see_all</source>
+                <target>Voir tous les avis sur Google</target>
+            </trans-unit>
+            <trans-unit id="1zdyp5b">
+                <source>label.google_reviews_slider</source>
+                <target>Avis Google</target>
+            </trans-unit>
+            <trans-unit id="REMQqyu">
+                <source>label.google_reviews_source</source>
+                <target>Avis issus de notre fiche Google.</target>
+            </trans-unit>
+            <trans-unit id="wgImOkz">
+                <source>label.google_reviews_title</source>
+                <target>Titre</target>
             </trans-unit>
             <trans-unit id="tf7xOaW">
                 <source>label.guided_project_social_bluesky_connect</source>
@@ -761,6 +837,10 @@
             <trans-unit id="jO4qa1.">
                 <source>label.guided_step_social_google_display</source>
                 <target>Afficher les avis sur une page</target>
+            </trans-unit>
+            <trans-unit id="zE1MrrB">
+                <source>label.guided_step_social_google_hide</source>
+                <target>Masquer un avis</target>
             </trans-unit>
             <trans-unit id="ilGA6aD">
                 <source>label.guided_step_social_google_prerequisites</source>
@@ -1333,6 +1413,26 @@
             <trans-unit id="Oh3g0mi">
                 <source>label.social_calendar_series_view</source>
                 <target>Voir la série</target>
+            </trans-unit>
+            <trans-unit id="fjAINU5">
+                <source>label.social_calendar_shared_failed</source>
+                <target>%count% calendrier(s) partagé(s) non lu(s)</target>
+            </trans-unit>
+            <trans-unit id="Gtmv2ay">
+                <source>label.social_calendar_shared_invalid</source>
+                <target>Flux de %site% illisible</target>
+            </trans-unit>
+            <trans-unit id="Yhxhwl0">
+                <source>label.social_calendar_shared_malformed</source>
+                <target>Entrée « %site% » sans adresse de flux valide</target>
+            </trans-unit>
+            <trans-unit id="hr3egGJ">
+                <source>label.social_calendar_shared_refused</source>
+                <target>Calendrier de %site% : adresse refusée, à recoller depuis son site</target>
+            </trans-unit>
+            <trans-unit id="1SxQDNO">
+                <source>label.social_calendar_shared_unreachable</source>
+                <target>Calendrier de %site% injoignable</target>
             </trans-unit>
             <trans-unit id="q59uuo1">
                 <source>label.social_calendar_state_approved</source>

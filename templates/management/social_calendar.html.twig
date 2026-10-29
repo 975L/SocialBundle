@@ -12,8 +12,16 @@
     </span>
 {% endmacro %}
 
-{# A post on the calendar, coloured by its state: one gone out everywhere only opens, any other is dragged to another moment #}
+{# A post on the calendar, coloured by its state: one gone out everywhere only opens, any other is dragged to another moment. Another site's post (see SocialSharedCalendar) is only read: greyed, its site's name on it, a click opening it on that site #}
 {% macro card(post, connected) %}
+    {% if post.kind|default('') == 'shared' %}
+        {% set tag = post.url ? 'a' : 'span' %}
+        <{{ tag }}{% if post.url %} href="{{ post.url }}" target="_blank" rel="noopener"{% endif %} class="social-calendar-card is-shared" title="{{ post.site }}">
+            <small class="social-calendar-card-site">{{ post.site }}</small>
+            <span>{{ post.title }}</span>
+            {{ _self.networks(post.networks, post.networks) }}
+        </{{ tag }}>
+    {% else %}
     {% set draggable = post.state != 'published' %}
     <a href="{{ post.edit_url }}" draggable="false" data-action="social-calendar#open" data-panel-id="{{ post.id }}" data-panel-card
         class="social-calendar-card is-{{ post.state }}"
@@ -24,6 +32,7 @@
         <span>{{ post.title }}</span>
         {{ _self.networks(post.networks, connected) }}
     </a>
+    {% endif %}
 {% endmacro %}
 
 {% block main %}
@@ -69,6 +78,13 @@
         </div>
 
         <p class="small text-muted">{{ 'label.social_calendar_drag_hint'|trans({}, 'social') }}</p>
+
+        {# The other sites whose posts are missing this time, their feed unread #}
+        {% if shared_errors|default([]) is not empty %}
+            <p class="small text-muted social-calendar-shared-errors"><i class="fa fa-triangle-exclamation"></i>
+                {% for error in shared_errors %}{{ ('label.social_calendar_shared_' ~ error.reason)|trans({'%site%': error.site}, 'social') }}{{ loop.last ? '' : ' - ' }}{% endfor %}
+            </p>
+        {% endif %}
 
         {# The calendar subscribed to from Outlook, Evolution or Google Calendar by its secret address (see SocialCalendarFeed) #}
         <details class="social-calendar-feed mb-3">

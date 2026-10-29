@@ -1,6 +1,6 @@
 ---
 name: c975l-social
-description: "Use this skill when working with social links, share buttons, customer reviews or the publication on the social networks in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the three block kinds, the network icons, the site-wide auto-display, the CSS tokens, the Google Business Profile review import with its pluggable sources, and the scheduled posts on Bluesky, Facebook, Instagram and LinkedIn, the publications calendar and the AI-written texts. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, startStimulusApp, c975lStimulusApp, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, Google Business Profile, c975l:social:publish, c975l:social:bluesky:reminder, SocialPublisher, SocialPost, SocialPostTarget, SocialPostCrudController, NetworkPublisherInterface, SocialContentSourceInterface, SocialContent, social-publish-template, social-meta-app-id, social-bluesky-oauth-session, SocialConnectionsController, Connexions, BlueskyOAuthClient, Es256Signer, DPoP, MetaGraphClient, SocialImageExporter, post on Bluesky, post on Facebook, post on Instagram, LinkedInClient, LinkedInPublisher, social-linkedin-client-id, post on LinkedIn, SocialPlanner, plannedAt, SocialCalendarController, SocialPostWriter, social-ai-guidelines, social publishing, SocialSeries, prolong a series, c975l:social:series:ending, changeContent, retryFailed, SocialCalendarFeed, iCal feed, SocialMedia, SocialMediaPicker, social_calendar_medias, sortMedias, hasGoneOut, approve-series, findComingBySeries, SocialPostApprover, social-meta-page-name, social-meta-instagram-username, calendar day view, social_calendar_texts, SocialCalendarController::FROM, YoutubeClient, YoutubePublisher, YoutubeHealthCheckProvider, social-youtube-made-for-kids, post on YouTube, Facebook Reel, videoRequired, GoogleOAuthClient, FirstCommentPublisherInterface, first comment, isCommentPending, ProfileResharePublisherInterface, reshare, isResharePending, StoryPublisherInterface, story, isStoryPending, isFollowUpPending, storyUrl, LinkedIn Page, social-linkedin-organization-id, SocialLinkedInPageController, Community Management API, c975l:social:draft, SocialDraftImporter, imported drafts, c975l:social:linkedin:reminder, SocialPostDuplicator, social_calendar_upload, social_calendar_networks, social_calendar_duplicate, social-bluesky-label, SocialPost::$locale, hasVideo, c975LUi:Image:Zoom, panel zoom, social_calendar_series, SocialCalendarController::SERIES, getVideoUrl, series review page, approve-picked, SocialDraftAlertProvider, AlertProviderInterface, findDraftsPlannedBetween, findComingIdsBySeries, data-panel-card, social_calendar_retry, retry from the calendar."
+description: "Use this skill when working with social links, share buttons, customer reviews or the publication on the social networks in a Symfony application built on the c975L ecosystem with c975l/social-bundle. Covers the site-wide social links row, the share buttons band and its shapes and fills, the four block kinds, the network icons, the site-wide auto-display, the CSS tokens, the Google Business Profile review import with its pluggable sources, and the scheduled posts on Bluesky, Facebook, Instagram and LinkedIn, the publications calendar and the AI-written texts. Triggers on: social_links, social_links_display, share_buttons_display, share_buttons, share_buttons_default, share_buttons_edit_url, social_link_block, social_link_icon, social-enable-share-buttons, ui-enable-reviews, ReviewsSourceInterface, ReviewsReplySourceInterface, ReviewSynchronizer, ReviewReplyPublisher, c975l:social:reviews:sync, social-google-oauth-client-id, block-thumbs, BundleStylesheetManagementProviderInterface, ui.management_stylesheet, SocialBlockCacheTagProvider, BlockCacheTagProviderInterface, startStimulusApp, c975lStimulusApp, label.group_social, social config group, social links, share buttons, network icon, brand color, customer reviews, Google reviews, google_reviews, social_google_reviews, GoogleReviewsExtension, GoogleReviewsCacheInvalidationListener, Displayed switch, hide a review, Google Business Profile, c975l:social:publish, c975l:social:bluesky:reminder, SocialPublisher, SocialPost, SocialPostTarget, SocialPostCrudController, NetworkPublisherInterface, SocialContentSourceInterface, SocialContent, social-publish-template, social-meta-app-id, social-bluesky-oauth-session, SocialConnectionsController, Connexions, BlueskyOAuthClient, Es256Signer, DPoP, MetaGraphClient, SocialImageExporter, post on Bluesky, post on Facebook, post on Instagram, LinkedInClient, LinkedInPublisher, social-linkedin-client-id, post on LinkedIn, SocialPlanner, plannedAt, SocialCalendarController, SocialPostWriter, social-ai-guidelines, social publishing, SocialSeries, prolong a series, c975l:social:series:ending, changeContent, retryFailed, SocialCalendarFeed, iCal feed, SocialMedia, SocialMediaPicker, social_calendar_medias, sortMedias, hasGoneOut, approve-series, findComingBySeries, SocialPostApprover, social-meta-page-name, social-meta-instagram-username, calendar day view, social_calendar_texts, SocialCalendarController::FROM, YoutubeClient, YoutubePublisher, YoutubeHealthCheckProvider, social-youtube-made-for-kids, post on YouTube, Facebook Reel, videoRequired, GoogleOAuthClient, FirstCommentPublisherInterface, first comment, isCommentPending, ProfileResharePublisherInterface, reshare, isResharePending, StoryPublisherInterface, story, isStoryPending, isFollowUpPending, storyUrl, LinkedIn Page, social-linkedin-organization-id, SocialLinkedInPageController, Community Management API, c975l:social:draft, SocialDraftImporter, imported drafts, c975l:social:linkedin:reminder, SocialPostDuplicator, social_calendar_upload, social_calendar_networks, social_calendar_duplicate, social-bluesky-label, SocialPost::$locale, hasVideo, c975LUi:Image:Zoom, panel zoom, social_calendar_series, SocialCalendarController::SERIES, getVideoUrl, series review page, approve-picked, SocialDraftAlertProvider, AlertProviderInterface, SocialSharedCalendar, SocialCalendarParser, SocialSharedCalendarAlertProvider, social-calendar-shared-feeds, shared calendar, X-SOCIAL-SHARED, findDraftsPlannedBetween, findComingIdsBySeries, data-panel-card, social_calendar_retry, retry from the calendar."
 ---
 
 # c975L SocialBundle
@@ -46,6 +46,7 @@ CRUD scoped to its own kind. Both sit behind ConfigBundle's `site-role-editor` s
 | `social_links` | no | the singleton itself: an ordered list of `network` + `url` (rows dragged into order, their `position` dropped on submit, the array order stored), an optional rich-text intro, the icon style and the label visibility |
 | `social_links_display` | yes | a thin pointer dropping the same site-wide links into any page's block flow |
 | `share_buttons_display` | yes | the same, for the dashboard-defined share buttons; its one field is an anchor |
+| `google_reviews` | yes | the imported Google reviews left displayed, as a carousel (UiBundle's `slider` controller, 1/2/3 cards in view) with their average, the mention of the Google listing and a link to all of them; renders nothing while none is displayed |
 
 The two `*_display` kinds **store no data of their own** — their form has no display field and their
 template renders the singleton. That is the point: one list, edited once, shown wherever it is needed,
@@ -138,9 +139,10 @@ wanting the same silhouettes on a public showcase page contributes the file from
 
 **The reviews themselves live in UiBundle** (`c975L\UiBundle\Entity\Review`, table `site_review`),
 alongside what visitors write on the site: the two are the same thing seen from two sides, and only
-`source` tells them apart. Moderation, display and the `ui-enable-reviews` switch are all UiBundle's —
-see the `c975l-blocks` skill. This bundle owns **the feed alone**: connecting a platform, pulling its
-reviews in, and pushing an answer back out.
+`source` tells them apart. Moderation, the `collection` source and the `ui-enable-reviews` switch are all UiBundle's —
+see the `c975l-blocks` skill. This bundle owns **the feed**: connecting a platform, pulling its
+reviews in, pushing an answer back out - and the `google_reviews` block, which `ui-enable-reviews` does
+not govern (that key is about what visitors write here).
 
 | Piece | Class |
 | --- | --- |
@@ -151,15 +153,20 @@ reviews in, and pushing an answer back out.
 | OAuth | `Service\GoogleOAuthClient`, `Controller\GoogleOAuthController` |
 | Import | `Service\ReviewSynchronizer`, `Command\ReviewsSyncCommand` |
 | Reply out | `Service\ReviewReplyPublisher` |
+| Display | `google_reviews` block, `Twig\GoogleReviewsExtension` (`social_google_reviews(limit)`), `templates/reviews/GoogleReviews.html.twig` |
 
 Sources are auto-tagged by interface (`social.reviews_source`, see `c975LSocialBundle::build()`), so a
 new platform is a class implementing `ReviewsSourceInterface` and nothing else.
 
-A run upserts on `(source, external_id)`, marks every imported row `published` — the platform moderated
-it already — and removes the reviews its source no longer returns (`ReviewRepository::findMissing()`),
+A run upserts on `(source, external_id)`, marks a newly imported row `published` — the platform moderated
+it already — never touches the status of a row it already holds (a review hidden with UiBundle's
+**Displayed** switch, `Review::setDisplayed()`, stays hidden), and removes the reviews its source no longer returns (`ReviewRepository::findMissing()`),
 so a review deleted on the platform goes here too. Unless the run brought nothing back at all: an empty
 answer is what a revoked token or an exhausted quota looks like, and wiping the wall on one is worse
 than showing it stale.
+
+`GoogleBusinessProfileSource` hands every review over with `verified: false`: Google Maps says its
+reviews are not verified, and the card's badge must not contradict it (L111-7-2).
 
 `ReviewReplyPublisher` implements **UiBundle's** `ReviewReplyPublisherInterface`, which is how the
 moderation screen reaches it without this bundle owning the screen. Its `supports()` answers false for
@@ -231,6 +238,7 @@ every upload, an unaudited Google Cloud project's uploads possibly locked privat
 | AI texts | `Service\SocialPostWriter` (Donovan's writer key, `social-ai-guidelines`), the template as fallback |
 | Calendar | `Controller\Management\SocialCalendarController` ("Calendrier", `site-role-editor`), `Service\SocialPlanner`, `assets/js/social-calendar.js` |
 | Calendar feed | `Service\SocialCalendarFeed`, `Controller\SocialCalendarFeedController` (`/social/calendar/{token}.ics`, secret `social-calendar-ics-token`) |
+| Shared calendar | `Service\SocialSharedCalendar` (`social-calendar-shared-feeds`, json `{"Name": "feed address"}`, read with `?own=1`, all feeds asked at once, 3 s timeout, 10 min in `cache.app`, failures `unreachable`/`refused` (4xx)/`invalid`/`malformed`), `Service\SocialCalendarParser` (reads only what `SocialCalendarFeed` writes, skips `X-SOCIAL-SHARED`), `Management\SocialSharedCalendarAlertProvider` (last failures, from the cache) |
 | Series | `Entity\SocialSeries`, `Service\SocialSeriesGenerator`, `Command\SeriesEndingCommand` (`c975l:social:series:ending`, `social-series-ending-days`) |
 | Refusals | `Service\SocialAdminMailer` (emails `email-to`), `SocialPostCrudController::retryPost()` → `SocialPublisher::retryFailed()` |
 | First comment | `Contract\FirstCommentPublisherInterface` (`comment()`, LinkedIn alone), `SocialPostTarget::$comment`, `isCommentPending()` |
@@ -383,6 +391,9 @@ Google connection still answers - the import being the one thing here that stops
   `published` state.
 - **Do not create a `SocialPost` without a moment, nor approve on a drag.** The calendar shows every post
   at its `plannedAt`, and the planned run is the only clock; a drag moves, "Valider" approves.
+- **Do not read another site's feed but through `SocialSharedCalendar`.** It asks `?own=1` and the parser
+  skips `X-SOCIAL-SHARED`, which keeps two sites listing each other from looping; a dashboard provider
+  reads `getKnownErrors()`, never a feed.
 - **Do not hand Meta the site's WebP url.** Go through `SocialImageExporter::jpegUrl()`.
 - **Do not make `share_buttons_display` cacheable.** Its render carries the current page's url, so the
   first page's share links would be served on every other page holding that block.

@@ -2,6 +2,14 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="es" datatype="plaintext" original="social.es.xlf">
         <body>
+            <trans-unit id="H7R6pn9">
+                <source>block.google_reviews</source>
+                <target>Opiniones de Google</target>
+            </trans-unit>
+            <trans-unit id="Zc6TsoF">
+                <source>block.google_reviews_description</source>
+                <target>Carrusel de las opiniones importadas de la ficha de Google, con su nota media</target>
+            </trans-unit>
             <trans-unit id="7SpI0nW">
                 <source>block.share_buttons_display</source>
                 <target>Botones para compartir</target>
@@ -40,7 +48,7 @@
             </trans-unit>
             <trans-unit id="VNxe2Mo">
                 <source>description.guided_project_social_google_reviews</source>
-                <target>Moderar lo que Google ha traído, responderlo y colocar las reseñas en una página.</target>
+                <target>Leer lo que Google ha traído, responder, ocultar una opinión y poner el bloque de opiniones en una página.</target>
             </trans-unit>
             <trans-unit id="1Qxr9lg">
                 <source>description.guided_project_social_linkedin_connect</source>
@@ -84,7 +92,7 @@
             </trans-unit>
             <trans-unit id="6i891bK">
                 <source>description.guided_step_social_calendar_feed</source>
-                <target>Despliegue «Suscribirse desde una agenda» y cree la dirección secreta: pegada en Outlook, Evolution o Google Calendar, muestra allí las publicaciones previstas. Renovarla anula la anterior.</target>
+                <target>Despliegue «Suscribirse desde una agenda» y cree la dirección secreta: pegada en Outlook, Evolution o Google Calendar, muestra allí las publicaciones previstas. Renovarla anula la anterior. ¿Varios sitios publican en las mismas cuentas? Pegue sus direcciones en «Calendario: sitios compartidos» de uno de ellos: su calendario y su flujo lo muestran entonces todo.</target>
             </trans-unit>
             <trans-unit id="y3lKM_7">
                 <source>description.guided_step_social_calendar_move</source>
@@ -124,7 +132,11 @@
             </trans-unit>
             <trans-unit id="RJQ_vuA">
                 <source>description.guided_step_social_google_display</source>
-                <target>En la página deseada, añadir un bloque "Colección" y elegir la fuente "Opiniones de clientes". Las opiniones se muestran con su valoración, su fecha y el enlace a la opinión original.</target>
+                <target>En la página deseada, añadir el bloque «Opiniones de Google»: un carrusel de las opiniones visibles, con su nota media y el enlace a la ficha de Google. Sin opiniones que mostrar, no aparece. El botón «ocultar» de su barra lo retira de la página.</target>
+            </trans-unit>
+            <trans-unit id="a8hhPTh">
+                <source>description.guided_step_social_google_hide</source>
+                <target>El interruptor Mostrada de la fila oculta la opinión en el sitio, o la vuelve a mostrar, con un clic. Una opinión oculta lo sigue estando: la importación nocturna no la vuelve a publicar. El bloque indica que las opiniones vienen de Google y enlaza con todas las demás.</target>
             </trans-unit>
             <trans-unit id="6xgYazB">
                 <source>description.guided_step_social_google_prerequisites</source>
@@ -132,15 +144,15 @@
             </trans-unit>
             <trans-unit id="cFM7OuY">
                 <source>description.guided_step_social_google_reply</source>
-                <target>El botón en forma de flecha abre la respuesta pública, que se envía a Google en cuanto se guarda. El texto y la nota de la reseña pertenecen a su autor: no son modificables ni suprimibles. Una reseña abusiva se denuncia a Google.</target>
+                <target>El botón en forma de flecha abre la respuesta pública, que se envía a Google en cuanto se guarda. El texto y la nota de la opinión pertenecen a su autor: no son modificables ni suprimibles. Una opinión abusiva se denuncia a Google.</target>
             </trans-unit>
             <trans-unit id="pu1hp1o">
                 <source>description.guided_step_social_google_reviews</source>
-                <target>Todas las reseñas del sitio, sea cual sea la plataforma. Las de Google llegan solas cada noche: la lista permanece vacía mientras no se haya ejecutado la primera sincronización.</target>
+                <target>Todas las opiniones del sitio, sea cual sea la plataforma. Las de Google llegan solas cada noche: la lista permanece vacía mientras no se haya ejecutado la primera sincronización.</target>
             </trans-unit>
             <trans-unit id="r_RYin.">
                 <source>description.guided_step_social_google_sync</source>
-                <target>Las reseñas llegan solas cada noche, ya que el propio bundle programa la tarea «c975l:social:reviews:sync». Queda una clave opcional, «social-google-listing-url»: la dirección pública de la ficha, recogida en los datos estructurados del sitio.</target>
+                <target>Las opiniones llegan solas cada noche, ya que el propio bundle programa la tarea «c975l:social:reviews:sync». Queda una clave opcional, «social-google-listing-url»: la dirección pública de la ficha, recogida en los datos estructurados del sitio.</target>
             </trans-unit>
             <trans-unit id="2BLT8wV">
                 <source>description.guided_step_social_linkedin_connect</source>
@@ -484,7 +496,7 @@
             </trans-unit>
             <trans-unit id="MtGVTQR">
                 <source>help.social_calendar_feed</source>
-                <target>Copie esta dirección en su agenda: Evolution, Nuevo y luego agenda «En la web»; Google Calendar, Otros calendarios y luego «Desde URL» (visible después en Android); Outlook, Agregar calendario y luego «Suscribirse desde la web». Solo lectura, actualizada por la agenda a su ritmo. Manténgala secreta: renovarla anula la anterior.</target>
+                <target>Copie esta dirección en su agenda: Evolution, Nuevo y luego agenda «En la web»; Google Calendar, Otros calendarios y luego «Desde URL» (visible después en Android); Outlook, Agregar calendario y luego «Suscribirse desde la web». Solo lectura, actualizada por la agenda a su ritmo. Manténgala secreta: renovarla anula la anterior. Para un calendario común a varios sitios, pegue la dirección de cada uno en «Calendario: sitios compartidos» del sitio que los reúne.</target>
             </trans-unit>
             <trans-unit id="hs5kZPn">
                 <source>help.social_calendar_feed_none</source>
@@ -646,6 +658,30 @@
                 <source>label.fill_transparent</source>
                 <target>Transparente</target>
             </trans-unit>
+            <trans-unit id="2Lwfwsw">
+                <source>label.gallery_showcase_google_reviews</source>
+                <target>Opiniones de Google</target>
+            </trans-unit>
+            <trans-unit id="EtUmQgH">
+                <source>label.gallery_showcase_google_reviews_description</source>
+                <target>Las opiniones de la ficha de Google en carrusel, con su nota media y su procedencia.</target>
+            </trans-unit>
+            <trans-unit id="hZcDv5c">
+                <source>label.gallery_showcase_google_reviews_sample_1</source>
+                <target>Trato cercano y trabajo cuidado, lo recomiendo sin dudar.</target>
+            </trans-unit>
+            <trans-unit id="4rcDWYJ">
+                <source>label.gallery_showcase_google_reviews_sample_2</source>
+                <target>Rápido, claro con los precios, y el resultado es perfecto.</target>
+            </trans-unit>
+            <trans-unit id="BZjPMO7">
+                <source>label.gallery_showcase_google_reviews_sample_3</source>
+                <target>Muy buen servicio, algo de espera para la cita.</target>
+            </trans-unit>
+            <trans-unit id="iWUyO.e">
+                <source>label.gallery_showcase_google_reviews_sample_4</source>
+                <target>Siempre buenos consejos, volvemos sin dudarlo.</target>
+            </trans-unit>
             <trans-unit id="QI77jSF">
                 <source>label.gallery_showcase_share_buttons</source>
                 <target>Botones para compartir</target>
@@ -662,6 +698,46 @@
                 <source>label.gallery_showcase_social_links_description</source>
                 <target>Estilos disponibles para los enlaces a redes sociales.</target>
             </trans-unit>
+            <trans-unit id="uPwqG0b">
+                <source>label.google_reviews_average</source>
+                <target>Nota media: %average% sobre 5, de %count% opinión|Nota media: %average% sobre 5, de %count% opiniones</target>
+            </trans-unit>
+            <trans-unit id="RfNflLq">
+                <source>label.google_reviews_count</source>
+                <target>%count% opinión|%count% opiniones</target>
+            </trans-unit>
+            <trans-unit id="sFFqrHJ">
+                <source>label.google_reviews_duration</source>
+                <target>Segundos entre dos desplazamientos</target>
+            </trans-unit>
+            <trans-unit id=".Q7GrOI">
+                <source>label.google_reviews_duration_help</source>
+                <target>0 para un carrusel manual, con las flechas.</target>
+            </trans-unit>
+            <trans-unit id="IhVUFIX">
+                <source>label.google_reviews_limit</source>
+                <target>Número de opiniones</target>
+            </trans-unit>
+            <trans-unit id=".Qlrbbe">
+                <source>label.google_reviews_limit_help</source>
+                <target>Las más recientes primero. Vacío, se muestran todas las opiniones visibles.</target>
+            </trans-unit>
+            <trans-unit id="qSa3Ka2">
+                <source>label.google_reviews_see_all</source>
+                <target>Ver todas las opiniones en Google</target>
+            </trans-unit>
+            <trans-unit id="1zdyp5b">
+                <source>label.google_reviews_slider</source>
+                <target>Opiniones de Google</target>
+            </trans-unit>
+            <trans-unit id="REMQqyu">
+                <source>label.google_reviews_source</source>
+                <target>Opiniones procedentes de nuestra ficha de Google.</target>
+            </trans-unit>
+            <trans-unit id="wgImOkz">
+                <source>label.google_reviews_title</source>
+                <target>Título</target>
+            </trans-unit>
             <trans-unit id="tf7xOaW">
                 <source>label.guided_project_social_bluesky_connect</source>
                 <target>Conectar la cuenta de Bluesky</target>
@@ -676,7 +752,7 @@
             </trans-unit>
             <trans-unit id="9gMwOTb">
                 <source>label.guided_project_social_google_reviews</source>
-                <target>Consultar y mostrar las reseñas de Google</target>
+                <target>Consultar y mostrar las opiniones de Google</target>
             </trans-unit>
             <trans-unit id="M.lArB1">
                 <source>label.guided_project_social_linkedin_connect</source>
@@ -762,6 +838,10 @@
                 <source>label.guided_step_social_google_display</source>
                 <target>Mostrar las opiniones en una página</target>
             </trans-unit>
+            <trans-unit id="zE1MrrB">
+                <source>label.guided_step_social_google_hide</source>
+                <target>Ocultar una opinión</target>
+            </trans-unit>
             <trans-unit id="ilGA6aD">
                 <source>label.guided_step_social_google_prerequisites</source>
                 <target>Preparar el acceso en Google</target>
@@ -772,7 +852,7 @@
             </trans-unit>
             <trans-unit id="SupTUqT">
                 <source>label.guided_step_social_google_reviews</source>
-                <target>Consultar las reseñas importadas</target>
+                <target>Consultar las opiniones importadas</target>
             </trans-unit>
             <trans-unit id="oqWYK8u">
                 <source>label.guided_step_social_google_sync</source>
@@ -1048,7 +1128,7 @@
             </trans-unit>
             <trans-unit id="G03WcyU">
                 <source>label.info_social_connections</source>
-                <target>Las redes a las que se conecta el sitio. Una vez conectadas, reciben las publicaciones preparadas en la pantalla «Publicaciones», sin nada más que activar. Google da acceso a las reseñas de su ficha de empresa.</target>
+                <target>Las redes a las que se conecta el sitio. Una vez conectadas, reciben las publicaciones preparadas en la pantalla «Publicaciones», sin nada más que activar. Google da acceso a las opiniones de su ficha de empresa.</target>
             </trans-unit>
             <trans-unit id="CJ1xpE7">
                 <source>label.info_social_content_change</source>
@@ -1333,6 +1413,26 @@
             <trans-unit id="Oh3g0mi">
                 <source>label.social_calendar_series_view</source>
                 <target>Ver la serie</target>
+            </trans-unit>
+            <trans-unit id="fjAINU5">
+                <source>label.social_calendar_shared_failed</source>
+                <target>%count% calendario(s) compartido(s) sin leer</target>
+            </trans-unit>
+            <trans-unit id="Gtmv2ay">
+                <source>label.social_calendar_shared_invalid</source>
+                <target>Flujo de %site% ilegible</target>
+            </trans-unit>
+            <trans-unit id="Yhxhwl0">
+                <source>label.social_calendar_shared_malformed</source>
+                <target>Entrada «%site%» sin dirección de flujo válida</target>
+            </trans-unit>
+            <trans-unit id="hr3egGJ">
+                <source>label.social_calendar_shared_refused</source>
+                <target>Calendario de %site%: dirección rechazada, vuelva a pegarla desde su sitio</target>
+            </trans-unit>
+            <trans-unit id="1SxQDNO">
+                <source>label.social_calendar_shared_unreachable</source>
+                <target>Calendario de %site% inaccesible</target>
             </trans-unit>
             <trans-unit id="q59uuo1">
                 <source>label.social_calendar_state_approved</source>

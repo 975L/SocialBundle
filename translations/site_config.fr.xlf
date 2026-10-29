@@ -34,6 +34,10 @@
                 <source>description.social_calendar_ics_token</source>
                 <target>Partie secrète de l'adresse du flux iCal des publications, créée ou renouvelée depuis le calendrier. Vide : pas de flux.</target>
             </trans-unit>
+            <trans-unit id="MS1ymuK">
+                <source>description.social_calendar_shared_feeds</source>
+                <target>Les autres sites publiant sur les mêmes comptes, en JSON : {"Nom": "adresse de son flux iCal"}. Leurs posts s'affichent en grisé dans le calendrier et s'ajoutent au flux de ce site.</target>
+            </trans-unit>
             <trans-unit id="qi3JaGX">
                 <source>description.social_enable_share_buttons</source>
                 <target>Affiche automatiquement les boutons de partage sur chaque page (réglages dans "Boutons de partage").</target>
@@ -181,6 +185,10 @@
             <trans-unit id="zo6BSQn">
                 <source>label.social_calendar_ics_token</source>
                 <target>Calendrier : clé de l'abonnement iCal</target>
+            </trans-unit>
+            <trans-unit id="mvJRLvP">
+                <source>label.social_calendar_shared_feeds</source>
+                <target>Calendrier : sites partagés</target>
             </trans-unit>
             <trans-unit id="Dfr17Uy">
                 <source>label.social_enable_share_buttons</source>

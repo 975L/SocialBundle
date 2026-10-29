@@ -62,6 +62,19 @@ class ReviewSynchronizerTest extends TestCase
         );
     }
 
+    // One run of a source returning review "a", answered by the row already held for it
+    private function synchronizeOnto(Review $existing): void
+    {
+        $repository = $this->createStub(ReviewRepository::class);
+        $repository->method('findOneFromSource')->willReturn($existing);
+
+        new ReviewSynchronizer(
+            [$this->createSource('google', true, $this->createData('a'))],
+            $repository,
+            $this->createStub(EntityManagerInterface::class)
+        )->synchronize();
+    }
+
     public function testSynchronizePersistsOneReviewPerFetchedItem(): void
     {
         $repository = $this->createStub(ReviewRepository::class);
@@ -212,35 +225,42 @@ class ReviewSynchronizerTest extends TestCase
     public function testSynchronizeClearsAReplyTheSourceNoLongerReturns(): void
     {
         $existing = new Review()->setSource('google')->setExternalId('a')->setReplyComment('Merci !');
-
-        $repository = $this->createStub(ReviewRepository::class);
-        $repository->method('findOneFromSource')->willReturn($existing);
-
-        $synchronizer = new ReviewSynchronizer(
-            [$this->createSource('google', true, $this->createData('a'))],
-            $repository,
-            $this->createStub(EntityManagerInterface::class)
-        );
-        $synchronizer->synchronize();
+        $this->synchronizeOnto($existing);
 
         $this->assertNull($existing->getReplyComment());
     }
 
-    // UiBundle holds the site's own reviews in the same table, where Pending is the default: an imported one waiting for a second moderation would never reach the page the platform already shows it on
-    public function testSynchronizePublishesEveryImportedReview(): void
+    // UiBundle holds the site's own reviews in the same table, where Pending is the default: a newly imported one waiting for a second moderation would never reach the page the platform already shows it on
+    public function testSynchronizePublishesANewlyImportedReview(): void
     {
-        $existing = new Review()->setSource('google')->setExternalId('a')->setStatus(ReviewStatus::Pending);
+        $persisted = [];
 
         $repository = $this->createStub(ReviewRepository::class);
-        $repository->method('findOneFromSource')->willReturn($existing);
+        $repository->method('findOneFromSource')->willReturn(null);
+
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+        $entityManager->method('persist')->willReturnCallback(static function (object $review) use (&$persisted): void {
+            $persisted[] = $review;
+        });
 
         $synchronizer = new ReviewSynchronizer(
             [$this->createSource('google', true, $this->createData('a'))],
             $repository,
-            $this->createStub(EntityManagerInterface::class)
+            $entityManager
         );
         $synchronizer->synchronize();
 
-        $this->assertSame(ReviewStatus::Published, $existing->getStatus());
+        $this->assertCount(1, $persisted);
+        $this->assertSame(ReviewStatus::Published, $persisted[0]->getStatus());
+    }
+
+    // Hidden from the moderation list, a review stays hidden: the nightly import still refreshes what its author changed on the platform, never whether the site shows it
+    public function testSynchronizeKeepsTheStatusOfAReviewAlreadyHeld(): void
+    {
+        $existing = new Review()->setSource('google')->setExternalId('a')->setComment('Old text')->setStatus(ReviewStatus::Rejected);
+        $this->synchronizeOnto($existing);
+
+        $this->assertSame(ReviewStatus::Rejected, $existing->getStatus());
+        $this->assertSame('Impeccable', $existing->getComment());
     }
 }

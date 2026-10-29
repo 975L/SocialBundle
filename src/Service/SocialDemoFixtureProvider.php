@@ -61,8 +61,8 @@ class SocialDemoFixtureProvider implements DemoFixtureProviderInterface
             ->setComment($this->trans('label.social_sample_review_' . $key . '_comment'))
             ->setPublishedAt(new \DateTimeImmutable($postedAt))
             ->setSourceUrl(sprintf(self::SOURCE_URL, $key))
-            // A platform only publishes what it ties to an account, which is what the site is allowed to say of it
-            ->setVerified(true)
+            // As the import hands them over: Google Maps says its reviews are not verified (see GoogleBusinessProfileSource)
+            ->setVerified(false)
         ;
     }
 

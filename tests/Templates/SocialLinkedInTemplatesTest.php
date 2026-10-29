@@ -16,17 +16,10 @@ use Twig\Environment;
 // The LinkedIn tile of "Connexions" and "Choisir la Page LinkedIn" rendered for real, EasyAdmin's components included, as SocialCalendarTemplateTest renders the calendar
 class SocialLinkedInTemplatesTest extends TestCase
 {
-    private static ?TemplateTestKernel $kernel = null;
-
-    // The kernel's Twig, booted once for the class
+    // The kernel's Twig (see TemplateTestKernel::twig())
     private function twig(): Environment
     {
-        if (null === self::$kernel) {
-            self::$kernel = new TemplateTestKernel('test', true);
-            self::$kernel->boot();
-        }
-
-        return self::$kernel->getContainer()->get('test.service_container')->get('twig');
+        return TemplateTestKernel::twig();
     }
 
     // The LinkedIn tile, connected on the given accounts, beside a tile of one button

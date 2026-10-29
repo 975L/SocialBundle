@@ -2,6 +2,14 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="social.en.xlf">
         <body>
+            <trans-unit id="H7R6pn9">
+                <source>block.google_reviews</source>
+                <target>Google reviews</target>
+            </trans-unit>
+            <trans-unit id="Zc6TsoF">
+                <source>block.google_reviews_description</source>
+                <target>Carousel of the reviews imported from the Google listing, with their average rating</target>
+            </trans-unit>
             <trans-unit id="7SpI0nW">
                 <source>block.share_buttons_display</source>
                 <target>Share buttons</target>
@@ -40,7 +48,7 @@
             </trans-unit>
             <trans-unit id="VNxe2Mo">
                 <source>description.guided_project_social_google_reviews</source>
-                <target>Moderate what Google brought in, answer it, and put the reviews on a page.</target>
+                <target>Read what Google brought back, answer it, hide a review, and put the reviews block on a page.</target>
             </trans-unit>
             <trans-unit id="1Qxr9lg">
                 <source>description.guided_project_social_linkedin_connect</source>
@@ -84,7 +92,7 @@
             </trans-unit>
             <trans-unit id="6i891bK">
                 <source>description.guided_step_social_calendar_feed</source>
-                <target>Unfold "Subscribe from a calendar" and create the secret address: pasted into Outlook, Evolution or Google Calendar, it shows the planned posts there. Renewing it cuts the former one.</target>
+                <target>Unfold "Subscribe from a calendar" and create the secret address: pasted into Outlook, Evolution or Google Calendar, it shows the planned posts there. Renewing it cuts the former one. Several sites posting on the same accounts? Paste their addresses into "Calendar: shared sites" of one of them: its calendar and feed then show everything.</target>
             </trans-unit>
             <trans-unit id="y3lKM_7">
                 <source>description.guided_step_social_calendar_move</source>
@@ -124,7 +132,11 @@
             </trans-unit>
             <trans-unit id="RJQ_vuA">
                 <source>description.guided_step_social_google_display</source>
-                <target>On the page you want, add a "Collection" block and pick the "Customer reviews" source. Reviews are shown with their rating, their date and the link to the original review.</target>
+                <target>On the page you want, add the "Google reviews" block: a carousel of the displayed reviews, with their average rating and the link to the Google listing. With no review to show, it does not appear. The "hide" button of its bar takes it off the page.</target>
+            </trans-unit>
+            <trans-unit id="a8hhPTh">
+                <source>description.guided_step_social_google_hide</source>
+                <target>The Displayed switch on the row hides the review from the site, or shows it again, in one click. A hidden review stays hidden: the nightly import does not publish it again. The block says the reviews come from Google and links to all the others.</target>
             </trans-unit>
             <trans-unit id="6xgYazB">
                 <source>description.guided_step_social_google_prerequisites</source>
@@ -484,7 +496,7 @@
             </trans-unit>
             <trans-unit id="MtGVTQR">
                 <source>help.social_calendar_feed</source>
-                <target>Copy this address into your calendar: Evolution, New then "On the web" calendar; Google Calendar, Other calendars then "From URL" (then shown on Android); Outlook, Add calendar then "Subscribe from web". Read-only, refreshed by the calendar at its own pace. Keep it secret: renewing it cuts the former one.</target>
+                <target>Copy this address into your calendar: Evolution, New then "On the web" calendar; Google Calendar, Other calendars then "From URL" (then shown on Android); Outlook, Add calendar then "Subscribe from web". Read-only, refreshed by the calendar at its own pace. Keep it secret: renewing it cuts the former one. For a calendar shared by several sites, paste each one's address into "Calendar: shared sites" of the site gathering them.</target>
             </trans-unit>
             <trans-unit id="hs5kZPn">
                 <source>help.social_calendar_feed_none</source>
@@ -646,6 +658,30 @@
                 <source>label.fill_transparent</source>
                 <target>Transparent</target>
             </trans-unit>
+            <trans-unit id="2Lwfwsw">
+                <source>label.gallery_showcase_google_reviews</source>
+                <target>Google reviews</target>
+            </trans-unit>
+            <trans-unit id="EtUmQgH">
+                <source>label.gallery_showcase_google_reviews_description</source>
+                <target>The Google listing reviews as a carousel, with their average rating and where they come from.</target>
+            </trans-unit>
+            <trans-unit id="hZcDv5c">
+                <source>label.gallery_showcase_google_reviews_sample_1</source>
+                <target>Warm welcome and careful work, I recommend them without hesitation.</target>
+            </trans-unit>
+            <trans-unit id="4rcDWYJ">
+                <source>label.gallery_showcase_google_reviews_sample_2</source>
+                <target>Quick, upfront about prices, and the result is perfect.</target>
+            </trans-unit>
+            <trans-unit id="BZjPMO7">
+                <source>label.gallery_showcase_google_reviews_sample_3</source>
+                <target>Very good service, a bit of a wait for an appointment.</target>
+            </trans-unit>
+            <trans-unit id="iWUyO.e">
+                <source>label.gallery_showcase_google_reviews_sample_4</source>
+                <target>Always good advice, we keep coming back.</target>
+            </trans-unit>
             <trans-unit id="QI77jSF">
                 <source>label.gallery_showcase_share_buttons</source>
                 <target>Share buttons</target>
@@ -661,6 +697,46 @@
             <trans-unit id="nECqDP1">
                 <source>label.gallery_showcase_social_links_description</source>
                 <target>Available styles for social network links.</target>
+            </trans-unit>
+            <trans-unit id="uPwqG0b">
+                <source>label.google_reviews_average</source>
+                <target>Average rating: %average% out of 5, from %count% review|Average rating: %average% out of 5, from %count% reviews</target>
+            </trans-unit>
+            <trans-unit id="RfNflLq">
+                <source>label.google_reviews_count</source>
+                <target>%count% review|%count% reviews</target>
+            </trans-unit>
+            <trans-unit id="sFFqrHJ">
+                <source>label.google_reviews_duration</source>
+                <target>Seconds between two turns</target>
+            </trans-unit>
+            <trans-unit id=".Q7GrOI">
+                <source>label.google_reviews_duration_help</source>
+                <target>0 for a manual carousel, turned with the arrows.</target>
+            </trans-unit>
+            <trans-unit id="IhVUFIX">
+                <source>label.google_reviews_limit</source>
+                <target>Number of reviews</target>
+            </trans-unit>
+            <trans-unit id=".Qlrbbe">
+                <source>label.google_reviews_limit_help</source>
+                <target>Newest first. Left empty, every displayed review is shown.</target>
+            </trans-unit>
+            <trans-unit id="qSa3Ka2">
+                <source>label.google_reviews_see_all</source>
+                <target>See all the reviews on Google</target>
+            </trans-unit>
+            <trans-unit id="1zdyp5b">
+                <source>label.google_reviews_slider</source>
+                <target>Google reviews</target>
+            </trans-unit>
+            <trans-unit id="REMQqyu">
+                <source>label.google_reviews_source</source>
+                <target>Reviews taken from our Google listing.</target>
+            </trans-unit>
+            <trans-unit id="wgImOkz">
+                <source>label.google_reviews_title</source>
+                <target>Title</target>
             </trans-unit>
             <trans-unit id="tf7xOaW">
                 <source>label.guided_project_social_bluesky_connect</source>
@@ -761,6 +837,10 @@
             <trans-unit id="jO4qa1.">
                 <source>label.guided_step_social_google_display</source>
                 <target>Display the reviews on a page</target>
+            </trans-unit>
+            <trans-unit id="zE1MrrB">
+                <source>label.guided_step_social_google_hide</source>
+                <target>Hide a review</target>
             </trans-unit>
             <trans-unit id="ilGA6aD">
                 <source>label.guided_step_social_google_prerequisites</source>
@@ -1333,6 +1413,26 @@
             <trans-unit id="Oh3g0mi">
                 <source>label.social_calendar_series_view</source>
                 <target>View the series</target>
+            </trans-unit>
+            <trans-unit id="fjAINU5">
+                <source>label.social_calendar_shared_failed</source>
+                <target>%count% shared calendar(s) not read</target>
+            </trans-unit>
+            <trans-unit id="Gtmv2ay">
+                <source>label.social_calendar_shared_invalid</source>
+                <target>%site%'s feed unreadable</target>
+            </trans-unit>
+            <trans-unit id="Yhxhwl0">
+                <source>label.social_calendar_shared_malformed</source>
+                <target>Entry "%site%" has no valid feed address</target>
+            </trans-unit>
+            <trans-unit id="hr3egGJ">
+                <source>label.social_calendar_shared_refused</source>
+                <target>%site% calendar: address refused, paste it again from its site</target>
+            </trans-unit>
+            <trans-unit id="1SxQDNO">
+                <source>label.social_calendar_shared_unreachable</source>
+                <target>%site%'s calendar unreachable</target>
             </trans-unit>
             <trans-unit id="q59uuo1">
                 <source>label.social_calendar_state_approved</source>

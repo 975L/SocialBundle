@@ -50,4 +50,20 @@
   display: none;
 }
 
+/* The Google reviews are a heading over a row of three cards, the carousel a computer shows */
+.ui-block-thumb--google_reviews {
+  justify-content: center;
+}
+.ui-block-thumb--google_reviews .ui-block-thumb__line {
+  width: 100%;
+  height: 1.5rem;
+  border-radius: 2px;
+  background-image: linear-gradient(to right, currentcolor 0 88%, transparent 88%);
+  background-size: 33.333% 100%;
+  background-color: transparent;
+}
+.ui-block-thumb--google_reviews .ui-block-thumb__line + .ui-block-thumb__line {
+  display: none;
+}
+
 /*# sourceMappingURL=block-thumbs.css.map */

@@ -36,7 +36,7 @@ class SameAsProvider implements SameAsProviderInterface
      */
     private function listingUrl(): array
     {
-        $url = $this->configService->get('social-google-listing-url');
+        $url = $this->configService->get(GoogleBusinessProfileSource::LISTING_URL);
 
         return is_string($url) && '' !== trim($url) ? [trim($url)] : [];
     }

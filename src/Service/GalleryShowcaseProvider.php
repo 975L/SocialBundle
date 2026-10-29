@@ -16,11 +16,13 @@ use c975L\UiBundle\Service\IconServiceInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
-// Shows every visual style of "social_links_display"/"share_buttons_display" in a block gallery/showcase (see UiBundle's GalleryShowcaseRegistry, consumed by the public block showcase). Neither fits BlockFixtureProviderInterface: both always render a site-wide singleton regardless of their own data (see SocialLinksDisplay.html.twig/ShareButtonsDisplay.html.twig) - rendered here instead, directly against the same underlying components/markup, with a fixed sample set of networks (Laurent's own picks, one set per showcase) instead of the real singleton/current page URL that real render depends on.
+// Shows every visual style of "social_links_display"/"share_buttons_display", and the "google_reviews" carousel, in a block gallery/showcase (see UiBundle's GalleryShowcaseRegistry, consumed by the public block showcase). Neither fits BlockFixtureProviderInterface: both always render a site-wide singleton regardless of their own data (see SocialLinksDisplay.html.twig/ShareButtonsDisplay.html.twig) - rendered here instead, directly against the same underlying components/markup, with a fixed sample set of networks (Laurent's own picks, one set per showcase) instead of the real singleton/current page URL that real render depends on.
 class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
 {
     private const array SOCIAL_LINKS_NETWORKS = ['facebook', 'bluesky', 'linkedin'];
     private const array SHARE_BUTTONS_NETWORKS = ['facebook', 'bluesky', 'pinterest'];
+    // Author and rating of each sample review, their texts translated (label.gallery_showcase_google_reviews_sample_*)
+    private const array GOOGLE_REVIEWS_SAMPLE = [['Marie L.', 5], ['Thomas B.', 5], ['Sophie R.', 4], ['Karim D.', 5]];
 
     public function __construct(
         private readonly Environment $twig,
@@ -45,7 +47,49 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
                 'kind' => 'share_buttons_display',
                 'variants' => $this->shareButtonsVariants(),
             ],
+            // Stands in for "google_reviews" - which reviews it shows is the moderation list's say, never the block's own data, so a plain fixture would render empty on a site holding none. Sample reviews fed to the same partial the block draws through instead
+            $this->translator->trans('label.gallery_showcase_google_reviews', [], 'social') => [
+                'description' => $this->translator->trans('label.gallery_showcase_google_reviews_description', [], 'social'),
+                'kind' => 'google_reviews',
+                'variants' => [
+                    $this->translator->trans('block.google_reviews', [], 'social') => $this->googleReviewsVariant(),
+                ],
+            ],
         ];
+    }
+
+    // Four reviews, so the row shows its arrows and dots on a computer too. Not verified, as the Google ones never are
+    private function googleReviewsVariant(): string
+    {
+        $items = [];
+        foreach (self::GOOGLE_REVIEWS_SAMPLE as $index => [$author, $rating]) {
+            $items[] = [
+                'id' => $index + 1,
+                'title' => $author,
+                'content' => $this->translator->trans('label.gallery_showcase_google_reviews_sample_' . ($index + 1), [], 'social'),
+                'url' => null,
+                'imageUrl' => null,
+                'rating' => $rating,
+                'publishedAt' => new \DateTimeImmutable(sprintf('-%d days', 7 * ($index + 1))),
+                'replyComment' => null,
+                'repliedAt' => null,
+                'source' => GoogleBusinessProfileSource::NAME,
+                'verified' => false,
+            ];
+        }
+
+        return $this->twig->render('@c975LSocial/reviews/GoogleReviews.html.twig', [
+            'id' => 'gallery-google-reviews',
+            'anchorId' => '',
+            'title' => '',
+            'duration' => 0,
+            'reviews' => [
+                'items' => $items,
+                'count' => count($items),
+                'average' => round(array_sum(array_column(self::GOOGLE_REVIEWS_SAMPLE, 1)) / count($items), 1),
+                'listingUrl' => '#',
+            ],
+        ]);
     }
 
     // One per SocialLinksType::ICON_STYLES choice - rendered via the same "blocks/SocialLinks.html.twig" adapter a real block uses, just fed sample links directly instead of through render_block()

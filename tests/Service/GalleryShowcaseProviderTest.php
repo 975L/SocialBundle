@@ -39,12 +39,12 @@ class GalleryShowcaseProviderTest extends TestCase
         return new GalleryShowcaseProvider($twig, $shareButtonsService, $iconService, $translator);
     }
 
-    public function testGetShowcasesReturnsSocialLinksAndShareButtonsSections(): void
+    public function testGetShowcasesReturnsSocialLinksShareButtonsAndGoogleReviewsSections(): void
     {
         $showcases = $this->createProvider()->getShowcases();
 
         $this->assertSame(
-            ['label.gallery_showcase_social_links', 'label.gallery_showcase_share_buttons'],
+            ['label.gallery_showcase_social_links', 'label.gallery_showcase_share_buttons', 'label.gallery_showcase_google_reviews'],
             array_keys($showcases)
         );
     }
@@ -104,5 +104,14 @@ class GalleryShowcaseProviderTest extends TestCase
         foreach (['Wide', 'Ellipse', 'Circle', 'Outline'] as $label) {
             $this->assertStringNotContainsString('social-share--preview-backdrop', $variants[$label]);
         }
+    }
+
+    // Stands in for "google_reviews", whose own render depends on the reviews a site holds - drawn through the block's very partial
+    public function testGoogleReviewsShowcaseStandsInForGoogleReviewsThroughItsPartial(): void
+    {
+        $showcase = $this->createProvider()->getShowcases()['label.gallery_showcase_google_reviews'];
+
+        $this->assertSame('google_reviews', $showcase['kind']);
+        $this->assertSame(['block.google_reviews' => '<!-- @c975LSocial/reviews/GoogleReviews.html.twig -->'], $showcase['variants']);
     }
 }

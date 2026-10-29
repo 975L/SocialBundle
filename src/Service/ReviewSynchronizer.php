@@ -70,7 +70,8 @@ class ReviewSynchronizer
 
             $seen[$data->externalId] = true;
 
-            $review = $this->reviewRepository->findOneFromSource($name, $data->externalId) ?? new Review();
+            // Published on arrival only: the platform moderated it already, and holding it back would show a site's own reviews as more recent than the ones it re-publishes. A review already held keeps whatever the moderation list's switch made of it, so a hidden one stays hidden
+            $review = $this->reviewRepository->findOneFromSource($name, $data->externalId) ?? new Review()->setStatus(ReviewStatus::Published);
             $review->setSource($name);
 
             $this->fill($review, $data);
@@ -88,12 +89,10 @@ class ReviewSynchronizer
         return $count;
     }
 
-    // The source stays authoritative on every field, reply included: a reply removed on the platform has to disappear here too, or the site keeps showing an answer its author has withdrawn
+    // The source stays authoritative on every field it serves, reply included: a reply removed on the platform has to disappear here too, or the site keeps showing an answer its author has withdrawn. The status is not one of them - whether the site shows the review is its own decision
     private function fill(Review $review, ReviewData $data): void
     {
         $review
-            // Published on arrival: the platform moderated it already, and holding it back would show a site's own reviews as more recent than the ones it re-publishes
-            ->setStatus(ReviewStatus::Published)
             ->setExternalId($data->externalId)
             ->setAuthorName($data->authorName)
             ->setAuthorAvatarUrl($data->authorAvatarUrl)

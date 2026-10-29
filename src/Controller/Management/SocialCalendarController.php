@@ -26,6 +26,7 @@ use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPostApprover;
 use c975L\SocialBundle\Service\SocialPostDuplicator;
 use c975L\SocialBundle\Service\SocialPublisher;
+use c975L\SocialBundle\Service\SocialSharedCalendar;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -114,6 +115,7 @@ class SocialCalendarController extends AbstractController
         private readonly SocialPostApprover $approver,
         private readonly SocialPostDuplicator $duplicator,
         private readonly SocialSeriesRepository $seriesRepository,
+        private readonly SocialSharedCalendar $sharedCalendar,
     ) {
     }
 
@@ -180,6 +182,8 @@ class SocialCalendarController extends AbstractController
             'token' => self::CSRF_TOKEN,
             'feed_url' => $this->feedUrl(),
             'feed_token_url' => $this->generateUrl(self::FEED_TOKEN_ROUTE),
+            // The other sites whose feed could not be read this time (see SocialSharedCalendar)
+            'shared_errors' => $this->sharedCalendar->getErrors(),
         ]);
     }
 
@@ -665,8 +669,10 @@ class SocialCalendarController extends AbstractController
     private function days(\DateTimeImmutable $start, \DateTimeImmutable $end, ?\DateTimeImmutable $month, string $view = self::WEEK): array
     {
         $items = $this->publishedItems($start, $end, null !== $month, $view);
-        foreach ($this->comingItems($start, $end, $view) as $day => $dayItems) {
-            $items[$day] = [...$items[$day] ?? [], ...$dayItems];
+        foreach ([$this->comingItems($start, $end, $view), $this->sharedItems($start, $end)] as $byDay) {
+            foreach ($byDay as $day => $dayItems) {
+                $items[$day] = [...$items[$day] ?? [], ...$dayItems];
+            }
         }
 
         $days = [];
@@ -700,6 +706,20 @@ class SocialCalendarController extends AbstractController
                 $at = $post->getPlannedAt();
                 $items[$at->format('Y-m-d')][] = ['kind' => 'planned', 'at' => $at] + $this->card($post, $view);
             }
+        }
+
+        return $items;
+    }
+
+    // The other sites' posts between the two days, by day: read only, greyed, their site's name on them and a click opening them there (see SocialSharedCalendar)
+    /** @return array<string, list<array<string, mixed>>> */
+    private function sharedItems(\DateTimeImmutable $start, \DateTimeImmutable $end): array
+    {
+        $items = [];
+        $timezone = new \DateTimeZone(date_default_timezone_get());
+        foreach ($this->sharedCalendar->getEvents($start, $end) as $event) {
+            $at = $event['start']->setTimezone($timezone);
+            $items[$at->format('Y-m-d')][] = ['kind' => 'shared', 'at' => $at, 'site' => $event['site'], 'title' => $event['summary'], 'url' => $event['url'], 'networks' => $event['networks']];
         }
 
         return $items;

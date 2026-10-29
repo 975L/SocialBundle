@@ -25,6 +25,7 @@ use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPostApprover;
 use c975L\SocialBundle\Service\SocialPostDuplicator;
 use c975L\SocialBundle\Service\SocialPublisher;
+use c975L\SocialBundle\Service\SocialSharedCalendar;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
@@ -93,6 +94,13 @@ class SocialCalendarControllerTest extends TestCase
     /** @var ?array<string, array<string, mixed>> */
     private ?array $retryReport = ['bluesky' => ['ok' => true]];
 
+    // What the other sites' feeds answer, and the ones that could not be read
+    /** @var list<array<string, mixed>> */
+    private array $sharedEvents = [];
+
+    /** @var list<array{site: string, reason: string}> */
+    private array $sharedErrors = [];
+
     protected function setUp(): void
     {
         $this->plannedAt = new \DateTimeImmutable('+1 day 09:30');
@@ -115,7 +123,17 @@ class SocialCalendarControllerTest extends TestCase
             $this->createStub(SocialPostApprover::class),
             new SocialPostDuplicator($this->createStub(SocialPublisher::class), sys_get_temp_dir()),
             $this->createStub(SocialSeriesRepository::class),
+            $this->sharedCalendar(),
         );
+    }
+
+    private function sharedCalendar(): SocialSharedCalendar
+    {
+        $sharedCalendar = $this->createStub(SocialSharedCalendar::class);
+        $sharedCalendar->method('getEvents')->willReturnCallback(fn (): array => $this->sharedEvents);
+        $sharedCalendar->method('getErrors')->willReturnCallback(fn (): array => $this->sharedErrors);
+
+        return $sharedCalendar;
     }
 
     // A card covers two quarters of an hour: items whose heights overlap go side by side, the next one free again taking the first lane back
@@ -255,6 +273,7 @@ class SocialCalendarControllerTest extends TestCase
             new SocialPostApprover($this->mediaChecker ?? $this->createStub(SocialMediaChecker::class), $entityManager),
             new SocialPostDuplicator($this->createStub(SocialPublisher::class), sys_get_temp_dir()),
             $seriesRepository,
+            $this->sharedCalendar(),
         );
 
         $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
@@ -308,6 +327,21 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertCount(1, $this->rendered['weeks'][0]);
         $this->assertNotEmpty($this->rendered['weeks'][0][0]['cells']);
         $this->assertNotEmpty($this->rendered['hours']);
+    }
+
+    // Another site's post sits on its day at the server's own time, read only: its site and link, and nothing that drags or opens the panel - a feed unread is said, the calendar still shown
+    public function testAnotherSitesPostIsShownReadOnly(): void
+    {
+        $this->sharedEvents = [['site' => 'run.as', 'uid' => 'social-post-3@run.as', 'start' => new \DateTimeImmutable('2026-10-22 08:00', new \DateTimeZone('UTC')), 'summary' => '[Approuvé] Raccourcir', 'url' => 'https://run.as/management/social-calendar?post=3', 'networks' => ['bluesky']]];
+        $this->sharedErrors = [['site' => 'edlo.eu', 'reason' => SocialSharedCalendar::UNREACHABLE]];
+        $request = Request::create('/', 'GET', ['view' => 'day', 'date' => '2026-10-22']);
+        $this->createController($request)->index($request);
+
+        $item = $this->rendered['weeks'][0][0]['items'][0];
+        $this->assertSame(['shared', 'run.as', '[Approuvé] Raccourcir', 'https://run.as/management/social-calendar?post=3', ['bluesky']], [$item['kind'], $item['site'], $item['title'], $item['url'], $item['networks']]);
+        $this->assertSame(date_default_timezone_get(), $item['at']->getTimezone()->getName());
+        $this->assertArrayNotHasKey('id', $item);
+        $this->assertSame($this->sharedErrors, $this->rendered['shared_errors']);
     }
 
     // "Day" opens on today when the period shown holds it, on the period's first day otherwise

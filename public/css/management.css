@@ -279,6 +279,21 @@
   filter: grayscale(1);
   opacity: 0.6;
 }
+.social-calendar-card {
+  /* Another site's post: only read, faded behind this site's own, its site's name first */
+}
+.social-calendar-card.is-shared {
+  background: var(--bs-tertiary-bg, #f8f9fa);
+  border-style: dotted;
+  border-color: var(--bs-secondary, #6c757d);
+  color: var(--bs-secondary-color, #6c757d);
+  opacity: 0.75;
+  cursor: pointer;
+}
+.social-calendar-card > .social-calendar-card-site {
+  flex: none;
+  font-weight: 600;
+}
 .social-calendar-card > img {
   width: 28px;
   height: 28px;

@@ -21,6 +21,7 @@ use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\UX\TwigComponent\TwigComponentBundle;
+use Twig\Environment;
 use Twig\Loader\ArrayLoader;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -29,6 +30,19 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 class TemplateTestKernel extends Kernel
 {
     use MicroKernelTrait;
+
+    private static ?self $shared = null;
+
+    // The kernel's Twig, booted once for the whole run - in debug, so a change to the kernel rebuilds its container
+    public static function twig(): Environment
+    {
+        if (null === self::$shared) {
+            self::$shared = new self('test', true);
+            self::$shared->boot();
+        }
+
+        return self::$shared->getContainer()->get('test.service_container')->get('twig');
+    }
 
     // The three bundles the templates need, nothing of EasyAdmin's own boot
     public function registerBundles(): iterable

@@ -1,0 +1,11 @@
+{# Adapter for the dynamic Block system - the imported Google reviews left displayed, drawn by reviews/GoogleReviews.html.twig; nothing at all, not even a wrapper, when there is none #}
+{% set reviews = social_google_reviews(limit|default(null)) %}
+{% if reviews.items is not empty %}
+    {{ include('@c975LSocial/reviews/GoogleReviews.html.twig', {
+        id: 'google-reviews-' ~ block.id,
+        anchorId: anchor_id|default(''),
+        title: title|default(''),
+        duration: duration|default(5),
+        reviews: reviews,
+    }, with_context = false) }}
+{% endif %}

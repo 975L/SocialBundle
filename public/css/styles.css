@@ -1461,4 +1461,66 @@ footer .social-link a:hover {
   background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
 }
 
+/* The "google_reviews" block (see templates/reviews/GoogleReviews.html.twig), its slider named with three classes so it wins over UiBundle's ".slider-freeflow" rules whichever stylesheet loads first: UiBundle's freeflow slider kept inside the column rather than bled to the viewport's edges, its slides aligned on their start so that a row shows one card on a phone, two on a tablet and three on a computer. The cards themselves are UiBundle's .review-item */
+.google-reviews {
+  margin-block: var(--google-reviews-margin-block, 2rem);
+}
+
+.google-reviews__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.google-reviews__average {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.google-reviews__score {
+  font-size: 1.5em;
+  font-weight: 700;
+}
+
+.google-reviews .slider.google-reviews__slider {
+  --google-reviews-per-row: 1;
+  --slider-margin-block: 1rem;
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+}
+.google-reviews .slider.google-reviews__slider .slider-list {
+  gap: var(--review-list-gap, 1rem);
+  padding-inline: 0;
+}
+.google-reviews .slider.google-reviews__slider .slider-item {
+  flex: 0 0 calc((100% - (var(--google-reviews-per-row) - 1) * var(--review-list-gap, 1rem)) / var(--google-reviews-per-row));
+  scroll-snap-align: start;
+  aspect-ratio: auto;
+}
+.google-reviews .slider.google-reviews__slider .review-item {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .google-reviews .slider.google-reviews__slider {
+    --google-reviews-per-row: 2;
+  }
+}
+@media (min-width: 1024px) {
+  .google-reviews .slider.google-reviews__slider {
+    --google-reviews-per-row: 3;
+  }
+}
+.google-reviews__source {
+  margin-block: 1rem 0;
+  font-size: 0.875em;
+  text-align: center;
+}
+
 /*# sourceMappingURL=styles.css.map */

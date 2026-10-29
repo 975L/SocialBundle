@@ -129,6 +129,18 @@ class GoogleBusinessProfileSourceTest extends TestCase
         $this->assertNull($reviews[0]->comment);
     }
 
+    // Google Maps says its reviews are not verified, so the site's badge must not say they are
+    public function testFetchMarksEveryReviewAsNotVerified(): void
+    {
+        $httpClient = new MockHttpClient([new MockResponse(json_encode([
+            'reviews' => [['reviewId' => 'r1', 'starRating' => 'FOUR', 'comment' => 'Bien', 'createTime' => '2026-08-01T10:00:00Z']],
+        ], \JSON_THROW_ON_ERROR))]);
+
+        $reviews = iterator_to_array($this->createSource($httpClient)->fetch());
+
+        $this->assertFalse($reviews[0]->verified);
+    }
+
     // Something with no id could never be updated on the next run, and something with no readable rating could not be displayed
     public function testFetchSkipsEntriesWithoutAnIdOrAReadableRating(): void
     {

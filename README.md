@@ -39,6 +39,7 @@ Add SocialBundle on top of the shared [UiBundle](https://github.com/975L/UiBundl
 - **Share buttons**: a `share_buttons()` Twig function to let visitors share the current (or a given) page on 20 social networks, with an independently picked button shape and fill
 - **Share buttons dashboard settings**: pick which networks, and which button shape and fill, are used site-wide, plus an `enable-share-buttons` config key to auto-display them on every page with no template change
 - **Pickable pointer block** (`share_buttons_display`) to drop those same site-wide share buttons into any page's block flow, with no data re-entry
+- **Google reviews block** (`google_reviews`): the imported Google reviews left displayed, as a carousel with their average and where they come from - see [The Google reviews block](#the-google-reviews-block)
 - **Icon picker** reusing [c975L/UiBundle](https://github.com/975L/UiBundle)'s searchable `IconPickerType`
 - **Stylesheet auto-registration** via UiBundle's `BundleStylesheetProviderInterface` — no manual `<link>` needed
 - **Block silhouettes** via UiBundle's `BundleStylesheetManagementProviderInterface` — the bundle's kinds are drawn at thumbnail size in the back-office's visual block picker
@@ -48,7 +49,7 @@ Add SocialBundle on top of the shared [UiBundle](https://github.com/975L/UiBundl
 - **Scheduled review import** via `MaintenanceTaskProviderInterface` — a site installing the bundle gets the nightly sync, one removing it stops running it
 - **Admin help procedures** contributed automatically via `ProcedureProviderInterface`
 - **Guided projects** contributed automatically via `GuidedProjectProviderInterface` — see [Guided projects](#guided-projects)
-- **Customer reviews**: imported from the site's own Google Business Profile listing into [c975L/UiBundle](https://github.com/975L/UiBundle)'s `Review` entity, which holds in the same table what visitors write on the site — this bundle brings the platforms, Ui the moderation screen and the display, and the whole feature sits behind Ui's `ui-enable-reviews` config key; see [Customer reviews](#customer-reviews)
+- **Customer reviews**: imported from the site's own Google Business Profile listing into [c975L/UiBundle](https://github.com/975L/UiBundle)'s `Review` entity, which holds in the same table what visitors write on the site — this bundle brings the platforms and the `google_reviews` block, Ui the moderation screen, where a **Displayed** switch hides a review for good; see [Customer reviews](#customer-reviews)
 - **Pluggable review sources** via `ReviewsSourceInterface` — auto-discovered by interface, so a site adds its own platform without touching this bundle
 - **A skill for coding agents**, shipped in the package and read straight from `vendor/` — see [AI agent skills](#ai-agent-skills)
 
@@ -250,17 +251,29 @@ Its one field is an **anchor** (same as UiBundle's page-section kinds, see that 
 
 The reviews of the site's own Google listing, imported into the `Review` entity of [c975L/UiBundle](https://github.com/975L/UiBundle) — which holds in the same table what visitors write on the site, the two being the same thing seen from two sides, and only `Review::$source` telling them apart.
 
-**This bundle brings the platforms, Ui owns the reviews.** The entity, its repository, the moderation screen, the collection source displaying them and their theme tokens are all Ui's; what lives here is the connection to each platform (`ReviewsSourceInterface`), the import (`ReviewSynchronizer` and its command) and the push-back of a public reply (`ReviewReplyPublisher`, which implements Ui's `ReviewReplyPublisherInterface`). A site bringing no platform at all still gets a moderation screen, one that knows there is nothing to push.
+**This bundle brings the platforms, Ui owns the reviews.** The entity, its repository, the moderation screen, the collection source displaying them and their theme tokens are all Ui's; what lives here is the `google_reviews` block, the connection to each platform (`ReviewsSourceInterface`), the import (`ReviewSynchronizer` and its command) and the push-back of a public reply (`ReviewReplyPublisher`, which implements Ui's `ReviewReplyPublisherInterface`). A site bringing no platform at all still gets a moderation screen, one that knows there is nothing to push.
 
-The whole feature hangs on one key, Ui's **`ui-enable-reviews`** (bool, `false` by default). It only governs the public side: this bundle's Google connection and its two guided projects stay whatever its value, the moderation screen saying when the reviews are hidden on the site. The import command keeps running, so reactivating it shows the reviews that came in meanwhile.
+Ui's **`ui-enable-reviews`** key (bool, `false` by default) governs what visitors write on the site - its form, its `collection` source - and not the Google reviews: the import, the moderation screen, this bundle's two guided projects and the `google_reviews` block stay whatever its value, the block showing the Google reviews as soon as one is there to show.
 
 ### The public reply, the one thing the site writes back
 
-What the moderation screen may and may not do to an imported review is [c975L/UiBundle](https://github.com/975L/UiBundle)'s business — in short, a review being its author's statement, it can be neither created nor edited nor hidden. What this bundle performs is the **public reply**: Ui's screen saves it through `ReviewReplyPublisherInterface`, `ReviewReplyPublisher` pushes it to the platform the review came from, and it is stored only once the platform took it, so a visitor never reads an answer its author never received. Emptying the field removes the reply on both sides.
+What the moderation screen may and may not do to an imported review is [c975L/UiBundle](https://github.com/975L/UiBundle)'s business — in short, a review being its author's statement, it can be neither created nor edited nor deleted, only answered and shown or hidden with the list's **Displayed** switch. What this bundle performs is the **public reply**: Ui's screen saves it through `ReviewReplyPublisherInterface`, `ReviewReplyPublisher` pushes it to the platform the review came from, and it is stored only once the platform took it, so a visitor never reads an answer its author never received. Emptying the field removes the reply on both sides.
 
 Sources able to take a reply implement `ReviewsReplySourceInterface` on top of `ReviewsSourceInterface`, so a read-only platform has no method to stub — and `supports()` answers `false` for it, which is what tells Ui's screen not to offer the field.
 
-`ReviewSynchronizer` marks every imported review published: the platform moderated it before ever showing it, and holding it for a second moderation here would leave the site's average visibly apart from the listing's.
+`ReviewSynchronizer` marks a newly imported review published: the platform moderated it before ever showing it, and holding it for a second moderation here would leave the site's average visibly apart from the listing's. A review it already holds is updated - text, rating, author, avatar, reply - but its status never is, so one hidden from the moderation list stays hidden through every later import. Google reviews arrive **not verified**: Google Maps itself says its reviews are not, an account having written one proving no purchase, and the card's "verified" badge saying otherwise would contradict the listing (L111-7-2).
+
+### The Google reviews block
+
+Pick **Google reviews** (`google_reviews`, *Sections*) in a page's block picker. It draws the Google reviews the moderation list leaves displayed, newest first, as a carousel run by UiBundle's `slider` controller in its freeflow layout, its slides aligned on their start (`sass/_google-reviews.scss`): one card in view on a phone, two on a tablet, three on a computer, playing on its own, paused under the pointer, swiped, with arrows, dots and a pause button. Each card is UiBundle's own `collection/ReviewItem.html.twig`, fed by `GoogleReviewsExtension` (`social_google_reviews(limit)`) exactly as the `collection` block feeds it.
+
+- **Settings**: a title (optional), the seconds between two turns (`5` by default, `0` for arrows only) and how many reviews (empty for all), plus the in-page anchor every section kind offers.
+- **Head**: the average of every displayed Google review with its stars, never of the `limit` first ones only.
+- **Foot**: "Reviews taken from our Google listing", always printed since reviews can be hidden one by one, and a link to all of them on Google built from `social-google-listing-url`, left out while that key is empty.
+- **Nothing to show, nothing rendered**: no review displayed, and the block prints an empty string - no title, no wrapper.
+- **Cache**: the reviews' own `ui_reviews` tag (`SocialBlockCacheTagProvider`), emptied by UiBundle on every flush touching a review and by `GoogleReviewsCacheInvalidationListener` when the listing url changes.
+
+The block bar's own "hide" button takes the whole block off a page. The block gallery shows it with sample reviews (`GalleryShowcaseProvider`), its real render depending on the reviews a site holds.
 
 ### Connecting the site to Google
 
@@ -384,7 +397,7 @@ The **"Calendar"** screen (`SocialCalendarController`, sidebar "Social", `site-r
 
 #### Subscribing from a calendar app
 
-The calendar can also be read from **Outlook, Evolution or Google Calendar** (and from there on Android), read-only, as an iCalendar feed (`SocialCalendarFeed`, RFC 5545): one 15-minute event per post at its moment, from two months back to a year ahead, its state in brackets before its title (`[To approve]`, `[Approved]`…), its networks and text in its description, a link back to the calendar's week.
+The calendar can also be read from **Outlook, Evolution or Google Calendar** (and from there on Android), read-only, as an iCalendar feed (`SocialCalendarFeed`, RFC 5545): one 15-minute event per post at its moment, from two months back to a year ahead, its state in brackets before its title (`[To approve]`, `[Approved]`…), its networks and text in its description and as its categories, a link back to the calendar's week.
 
 1. On the calendar, unfold **"Subscribe from a calendar"** and click **"Create the address"**: a secret address `https://<site>/social/calendar/<64 hex>.ics` appears (`SocialCalendarFeedController`, route `social_calendar_feed`, outside `/management` since a calendar app holds no session — the token, kept in the restricted, encrypted config **`social-calendar-ics-token`**, is its only key).
 2. Copy it into the calendar app:
@@ -394,6 +407,24 @@ The calendar can also be read from **Outlook, Evolution or Google Calendar** (an
 3. **"Renew the address"** replaces the token: the former address answers a 404 from then on — what to do if it leaked.
 
 A wrong or withdrawn token answers a plain 404, telling nothing of the feed. The route needs nothing more than the bundle's controllers being imported (see [Routes](#routes)), and no `access_control` rule may cover `/social/calendar`.
+
+#### One calendar for several sites
+
+Several sites posting on the same accounts (a company site, its blog, its short links…) each keep their own calendar, and none shows the whole week — nor that two of them post on Bluesky the same morning. One of them can gather the others, without the bundle knowing anything of your sites:
+
+1. On **each** site, create its feed's address as above.
+2. On the site gathering them, paste the others into the config **`social-calendar-shared-feeds`** (restricted, encrypted, JSON), each site's name then its address:
+   ```json
+   {
+       "blog": "https://blog.example.com/social/calendar/<64 hex>.ics",
+       "short links": "https://short.example/social/calendar/<64 hex>.ics"
+   }
+   ```
+3. Subscribe your calendar app to **that** site's feed only.
+
+Its calendar then shows the other sites' posts too, greyed and read-only (no drag, no panel), their site's name on them, a click opening the post on its own site. Its feed adds them, their site's name in brackets before their title. The feeds are all asked at once by `SocialSharedCalendar`, with a 3-second timeout, and each kept 10 minutes in `cache.app` (a failure, 2): a feed down, an address refused (its key renewed on the other site, to paste again), garbled, or an entry without an address only leaves that site out, said by its name and never by its address, which holds its key, said in small on the calendar and as a dashboard alert (`SocialSharedCalendarAlertProvider`, which reads the last failures from the cache and never a feed). The feeds are parsed by `SocialCalendarParser`, a minimal reader of what `SocialCalendarFeed` itself writes — no dependency.
+
+No loop: a site reads another's feed with `?own=1`, which answers its own posts alone, and the posts it shares carry `X-SOCIAL-SHARED`, skipped when read — two sites may list each other. An entry giving the site's own feed is refused, its posts would show twice.
 
 ### Connecting the networks
 

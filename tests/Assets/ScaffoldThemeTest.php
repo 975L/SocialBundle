@@ -26,6 +26,8 @@ class ScaffoldThemeTest extends TestCase
         '--social-share-btn-width',
         '--social-share-btn-height',
         '--social-share-btn-radius',
+        // How many Google review cards a row shows, set by the block per breakpoint
+        '--google-reviews-per-row',
     ];
 
     // Only read by .social-share--preview-backdrop, the stand-in band of the dashboard preview and the block gallery - never carried by a real page, so a site has nothing to retune there
@@ -42,6 +44,8 @@ class ScaffoldThemeTest extends TestCase
     // UiBundle's own page rhythm, read here so the social links block steps like every other block of the page - offered by its themes/ui.css, not restated here (the scaffold's header: only what is SocialBundle's own)
     private const array UI_OWNED = [
         '--section-space-tight',
+        // The gap between two review cards, the same in the Google reviews block as in UiBundle's own lists
+        '--review-list-gap',
     ];
 
     // Bootstrap's own tokens, read by sass/management.scss on the back-office screens EasyAdmin draws with Bootstrap: they follow the dashboard's light and dark themes, not the site's, so a site has nothing to set there

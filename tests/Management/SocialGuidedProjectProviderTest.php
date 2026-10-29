@@ -210,4 +210,20 @@ class SocialGuidedProjectProviderTest extends TestCase
 
         return $keys;
     }
+
+    // Read, answered, hidden if need be from the list's own switch, then placed on a page - the last step having nothing to point at, the block being added wherever the editor wants it
+    public function testTheGoogleReviewsProjectHidesAReviewFromTheListSwitch(): void
+    {
+        $steps = [];
+        foreach ($this->createProvider()->getGuidedProjects() as $project) {
+            if ('social-google-reviews' === $project['slug']) {
+                $steps = $project['steps'];
+            }
+        }
+
+        $this->assertSame(
+            [null, '.action-edit', 'tr[data-id] td[data-column="displayed"]', null],
+            array_map(static fn (array $step): ?string => $step['highlight'] ?? null, $steps),
+        );
+    }
 }

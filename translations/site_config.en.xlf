@@ -34,6 +34,10 @@
                 <source>description.social_calendar_ics_token</source>
                 <target>Secret part of the posts' iCal feed address, created or renewed from the calendar. Empty: no feed.</target>
             </trans-unit>
+            <trans-unit id="MS1ymuK">
+                <source>description.social_calendar_shared_feeds</source>
+                <target>The other sites posting on the same accounts, as JSON: {"Name": "address of its iCal feed"}. Their posts show greyed in the calendar and are added to this site's feed.</target>
+            </trans-unit>
             <trans-unit id="qi3JaGX">
                 <source>description.social_enable_share_buttons</source>
                 <target>Automatically displays the share buttons on every page (settings under "Share buttons").</target>
@@ -181,6 +185,10 @@
             <trans-unit id="zo6BSQn">
                 <source>label.social_calendar_ics_token</source>
                 <target>Calendar: iCal subscription key</target>
+            </trans-unit>
+            <trans-unit id="mvJRLvP">
+                <source>label.social_calendar_shared_feeds</source>
+                <target>Calendar: shared sites</target>
             </trans-unit>
             <trans-unit id="Dfr17Uy">
                 <source>label.social_enable_share_buttons</source>
