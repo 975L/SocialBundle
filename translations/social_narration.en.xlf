@@ -210,13 +210,17 @@
                 <source>narration.guided_step_social_series_open</source>
                 <target>The panel takes you to the generation of a series: several drafts at once, which you will proofread afterwards. Say how many, from when and on which networks.</target>
             </trans-unit>
+            <trans-unit id="gsGDEWg">
+                <source>narration.guided_step_social_series_open_panel</source>
+                <target>Click a post's picture or title: its panel opens without leaving the series, and its arrows step to the previous or next post.</target>
+            </trans-unit>
             <trans-unit id="njw9jnA">
                 <source>narration.guided_step_social_series_prolong</source>
                 <target>When the series comes near its end, an email warns you. At the top of its page, or on the screen of one of its posts, "Prolong the series" makes as many again after it, at the same pace.</target>
             </trans-unit>
             <trans-unit id="1wbZKB1">
                 <source>narration.guided_step_social_series_review</source>
-                <target>Open "Series" in the menu, or click "View the series" in the panel of one of its posts: all its coming posts show side by side. Approve them one by one, tick or untick a network on its badge, enlarge a picture or play a video with a click.</target>
+                <target>Open "Series" in the menu, or click "View the series" in the panel of one of its posts: all its coming posts show side by side. Approve them one by one, tick or untick a network on its badge, play a video with a click. A post without a picture says so.</target>
             </trans-unit>
             <trans-unit id="F.zSd24">
                 <source>narration.guided_step_social_series_text</source>

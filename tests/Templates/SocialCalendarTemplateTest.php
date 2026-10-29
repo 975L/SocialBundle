@@ -84,8 +84,11 @@ class SocialCalendarTemplateTest extends TestCase
     }
 
     // The panel of a post in the given state, its approval being what the state offers - with the medias given, the content's picture otherwise
-    /** @param list<SocialMedia> $medias */
-    private function panel(string $state, array $medias = [], ?string $image = null, bool $editable = true, int $seriesDrafts = 0, string $plannedAt = '2026-10-04 19:00', bool $textsSaved = false, string $mediaProblems = '', ?string $seriesUrl = null): string
+    /**
+     * @param list<SocialMedia>                                                                           $medias
+     * @param array{previous: ?array{id: int, edit_url: string}, next: ?array{id: int, edit_url: string}} $siblings
+     */
+    private function panel(string $state, array $medias = [], ?string $image = null, bool $editable = true, int $seriesDrafts = 0, string $plannedAt = '2026-10-04 19:00', bool $textsSaved = false, string $mediaProblems = '', ?string $seriesUrl = null, array $siblings = ['previous' => null, 'next' => null]): string
     {
         $post = new SocialPost('gallery_media', '42', 'La sieste', 'https://example.org/42', null, new \DateTimeImmutable($plannedAt));
         $target = new SocialPostTarget($post, 'bluesky', 'Le texte de Bluesky');
@@ -117,6 +120,7 @@ class SocialCalendarTemplateTest extends TestCase
             'media_problems' => $mediaProblems,
             'series_drafts' => $seriesDrafts,
             'series_url' => $seriesUrl,
+            'siblings' => $siblings,
             'connected' => ['bluesky'],
             'offered_networks' => ['bluesky', 'facebook'],
             'accepted_types' => 'image/jpeg,video/mp4',
@@ -394,6 +398,16 @@ class SocialCalendarTemplateTest extends TestCase
     }
 
     // Escape closes the panel, from anywhere on the screen
+    // The coming posts of its series around it open in the same panel, nothing offered past either end
+    public function testThePanelStepsToTheSeriesPostsAround(): void
+    {
+        $html = $this->panel('draft', siblings: ['previous' => null, 'next' => ['id' => 8, 'edit_url' => '/edit/8']]);
+
+        $this->assertMatchesRegularExpression('/href="\/edit\/8"[^>]*data-action="social-calendar#open" data-panel-id="8"/', $html);
+        $this->assertStringContainsString('label.social_calendar_panel_next', $html);
+        $this->assertStringNotContainsString('label.social_calendar_panel_previous', $html);
+    }
+
     public function testEscapeClosesThePanel(): void
     {
         $this->assertStringContainsString('data-action="keydown.esc@window->social-calendar#closePanel"', $this->render('week'));
@@ -432,6 +446,13 @@ class SocialCalendarTemplateTest extends TestCase
             'offered_networks' => ['bluesky', 'facebook'],
             'move_url' => '/move',
             'networks_url' => '/networks',
+            'panel_url' => '/panel',
+            'medias_url' => '/medias',
+            'upload_url' => '/upload',
+            'texts_url' => '/texts',
+            'retry_url' => '/retry',
+            'duplicate_url' => '/duplicate',
+            'open_id' => 0,
             'token' => 'social_calendar',
             'prolong_url' => '/prolong',
         ]);
@@ -466,15 +487,27 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertMatchesRegularExpression('/value="facebook" id="social-series-network-1-facebook">/', $html);
     }
 
-    // A picture opens in UiBundle's lightbox, a video plays at its size
+    // A picture or a title opens the post's panel, a video plays at its size
     public function testTheSeriesOpensPicturesAndVideos(): void
     {
         $html = $this->series([$this->seriesCard(1, 'draft'), $this->seriesCard(2, 'draft', '/video-2.mp4')]);
 
         $this->assertStringContainsString('src="/video-2.mp4#t=1"', $html);
         $this->assertStringContainsString('click->social-calendar#zoom', $html);
-        $this->assertStringContainsString('/photo-1.webp', $html);
+        $this->assertMatchesRegularExpression('/href="\/edit\/1" data-action="social-calendar#open" data-panel-id="1"[^>]*>\s*<img src="\/photo-1.webp"/', $html);
+        $this->assertSame(3, substr_count($html, 'data-action="social-calendar#open"'));
+        $this->assertStringContainsString('data-social-calendar-panel-url-value="/panel"', $html);
+        $this->assertStringContainsString('data-social-calendar-target="panel"', $html);
         $this->assertStringContainsString('data-social-calendar-target="zoom"', $html);
+    }
+
+    // A post with neither picture nor video says so on its card, which opens its panel all the same - the warning always there, a picture before it hiding it, so the panel only adds or removes the picture
+    public function testTheSeriesSaysAPostHasNoPicture(): void
+    {
+        $html = $this->series([['image' => null] + $this->seriesCard(1, 'draft'), $this->seriesCard(2, 'draft')]);
+
+        $this->assertMatchesRegularExpression('/data-panel-id="1" data-panel-card[^>]*>\s*<span class="social-series-review-no-image">/', $html);
+        $this->assertMatchesRegularExpression('/<img src="\/photo-2.webp"[^>]*>\s*<span class="social-series-review-no-image">/', $html);
     }
 
     // A post gone out somewhere keeps its networks, and a series with nothing to come says so

@@ -102,6 +102,20 @@ class SocialPostRepositoryTest extends TestCase
         $this->assertSame(['1' => 2, '2' => 2], $this->targetCounts($this->repository->findPlannedBetween(new \DateTimeImmutable(), new \DateTimeImmutable('+3 days'))));
     }
 
+    // The dashboard's drafts: a post with a network still in draft, the others approved or not, within the window and in their order - one approved everywhere left out
+    public function testTheDraftsPlannedAreReadWithinTheirWindowInTheirOrder(): void
+    {
+        $this->post('1', static fn (SocialPostTarget $target) => $target->approve(), '+3 hours');
+        $this->post('2', static fn (SocialPostTarget $target) => $target->getPost()->getTargets()->map(static fn (SocialPostTarget $each) => $each->approve()), '+2 hours');
+        $this->post('3', null, '+1 hour');
+        $this->post('4', null, '+2 days');
+        $this->entityManager->clear();
+
+        $drafts = $this->repository->findDraftsPlannedBetween(new \DateTimeImmutable(), new \DateTimeImmutable('+24 hours'));
+
+        $this->assertSame(['3', '1'], array_map(static fn (SocialPost $post): string => $post->getSourceId(), $drafts));
+    }
+
     // The posts holding some contents of a source, their targets with them, another source's left out
     public function testThePostsOfSomeContentsAreReadWithTheirTargets(): void
     {

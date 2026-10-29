@@ -1,15 +1,13 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
-{# A series' coming posts side by side (see SocialCalendarController::series()): approved, taken back to a draft and their networks ticked through the calendar's own move and networks, the page reloaded after each #}
+{# A series' coming posts side by side (see SocialCalendarController::series()): approved, taken back to a draft and their networks ticked through the calendar's own move and networks, the page reloaded after each - a card's picture or title opening the calendar's panel of the post #}
 {% import '@c975LSocial/management/social_calendar.html.twig' as calendar %}
 
 {% block main %}
 
     <div class="social-series-review" data-controller="social-calendar"
-        data-social-calendar-url-value="{{ move_url }}"
-        data-social-calendar-token-value="{{ csrf_token(token) }}"
-        data-social-calendar-networks-url-value="{{ networks_url }}"
-        data-social-calendar-failed-label-value="{{ 'label.social_calendar_move_failed'|trans({}, 'social') }}">
+        data-action="keydown.esc@window->social-calendar#closePanel"
+        {{ include('@c975LSocial/management/_social_calendar_values.html.twig') }}>
 
         <div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
             <div>
@@ -73,8 +71,13 @@
                                 {# A moment in rather than the first frame, often black, played at its size with its sound by a click, Enter or Space #}
                                 <video src="{{ post.video_url }}#t=1" preload="metadata" muted tabindex="0" role="button" data-action="click->social-calendar#zoom keydown.enter->social-calendar#zoom keydown.space->social-calendar#zoom" title="{{ 'label.social_calendar_media_play'|trans({}, 'social') }}" aria-label="{{ 'label.social_calendar_media_play'|trans({}, 'social') }}"></video>
                                 <span class="social-calendar-panel-play" aria-hidden="true"><i class="fa fa-play"></i></span>
-                            {% elseif post.image %}
-                                <twig:c975LUi:Image:Zoom src="{{ post.image }}" highres="{{ post.image }}" alt="{{ post.title }}" label="{{ 'label.social_calendar_media_zoom'|trans({}, 'social') }}" priority="false" />
+                            {% else %}
+                                {# The post's panel, as a card of the calendar opens it - its screen in a new tab with a modifier key #}
+                                <a href="{{ post.edit_url }}" data-action="social-calendar#open" data-panel-id="{{ post.id }}" data-panel-card title="{{ post.title }}">
+                                    {% if post.image %}<img src="{{ post.image }}" alt="{{ post.title }}" loading="lazy">{% endif %}
+                                    {# Nothing to show with the post: said at a glance, before it goes out bare - hidden by a picture before it (see management.scss), so the panel only adds or removes the picture #}
+                                    <span class="social-series-review-no-image"><i class="fa fa-image" aria-hidden="true"></i>{{ 'label.social_series_review_no_image'|trans({}, 'social') }}</span>
+                                </a>
                             {% endif %}
                         </div>
 
@@ -83,7 +86,7 @@
                                 <strong>{{ post.planned_at|date('d/m') }}</strong>
                                 <span class="text-muted">{{ post.planned_at|date('H:i') }}</span>
                             </div>
-                            <span class="social-series-review-title" title="{{ post.title }}">{{ post.title }}</span>
+                            <a href="{{ post.edit_url }}" class="social-series-review-title" data-action="social-calendar#open" data-panel-id="{{ post.id }}" title="{{ post.title }}">{{ post.title }}</a>
 
                             {# Each connected network ticked or unticked by a click on its badge, saved at once #}
                             {% if offered_networks is not empty %}
@@ -112,7 +115,10 @@
             </div>
         {% endif %}
 
-        {# A video at its own size, filled by social-calendar.js - the pictures open in UiBundle's lightbox #}
+        {# Filled by social-calendar.js with the panel of the card clicked (see _social_calendar_panel.html.twig) #}
+        <aside class="social-calendar-panel" data-social-calendar-target="panel" hidden></aside>
+
+        {# A video at its own size, filled by social-calendar.js - the panel's pictures open in UiBundle's lightbox #}
         <dialog class="social-calendar-zoom" data-social-calendar-target="zoom" data-action="click->social-calendar#closeZoom close->social-calendar#clearZoom"></dialog>
     </div>
 {% endblock %}

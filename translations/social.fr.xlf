@@ -104,7 +104,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série ou l'ouvre pour en relire les posts côte à côte, réordonne ou retire ses médias, les agrandit ou lit ses vidéos d'un clic, en ajoute depuis le site ou en y déposant des fichiers, change son contenu, renvoie sur-le-champ un réseau qui l'a refusée, ou la duplique au lendemain.</target>
+                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série ou l'ouvre pour en relire les posts côte à côte, passe à son post précédent ou suivant par les flèches, réordonne ou retire ses médias, les agrandit ou lit ses vidéos d'un clic, en ajoute depuis le site ou en y déposant des fichiers, change son contenu, renvoie sur-le-champ un réseau qui l'a refusée, ou la duplique au lendemain.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -242,13 +242,17 @@
                 <source>description.guided_step_social_series_open</source>
                 <target>L'écran de série, que « Générer une série » ouvre aussi depuis les publications et le calendrier : combien de brouillons, à partir de quand, sur quels réseaux.</target>
             </trans-unit>
+            <trans-unit id="bP6r1Lp">
+                <source>description.guided_step_social_series_open_panel</source>
+                <target>Cliquez l'image ou le titre d'un post : le panneau du calendrier s'ouvre sur la page de la série, ses flèches passant au post précédent ou suivant. Ce qui s'y change se voit aussitôt sur sa carte.</target>
+            </trans-unit>
             <trans-unit id="YQtvut9">
                 <source>description.guided_step_social_series_prolong</source>
                 <target>Un e-mail prévient quand la série approche de sa fin. « Prolonger la série », en tête de sa page (« Voir la série » dans le panneau d'un de ses posts) ou sur l'écran d'un post, en crée autant à la suite, au même rythme.</target>
             </trans-unit>
             <trans-unit id="1LrVmDy">
                 <source>description.guided_step_social_series_review</source>
-                <target>Le menu « Séries », ou « Voir la série » dans le panneau d'un de ses posts, montre tous ses posts à venir côte à côte : validez-les un à un, cochez ou décochez un réseau sur son badge, agrandissez une image ou lisez une vidéo d'un clic. Les filtres séparent ceux à valider de ceux validés.</target>
+                <target>Le menu « Séries », ou « Voir la série » dans le panneau d'un de ses posts, montre tous ses posts à venir côte à côte : validez-les un à un, cochez ou décochez un réseau sur son badge, lisez une vidéo d'un clic. Un post sans image le signale. Les filtres séparent ceux à valider de ceux validés.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -293,6 +297,10 @@
             <trans-unit id="7jaXTbn">
                 <source>description.guided_step_social_youtube_prerequisites</source>
                 <target>Cette partie se passe sur console.cloud.google.com, dans le projet du client OAuth Google (celui de la fiche Google, ou un nouveau) : activer « YouTube Data API v3 », ajouter les scopes youtube.upload et youtube.readonly à l'écran de consentement et le passer « En production », puis déclarer dans le client OAuth l'adresse du site suivie de « /social/youtube/callback ». Pour que les vidéos sortent en public, le projet doit aussi passer l'audit de l'API YouTube.</target>
+            </trans-unit>
+            <trans-unit id="yuPeBS_">
+                <source>description.social_drafts_due</source>
+                <target>Un brouillon ne part pas : validez-le avant son heure. Le premier : « %title% », le %time%.</target>
             </trans-unit>
             <trans-unit id="SPQyqak">
                 <source>email.social_bluesky_reminder_body</source>
@@ -906,6 +914,10 @@
                 <source>label.guided_step_social_series_open</source>
                 <target>Ouvrir la génération</target>
             </trans-unit>
+            <trans-unit id="K1iVkKH">
+                <source>label.guided_step_social_series_open_panel</source>
+                <target>Ouvrir un post de la série</target>
+            </trans-unit>
             <trans-unit id="T2cR_XR">
                 <source>label.guided_step_social_series_prolong</source>
                 <target>Prolonger la série</target>
@@ -1266,6 +1278,14 @@
                 <source>label.social_calendar_next</source>
                 <target>Suivant</target>
             </trans-unit>
+            <trans-unit id="m2MIvc9">
+                <source>label.social_calendar_panel_next</source>
+                <target>Post suivant de la série</target>
+            </trans-unit>
+            <trans-unit id="tHvvxwV">
+                <source>label.social_calendar_panel_previous</source>
+                <target>Post précédent de la série</target>
+            </trans-unit>
             <trans-unit id="oZ_OaKV">
                 <source>label.social_calendar_plan</source>
                 <target>Replanifier</target>
@@ -1389,6 +1409,10 @@
             <trans-unit id=".AP7YxM">
                 <source>label.social_content_redraw</source>
                 <target>Tirer une autre</target>
+            </trans-unit>
+            <trans-unit id="CPMj.aO">
+                <source>label.social_drafts_due</source>
+                <target>%count% post(s) avec un réseau encore en brouillon dans les 24 h</target>
             </trans-unit>
             <trans-unit id="hqYGPbp">
                 <source>label.social_linkedin_page</source>
@@ -1717,6 +1741,10 @@
             <trans-unit id="B075NnB">
                 <source>label.social_series_review_menu</source>
                 <target>Séries</target>
+            </trans-unit>
+            <trans-unit id="Uhp7wZ6">
+                <source>label.social_series_review_no_image</source>
+                <target>Sans image</target>
             </trans-unit>
             <trans-unit id="5ej7CCE">
                 <source>label.social_series_review_others</source>

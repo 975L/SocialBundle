@@ -1,5 +1,19 @@
 # Changelog
 
+## v2.20.1
+
+Dashboard warns of drafts due, series posts open the panel
+
+- Added `SocialDraftAlertProvider`: posts due within 24 h with a network in draft (29/10/2026)
+- Added `SocialPostRepository::findDraftsPlannedBetween()` (29/10/2026)
+- Calendar panel: previous and next post of the series (29/10/2026)
+- Series page: picture or title opens the post's panel (29/10/2026)
+- Series page: post without any picture says so (29/10/2026)
+- Series page: duplicate comes back to the series (29/10/2026)
+- Series page: posts at the same moment ordered by id (29/10/2026)
+- Guided projects: series step opening a post's panel, texts updated (29/10/2026)
+- README, skill: draft alert, series panel (29/10/2026)
+
 ## v2.20.0
 
 LinkedIn posts on a Page, reshares and stories added

@@ -10,6 +10,12 @@
         {%- endif -%}
     </twig:ea:Badge>
     <div class="d-flex gap-2">
+        {# The posts of its series around it, opened in this same panel #}
+        {% for direction, sibling in siblings ?? {} %}
+            {% if sibling %}
+                <twig:ea:Button htmlElement="a" href="{{ sibling.edit_url }}" size="sm" icon="fa fa-chevron-{{ direction == 'previous' ? 'left' : 'right' }}" data-action="social-calendar#open" data-panel-id="{{ sibling.id }}" title="{{ ('label.social_calendar_panel_' ~ direction)|trans({}, 'social') }}" aria-label="{{ ('label.social_calendar_panel_' ~ direction)|trans({}, 'social') }}" />
+            {% endif %}
+        {% endfor %}
         <twig:ea:Button htmlElement="a" href="{{ post.edit_url }}" size="sm" icon="fa fa-up-right-from-square">{{ 'label.social_calendar_edit_texts'|trans({}, 'social') }}</twig:ea:Button>
         <twig:ea:Button type="button" size="sm" data-action="social-calendar#closePanel">{{ 'label.social_calendar_close'|trans({}, 'social') }}</twig:ea:Button>
     </div>

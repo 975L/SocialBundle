@@ -1,5 +1,30 @@
 [
     {
+        "date": "2026-10-29",
+        "description": [
+            {
+                "en": "The dashboard warns of the posts due within a day with a network still in draft",
+                "fr": "Le tableau de bord prévient des publications prévues dans la journée avec un réseau encore en brouillon",
+                "es": "El panel avisa de las publicaciones previstas en el día con una red aún en borrador"
+            },
+            {
+                "en": "On a series' page, a picture or a title opens the post's panel, and a post without any picture says so",
+                "fr": "Sur la page d'une série, une image ou un titre ouvre le panneau du post, et un post sans image le signale",
+                "es": "En la página de una serie, una imagen o un título abre el panel de la publicación, y una publicación sin imagen lo indica"
+            },
+            {
+                "en": "The panel of a series' post steps to its previous or next post with arrows",
+                "fr": "Le panneau d'un post de série passe à son post précédent ou suivant par des flèches",
+                "es": "El panel de una publicación de serie pasa a la anterior o la siguiente con flechas"
+            },
+            {
+                "en": "A post duplicated from a series' page brings you back to that page",
+                "fr": "Un post dupliqué depuis la page d'une série vous ramène sur cette page",
+                "es": "Una publicación duplicada desde la página de una serie le devuelve a esa página"
+            }
+        ]
+    },
+    {
         "date": "2026-10-28",
         "description": [
             {

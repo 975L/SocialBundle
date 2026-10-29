@@ -210,13 +210,17 @@
                 <source>narration.guided_step_social_series_open</source>
                 <target>Le panneau vous emmène sur la génération d'une série : plusieurs brouillons d'un coup, que vous relirez ensuite. Indiquez combien, à partir de quand et sur quels réseaux.</target>
             </trans-unit>
+            <trans-unit id="gsGDEWg">
+                <source>narration.guided_step_social_series_open_panel</source>
+                <target>Cliquez l'image ou le titre d'un post : son panneau s'ouvre sans quitter la série, et ses flèches passent au post précédent ou suivant.</target>
+            </trans-unit>
             <trans-unit id="njw9jnA">
                 <source>narration.guided_step_social_series_prolong</source>
                 <target>Quand la série approche de sa fin, un e-mail vous prévient. En tête de sa page, ou sur l'écran de l'un de ses posts, « Prolonger la série » en crée autant à la suite, au même rythme.</target>
             </trans-unit>
             <trans-unit id="1wbZKB1">
                 <source>narration.guided_step_social_series_review</source>
-                <target>Ouvrez « Séries » dans le menu, ou cliquez sur « Voir la série » dans le panneau d'un de ses posts : tous ses posts à venir s'affichent côte à côte. Validez-les un à un, cochez ou décochez un réseau sur son badge, agrandissez une image ou lisez une vidéo d'un clic.</target>
+                <target>Ouvrez « Séries » dans le menu, ou cliquez sur « Voir la série » dans le panneau d'un de ses posts : tous ses posts à venir s'affichent côte à côte. Validez-les un à un, cochez ou décochez un réseau sur son badge, lisez une vidéo d'un clic. Un post sans image le signale.</target>
             </trans-unit>
             <trans-unit id="F.zSd24">
                 <source>narration.guided_step_social_series_text</source>

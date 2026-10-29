@@ -316,7 +316,7 @@ export default class extends Controller {
         this.send(this.urlValue, body);
     }
 
-    // The post written again the day after, the calendar then opened on the copy's day with its panel
+    // The post written again the day after, the screen answered by the server then opened with the copy's panel
     duplicate(event) {
         const button = event.currentTarget;
         button.disabled = true;
@@ -350,7 +350,7 @@ export default class extends Controller {
 
     // The panel read again says the post's networks and state as they now are, which its card on the calendar takes - whether it can be dragged changing only with the page, the server refusing a move of a post gone out anyway
     badgesTargetConnected(badges) {
-        const card = this.element.querySelector(`[data-panel-id="${badges.dataset.postId}"]`);
+        const card = this.element.querySelector(`[data-panel-card][data-panel-id="${badges.dataset.postId}"]`);
         if (!card) return;
 
         card.classList.remove("is-draft", "is-approved", "is-failed", "is-published");
@@ -362,7 +362,7 @@ export default class extends Controller {
 
     // The panel read again says the post's picture as it now is, which its card on the calendar takes: changed, gained when it had none, or lost with the last media
     thumbnailTargetConnected(thumbnail) {
-        const card = this.element.querySelector(`[data-panel-id="${thumbnail.dataset.postId}"]`);
+        const card = this.element.querySelector(`[data-panel-card][data-panel-id="${thumbnail.dataset.postId}"]`);
         if (!card) return;
 
         // The card's own picture, not the icon of one of its networks

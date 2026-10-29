@@ -63,6 +63,10 @@ class SocialCalendarControllerTest extends TestCase
     /** @var list<SocialPost> */
     private array $seriesPosts = [];
 
+    // What the repository answers as the ids of the series' coming posts, in their order
+    /** @var list<int> */
+    private array $seriesIds = [];
+
     /** @var array<string, mixed> */
     private array $rendered = [];
 
@@ -203,6 +207,7 @@ class SocialCalendarControllerTest extends TestCase
         $postRepository = $this->createStub(SocialPostRepository::class);
         $postRepository->method('find')->willReturnCallback(fn (mixed $id): ?SocialPost => 42 === $id ? $this->post : null);
         $postRepository->method('findComingBySeries')->willReturnCallback(fn (): array => $this->seriesPosts);
+        $postRepository->method('findComingIdsBySeries')->willReturnCallback(fn (): array => $this->seriesIds);
 
         // The series of the post, known by the id 3
         $seriesRepository = $this->createStub(SocialSeriesRepository::class);
@@ -563,6 +568,26 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertFalse($this->rendered['editable']);
     }
 
+    // The panel of a series' post names the coming posts around it, none past either end nor for a post of no series
+    public function testThePanelStepsThroughTheSeries(): void
+    {
+        new \ReflectionProperty(SocialPost::class, 'id')->setValue($this->post, 42);
+        $request = Request::create('/', 'GET', ['id' => '42', 'view' => 'series']);
+
+        $this->createController($request)->panel($request);
+        $this->assertSame(['previous' => null, 'next' => null], $this->rendered['siblings']);
+
+        $this->seriesPost('Other');
+        $this->seriesIds = [41, 42, 43];
+        $this->createController($request)->panel($request);
+        $this->assertSame(41, $this->rendered['siblings']['previous']['id'] ?? null);
+        $this->assertSame(43, $this->rendered['siblings']['next']['id'] ?? null);
+
+        $this->seriesIds = [42, 43];
+        $this->createController($request)->panel($request);
+        $this->assertNull($this->rendered['siblings']['previous']);
+    }
+
     // The move plans a post that goes out under the site's name: no token, nothing changes
     public function testAMoveWithoutTheTokenIsRefused(): void
     {
@@ -794,6 +819,21 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertCount(1, $this->persisted);
         $this->assertInstanceOf(SocialPost::class, $this->persisted[0]);
         $this->assertSame(1, $this->flushes);
+    }
+
+    // Asked from the series' page, the copy's panel opens back there - the calendar answered for a post of no series
+    public function testADuplicateAskedFromTheSeriesComesBackToIt(): void
+    {
+        $duplicate = function (): string {
+            $request = Request::create('/?view=series', 'POST', ['post' => '42']);
+            $request->headers->set('X-CSRF-Token', 'valid');
+
+            return (string) $this->createController($request)->duplicate($request)->getContent();
+        };
+
+        $this->assertSame('/' . SocialCalendarController::ROUTE, $duplicate());
+        $this->seriesPost('Other');
+        $this->assertSame('/' . SocialCalendarController::SERIES_ROUTE, $duplicate());
     }
 
     private function retry(string $token = 'valid'): Response

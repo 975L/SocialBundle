@@ -652,11 +652,31 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+.social-series-review-media video {
   cursor: zoom-in;
 }
 .social-series-review-media a {
   display: block;
   height: 100%;
+}
+
+.social-series-review-no-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  height: 100%;
+  color: var(--bs-warning-text-emphasis, #997404);
+  background: var(--bs-warning-bg-subtle, #fff3cd);
+  font-size: 0.8rem;
+}
+.social-series-review-no-image i {
+  font-size: 1.5rem;
+}
+img + .social-series-review-no-image {
+  display: none;
 }
 
 .social-series-review-body {
@@ -669,6 +689,7 @@
 }
 
 .social-series-review-title {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

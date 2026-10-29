@@ -570,12 +570,38 @@ $quarter: 1.25rem;
         width: 100%;
         height: 100%;
         object-fit: cover;
+    }
+
+    // A video plays at its size, a picture opens the post's panel
+    video {
         cursor: zoom-in;
     }
 
     a {
         display: block;
         height: 100%;
+    }
+}
+
+// A post without a picture, its square saying so in the warning colour
+.social-series-review-no-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .35rem;
+    height: 100%;
+    color: var(--bs-warning-text-emphasis, #997404);
+    background: var(--bs-warning-bg-subtle, #fff3cd);
+    font-size: .8rem;
+
+    i {
+        font-size: 1.5rem;
+    }
+
+    // Always rendered, said only while no picture comes before it - the calendar's panel adding or removing the picture alone
+    img + & {
+        display: none;
     }
 }
 
@@ -589,6 +615,7 @@ $quarter: 1.25rem;
 }
 
 .social-series-review-title {
+    display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

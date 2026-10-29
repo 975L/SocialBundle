@@ -104,7 +104,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Haga clic en una publicación: su panel cambia su fecha y hora, la valida o la devuelve a borrador, valida de una vez toda su serie o la abre para releer sus publicaciones una al lado de otra, reordena o quita sus medios, los amplía o reproduce sus vídeos con un clic, añade otros desde el sitio o soltando archivos en él, cambia su contenido, la vuelve a enviar al momento en una red que la rechazó, o la duplica al día siguiente.</target>
+                <target>Haga clic en una publicación: su panel cambia su fecha y hora, la valida o la devuelve a borrador, valida de una vez toda su serie o la abre para releer sus publicaciones una al lado de otra, pasa a su publicación anterior o siguiente con las flechas, reordena o quita sus medios, los amplía o reproduce sus vídeos con un clic, añade otros desde el sitio o soltando archivos en él, cambia su contenido, la vuelve a enviar al momento en una red que la rechazó, o la duplica al día siguiente.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -242,13 +242,17 @@
                 <source>description.guided_step_social_series_open</source>
                 <target>La pantalla de serie, que «Generar una serie» abre también desde las publicaciones y el calendario: cuántos borradores, desde cuándo, en qué redes.</target>
             </trans-unit>
+            <trans-unit id="bP6r1Lp">
+                <source>description.guided_step_social_series_open_panel</source>
+                <target>Haga clic en la imagen o el título de una publicación: el panel del calendario se abre en la página de la serie, y sus flechas pasan a la publicación anterior o siguiente. Lo que se cambia allí se ve al momento en su tarjeta.</target>
+            </trans-unit>
             <trans-unit id="YQtvut9">
                 <source>description.guided_step_social_series_prolong</source>
                 <target>Un correo avisa cuando la serie se acerca a su fin. «Prolongar la serie», en la parte superior de su página («Ver la serie» en el panel de una de sus publicaciones) o en la pantalla de una publicación, crea otras tantas a continuación, al mismo ritmo.</target>
             </trans-unit>
             <trans-unit id="1LrVmDy">
                 <source>description.guided_step_social_series_review</source>
-                <target>El menú «Series», o «Ver la serie» en el panel de una de sus publicaciones, muestra todas sus publicaciones próximas una al lado de otra: valídelas una a una, marque o desmarque una red en su distintivo, amplíe una imagen o reproduzca un vídeo con un clic. Los filtros separan las que están por validar de las validadas.</target>
+                <target>El menú «Series», o «Ver la serie» en el panel de una de sus publicaciones, muestra todas sus publicaciones próximas una al lado de otra: valídelas una a una, marque o desmarque una red en su distintivo, reproduzca un vídeo con un clic. Una publicación sin imagen lo indica. Los filtros separan las que están por validar de las validadas.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -293,6 +297,10 @@
             <trans-unit id="7jaXTbn">
                 <source>description.guided_step_social_youtube_prerequisites</source>
                 <target>Esta parte se hace en console.cloud.google.com, en el proyecto del cliente OAuth de Google (el de la ficha de Google o uno nuevo): activar «YouTube Data API v3», añadir los scopes youtube.upload y youtube.readonly a la pantalla de consentimiento y pasarla «En producción», y declarar en el cliente OAuth la dirección del sitio seguida de «/social/youtube/callback». Para que los vídeos salgan públicos, el proyecto también debe pasar la auditoría de la API de YouTube.</target>
+            </trans-unit>
+            <trans-unit id="yuPeBS_">
+                <source>description.social_drafts_due</source>
+                <target>Un borrador no se publica: valídelo antes de su hora. El primero: «%title%», el %time%.</target>
             </trans-unit>
             <trans-unit id="SPQyqak">
                 <source>email.social_bluesky_reminder_body</source>
@@ -906,6 +914,10 @@
                 <source>label.guided_step_social_series_open</source>
                 <target>Abrir la generación</target>
             </trans-unit>
+            <trans-unit id="K1iVkKH">
+                <source>label.guided_step_social_series_open_panel</source>
+                <target>Abrir una publicación de la serie</target>
+            </trans-unit>
             <trans-unit id="T2cR_XR">
                 <source>label.guided_step_social_series_prolong</source>
                 <target>Prolongar la serie</target>
@@ -1266,6 +1278,14 @@
                 <source>label.social_calendar_next</source>
                 <target>Siguiente</target>
             </trans-unit>
+            <trans-unit id="m2MIvc9">
+                <source>label.social_calendar_panel_next</source>
+                <target>Publicación siguiente de la serie</target>
+            </trans-unit>
+            <trans-unit id="tHvvxwV">
+                <source>label.social_calendar_panel_previous</source>
+                <target>Publicación anterior de la serie</target>
+            </trans-unit>
             <trans-unit id="oZ_OaKV">
                 <source>label.social_calendar_plan</source>
                 <target>Reprogramar</target>
@@ -1389,6 +1409,10 @@
             <trans-unit id=".AP7YxM">
                 <source>label.social_content_redraw</source>
                 <target>Sacar otra</target>
+            </trans-unit>
+            <trans-unit id="CPMj.aO">
+                <source>label.social_drafts_due</source>
+                <target>%count% publicación(es) con una red aún en borrador en 24 h</target>
             </trans-unit>
             <trans-unit id="hqYGPbp">
                 <source>label.social_linkedin_page</source>
@@ -1717,6 +1741,10 @@
             <trans-unit id="B075NnB">
                 <source>label.social_series_review_menu</source>
                 <target>Series</target>
+            </trans-unit>
+            <trans-unit id="Uhp7wZ6">
+                <source>label.social_series_review_no_image</source>
+                <target>Sin imagen</target>
             </trans-unit>
             <trans-unit id="5ej7CCE">
                 <source>label.social_series_review_others</source>

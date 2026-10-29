@@ -16,6 +16,7 @@ use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -146,16 +147,50 @@ class SocialPostRepository extends ServiceEntityRepository
     /** @return list<SocialPost> */
     public function findComingBySeries(SocialSeries $series, \DateTimeImmutable $after): array
     {
-        /* @var list<SocialPost> */
-        return $this->createQueryBuilder('p')
+        $builder = $this->createQueryBuilder('p')
             ->addSelect('t', 'm')
             ->leftJoin('p.targets', 't')
-            ->leftJoin('p.medias', 'm')
-            ->where('p.series = :series')
+            ->leftJoin('p.medias', 'm');
+
+        /* @var list<SocialPost> */
+        return $this->comingInSeries($builder, $series, $after)->getQuery()->getResult();
+    }
+
+    // The ids of a series' posts still to come, in their order, nothing else loaded - what the panel steps through
+    /** @return list<int> */
+    public function findComingIdsBySeries(SocialSeries $series, \DateTimeImmutable $after): array
+    {
+        $ids = $this->comingInSeries($this->createQueryBuilder('p')->select('p.id'), $series, $after)->getQuery()->getSingleColumnResult();
+
+        return array_values(array_map(intval(...), $ids));
+    }
+
+    // A series' posts still to come, in the order every screen shows them - the same moment ordered by id
+    private function comingInSeries(QueryBuilder $builder, SocialSeries $series, \DateTimeImmutable $after): QueryBuilder
+    {
+        return $builder
+            ->andWhere('p.series = :series')
             ->andWhere('p.plannedAt > :after')
             ->setParameter('series', $series)
             ->setParameter('after', $after)
             ->orderBy('p.plannedAt', \SortDirection::Ascending)
+            ->addOrderBy('p.id', \SortDirection::Ascending);
+    }
+
+    // The posts planned between the two moments still waiting on a network's approval - whatever the others became, that one not going out -, in their order: what the dashboard warns of
+    /** @return list<SocialPost> */
+    public function findDraftsPlannedBetween(\DateTimeImmutable $from, \DateTimeImmutable $to): array
+    {
+        /* @var list<SocialPost> */
+        return $this->createQueryBuilder('p')
+            ->where('p.plannedAt >= :from')
+            ->andWhere('p.plannedAt < :to')
+            ->andWhere('EXISTS (SELECT d.id FROM ' . SocialPostTarget::class . ' d WHERE d.post = p AND d.status = :draft)')
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+            ->setParameter('draft', SocialPostStatus::Draft)
+            ->orderBy('p.plannedAt', \SortDirection::Ascending)
+            ->addOrderBy('p.id', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }

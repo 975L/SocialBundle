@@ -15,7 +15,7 @@
 {# A post on the calendar, coloured by its state: one gone out everywhere only opens, any other is dragged to another moment #}
 {% macro card(post, connected) %}
     {% set draggable = post.state != 'published' %}
-    <a href="{{ post.edit_url }}" draggable="false" data-action="social-calendar#open" data-panel-id="{{ post.id }}"
+    <a href="{{ post.edit_url }}" draggable="false" data-action="social-calendar#open" data-panel-id="{{ post.id }}" data-panel-card
         class="social-calendar-card is-{{ post.state }}"
         {% if draggable %}data-social-calendar-target="item" data-post-id="{{ post.id }}" data-at="{{ post.planned_at|date('c') }}"{% endif %}>
         {% if post.image %}<img src="{{ post.image }}" alt="" loading="lazy">{% endif %}
@@ -30,20 +30,8 @@
 
     <div data-controller="social-calendar"
         data-action="keydown.esc@window->social-calendar#closePanel"
-        data-social-calendar-url-value="{{ move_url }}"
-        data-social-calendar-token-value="{{ csrf_token(token) }}"
-        data-social-calendar-panel-url-value="{{ panel_url }}"
-        data-social-calendar-medias-url-value="{{ medias_url }}"
-        data-social-calendar-upload-url-value="{{ upload_url }}"
-        data-social-calendar-texts-url-value="{{ texts_url }}"
-        data-social-calendar-networks-url-value="{{ networks_url }}"
-        data-social-calendar-duplicate-url-value="{{ duplicate_url }}"
-        data-social-calendar-retry-url-value="{{ retry_url }}"
-        data-social-calendar-open-id-value="{{ open_id }}"
-        data-social-calendar-new-url-value="{{ new_url }}"
-        data-social-calendar-retry-failed-label-value="{{ 'label.social_calendar_retry_failed'|trans({}, 'social') }}"
-        data-social-calendar-texts-failed-label-value="{{ 'label.social_calendar_texts_failed'|trans({}, 'social') }}"
-        data-social-calendar-failed-label-value="{{ 'label.social_calendar_move_failed'|trans({}, 'social') }}">
+        {{ include('@c975LSocial/management/_social_calendar_values.html.twig') }}
+        data-social-calendar-new-url-value="{{ new_url }}">
 
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
             <h1 class="mb-0">{{ 'label.social_calendar'|trans({}, 'social') }} - {{ title|capitalize }}</h1>

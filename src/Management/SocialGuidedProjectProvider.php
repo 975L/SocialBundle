@@ -209,6 +209,13 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => 'a[href*="/social-calendar/series"]',
                 ],
                 [
+                    // On the series' page the previous step opens: the first card's title, its picture being missing on a post without one
+                    'label' => 'label.guided_step_social_series_open_panel',
+                    'description' => 'description.guided_step_social_series_open_panel',
+                    'narration' => 'narration.guided_step_social_series_open_panel',
+                    'highlight' => '.social-series-review-title',
+                ],
+                [
                     // Shown while the series has drafts, which it has just after generating
                     'label' => 'label.guided_step_social_series_approve_picked',
                     'description' => 'description.guided_step_social_series_approve_picked',

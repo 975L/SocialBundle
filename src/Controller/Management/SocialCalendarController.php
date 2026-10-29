@@ -250,7 +250,16 @@ class SocialCalendarController extends AbstractController
             'connected' => $connected,
             'offered_networks' => $this->offeredNetworks($connected),
             'move_url' => $this->generateUrl(self::MOVE_ROUTE),
-            'networks_url' => $this->generateUrl(self::NETWORKS_ROUTE, ['view' => self::WEEK]),
+            'networks_url' => $this->generateUrl(self::NETWORKS_ROUTE, ['view' => self::SERIES]),
+            // The calendar's panel, a card's picture or title opening it, its links coming back here
+            'panel_url' => $this->generateUrl(self::PANEL_ROUTE, ['view' => self::SERIES]),
+            'medias_url' => $this->generateUrl(self::MEDIAS_ROUTE, ['view' => self::SERIES]),
+            'upload_url' => $this->generateUrl(self::UPLOAD_ROUTE, ['view' => self::SERIES]),
+            'texts_url' => $this->generateUrl(self::TEXTS_ROUTE, ['view' => self::SERIES]),
+            'retry_url' => $this->generateUrl(self::RETRY_ROUTE, ['view' => self::SERIES]),
+            'duplicate_url' => $this->generateUrl(self::DUPLICATE_ROUTE, ['view' => self::SERIES]),
+            // A copy just made, its panel opening with the page
+            'open_id' => $request->query->getInt('post'),
             'token' => self::CSRF_TOKEN,
             'prolong_url' => null === $last ? null : $this->postUrl($last, 'prolongSeries', self::SERIES),
         ]);
@@ -267,7 +276,7 @@ class SocialCalendarController extends AbstractController
             return new Response(null, Response::HTTP_NOT_FOUND);
         }
 
-        return $this->renderPanel($post, $this->view($request));
+        return $this->renderPanel($post, $this->panelView($request));
     }
 
     // The panel's medias put in the order given, one of them taken off the post first when asked - its file going with it, and the content it was picked from freed. Answers the panel as it now reads; a post gone out on a network keeps what it went out with
@@ -298,7 +307,7 @@ class SocialCalendarController extends AbstractController
         $post->sortMedias();
         $this->entityManager->flush();
 
-        return $this->renderPanel($post, $this->view($request));
+        return $this->renderPanel($post, $this->panelView($request));
     }
 
     // The pictures and videos dropped on the panel, or picked from its zone, added after the post's medias as files of its own - Vich storing each one as the post's screen does (see SocialMediaUploadListener). A file of another type, or one the server did not receive whole, refuses the whole drop, said in the answer; a post gone out on a network keeps what it went out with
@@ -328,7 +337,7 @@ class SocialCalendarController extends AbstractController
         }
         $this->entityManager->flush();
 
-        return $this->renderPanel($post, $this->view($request), problems: $this->mediaChecker->check($post));
+        return $this->renderPanel($post, $this->panelView($request), problems: $this->mediaChecker->check($post));
     }
 
     // The panel's texts saved, each network's own - one gone out on its network keeping what it went out with. An empty text, or one longer than its network takes, refuses the whole save, said in the answer
@@ -367,7 +376,7 @@ class SocialCalendarController extends AbstractController
         }
         $this->entityManager->flush();
 
-        return $this->renderPanel($post, $this->view($request), true);
+        return $this->renderPanel($post, $this->panelView($request), true);
     }
 
     // The networks ticked in the panel, among the connected ones, written the way the post's screen writes them: a network unticked drops its text, one ticked gets its text written - a network not connected left as it was, the panel not offering it. A post gone out anywhere keeps its networks
@@ -390,10 +399,10 @@ class SocialCalendarController extends AbstractController
             return new Response(null, Response::HTTP_NO_CONTENT);
         }
 
-        return $this->renderPanel($post, $this->view($request), problems: $this->mediaChecker->check($post));
+        return $this->renderPanel($post, $this->panelView($request), problems: $this->mediaChecker->check($post));
     }
 
-    // The post written again the day after, a draft on the networks still connected, its medias its own - answered by the calendar's address on the copy's day, its panel opening there
+    // The post written again the day after, a draft on the networks still connected, its medias its own - answered by the address its panel opens at: the series' page it was asked from, the calendar on the copy's day otherwise
     #[AdminRoute(path: '/social-calendar/duplicate', name: 'social_calendar_duplicate', options: ['methods' => ['POST']])]
     public function duplicate(Request $request): Response
     {
@@ -405,6 +414,11 @@ class SocialCalendarController extends AbstractController
         $copy = $this->duplicator->duplicate($post, $this->publisher->getConnectedNetworkNames());
         $this->entityManager->persist($copy);
         $this->entityManager->flush();
+
+        $series = $post->getSeries();
+        if (self::SERIES === $this->panelView($request) && null !== $series) {
+            return new Response($this->generateUrl(self::SERIES_ROUTE, ['id' => $series->getId(), 'post' => $copy->getId()]));
+        }
 
         return new Response($this->generateUrl(self::ROUTE, ['view' => $this->view($request), 'date' => $copy->getPlannedAt()->format('Y-m-d'), 'post' => $copy->getId()]));
     }
@@ -428,7 +442,7 @@ class SocialCalendarController extends AbstractController
             return new Response($this->translator->trans('label.social_calendar_retry_nothing', [], 'social'), Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        return $this->renderPanel($post, $this->view($request));
+        return $this->renderPanel($post, $this->panelView($request));
     }
 
     // The post a panel's action is sent for, once the editor's role and the panel's token checked - the refusal answered instead, a post not found or, $editable, gone out on a network being one
@@ -469,6 +483,7 @@ class SocialCalendarController extends AbstractController
             'series_drafts' => null === $post->getSeries() ? 0 : $this->postRepository->countComingDraftsBySeries($post->getSeries(), new \DateTimeImmutable()),
             // Its series' posts side by side, to be read one by one
             'series_url' => null === $post->getSeries() ? null : $this->generateUrl(self::SERIES_ROUTE, ['id' => $post->getSeries()->getId()]),
+            'siblings' => $this->siblings($post, $view),
             'connected' => $connected,
             'offered_networks' => $this->offeredNetworks($connected),
             // What the panel's drop zone takes, its file picker offering these alone
@@ -602,6 +617,12 @@ class SocialCalendarController extends AbstractController
         $view = $request->query->getString('view');
 
         return \in_array($view, self::VIEWS, true) ? $view : self::WEEK;
+    }
+
+    // The screen a panel's links come back to: the series' page when it opened the panel, a view of the calendar otherwise
+    private function panelView(Request $request): string
+    {
+        return self::SERIES === $request->query->getString('view') ? self::SERIES : $this->view($request);
     }
 
     // The day asked for, today for anything else
@@ -796,15 +817,29 @@ class SocialCalendarController extends AbstractController
     }
 
     // A screen of the post: its own, or one of its actions', coming back to the calendar's $view
-    private function postUrl(SocialPost $post, string $action, string $view): string
+    private function postUrl(SocialPost | int $post, string $action, string $view): string
     {
         return $this->adminUrlGenerator
             ->unsetAll()
             ->setController(SocialPostCrudController::class)
             ->setAction($action)
-            ->setEntityId($post->getId())
+            ->setEntityId($post instanceof SocialPost ? $post->getId() : $post)
             ->set(self::FROM, $view)
             ->generateUrl();
+    }
+
+    // The posts of its series coming just before and just after, their panel a click away - none for a post outside a series, or gone by
+    /** @return array{previous: ?array{id: int, edit_url: string}, next: ?array{id: int, edit_url: string}} */
+    private function siblings(SocialPost $post, string $view): array
+    {
+        $ids = null === $post->getSeries() ? [] : $this->postRepository->findComingIdsBySeries($post->getSeries(), new \DateTimeImmutable());
+        $index = array_search($post->getId(), $ids, true);
+        $sibling = fn (?int $id): ?array => null === $id ? null : ['id' => $id, 'edit_url' => $this->postUrl($id, Action::EDIT, $view)];
+
+        return [
+            'previous' => $sibling(false === $index ? null : $ids[$index - 1] ?? null),
+            'next' => $sibling(false === $index ? null : $ids[$index + 1] ?? null),
+        ];
     }
 
     // A date as the visitor's language writes it

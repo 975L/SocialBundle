@@ -104,7 +104,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once or opens it to read its posts side by side, reorders or removes its medias, enlarges them or plays its videos with a click, adds some from the site or by dropping files on it, changes its content, sends it again at once on a network that refused it, or duplicates it to the next day.</target>
+                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once or opens it to read its posts side by side, steps to its previous or next post with the arrows, reorders or removes its medias, enlarges them or plays its videos with a click, adds some from the site or by dropping files on it, changes its content, sends it again at once on a network that refused it, or duplicates it to the next day.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -242,13 +242,17 @@
                 <source>description.guided_step_social_series_open</source>
                 <target>The series screen, which "Generate a series" also opens from the posts and the calendar: how many drafts, from when, on which networks.</target>
             </trans-unit>
+            <trans-unit id="bP6r1Lp">
+                <source>description.guided_step_social_series_open_panel</source>
+                <target>Click a post's picture or title: the calendar's panel opens on the series' page, its arrows stepping to the previous or next post. What is changed there shows at once on its card.</target>
+            </trans-unit>
             <trans-unit id="YQtvut9">
                 <source>description.guided_step_social_series_prolong</source>
                 <target>An email warns when the series comes near its end. "Prolong the series", at the top of its page ("View the series" in the panel of one of its posts) or on the screen of a post, makes as many again after it, at the same pace.</target>
             </trans-unit>
             <trans-unit id="1LrVmDy">
                 <source>description.guided_step_social_series_review</source>
-                <target>The "Series" menu, or "View the series" in the panel of one of its posts, shows all its coming posts side by side: approve them one by one, tick or untick a network on its badge, enlarge a picture or play a video with a click. The filters set apart those to approve from those approved.</target>
+                <target>The "Series" menu, or "View the series" in the panel of one of its posts, shows all its coming posts side by side: approve them one by one, tick or untick a network on its badge, play a video with a click. A post without a picture says so. The filters set apart those to approve from those approved.</target>
             </trans-unit>
             <trans-unit id="i3T88kV">
                 <source>description.guided_step_social_share_buttons_anchor</source>
@@ -293,6 +297,10 @@
             <trans-unit id="7jaXTbn">
                 <source>description.guided_step_social_youtube_prerequisites</source>
                 <target>This part happens on console.cloud.google.com, in the Google OAuth client's project (the Google listing's, or a new one): enable "YouTube Data API v3", add the youtube.upload and youtube.readonly scopes to the consent screen and set it "In production", then declare in the OAuth client the site's address followed by "/social/youtube/callback". For the videos to go out public, the project also has to pass YouTube's API audit.</target>
+            </trans-unit>
+            <trans-unit id="yuPeBS_">
+                <source>description.social_drafts_due</source>
+                <target>A draft never goes out: approve it before its time. The first one: "%title%", on %time%.</target>
             </trans-unit>
             <trans-unit id="SPQyqak">
                 <source>email.social_bluesky_reminder_body</source>
@@ -906,6 +914,10 @@
                 <source>label.guided_step_social_series_open</source>
                 <target>Open the generation</target>
             </trans-unit>
+            <trans-unit id="K1iVkKH">
+                <source>label.guided_step_social_series_open_panel</source>
+                <target>Open a post of the series</target>
+            </trans-unit>
             <trans-unit id="T2cR_XR">
                 <source>label.guided_step_social_series_prolong</source>
                 <target>Prolong the series</target>
@@ -1266,6 +1278,14 @@
                 <source>label.social_calendar_next</source>
                 <target>Next</target>
             </trans-unit>
+            <trans-unit id="m2MIvc9">
+                <source>label.social_calendar_panel_next</source>
+                <target>Next post of the series</target>
+            </trans-unit>
+            <trans-unit id="tHvvxwV">
+                <source>label.social_calendar_panel_previous</source>
+                <target>Previous post of the series</target>
+            </trans-unit>
             <trans-unit id="oZ_OaKV">
                 <source>label.social_calendar_plan</source>
                 <target>Reschedule</target>
@@ -1389,6 +1409,10 @@
             <trans-unit id=".AP7YxM">
                 <source>label.social_content_redraw</source>
                 <target>Draw another</target>
+            </trans-unit>
+            <trans-unit id="CPMj.aO">
+                <source>label.social_drafts_due</source>
+                <target>%count% post(s) with a network still in draft within 24 hours</target>
             </trans-unit>
             <trans-unit id="hqYGPbp">
                 <source>label.social_linkedin_page</source>
@@ -1717,6 +1741,10 @@
             <trans-unit id="B075NnB">
                 <source>label.social_series_review_menu</source>
                 <target>Series</target>
+            </trans-unit>
+            <trans-unit id="Uhp7wZ6">
+                <source>label.social_series_review_no_image</source>
+                <target>No picture</target>
             </trans-unit>
             <trans-unit id="5ej7CCE">
                 <source>label.social_series_review_others</source>

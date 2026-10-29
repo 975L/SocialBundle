@@ -210,13 +210,17 @@
                 <source>narration.guided_step_social_series_open</source>
                 <target>El panel le lleva a la generación de una serie: varios borradores de una vez, que revisará después. Indique cuántos, desde cuándo y en qué redes.</target>
             </trans-unit>
+            <trans-unit id="gsGDEWg">
+                <source>narration.guided_step_social_series_open_panel</source>
+                <target>Haga clic en la imagen o el título de una publicación: su panel se abre sin salir de la serie, y sus flechas pasan a la publicación anterior o siguiente.</target>
+            </trans-unit>
             <trans-unit id="njw9jnA">
                 <source>narration.guided_step_social_series_prolong</source>
                 <target>Cuando la serie se acerca a su fin, un correo le avisa. En la parte superior de su página, o en la pantalla de una de sus publicaciones, «Prolongar la serie» crea otras tantas a continuación, al mismo ritmo.</target>
             </trans-unit>
             <trans-unit id="1wbZKB1">
                 <source>narration.guided_step_social_series_review</source>
-                <target>Abra «Series» en el menú, o haga clic en «Ver la serie» en el panel de una de sus publicaciones: todas sus publicaciones próximas se muestran una al lado de otra. Valídelas una a una, marque o desmarque una red en su distintivo, amplíe una imagen o reproduzca un vídeo con un clic.</target>
+                <target>Abra «Series» en el menú, o haga clic en «Ver la serie» en el panel de una de sus publicaciones: todas sus publicaciones próximas se muestran una al lado de otra. Valídelas una a una, marque o desmarque una red en su distintivo, reproduzca un vídeo con un clic. Una publicación sin imagen lo indica.</target>
             </trans-unit>
             <trans-unit id="F.zSd24">
                 <source>narration.guided_step_social_series_text</source>
