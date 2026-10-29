@@ -12,13 +12,13 @@ import { addSortGesture } from "@c975l/ui-bundle/pointer-sort.js";
 // The publications calendar (see management/social_calendar.html.twig): a card dragged onto a quarter of an hour of the week is planned at that moment, onto a day of the month at its own time that day, its approval untouched; a coming moment double-clicked writes a new post there. The gesture is UiBundle's (pointer-sort.js), this controller owning only where a card lands, saved on the spot then the page reloaded, the server computing where every other post falls
 export default class extends Controller {
     static targets = ["item", "zone", "panel", "planAt", "group", "media", "thumbnail", "badges", "drop", "zoom", "pick", "pickAll"];
-    static values = { url: String, token: String, panelUrl: String, mediasUrl: String, uploadUrl: String, textsUrl: String, networksUrl: String, duplicateUrl: String, retryUrl: String, openId: Number, newUrl: String, failedLabel: String, textsFailedLabel: String, retryFailedLabel: String };
+    static values = { url: String, token: String, panelUrl: String, mediasUrl: String, uploadUrl: String, textsUrl: String, networksUrl: String, duplicateUrl: String, retryUrl: String, openId: Number, newUrl: String, failedLabel: String, openFailedLabel: String, textsFailedLabel: String, retryFailedLabel: String };
 
-    // A copy just made opens its panel with the page, its id then taken off the address so a reload does not open it again
+    // A copy just made, or the next draft after an approval from a series' panel, opens its panel with the page - said when it is gone meanwhile - its id then taken off the address so a reload does not open it again
     connect() {
         if (this.openIdValue <= 0) return;
 
-        this.openPanel(this.openIdValue);
+        this.openPanel(this.openIdValue, () => window.alert(this.openFailedLabelValue));
         const url = new URL(window.location.href);
         url.searchParams.delete("post");
         window.history.replaceState(window.history.state, "", url);
@@ -128,9 +128,16 @@ export default class extends Controller {
         this.save(event.currentTarget.dataset.postId, value);
     }
 
-    // The panel's other buttons: approving the post, or taking it back to a draft
+    // The panel's other buttons: approving the post, or taking it back to a draft - on a series' page, a post approved from its panel opening the next draft's once reloaded
     place(event) {
-        this.save(event.currentTarget.dataset.postId, event.currentTarget.dataset.to);
+        const button = event.currentTarget;
+        const next = "approve" === button.dataset.to && this.panelTarget.contains(button) ? this.nextDraft(button.dataset.postId) : null;
+        this.send(this.urlValue, new URLSearchParams({ post: button.dataset.postId, to: button.dataset.to }), next);
+    }
+
+    // The first draft after the post's card in a series' grid, the approved ones in between skipped - none on the calendar, which has no such grid
+    nextDraft(id) {
+        return this.element.querySelector(`.social-series-review-card:has([data-panel-id="${id}"]) ~ .social-series-review-card.is-draft [data-panel-id]`)?.dataset.panelId ?? null;
     }
 
     // Armed per media of the panel as it is read: dragged among the others, it takes the place of the one under the pointer - before it from its left half, after it from its right - the order saved once let go, and put back as it stood when the gesture is cancelled
@@ -386,18 +393,24 @@ export default class extends Controller {
         this.send(this.urlValue, new URLSearchParams({ post, to }));
     }
 
-    // The body sent under the screen's token, then saved() told how it went - with the server's reason for a refusal
-    send(url, body) {
+    // The body sent under the screen's token, then saved() told how it went - with the server's reason for a refusal, and the post whose panel to open once saved
+    send(url, body, next = null) {
         fetch(url, { method: "POST", headers: { "X-CSRF-Token": this.tokenValue }, body })
-            .then((response) => (response.ok ? this.saved(true) : response.text().then((reason) => this.saved(false, reason))))
+            .then((response) => (response.ok ? this.saved(true, "", next) : response.text().then((reason) => this.saved(false, reason))))
             .catch(() => this.saved(false));
     }
 
-    // Announced before the reload, cancelable, so a page refreshing its calendar on its own may take over - a refusal says the server's reason when it gave one
-    saved(ok, reason = "") {
+    // Announced before the reload, cancelable, so a page refreshing its calendar on its own may take over - a refusal says the server's reason when it gave one; a post to open next is put in the address first, the reload keeping the scroll and the filter (see connect())
+    saved(ok, reason = "", next = null) {
         if (!ok) window.alert("" !== reason ? reason : this.failedLabelValue);
 
-        const event = this.dispatch("saved", { detail: { ok }, cancelable: true });
-        if (!event.defaultPrevented) window.location.reload();
+        const event = this.dispatch("saved", { detail: { ok, next }, cancelable: true });
+        if (event.defaultPrevented) return;
+        if (ok && null !== next) {
+            const url = new URL(window.location.href);
+            url.searchParams.set("post", next);
+            window.history.replaceState(window.history.state, "", url);
+        }
+        window.location.reload();
     }
 }

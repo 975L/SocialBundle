@@ -387,6 +387,46 @@ class SocialCalendarBehaviourTest extends JsCase
         $this->assertTrue($sent['held'], 'The button was not held while the selection was approved.');
     }
 
+    // On a series' page, a post approved from its panel names the next draft to open once reloaded, the approved ones in between skipped - not when taken back to a draft, nor approved from its card, nor on the calendar
+    public function testAPostApprovedOnTheSeriesPageOpensTheNextDraft(): void
+    {
+        $next = $this->calendar(
+            'const nexts = [];
+             document.addEventListener("social-calendar:saved", (event) => nexts.push(event.detail.next));
+             const panel = async () => {
+                 item("draft").click(); await frame(); await frame();
+             };
+             await panel();
+             item("approve").click(); await frame(); await frame();
+             root.querySelector("[data-controller=social-calendar]").insertAdjacentHTML("afterbegin", \'<div class="social-series-review-grid"><article class="social-series-review-card is-draft"><a data-panel-id="7"></a><button data-name="card-approve" data-action="social-calendar#place" data-post-id="7" data-to="approve"></button></article><article class="social-series-review-card is-approved"><a data-panel-id="8"></a></article><article class="social-series-review-card is-draft"><a data-panel-id="9"></a></article></div>\');
+             await frame();
+             await panel();
+             item("unapprove").click(); await frame(); await frame();
+             item("card-approve").click(); await frame(); await frame();
+             item("approve").click(); await frame(); await frame();
+
+             return nexts;'
+        );
+
+        $this->assertSame([null, null, null, '9'], $next, 'The post approved did not name the next draft to open on the series page alone.');
+    }
+
+    // A post to open with the page that cannot be read any more says so
+    public function testAPostOpenedWithThePageThatIsGoneIsSaid(): void
+    {
+        $alerts = $this->calendar(
+            'const alerts = [];
+             window.alert = (message) => alerts.push(message);
+             window.fetch = () => Promise.resolve({ ok: false, text: () => Promise.resolve("") });
+             root.insertAdjacentHTML("beforeend", \'<div data-controller="social-calendar" data-social-calendar-panel-url-value="/management/social-calendar/post" data-social-calendar-open-id-value="9" data-social-calendar-open-failed-label-value="Introuvable"><aside data-social-calendar-target="panel" hidden></aside></div>\');
+             await frame(); await frame(); await frame();
+
+             return alerts;'
+        );
+
+        $this->assertSame(['Introuvable'], $alerts, 'A post gone before its panel opened with the page was not said.');
+    }
+
     // The duplicate is asked for the post, its button held meanwhile
     public function testThePostIsDuplicated(): void
     {

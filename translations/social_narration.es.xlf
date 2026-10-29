@@ -216,7 +216,7 @@
             </trans-unit>
             <trans-unit id="gsGDEWg">
                 <source>narration.guided_step_social_series_open_panel</source>
-                <target>Haga clic en la imagen o el título de una publicación: su panel se abre sin salir de la serie, y sus flechas pasan a la publicación anterior o siguiente.</target>
+                <target>Haga clic en la imagen o el título de una publicación: su panel se abre sin salir de la serie, sus flechas pasan a la publicación anterior o siguiente, y « Validar » abre enseguida el siguiente borrador.</target>
             </trans-unit>
             <trans-unit id="njw9jnA">
                 <source>narration.guided_step_social_series_prolong</source>

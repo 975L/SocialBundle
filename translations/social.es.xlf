@@ -256,7 +256,7 @@
             </trans-unit>
             <trans-unit id="bP6r1Lp">
                 <source>description.guided_step_social_series_open_panel</source>
-                <target>Haga clic en la imagen o el título de una publicación: el panel del calendario se abre en la página de la serie, y sus flechas pasan a la publicación anterior o siguiente. Lo que se cambia allí se ve al momento en su tarjeta.</target>
+                <target>Haga clic en la imagen o el título de una publicación: el panel del calendario se abre en la página de la serie, sus flechas pasan a la publicación anterior o siguiente, y « Validar » abre enseguida el siguiente borrador por revisar. Lo que se cambia allí se ve al momento en su tarjeta.</target>
             </trans-unit>
             <trans-unit id="YQtvut9">
                 <source>description.guided_step_social_series_prolong</source>
@@ -1357,6 +1357,10 @@
             <trans-unit id="NUU5AmN">
                 <source>label.social_calendar_next</source>
                 <target>Siguiente</target>
+            </trans-unit>
+            <trans-unit id="7xBlqmM">
+                <source>label.social_calendar_open_failed</source>
+                <target>No se ha podido abrir esta publicación: quizá se haya eliminado entretanto.</target>
             </trans-unit>
             <trans-unit id="m2MIvc9">
                 <source>label.social_calendar_panel_next</source>

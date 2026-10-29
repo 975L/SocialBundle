@@ -18,6 +18,11 @@
                 "es": "El panel de una publicación de serie pasa a la anterior o la siguiente con flechas"
             },
             {
+                "en": "On a series' page, a post approved from its panel opens the next draft to review",
+                "fr": "Sur la page d'une série, un post validé depuis son panneau ouvre le brouillon suivant à relire",
+                "es": "En la página de una serie, una publicación validada desde su panel abre el siguiente borrador por revisar"
+            },
+            {
                 "en": "A post duplicated from a series' page brings you back to that page",
                 "fr": "Un post dupliqué depuis la page d'une série vous ramène sur cette page",
                 "es": "Una publicación duplicada desde la página de una serie le devuelve a esa página"

@@ -296,7 +296,8 @@ checked approved together (`to=approve-picked`, a non-empty `posts[]`, the ids n
 networks ticked through `networks()` with `bare=1` (answered 204, no panel rendered), a video found by
 `SocialPost::getVideoUrl()`, a picture or title opening the panel there (`[data-panel-card]` marks the card the panel's
 answer updates, a `.social-series-review-no-image` always rendered and hidden by an `img` before it). The panel's routes
-carry `view=series` from that page, `duplicate()` then answering the series' page with `?post=` the copy. A post's
+carry `view=series` from that page, `duplicate()` then answering the series' page with `?post=` the copy; a post approved
+from its panel there reloads the page with `?post=` the next `.is-draft` card of the grid. A post's
 panel names its series' previous and next coming posts (`findComingIdsBySeries()`, ordered `plannedAt, id` as
 `findComingBySeries()`). A post's screen or "Prolonger" opened from it carries `calendar=series`
 (`SocialCalendarController::SERIES`) and comes back to that page. `Management\SocialDraftAlertProvider` (ConfigBundle's

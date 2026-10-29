@@ -256,7 +256,7 @@
             </trans-unit>
             <trans-unit id="bP6r1Lp">
                 <source>description.guided_step_social_series_open_panel</source>
-                <target>Click a post's picture or title: the calendar's panel opens on the series' page, its arrows stepping to the previous or next post. What is changed there shows at once on its card.</target>
+                <target>Click a post's picture or title: the calendar's panel opens on the series' page, its arrows stepping to the previous or next post, "Approve" opening the next draft to read at once. What is changed there shows at once on its card.</target>
             </trans-unit>
             <trans-unit id="YQtvut9">
                 <source>description.guided_step_social_series_prolong</source>
@@ -1357,6 +1357,10 @@
             <trans-unit id="NUU5AmN">
                 <source>label.social_calendar_next</source>
                 <target>Next</target>
+            </trans-unit>
+            <trans-unit id="7xBlqmM">
+                <source>label.social_calendar_open_failed</source>
+                <target>This post could not be opened: it may have been deleted meanwhile.</target>
             </trans-unit>
             <trans-unit id="m2MIvc9">
                 <source>label.social_calendar_panel_next</source>

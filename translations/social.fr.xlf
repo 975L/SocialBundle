@@ -256,7 +256,7 @@
             </trans-unit>
             <trans-unit id="bP6r1Lp">
                 <source>description.guided_step_social_series_open_panel</source>
-                <target>Cliquez l'image ou le titre d'un post : le panneau du calendrier s'ouvre sur la page de la série, ses flèches passant au post précédent ou suivant. Ce qui s'y change se voit aussitôt sur sa carte.</target>
+                <target>Cliquez l'image ou le titre d'un post : le panneau du calendrier s'ouvre sur la page de la série, ses flèches passant au post précédent ou suivant, « Valider » ouvrant aussitôt le brouillon suivant à relire. Ce qui s'y change se voit aussitôt sur sa carte.</target>
             </trans-unit>
             <trans-unit id="YQtvut9">
                 <source>description.guided_step_social_series_prolong</source>
@@ -1357,6 +1357,10 @@
             <trans-unit id="NUU5AmN">
                 <source>label.social_calendar_next</source>
                 <target>Suivant</target>
+            </trans-unit>
+            <trans-unit id="7xBlqmM">
+                <source>label.social_calendar_open_failed</source>
+                <target>Ce post n'a pas pu être ouvert : il a peut-être été supprimé entre-temps.</target>
             </trans-unit>
             <trans-unit id="m2MIvc9">
                 <source>label.social_calendar_panel_next</source>

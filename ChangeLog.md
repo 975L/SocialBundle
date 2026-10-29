@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.21.1
+
+Series' panel opens the next draft once a post is approved
+
+- Series' page: a post approved from its panel opens the next draft's panel (29/10/2026)
+- Calendar: a post to open with the page that is gone said (29/10/2026)
+- Guided project, README, skill: next draft after an approval (29/10/2026)
+
 ## v2.21.0
 
 Calendar gathers the posts of the sites sharing its accounts

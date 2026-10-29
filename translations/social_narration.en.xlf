@@ -216,7 +216,7 @@
             </trans-unit>
             <trans-unit id="gsGDEWg">
                 <source>narration.guided_step_social_series_open_panel</source>
-                <target>Click a post's picture or title: its panel opens without leaving the series, and its arrows step to the previous or next post.</target>
+                <target>Click a post's picture or title: its panel opens without leaving the series, its arrows step to the previous or next post, and "Approve" opens the next draft at once.</target>
             </trans-unit>
             <trans-unit id="njw9jnA">
                 <source>narration.guided_step_social_series_prolong</source>

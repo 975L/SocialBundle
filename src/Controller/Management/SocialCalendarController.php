@@ -262,7 +262,7 @@ class SocialCalendarController extends AbstractController
             'texts_url' => $this->generateUrl(self::TEXTS_ROUTE, ['view' => self::SERIES]),
             'retry_url' => $this->generateUrl(self::RETRY_ROUTE, ['view' => self::SERIES]),
             'duplicate_url' => $this->generateUrl(self::DUPLICATE_ROUTE, ['view' => self::SERIES]),
-            // A copy just made, its panel opening with the page
+            // A copy just made or the draft to approve next, its panel opening with the page
             'open_id' => $request->query->getInt('post'),
             'token' => self::CSRF_TOKEN,
             'prolong_url' => null === $last ? null : $this->postUrl($last, 'prolongSeries', self::SERIES),

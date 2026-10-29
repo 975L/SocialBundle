@@ -216,7 +216,7 @@
             </trans-unit>
             <trans-unit id="gsGDEWg">
                 <source>narration.guided_step_social_series_open_panel</source>
-                <target>Cliquez l'image ou le titre d'un post : son panneau s'ouvre sans quitter la série, et ses flèches passent au post précédent ou suivant.</target>
+                <target>Cliquez l'image ou le titre d'un post : son panneau s'ouvre sans quitter la série, ses flèches passent au post précédent ou suivant, et « Valider » ouvre aussitôt le brouillon suivant.</target>
             </trans-unit>
             <trans-unit id="njw9jnA">
                 <source>narration.guided_step_social_series_prolong</source>
