@@ -27,6 +27,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 )]
 class LinkedInReminderCommand extends Command
 {
+    use DaysLeftTrait;
+
     // The days left on which the reminder goes
     public const array DAYS = [14, 3];
 
@@ -42,11 +44,8 @@ class LinkedInReminderCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        // Counted in calendar days of the server's timezone, whatever offset the end was stored with, so the nightly run meets each of them once
         $expiresAt = $this->linkedInClient->expiresAt();
-        $today = new \DateTimeImmutable('today');
-        $daysLeft = null === $expiresAt ? null : (int) $today->diff($expiresAt->setTimezone($today->getTimezone())->setTime(0, 0))->format('%r%a');
-        if (!$this->linkedInClient->isConnected() || !\in_array($daysLeft, self::DAYS, true)) {
+        if (!$this->linkedInClient->isConnected() || !\in_array($this->daysLeft($expiresAt), self::DAYS, true)) {
             $io->success('No LinkedIn reminder due.');
 
             return Command::SUCCESS;

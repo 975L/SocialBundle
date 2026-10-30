@@ -1,5 +1,24 @@
 # Changelog
 
+## v2.22.0
+
+Pinterest: posts pinned on a board
+
+- Added `PinterestClient`: OAuth of a business account, its boards and its pins (30/10/2026)
+- Added `PinterestPublisher`: one picture per pin, the text's first line as title, the content's address as link (30/10/2026)
+- Added `PinterestOAuthController` (`/social/pinterest/connect`, `/social/pinterest/callback`) and `SocialPinterestBoardController` (30/10/2026)
+- Added `c975l:social:pinterest:refresh`: tokens renewed nightly, a refusal emailed on fixed days (30/10/2026)
+- Added `PinterestHealthCheckProvider`: missing board, renewal stopped, connection ended (30/10/2026)
+- Added configs `social-pinterest-*` (30/10/2026)
+- Connections: Pinterest tile, with its account, its board and the button to pick it (30/10/2026)
+- `SocialPostWriter`: Pinterest's writing rules (30/10/2026)
+- Guided project, README, skill: Pinterest connection (30/10/2026)
+- Added `ApiRefusal`: a network's refusal read from its body, shared by LinkedIn, YouTube and Pinterest (30/10/2026)
+- Instagram, Pinterest: a preview writes no JPEG copy (30/10/2026)
+- `LinkedInReminderCommand`: days left counted by `DaysLeftTrait` (30/10/2026)
+- Added `OAuthStateTrait`: the OAuth state shared by the Meta, LinkedIn, YouTube and Pinterest connections (30/10/2026)
+- Pick screens of Meta, LinkedIn and Pinterest share one card template (30/10/2026)
+
 ## v2.21.2
 
 Social links: Apple Podcasts, Deezer and Podcast networks added

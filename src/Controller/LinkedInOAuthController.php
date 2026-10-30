@@ -26,6 +26,8 @@ use function Symfony\Component\Translation\t;
 // The two routes of the LinkedIn connection, the same shape as the Meta one (see MetaOAuthController): the member consents, and the site keeps the token the posts on the member's profile, or on a Page they administer, are made with - for its 60 days, LinkedIn handing no refresh token. One callback for both, so the redirect url declared in the app stays the same
 class LinkedInOAuthController extends AbstractController
 {
+    use OAuthStateTrait;
+
     private const string SESSION_STATE = 'social_linkedin_oauth_state';
 
     // Whether the connection under way is a Page's, kept from the click to the callback
@@ -49,9 +51,7 @@ class LinkedInOAuthController extends AbstractController
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
-        // Held in the session and checked on the way back: without it the callback would accept a code obtained by anyone who can make the editor's browser follow a link
-        $state = bin2hex(random_bytes(16));
-        $request->getSession()->set(self::SESSION_STATE, $state);
+        $state = $this->newState($request);
         $page = $request->query->getBoolean('page');
         $request->getSession()->set(self::SESSION_PAGE, $page);
 
@@ -63,7 +63,7 @@ class LinkedInOAuthController extends AbstractController
     {
         $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
 
-        $expected = $request->getSession()->remove(self::SESSION_STATE);
+        $code = $this->callbackCode($request);
         $page = true === $request->getSession()->remove(self::SESSION_PAGE);
 
         // A connection held by an earlier one never picked from, so it cannot outlive this one
@@ -76,8 +76,7 @@ class LinkedInOAuthController extends AbstractController
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
-        $code = $request->query->get('code');
-        if (!\is_string($expected) || $expected !== $request->query->get('state') || !\is_string($code) || '' === $code) {
+        if (null === $code) {
             $this->addFlash('danger', t('flash.linkedin_refused', [], 'social'));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);

@@ -131,13 +131,10 @@ class YoutubeClient
         return $this->checked($response, $url)->toArray(false);
     }
 
-    // YouTube explains a refusal in the body ("quotaExceeded", "uploadLimitExceeded"), which is what the screen should show rather than a bare status code
+    // The response, once sure it is not a refusal - YouTube's message sitting under "error"
     private function checked(ResponseInterface $response, string $what): ResponseInterface
     {
-        if ($response->getStatusCode() >= 300) {
-            $data = json_decode($response->getContent(false), true);
-            throw new \RuntimeException(sprintf('YouTube refused %s: %s', $what, \is_array($data) ? ($data['error']['message'] ?? $response->getStatusCode()) : $response->getStatusCode()));
-        }
+        ApiRefusal::throwIf($response, 'YouTube', $what, 'error.message');
 
         return $response;
     }

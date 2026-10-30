@@ -11,23 +11,9 @@
 
         <div class="row g-3">
             {% for organization in organizations %}
-                <div class="col-12 col-md-6 col-xl-4">
-                    <div class="card h-100">
-                        <div class="card-body d-flex flex-column">
-                            <h2 class="h5 card-title"><i class="fab fa-linkedin me-2"></i><a href="https://www.linkedin.com/company/{{ organization.id }}/" target="_blank" rel="noopener noreferrer">{{ organization.name }}</a></h2>
-
-                            <p class="card-text small text-muted">ID {{ organization.id }}</p>
-
-                            {% if organization.id == current %}
-                                <p><twig:ea:Badge color="success">{{ ('label.social_linkedin_page_current'|trans({}, 'social')) }}</twig:ea:Badge></p>
-                            {% endif %}
-
-                            <div class="mt-auto">
-                                <twig:ea:Button variant="primary" name="organization" value="{{ organization.id }}">{{ ('label.social_linkedin_page_pick'|trans({}, 'social')) }}</twig:ea:Button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% embed '@c975LSocial/management/_pick_card.html.twig' with {icon: 'fab fa-linkedin', name: organization.name, id: organization.id, field: 'organization', current_label: 'label.social_linkedin_page_current', pick_label: 'label.social_linkedin_page_pick'} %}
+                    {% block title %}<a href="https://www.linkedin.com/company/{{ organization.id }}/" target="_blank" rel="noopener noreferrer">{{ organization.name }}</a>{% endblock %}
+                {% endembed %}
             {% endfor %}
         </div>
     </form>

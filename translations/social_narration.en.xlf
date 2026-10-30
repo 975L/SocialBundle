@@ -134,6 +134,22 @@
                 <source>narration.guided_step_social_meta_prerequisites</source>
                 <target>This first part happens at Meta, on developers.facebook.com: create an app, add Facebook Login to it with the site's return address, and leave it in development mode. Check too that the Page is linked to the Instagram professional account. Come back here with the ID and the secret.</target>
             </trans-unit>
+            <trans-unit id="OG9eYCY">
+                <source>narration.guided_step_social_pinterest_board</source>
+                <target>Pick here the board the pins go on; a single public board is picked at once.</target>
+            </trans-unit>
+            <trans-unit id="Mfa25BF">
+                <source>narration.guided_step_social_pinterest_connect</source>
+                <target>Click Connect on the Pinterest tile, then allow access with the account that pins.</target>
+            </trans-unit>
+            <trans-unit id="3L1enQf">
+                <source>narration.guided_step_social_pinterest_credentials</source>
+                <target>Search for "social-pinterest-client-id" and "social-pinterest-client-secret" in the settings list, and paste in the app's two values.</target>
+            </trans-unit>
+            <trans-unit id="RZYQ_r1">
+                <source>narration.guided_step_social_pinterest_prerequisites</source>
+                <target>On developers.pinterest.com, create an app with a business account, and declare the site's redirect address.</target>
+            </trans-unit>
             <trans-unit id="vcZmc00">
                 <source>narration.guided_step_social_posts_approve</source>
                 <target>Back on the list, the checked-calendar icon, "Approve", hands the post over to its planned date: it goes out on its own, instead of being sent at once.</target>

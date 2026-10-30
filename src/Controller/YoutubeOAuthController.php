@@ -25,6 +25,8 @@ use function Symfony\Component\Translation\t;
 // The two routes of the YouTube connection, the same shape as the LinkedIn one (see LinkedInOAuthController): the channel's owner consents with the Google OAuth client the site already holds, and the site keeps the refresh token and which channel it reaches
 class YoutubeOAuthController extends AbstractController
 {
+    use OAuthStateTrait;
+
     private const string SESSION_STATE = 'social_youtube_oauth_state';
 
     public function __construct(
@@ -45,9 +47,7 @@ class YoutubeOAuthController extends AbstractController
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
-        // Held in the session and checked on the way back: without it the callback would accept a code obtained by anyone who can make the editor's browser follow a link
-        $state = bin2hex(random_bytes(16));
-        $request->getSession()->set(self::SESSION_STATE, $state);
+        $state = $this->newState($request);
 
         return $this->redirect($this->youtubeClient->getAuthorizationUrl($this->redirectUri(), $state));
     }
@@ -57,9 +57,8 @@ class YoutubeOAuthController extends AbstractController
     {
         $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
 
-        $expected = $request->getSession()->remove(self::SESSION_STATE);
-        $code = $request->query->get('code');
-        if (!\is_string($expected) || $expected !== $request->query->get('state') || !\is_string($code) || '' === $code) {
+        $code = $this->callbackCode($request);
+        if (null === $code) {
             $this->addFlash('danger', t('flash.youtube_refused', [], 'social'));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);

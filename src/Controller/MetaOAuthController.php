@@ -25,6 +25,8 @@ use function Symfony\Component\Translation\t;
 // The two routes of the Meta connection, the same shape as the Google one (see GoogleOAuthController): the owner consents once, and the site keeps the Page token the posts on Facebook and Instagram are made with - the Page itself stored by SocialMetaPageController, where an account managing several picks the site's own
 class MetaOAuthController extends AbstractController
 {
+    use OAuthStateTrait;
+
     private const string SESSION_STATE = 'social_meta_oauth_state';
 
     public function __construct(
@@ -44,9 +46,7 @@ class MetaOAuthController extends AbstractController
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
-        // Held in the session and checked on the way back: without it the callback would accept a code obtained by anyone who can make the editor's browser follow a link
-        $state = bin2hex(random_bytes(16));
-        $request->getSession()->set(self::SESSION_STATE, $state);
+        $state = $this->newState($request);
 
         return $this->redirect($this->metaGraphClient->getAuthorizationUrl($this->redirectUri(), $state));
     }
@@ -56,13 +56,12 @@ class MetaOAuthController extends AbstractController
     {
         $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
 
-        $expected = $request->getSession()->remove(self::SESSION_STATE);
+        $code = $this->callbackCode($request);
 
         // A list left by an earlier connection never picked from, so it cannot outlive this one
         $request->getSession()->remove(SocialMetaPageController::SESSION_PAGES);
 
-        $code = $request->query->get('code');
-        if (!\is_string($expected) || $expected !== $request->query->get('state') || !\is_string($code) || '' === $code) {
+        if (null === $code) {
             $this->addFlash('danger', t('flash.meta_refused', [], 'social'));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);

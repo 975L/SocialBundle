@@ -134,6 +134,22 @@
                 <source>narration.guided_step_social_meta_prerequisites</source>
                 <target>Cette première partie se passe chez Meta, sur developers.facebook.com : créez une application, ajoutez-lui la connexion Facebook avec l'adresse de retour du site, et laissez-la en mode développement. Vérifiez aussi que la Page est reliée au compte Instagram professionnel. Revenez ici avec l'identifiant et la clé secrète.</target>
             </trans-unit>
+            <trans-unit id="OG9eYCY">
+                <source>narration.guided_step_social_pinterest_board</source>
+                <target>Choisissez ici le tableau où vont les épingles ; un seul tableau public est pris d'office.</target>
+            </trans-unit>
+            <trans-unit id="Mfa25BF">
+                <source>narration.guided_step_social_pinterest_connect</source>
+                <target>Cliquez sur Connecter dans la tuile Pinterest, puis autorisez l'accès avec le compte qui épingle.</target>
+            </trans-unit>
+            <trans-unit id="3L1enQf">
+                <source>narration.guided_step_social_pinterest_credentials</source>
+                <target>Cherchez « social-pinterest-client-id » et « social-pinterest-client-secret » dans la liste des réglages, et collez-y les deux valeurs de l'application.</target>
+            </trans-unit>
+            <trans-unit id="RZYQ_r1">
+                <source>narration.guided_step_social_pinterest_prerequisites</source>
+                <target>Sur developers.pinterest.com, créez une application avec un compte professionnel, et déclarez l'adresse de rappel du site.</target>
+            </trans-unit>
             <trans-unit id="vcZmc00">
                 <source>narration.guided_step_social_posts_approve</source>
                 <target>De retour sur la liste, l'icône de calendrier coché, « Valider », confie la publication à sa date prévue : elle partira d'elle-même, au lieu d'être envoyée tout de suite.</target>

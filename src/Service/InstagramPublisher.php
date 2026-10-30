@@ -115,9 +115,10 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
         return (string) $this->metaGraphClient->request('POST', '/' . $this->instagramId() . '/media_publish', ['creation_id' => $containerId, ...$token])['id'];
     }
 
+    // The source pictures in place of their JPEG copies, a preview writing nothing to disk
     public function preview(string $text, SocialContent $content, array $medias = []): array
     {
-        return ['path' => '/' . $this->instagramId() . '/media', ...$this->request($text, $content, $medias)];
+        return ['path' => '/' . $this->instagramId() . '/media', ...$this->request($text, $content, $medias, true)];
     }
 
     // The container publish() creates, token aside, with the children a carousel creates before it
@@ -126,11 +127,11 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
      *
      * @return array{parameters: array<string, string>, children?: list<array<string, string>>}
      */
-    private function request(string $text, SocialContent $content, array $medias): array
+    private function request(string $text, SocialContent $content, array $medias, bool $preview = false): array
     {
         // No media of its own: the content's image
         if ([] === $medias) {
-            $imageUrl = $this->imageExporter->jpegUrl($content, self::MIN_RATIO, self::MAX_RATIO)
+            $imageUrl = ($preview ? $content->imagePath ?? $content->imageUrl : $this->imageExporter->jpegUrl($content, self::MIN_RATIO, self::MAX_RATIO))
                 ?? throw new \RuntimeException('Instagram only takes posts with an image, and this content has none.');
 
             return ['parameters' => ['image_url' => $imageUrl, 'caption' => $text, 'alt_text' => mb_substr($content->imageAlt ?? $content->title, 0, 1000)]];
@@ -142,20 +143,24 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
 
             return ['parameters' => $media->isVideo()
                 ? ['media_type' => 'REELS', 'video_url' => $media->url, 'caption' => $text]
-                : ['image_url' => $this->imageUrl($media, $content), 'caption' => $text, 'alt_text' => mb_substr($media->alt ?? $content->imageAlt ?? $content->title, 0, 1000)]];
+                : ['image_url' => $this->imageUrl($media, $content, $preview), 'caption' => $text, 'alt_text' => mb_substr($media->alt ?? $content->imageAlt ?? $content->title, 0, 1000)]];
         }
 
         // Several: a carousel of child containers
         $children = array_map(fn (PostMedia $media): array => $media->isVideo()
             ? ['is_carousel_item' => 'true', 'media_type' => 'VIDEO', 'video_url' => $media->url]
-            : ['is_carousel_item' => 'true', 'image_url' => $this->imageUrl($media, $content)], $medias);
+            : ['is_carousel_item' => 'true', 'image_url' => $this->imageUrl($media, $content, $preview)], $medias);
 
         return ['parameters' => ['media_type' => 'CAROUSEL', 'caption' => $text], 'children' => $children];
     }
 
-    // The url of an uploaded picture framed within Instagram's ratios, as the content's own image is
-    private function imageUrl(PostMedia $media, SocialContent $content): string
+    // The url of an uploaded picture framed within Instagram's ratios, as the content's own image is - its path for a preview
+    private function imageUrl(PostMedia $media, SocialContent $content, bool $preview): string
     {
+        if ($preview) {
+            return $media->path;
+        }
+
         return $this->imageExporter->jpegUrl(new SocialContent($content->sourceId, $content->title, $content->url, imagePath: $media->path), self::MIN_RATIO, self::MAX_RATIO)
             ?? throw new \RuntimeException('This picture could not be served to Instagram: is "site-url" set?');
     }

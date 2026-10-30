@@ -130,6 +130,42 @@
                 <source>description.social_meta_page_token</source>
                 <target>Filled by "Connect Meta". It does not expire, unless the password changes or the app is removed.</target>
             </trans-unit>
+            <trans-unit id="Eg.B5hh">
+                <source>description.social_pinterest_access_token</source>
+                <target>Filled by the connection on the Pinterest tile of "Connections", renewed nightly by c975l:social:pinterest:refresh. Valid for 30 days.</target>
+            </trans-unit>
+            <trans-unit id="7fvIquZ">
+                <source>description.social_pinterest_board_id</source>
+                <target>Filled by "Pick the Pinterest board": the ID of the board the site pins on.</target>
+            </trans-unit>
+            <trans-unit id="PRj9tx_">
+                <source>description.social_pinterest_board_name</source>
+                <target>Filled with the board: its name, shown in "Connections".</target>
+            </trans-unit>
+            <trans-unit id="0_ccaPt">
+                <source>description.social_pinterest_client_id</source>
+                <target>App ID of the app created on developers.pinterest.com, from a business account, with the site's /social/pinterest/callback redirect URI.</target>
+            </trans-unit>
+            <trans-unit id="qo_o3nU">
+                <source>description.social_pinterest_client_secret</source>
+                <target>App secret key of the same Pinterest app.</target>
+            </trans-unit>
+            <trans-unit id="sdzXBsQ">
+                <source>description.social_pinterest_refresh_token</source>
+                <target>Filled by the connection, replaced on every renewal. Valid for 60 days.</target>
+            </trans-unit>
+            <trans-unit id="1hfQEQj">
+                <source>description.social_pinterest_refresh_token_expires_at</source>
+                <target>Filled by the connection: the date after which Pinterest has to be connected again if the nightly renewal did not run.</target>
+            </trans-unit>
+            <trans-unit id="IuQbtES">
+                <source>description.social_pinterest_token_expires_at</source>
+                <target>Filled by the connection: the date after which Pinterest refuses the access token.</target>
+            </trans-unit>
+            <trans-unit id="0Wm6h8_">
+                <source>description.social_pinterest_username</source>
+                <target>Filled by the connection: the name of the connected Pinterest account.</target>
+            </trans-unit>
             <trans-unit id="KPbdz0r">
                 <source>description.social_publish_template</source>
                 <target>Template of the posted text. Variables: {title}, {url}, and the content's own ({category}, {description}...). A variable with no value is removed.</target>
@@ -281,6 +317,42 @@
             <trans-unit id="q7doyNI">
                 <source>label.social_meta_page_token</source>
                 <target>Facebook Page token</target>
+            </trans-unit>
+            <trans-unit id="RruQ2jU">
+                <source>label.social_pinterest_access_token</source>
+                <target>Pinterest access token</target>
+            </trans-unit>
+            <trans-unit id="9ctlrw9">
+                <source>label.social_pinterest_board_id</source>
+                <target>Pinterest board</target>
+            </trans-unit>
+            <trans-unit id="JvWgqMq">
+                <source>label.social_pinterest_board_name</source>
+                <target>Pinterest board name</target>
+            </trans-unit>
+            <trans-unit id="gfMTpV2">
+                <source>label.social_pinterest_client_id</source>
+                <target>Pinterest app client ID</target>
+            </trans-unit>
+            <trans-unit id="q.6Gr0O">
+                <source>label.social_pinterest_client_secret</source>
+                <target>Pinterest app secret</target>
+            </trans-unit>
+            <trans-unit id="is9XTiL">
+                <source>label.social_pinterest_refresh_token</source>
+                <target>Pinterest refresh token</target>
+            </trans-unit>
+            <trans-unit id="Oe0aDiG">
+                <source>label.social_pinterest_refresh_token_expires_at</source>
+                <target>Pinterest connection expiry</target>
+            </trans-unit>
+            <trans-unit id="mEuSNqN">
+                <source>label.social_pinterest_token_expires_at</source>
+                <target>Pinterest token expiry</target>
+            </trans-unit>
+            <trans-unit id="9ym1oNy">
+                <source>label.social_pinterest_username</source>
+                <target>Pinterest account</target>
             </trans-unit>
             <trans-unit id="XYTOV4b">
                 <source>label.social_publish_template</source>

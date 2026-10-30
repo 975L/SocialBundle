@@ -62,6 +62,10 @@
                 <source>description.guided_project_social_meta_connect</source>
                 <target>La partie agence : l'application Meta, ses deux clés, et le consentement. À faire une fois, puis à nouveau si l'accès est retiré.</target>
             </trans-unit>
+            <trans-unit id="Vd8mLw7">
+                <source>description.guided_project_social_pinterest_connect</source>
+                <target>La partie agence : l'application Pinterest, ses deux clés, le consentement et le tableau. À faire une fois : l'accès se renouvelle ensuite tout seul chaque nuit.</target>
+            </trans-unit>
             <trans-unit id="osYKEjU">
                 <source>description.guided_project_social_posts</source>
                 <target>Vos publications pour les réseaux : en générer une série ou en préparer une, relire ses textes et ses médias, puis la valider ou l'envoyer.</target>
@@ -206,6 +210,22 @@
                 <source>description.guided_step_social_meta_prerequisites</source>
                 <target>Cette partie se passe sur developers.facebook.com : créer une application, y ajouter la connexion Facebook avec pour adresse de redirection celle du site suivie de « /social/meta/callback », et la laisser en mode développement. La Page doit être reliée au compte Instagram professionnel. Revenir ici avec l'identifiant et la clé secrète de l'application.</target>
             </trans-unit>
+            <trans-unit id="r5uBYQS">
+                <source>description.guided_step_social_pinterest_board</source>
+                <target>Sur l'écran qui s'ouvre après l'autorisation, cliquer sur « Choisir ce tableau » sous celui où vont les épingles. Un seul tableau public : il est pris d'office. Sans tableau public, en créer un sur Pinterest d'abord. Pour en changer plus tard, le bouton « Choisir le tableau Pinterest » de la tuile ramène ici.</target>
+            </trans-unit>
+            <trans-unit id="OBOzS8E">
+                <source>description.guided_step_social_pinterest_connect</source>
+                <target>Cliquer sur « Connecter » dans la tuile « Pinterest », puis autoriser l'accès avec le compte professionnel qui épingle. Le site enregistre lui-même les jetons et le compte, puis prend le tableau s'il n'y en a qu'un.</target>
+            </trans-unit>
+            <trans-unit id="R_0tjWV">
+                <source>description.guided_step_social_pinterest_credentials</source>
+                <target>Chercher « social-pinterest-client-id » et « social-pinterest-client-secret » dans la liste, et y coller l'App ID et l'App secret key. Le secret ne s'affiche qu'avec le bouton « Voir données sensibles ». Les jetons, le compte et le tableau se remplissent tout seuls aux étapes suivantes.</target>
+            </trans-unit>
+            <trans-unit id="08tI43H">
+                <source>description.guided_step_social_pinterest_prerequisites</source>
+                <target>Cette partie se passe sur developers.pinterest.com, avec un compte professionnel Pinterest : créer une application, y déclarer comme adresse de redirection celle du site suivie de « /social/pinterest/callback ». En accès d'essai, seules les épingles du compte propriétaire de l'application passent, visibles de lui seul ; l'accès Standard se demande ensuite avec une vidéo de démonstration. Revenir ici avec l'App ID et l'App secret key.</target>
+            </trans-unit>
             <trans-unit id="2_2asy8">
                 <source>description.guided_step_social_posts_approve</source>
                 <target>Ce bouton en forme de calendrier coché valide la publication : elle partira d'elle-même à sa date prévue, au lieu d'être envoyée tout de suite. Cochez plusieurs brouillons pour les valider ensemble avec « Valider la sélection ».</target>
@@ -330,6 +350,14 @@
                 <source>email.social_linkedin_reminder_subject</source>
                 <target>Reconnectez LinkedIn avant le %date%</target>
             </trans-unit>
+            <trans-unit id="qmfkMYq">
+                <source>email.social_pinterest_refresh_failed_body</source>
+                <target>Pinterest a refusé de renouveler l'accès du site (%error%). Plus rien n'est épinglé tant que le compte n'est pas reconnecté depuis « Connexions » :</target>
+            </trans-unit>
+            <trans-unit id="Z4dMkeM">
+                <source>email.social_pinterest_refresh_failed_subject</source>
+                <target>Reconnectez Pinterest</target>
+            </trans-unit>
             <trans-unit id="Zcn3ppA">
                 <source>email.social_post_comment_failed</source>
                 <target>la publication est partie, son premier commentaire a été refusé (%error%) : seul le commentaire sera renvoyé</target>
@@ -421,6 +449,30 @@
             <trans-unit id="XAjNZmW">
                 <source>flash.meta_refused</source>
                 <target>La connexion à Meta a été refusée ou interrompue.</target>
+            </trans-unit>
+            <trans-unit id="UFJQCAs">
+                <source>flash.pinterest_board_invalid</source>
+                <target>Ce tableau n'a pas pu être choisi : rechargez la page et recommencez.</target>
+            </trans-unit>
+            <trans-unit id="MMzQZm4">
+                <source>flash.pinterest_board_picked</source>
+                <target>Les épingles iront sur le tableau « %name% ».</target>
+            </trans-unit>
+            <trans-unit id="jiRwSLU">
+                <source>flash.pinterest_connected</source>
+                <target>Pinterest est connecté avec le compte %name%.</target>
+            </trans-unit>
+            <trans-unit id="R3wxs8E">
+                <source>flash.pinterest_no_board</source>
+                <target>Ce compte Pinterest n'a aucun tableau public : créez-en un sur Pinterest, puis choisissez-le ici.</target>
+            </trans-unit>
+            <trans-unit id="aKOIwUl">
+                <source>flash.pinterest_not_configured</source>
+                <target>Renseignez d'abord l'identifiant et le secret de votre app Pinterest dans la configuration.</target>
+            </trans-unit>
+            <trans-unit id="SEFk2aH">
+                <source>flash.pinterest_refused</source>
+                <target>La connexion à Pinterest a été refusée ou interrompue.</target>
             </trans-unit>
             <trans-unit id="sgZ4.jB">
                 <source>flash.social_calendar_feed_created</source>
@@ -606,6 +658,10 @@
                 <source>label.connection_not_connected</source>
                 <target>Non connecté</target>
             </trans-unit>
+            <trans-unit id="JOD96Pj">
+                <source>label.connection_pinterest_board_missing</source>
+                <target>Aucun tableau choisi : rien n'est épinglé tant qu'il n'y en a pas.</target>
+            </trans-unit>
             <trans-unit id="B8XG1pX">
                 <source>label.connection_reconnect</source>
                 <target>Reconnecter</target>
@@ -766,6 +822,10 @@
                 <source>label.guided_project_social_meta_connect</source>
                 <target>Connecter la Page Facebook et Instagram</target>
             </trans-unit>
+            <trans-unit id="gd7_sA.">
+                <source>label.guided_project_social_pinterest_connect</source>
+                <target>Connecter Pinterest</target>
+            </trans-unit>
             <trans-unit id="Wh.sgxE">
                 <source>label.guided_project_social_posts</source>
                 <target>Relire et publier sur vos réseaux</target>
@@ -913,6 +973,22 @@
             <trans-unit id="BzznW61">
                 <source>label.guided_step_social_meta_prerequisites</source>
                 <target>Créer l'application Meta</target>
+            </trans-unit>
+            <trans-unit id="3zgWo9F">
+                <source>label.guided_step_social_pinterest_board</source>
+                <target>Choisir le tableau</target>
+            </trans-unit>
+            <trans-unit id="Jgkpl7L">
+                <source>label.guided_step_social_pinterest_connect</source>
+                <target>Lancer la connexion</target>
+            </trans-unit>
+            <trans-unit id="Em24tUV">
+                <source>label.guided_step_social_pinterest_credentials</source>
+                <target>Renseigner les deux clés de l'application</target>
+            </trans-unit>
+            <trans-unit id="VXe0gNo">
+                <source>label.guided_step_social_pinterest_prerequisites</source>
+                <target>Créer l'application Pinterest</target>
             </trans-unit>
             <trans-unit id="bIP872E">
                 <source>label.guided_step_social_posts_approve</source>
@@ -1114,6 +1190,14 @@
                 <source>label.info_no_connected_network</source>
                 <target>Aucun réseau n'est encore connecté : rien ne sera publié tant qu'aucun ne l'est.</target>
             </trans-unit>
+            <trans-unit id="QGfKhEv">
+                <source>label.info_pinterest_connect</source>
+                <target>Relie le site à un compte professionnel Pinterest : chaque post devient une épingle, avec son image et son lien, sur le tableau choisi. Les jetons se renouvellent seuls chaque nuit.</target>
+            </trans-unit>
+            <trans-unit id="tu1qmPl">
+                <source>label.info_pinterest_not_configured</source>
+                <target>Renseignez d'abord l'identifiant et le secret de l'app Pinterest dans la configuration (« social-pinterest-client-id » et « social-pinterest-client-secret »).</target>
+            </trans-unit>
             <trans-unit id="lZ1hyGi">
                 <source>label.info_share_buttons_disabled</source>
                 <target>Les boutons de partage sont désactivés pour tout le site : aucune page ne les affiche, ces réglages restent donc sans effet pour l'instant.</target>
@@ -1149,6 +1233,10 @@
             <trans-unit id="eZ5rH.c">
                 <source>label.info_social_meta_page</source>
                 <target>Ce compte Facebook gère plusieurs Pages : choisissez celle sur laquelle le site publie. Le compte Instagram est celui que Meta relie à la Page ; pour en changer, modifiez ce lien dans Meta Business Suite, puis reconnectez.</target>
+            </trans-unit>
+            <trans-unit id="O2FzWfg">
+                <source>label.info_social_pinterest_board</source>
+                <target>Le compte %name% a plusieurs tableaux publics : choisissez celui où le site épingle.</target>
             </trans-unit>
             <trans-unit id="td4VA3T">
                 <source>label.info_social_post_prepare_url</source>
@@ -1221,6 +1309,10 @@
             <trans-unit id="o71OlA1">
                 <source>label.network_off</source>
                 <target>non connecté</target>
+            </trans-unit>
+            <trans-unit id="tvLY2Yw">
+                <source>label.network_pinterest</source>
+                <target>Pinterest</target>
             </trans-unit>
             <trans-unit id="ROhCU6T">
                 <source>label.network_youtube</source>
@@ -1621,6 +1713,18 @@
             <trans-unit id="O.QWmc1">
                 <source>label.social_meta_page_pick</source>
                 <target>Choisir cette Page</target>
+            </trans-unit>
+            <trans-unit id="L3B3.jU">
+                <source>label.social_pinterest_board</source>
+                <target>Choisir le tableau Pinterest</target>
+            </trans-unit>
+            <trans-unit id="Ic7_UrU">
+                <source>label.social_pinterest_board_current</source>
+                <target>Tableau actuel</target>
+            </trans-unit>
+            <trans-unit id="iLpaHNv">
+                <source>label.social_pinterest_board_pick</source>
+                <target>Choisir ce tableau</target>
             </trans-unit>
             <trans-unit id="tiqhi.Y">
                 <source>label.social_post</source>

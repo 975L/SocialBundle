@@ -382,11 +382,8 @@ class LinkedInClient
             'timeout' => 30,
         ]);
 
-        // LinkedIn explains a refusal in the body ("Not enough permissions", an expired token), which is what the screen should show rather than a bare status code
-        if ($response->getStatusCode() >= 300) {
-            $data = json_decode($response->getContent(false), true);
-            throw new \RuntimeException(sprintf('LinkedIn refused %s: %s', $path, \is_array($data) ? ($data['message'] ?? $response->getStatusCode()) : $response->getStatusCode()), $response->getStatusCode());
-        }
+        // A refusal thrown with LinkedIn's own explanation ("Not enough permissions", an expired token)
+        ApiRefusal::throwIf($response, 'LinkedIn', $path);
 
         return $response;
     }

@@ -1,0 +1,20 @@
+{# One choice of a pick screen - Meta Page, LinkedIn Page, Pinterest board - embedded with icon, name, id, current, field, current_label and pick_label, the "title" and "details" blocks overridden where a network shows more #}
+<div class="col-12 col-md-6 col-xl-4">
+    <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+            <h2 class="h5 card-title"><i class="{{ icon }} me-2"></i>{% block title %}{{ name }}{% endblock %}</h2>
+
+            <p class="card-text small text-muted">ID {{ id }}</p>
+
+            {% if id == current %}
+                <p><twig:ea:Badge color="success">{{ (current_label|trans({}, 'social')) }}</twig:ea:Badge></p>
+            {% endif %}
+
+            {% block details %}{% endblock %}
+
+            <div class="mt-auto">
+                <twig:ea:Button variant="primary" name="{{ field }}" value="{{ id }}">{{ (pick_label|trans({}, 'social')) }}</twig:ea:Button>
+            </div>
+        </div>
+    </div>
+</div>

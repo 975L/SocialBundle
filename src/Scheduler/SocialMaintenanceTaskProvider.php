@@ -31,6 +31,8 @@ class SocialMaintenanceTaskProvider implements MaintenanceTaskProviderInterface
             new MaintenanceTask('# #(2-5) * * *', 'c975l:social:linkedin:reminder'),
             // The reminder to connect Bluesky again, nightly - one email once its permissions are out of date
             new MaintenanceTask('# #(2-5) * * *', 'c975l:social:bluesky:reminder'),
+            // The Pinterest tokens renewed, nightly - a no-op until the access token is a week from its end, the refresh token living 60 days
+            new MaintenanceTask('# #(2-5) * * *', 'c975l:social:pinterest:refresh'),
         ];
     }
 }

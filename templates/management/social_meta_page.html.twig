@@ -11,31 +11,17 @@
 
         <div class="row g-3">
             {% for page in pages %}
-                <div class="col-12 col-md-6 col-xl-4">
-                    <div class="card h-100">
-                        <div class="card-body d-flex flex-column">
-                            <h2 class="h5 card-title"><i class="fab fa-facebook me-2"></i>{{ page.name }}</h2>
-
-                            <p class="card-text small text-muted">ID {{ page.pageId }}</p>
-
-                            {% if page.pageId == current %}
-                                <p><twig:ea:Badge color="success">{{ ('label.social_meta_page_current'|trans({}, 'social')) }}</twig:ea:Badge></p>
-                            {% endif %}
-
-                            {% if page.instagram %}
-                                <p class="card-text"><i class="fab fa-instagram me-2"></i>@{{ page.instagram }}</p>
-                            {% elseif page.instagramId %}
-                                <p class="card-text"><i class="fab fa-instagram me-2"></i>{{ ('label.social_meta_page_instagram_linked'|trans({}, 'social')) }}</p>
-                            {% else %}
-                                <p class="card-text small text-warning">{{ ('label.connection_instagram_missing'|trans({}, 'social')) }}</p>
-                            {% endif %}
-
-                            <div class="mt-auto">
-                                <twig:ea:Button variant="primary" name="page" value="{{ page.pageId }}">{{ ('label.social_meta_page_pick'|trans({}, 'social')) }}</twig:ea:Button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% embed '@c975LSocial/management/_pick_card.html.twig' with {icon: 'fab fa-facebook', name: page.name, id: page.pageId, field: 'page', current_label: 'label.social_meta_page_current', pick_label: 'label.social_meta_page_pick'} %}
+                    {% block details %}
+                        {% if page.instagram %}
+                            <p class="card-text"><i class="fab fa-instagram me-2"></i>@{{ page.instagram }}</p>
+                        {% elseif page.instagramId %}
+                            <p class="card-text"><i class="fab fa-instagram me-2"></i>{{ ('label.social_meta_page_instagram_linked'|trans({}, 'social')) }}</p>
+                        {% else %}
+                            <p class="card-text small text-warning">{{ ('label.connection_instagram_missing'|trans({}, 'social')) }}</p>
+                        {% endif %}
+                    {% endblock %}
+                {% endembed %}
             {% endfor %}
         </div>
     </form>

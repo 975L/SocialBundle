@@ -256,9 +256,20 @@ class MetaPublishersTest extends TestCase
             ->with($this->callback(fn (SocialContent $content): bool => '/var/medias/p1.jpg' === $content->imagePath), 0.8, 1.91)
             ->willReturn('https://example.org/medias/social/p1.jpg');
 
+        new InstagramPublisher($this->graph([['id' => 'c1'], ['status_code' => 'FINISHED'], ['id' => 'm1']]), $exporter, $this->config(), 0)->publish('Texte', $this->content(), [$this->picture('p1')]);
+
+        $this->assertSame(['image_url' => 'https://example.org/medias/social/p1.jpg', 'caption' => 'Texte', 'alt_text' => 'Alt p1', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
+    }
+
+    // A preview shows the source pictures, no JPEG copy written
+    public function testAnInstagramPreviewWritesNoCopy(): void
+    {
+        $exporter = $this->createMock(SocialImageExporter::class);
+        $exporter->expects($this->never())->method('jpegUrl');
+
         $preview = new InstagramPublisher($this->graph([]), $exporter, $this->config(), 0)->preview('Texte', $this->content(), [$this->picture('p1')]);
 
-        $this->assertSame(['path' => '/77/media', 'parameters' => ['image_url' => 'https://example.org/medias/social/p1.jpg', 'caption' => 'Texte', 'alt_text' => 'Alt p1']], $preview);
+        $this->assertSame('/var/medias/p1.jpg', $preview['parameters']['image_url']);
     }
 
     // A video alone goes out as a reel, published once processed

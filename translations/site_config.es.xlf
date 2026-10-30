@@ -130,6 +130,42 @@
                 <source>description.social_meta_page_token</source>
                 <target>Rellenado por «Conectar Meta». No caduca, salvo cambio de contraseña o retirada de la app.</target>
             </trans-unit>
+            <trans-unit id="Eg.B5hh">
+                <source>description.social_pinterest_access_token</source>
+                <target>Rellenado por la conexión del mosaico Pinterest de «Conexiones», renovado cada noche por c975l:social:pinterest:refresh. Válido 30 días.</target>
+            </trans-unit>
+            <trans-unit id="7fvIquZ">
+                <source>description.social_pinterest_board_id</source>
+                <target>Rellenado por «Elegir el tablero de Pinterest»: el identificador del tablero en el que el sitio publica sus pines.</target>
+            </trans-unit>
+            <trans-unit id="PRj9tx_">
+                <source>description.social_pinterest_board_name</source>
+                <target>Rellenado con el tablero: su nombre, mostrado en «Conexiones».</target>
+            </trans-unit>
+            <trans-unit id="0_ccaPt">
+                <source>description.social_pinterest_client_id</source>
+                <target>App ID de la app creada en developers.pinterest.com, desde una cuenta profesional, con la URI de redirección /social/pinterest/callback del sitio.</target>
+            </trans-unit>
+            <trans-unit id="qo_o3nU">
+                <source>description.social_pinterest_client_secret</source>
+                <target>App secret key de la misma app de Pinterest.</target>
+            </trans-unit>
+            <trans-unit id="sdzXBsQ">
+                <source>description.social_pinterest_refresh_token</source>
+                <target>Rellenado por la conexión, sustituido en cada renovación. Válido 60 días.</target>
+            </trans-unit>
+            <trans-unit id="1hfQEQj">
+                <source>description.social_pinterest_refresh_token_expires_at</source>
+                <target>Rellenado por la conexión: la fecha a partir de la cual hay que volver a conectar Pinterest si la renovación nocturna no se ejecutó.</target>
+            </trans-unit>
+            <trans-unit id="IuQbtES">
+                <source>description.social_pinterest_token_expires_at</source>
+                <target>Rellenado por la conexión: la fecha a partir de la cual Pinterest rechaza el token de acceso.</target>
+            </trans-unit>
+            <trans-unit id="0Wm6h8_">
+                <source>description.social_pinterest_username</source>
+                <target>Rellenado por la conexión: el nombre de la cuenta de Pinterest conectada.</target>
+            </trans-unit>
             <trans-unit id="KPbdz0r">
                 <source>description.social_publish_template</source>
                 <target>Plantilla del texto publicado. Variables: {title}, {url}, y las del contenido ({category}, {description}...). Una variable sin valor se elimina.</target>
@@ -281,6 +317,42 @@
             <trans-unit id="q7doyNI">
                 <source>label.social_meta_page_token</source>
                 <target>Token de la Página de Facebook</target>
+            </trans-unit>
+            <trans-unit id="RruQ2jU">
+                <source>label.social_pinterest_access_token</source>
+                <target>Token de acceso de Pinterest</target>
+            </trans-unit>
+            <trans-unit id="9ctlrw9">
+                <source>label.social_pinterest_board_id</source>
+                <target>Tablero de Pinterest</target>
+            </trans-unit>
+            <trans-unit id="JvWgqMq">
+                <source>label.social_pinterest_board_name</source>
+                <target>Nombre del tablero de Pinterest</target>
+            </trans-unit>
+            <trans-unit id="gfMTpV2">
+                <source>label.social_pinterest_client_id</source>
+                <target>Client ID de la app de Pinterest</target>
+            </trans-unit>
+            <trans-unit id="q.6Gr0O">
+                <source>label.social_pinterest_client_secret</source>
+                <target>Secreto de la app de Pinterest</target>
+            </trans-unit>
+            <trans-unit id="is9XTiL">
+                <source>label.social_pinterest_refresh_token</source>
+                <target>Token de renovación de Pinterest</target>
+            </trans-unit>
+            <trans-unit id="Oe0aDiG">
+                <source>label.social_pinterest_refresh_token_expires_at</source>
+                <target>Caducidad de la conexión de Pinterest</target>
+            </trans-unit>
+            <trans-unit id="mEuSNqN">
+                <source>label.social_pinterest_token_expires_at</source>
+                <target>Caducidad del token de Pinterest</target>
+            </trans-unit>
+            <trans-unit id="9ym1oNy">
+                <source>label.social_pinterest_username</source>
+                <target>Cuenta de Pinterest</target>
             </trans-unit>
             <trans-unit id="XYTOV4b">
                 <source>label.social_publish_template</source>

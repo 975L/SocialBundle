@@ -12,10 +12,12 @@ namespace c975L\SocialBundle\Tests\Controller\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\SocialConnectionsController;
+use c975L\SocialBundle\Controller\Management\SocialPinterestBoardController;
 use c975L\SocialBundle\Service\BlueskyOAuthClient;
 use c975L\SocialBundle\Service\GoogleOAuthClient;
 use c975L\SocialBundle\Service\LinkedInClient;
 use c975L\SocialBundle\Service\MetaGraphClient;
+use c975L\SocialBundle\Service\PinterestClient;
 use c975L\SocialBundle\Service\YoutubeClient;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -58,6 +60,10 @@ class SocialConnectionsControllerTest extends TestCase
         $youtube = $this->createStub(YoutubeClient::class);
         $youtube->method('isConfigured')->willReturn(true);
         $youtube->method('isConnected')->willReturn(true);
+        $pinterest = $this->createStub(PinterestClient::class);
+        $pinterest->method('isConfigured')->willReturn(true);
+        $pinterest->method('isConnected')->willReturn(true);
+        $pinterest->method('hasBoard')->willReturn('' !== ($configs['social-pinterest-board-id'] ?? ''));
 
         $twig = $this->createStub(Environment::class);
         $twig->method('render')->willReturnCallback(function (string $view, array $parameters): string {
@@ -72,7 +78,7 @@ class SocialConnectionsControllerTest extends TestCase
         $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
         $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
 
-        $controller = new SocialConnectionsController($configService, $bluesky, $meta, $google, $linkedIn, $youtube);
+        $controller = new SocialConnectionsController($configService, $bluesky, $meta, $google, $linkedIn, $youtube, $pinterest);
         $controller->setContainer($container);
         $controller->index(Request::create('https://' . $host . '/management/social-connections'));
 
@@ -95,8 +101,8 @@ class SocialConnectionsControllerTest extends TestCase
     {
         $networks = $this->networks($this->bluesky());
 
-        $this->assertSame(['bluesky', 'meta', 'linkedin', 'youtube', 'google'], array_keys($networks));
-        $this->assertSame(['social_bluesky_oauth_connect', 'social_meta_oauth_connect', 'social_linkedin_oauth_connect', 'social_youtube_oauth_connect', 'social_google_oauth_connect'], array_column($networks, 'route'));
+        $this->assertSame(['bluesky', 'meta', 'linkedin', 'youtube', 'pinterest', 'google'], array_keys($networks));
+        $this->assertSame(['social_bluesky_oauth_connect', 'social_meta_oauth_connect', 'social_linkedin_oauth_connect', 'social_youtube_oauth_connect', 'social_pinterest_oauth_connect', 'social_google_oauth_connect'], array_column($networks, 'route'));
         $this->assertSame([['icon' => 'fab fa-bluesky', 'name' => 'me.bsky.social', 'url' => 'https://bsky.app/profile/me.bsky.social']], $networks['bluesky']['accounts']);
         $this->assertSame([['icon' => 'fab fa-facebook', 'name' => '123', 'url' => 'https://www.facebook.com/123']], $networks['meta']['accounts']);
         $this->assertTrue($networks['meta']['configured']);
@@ -115,6 +121,20 @@ class SocialConnectionsControllerTest extends TestCase
 
         $this->assertTrue($networks['youtube']['connected']);
         $this->assertSame([['icon' => 'fab fa-youtube', 'name' => 'Papa Câlin', 'url' => 'https://www.youtube.com/channel/UC123']], $networks['youtube']['accounts']);
+    }
+
+    // The account under its name, linked to its profile, and the board under its own - one connected without a board flagged, so the owner picks one
+    public function testThePinterestTileLinksTheAccountAndNamesTheBoard(): void
+    {
+        $withBoard = $this->networks($this->bluesky(), configs: ['social-pinterest-username' => 'papacalin', 'social-pinterest-board-id' => '42', 'social-pinterest-board-name' => 'Histoires'])['pinterest'];
+        $this->assertSame([
+            ['icon' => 'fab fa-pinterest', 'name' => 'papacalin', 'url' => 'https://www.pinterest.com/papacalin/'],
+            ['icon' => 'fas fa-table-cells', 'name' => 'Histoires', 'url' => null],
+        ], $withBoard['accounts']);
+        $this->assertFalse($withBoard['board_missing']);
+        $this->assertSame(SocialPinterestBoardController::ROUTE, $withBoard['board_route']);
+
+        $this->assertTrue($this->networks($this->bluesky(), configs: ['social-pinterest-username' => 'papacalin'])['pinterest']['board_missing']);
     }
 
     // The Page under its name and the Instagram account under its username, each linked - one connected before their names were stored left unnamed and unlinked

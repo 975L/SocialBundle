@@ -15,6 +15,7 @@ use c975L\SocialBundle\Service\BlueskyOAuthClient;
 use c975L\SocialBundle\Service\GoogleOAuthClient;
 use c975L\SocialBundle\Service\LinkedInClient;
 use c975L\SocialBundle\Service\MetaGraphClient;
+use c975L\SocialBundle\Service\PinterestClient;
 use c975L\SocialBundle\Service\YoutubeClient;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -37,6 +38,7 @@ class SocialConnectionsController extends AbstractController
         private readonly GoogleOAuthClient $googleOAuthClient,
         private readonly LinkedInClient $linkedInClient,
         private readonly YoutubeClient $youtubeClient,
+        private readonly PinterestClient $pinterestClient,
     ) {
     }
 
@@ -51,6 +53,7 @@ class SocialConnectionsController extends AbstractController
                 $this->meta(),
                 $this->linkedIn(),
                 $this->youtube(),
+                $this->pinterest(),
                 $this->google(),
             ],
         ]);
@@ -138,6 +141,27 @@ class SocialConnectionsController extends AbstractController
             'configured' => $this->youtubeClient->isConfigured(),
             'connected' => $this->youtubeClient->isConnected(),
             'accounts' => $this->accounts(['fab fa-youtube', $this->value('social-youtube-channel-title') ?? $channel, null === $channel ? null : 'https://www.youtube.com/channel/' . $channel]),
+        ];
+    }
+
+    // The business account the pins go out on and the board they go on, its tokens renewing themselves nightly - the board picked again from its own button
+    /** @return array<string, mixed> */
+    private function pinterest(): array
+    {
+        $username = $this->value('social-pinterest-username');
+
+        return [
+            'name' => 'pinterest',
+            'icon' => 'fab fa-pinterest',
+            'route' => 'social_pinterest_oauth_connect',
+            'configured' => $this->pinterestClient->isConfigured(),
+            'connected' => $this->pinterestClient->isConnected(),
+            'accounts' => $this->accounts(
+                ['fab fa-pinterest', $username, null === $username ? null : 'https://www.pinterest.com/' . rawurlencode($username) . '/'],
+                ['fas fa-table-cells', $this->value('social-pinterest-board-name'), null],
+            ),
+            'board_route' => SocialPinterestBoardController::ROUTE,
+            'board_missing' => !$this->pinterestClient->hasBoard(),
         ];
     }
 

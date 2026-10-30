@@ -62,6 +62,10 @@
                 <source>description.guided_project_social_meta_connect</source>
                 <target>The agency's part: the Meta app, its two keys, and the consent. Done once, then again if the access is withdrawn.</target>
             </trans-unit>
+            <trans-unit id="Vd8mLw7">
+                <source>description.guided_project_social_pinterest_connect</source>
+                <target>The agency part: the Pinterest app, its two keys, the consent and the board. Done once: the access then renews itself every night.</target>
+            </trans-unit>
             <trans-unit id="osYKEjU">
                 <source>description.guided_project_social_posts</source>
                 <target>Your posts for the networks: generate a series or prepare one, proofread its texts and medias, then approve or send it.</target>
@@ -206,6 +210,22 @@
                 <source>description.guided_step_social_meta_prerequisites</source>
                 <target>This part happens on developers.facebook.com: create an app, add Facebook Login to it with the site's address followed by "/social/meta/callback" as redirect URI, and leave it in development mode. The Page must be linked to the Instagram professional account. Come back here with the app's ID and secret.</target>
             </trans-unit>
+            <trans-unit id="r5uBYQS">
+                <source>description.guided_step_social_pinterest_board</source>
+                <target>On the screen that opens after the authorization, click "Pick this board" under the one the pins go on. A single public board is picked at once. With no public board, create one on Pinterest first. To change it later, the "Pick the Pinterest board" button on the tile leads back here.</target>
+            </trans-unit>
+            <trans-unit id="OBOzS8E">
+                <source>description.guided_step_social_pinterest_connect</source>
+                <target>Click "Connect" on the "Pinterest" tile, then allow access with the business account that pins. The site stores the tokens and the account itself, then takes the board if there is only one.</target>
+            </trans-unit>
+            <trans-unit id="R_0tjWV">
+                <source>description.guided_step_social_pinterest_credentials</source>
+                <target>Search for "social-pinterest-client-id" and "social-pinterest-client-secret" in the list, and paste in the App ID and the App secret key. The secret only shows with the "Show sensitive data" button. The tokens, the account and the board fill themselves in the next steps.</target>
+            </trans-unit>
+            <trans-unit id="08tI43H">
+                <source>description.guided_step_social_pinterest_prerequisites</source>
+                <target>This part happens on developers.pinterest.com, with a Pinterest business account: create an app and declare as its redirect URI the site's address followed by "/social/pinterest/callback". With Trial access, only the pins of the app owner's account go through, visible to it alone; Standard access is then requested with a demo video. Come back here with the App ID and the App secret key.</target>
+            </trans-unit>
             <trans-unit id="2_2asy8">
                 <source>description.guided_step_social_posts_approve</source>
                 <target>This checked-calendar button approves the post: it goes out on its own at its planned date, instead of being sent at once. Tick several drafts to approve them together with "Approve the selection".</target>
@@ -330,6 +350,14 @@
                 <source>email.social_linkedin_reminder_subject</source>
                 <target>Connect LinkedIn again before %date%</target>
             </trans-unit>
+            <trans-unit id="qmfkMYq">
+                <source>email.social_pinterest_refresh_failed_body</source>
+                <target>Pinterest refused to renew the site's access (%error%). Nothing is pinned until the account is connected again from "Connections":</target>
+            </trans-unit>
+            <trans-unit id="Z4dMkeM">
+                <source>email.social_pinterest_refresh_failed_subject</source>
+                <target>Connect Pinterest again</target>
+            </trans-unit>
             <trans-unit id="Zcn3ppA">
                 <source>email.social_post_comment_failed</source>
                 <target>the post went out, its first comment was refused (%error%): only the comment will be sent again</target>
@@ -421,6 +449,30 @@
             <trans-unit id="XAjNZmW">
                 <source>flash.meta_refused</source>
                 <target>The connection to Meta was refused or interrupted.</target>
+            </trans-unit>
+            <trans-unit id="UFJQCAs">
+                <source>flash.pinterest_board_invalid</source>
+                <target>This board could not be picked: reload the page and try again.</target>
+            </trans-unit>
+            <trans-unit id="MMzQZm4">
+                <source>flash.pinterest_board_picked</source>
+                <target>Pins will go on the board "%name%".</target>
+            </trans-unit>
+            <trans-unit id="jiRwSLU">
+                <source>flash.pinterest_connected</source>
+                <target>Pinterest is connected with the account %name%.</target>
+            </trans-unit>
+            <trans-unit id="R3wxs8E">
+                <source>flash.pinterest_no_board</source>
+                <target>This Pinterest account has no public board: create one on Pinterest, then pick it here.</target>
+            </trans-unit>
+            <trans-unit id="aKOIwUl">
+                <source>flash.pinterest_not_configured</source>
+                <target>Fill in your Pinterest app's ID and secret in the configuration first.</target>
+            </trans-unit>
+            <trans-unit id="SEFk2aH">
+                <source>flash.pinterest_refused</source>
+                <target>The connection to Pinterest was refused or interrupted.</target>
             </trans-unit>
             <trans-unit id="sgZ4.jB">
                 <source>flash.social_calendar_feed_created</source>
@@ -606,6 +658,10 @@
                 <source>label.connection_not_connected</source>
                 <target>Not connected</target>
             </trans-unit>
+            <trans-unit id="JOD96Pj">
+                <source>label.connection_pinterest_board_missing</source>
+                <target>No board picked: nothing is pinned until one is.</target>
+            </trans-unit>
             <trans-unit id="B8XG1pX">
                 <source>label.connection_reconnect</source>
                 <target>Reconnect</target>
@@ -766,6 +822,10 @@
                 <source>label.guided_project_social_meta_connect</source>
                 <target>Connect the Facebook Page and Instagram</target>
             </trans-unit>
+            <trans-unit id="gd7_sA.">
+                <source>label.guided_project_social_pinterest_connect</source>
+                <target>Connect Pinterest</target>
+            </trans-unit>
             <trans-unit id="Wh.sgxE">
                 <source>label.guided_project_social_posts</source>
                 <target>Review and publish on your networks</target>
@@ -913,6 +973,22 @@
             <trans-unit id="BzznW61">
                 <source>label.guided_step_social_meta_prerequisites</source>
                 <target>Create the Meta app</target>
+            </trans-unit>
+            <trans-unit id="3zgWo9F">
+                <source>label.guided_step_social_pinterest_board</source>
+                <target>Pick the board</target>
+            </trans-unit>
+            <trans-unit id="Jgkpl7L">
+                <source>label.guided_step_social_pinterest_connect</source>
+                <target>Start the connection</target>
+            </trans-unit>
+            <trans-unit id="Em24tUV">
+                <source>label.guided_step_social_pinterest_credentials</source>
+                <target>Fill in the app's two keys</target>
+            </trans-unit>
+            <trans-unit id="VXe0gNo">
+                <source>label.guided_step_social_pinterest_prerequisites</source>
+                <target>Create the Pinterest app</target>
             </trans-unit>
             <trans-unit id="bIP872E">
                 <source>label.guided_step_social_posts_approve</source>
@@ -1114,6 +1190,14 @@
                 <source>label.info_no_connected_network</source>
                 <target>No network is connected yet: nothing will be posted until one is.</target>
             </trans-unit>
+            <trans-unit id="QGfKhEv">
+                <source>label.info_pinterest_connect</source>
+                <target>Links the site to a Pinterest business account: each post becomes a pin, with its picture and its link, on the board picked. The tokens renew themselves every night.</target>
+            </trans-unit>
+            <trans-unit id="tu1qmPl">
+                <source>label.info_pinterest_not_configured</source>
+                <target>Fill in the Pinterest app's ID and secret in the configuration first ("social-pinterest-client-id" and "social-pinterest-client-secret").</target>
+            </trans-unit>
             <trans-unit id="lZ1hyGi">
                 <source>label.info_share_buttons_disabled</source>
                 <target>The share buttons are turned off for the whole site: no page shows them, so these settings have no effect for now.</target>
@@ -1149,6 +1233,10 @@
             <trans-unit id="eZ5rH.c">
                 <source>label.info_social_meta_page</source>
                 <target>This Facebook account manages several Pages: pick the one the site posts on. The Instagram account is the one Meta links to the Page; to change it, edit that link in Meta Business Suite, then connect again.</target>
+            </trans-unit>
+            <trans-unit id="O2FzWfg">
+                <source>label.info_social_pinterest_board</source>
+                <target>The account %name% has several public boards: pick the one the site pins on.</target>
             </trans-unit>
             <trans-unit id="td4VA3T">
                 <source>label.info_social_post_prepare_url</source>
@@ -1221,6 +1309,10 @@
             <trans-unit id="o71OlA1">
                 <source>label.network_off</source>
                 <target>not connected</target>
+            </trans-unit>
+            <trans-unit id="tvLY2Yw">
+                <source>label.network_pinterest</source>
+                <target>Pinterest</target>
             </trans-unit>
             <trans-unit id="ROhCU6T">
                 <source>label.network_youtube</source>
@@ -1621,6 +1713,18 @@
             <trans-unit id="O.QWmc1">
                 <source>label.social_meta_page_pick</source>
                 <target>Pick this Page</target>
+            </trans-unit>
+            <trans-unit id="L3B3.jU">
+                <source>label.social_pinterest_board</source>
+                <target>Pick the Pinterest board</target>
+            </trans-unit>
+            <trans-unit id="Ic7_UrU">
+                <source>label.social_pinterest_board_current</source>
+                <target>Current board</target>
+            </trans-unit>
+            <trans-unit id="iLpaHNv">
+                <source>label.social_pinterest_board_pick</source>
+                <target>Pick this board</target>
             </trans-unit>
             <trans-unit id="tiqhi.Y">
                 <source>label.social_post</source>

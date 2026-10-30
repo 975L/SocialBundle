@@ -1,0 +1,18 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{# The public boards of the connected Pinterest account, one picked to pin on (see SocialPinterestBoardController::index()) #}
+{% block main %}
+    <h1>{{ ('label.social_pinterest_board'|trans({}, 'social')) }}</h1>
+
+    <p>{{ ('label.info_social_pinterest_board'|trans({'%name%': username}, 'social')) }}</p>
+
+    <form method="post">
+        <input type="hidden" name="token" value="{{ csrf_token(token) }}">
+
+        <div class="row g-3">
+            {% for board in boards %}
+                {% include '@c975LSocial/management/_pick_card.html.twig' with {icon: 'fab fa-pinterest', name: board.name, id: board.id, field: 'board', current_label: 'label.social_pinterest_board_current', pick_label: 'label.social_pinterest_board_pick'} %}
+            {% endfor %}
+        </div>
+    </form>
+{% endblock main %}

@@ -33,6 +33,7 @@ class SocialPostWriter extends AbstractAiProviderClient
         'facebook' => 'Three to six short lines, ending with an open question to the reader. The link alone on the last line.',
         'instagram' => 'A caption of four to eight lines. Then the link written out, followed by "link in bio" in the language of the post. Then eight to twelve hashtags on a last line.',
         'linkedin' => 'A professional tone, three to six short lines, what the reader gains first. The link on the last line. Three hashtags at most.',
+        'pinterest' => 'The first line is the pin\'s title: under 100 characters, the words someone would search for, no hashtag, no emoji. Then a description of two to four sentences saying what the reader finds behind the pin, with those words in it. No link, the pin carrying it. Two hashtags at most, at the end.',
         'youtube' => 'The first line is the video\'s title: under 70 characters, saying what the video shows, no hashtag, no link. Then a blank line and a description of two to four lines, the link written out on its own line, and three hashtags at most on the last line.',
     ];
 

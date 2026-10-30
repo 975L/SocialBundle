@@ -134,6 +134,22 @@
                 <source>narration.guided_step_social_meta_prerequisites</source>
                 <target>Esta primera parte se hace en Meta, en developers.facebook.com: cree una aplicación, añádale el inicio de sesión con Facebook con la dirección de retorno del sitio, y déjela en modo de desarrollo. Compruebe también que la Página está vinculada a la cuenta profesional de Instagram. Vuelva aquí con el identificador y la clave secreta.</target>
             </trans-unit>
+            <trans-unit id="OG9eYCY">
+                <source>narration.guided_step_social_pinterest_board</source>
+                <target>Elija aquí el tablero al que van los pines; un único tablero público se elige automáticamente.</target>
+            </trans-unit>
+            <trans-unit id="Mfa25BF">
+                <source>narration.guided_step_social_pinterest_connect</source>
+                <target>Haga clic en Conectar en el mosaico Pinterest y autorice el acceso con la cuenta que publica los pines.</target>
+            </trans-unit>
+            <trans-unit id="3L1enQf">
+                <source>narration.guided_step_social_pinterest_credentials</source>
+                <target>Busque «social-pinterest-client-id» y «social-pinterest-client-secret» en la lista de ajustes y pegue los dos valores de la app.</target>
+            </trans-unit>
+            <trans-unit id="RZYQ_r1">
+                <source>narration.guided_step_social_pinterest_prerequisites</source>
+                <target>En developers.pinterest.com, cree una app con una cuenta profesional y declare la dirección de redirección del sitio.</target>
+            </trans-unit>
             <trans-unit id="vcZmc00">
                 <source>narration.guided_step_social_posts_approve</source>
                 <target>De vuelta en la lista, el icono de calendario marcado, «Validar», confía la publicación a su fecha prevista: saldrá sola, en lugar de enviarse enseguida.</target>

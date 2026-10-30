@@ -45,6 +45,10 @@
                             <p class="card-text small text-warning">{{ ('label.connection_instagram_missing'|trans({}, 'social')) }}</p>
                         {% endif %}
 
+                        {% if network.connected and (network.board_missing ?? false) %}
+                            <p class="card-text small text-warning">{{ ('label.connection_pinterest_board_missing'|trans({}, 'social')) }}</p>
+                        {% endif %}
+
                         {% if network.connected and (network.outdated ?? false) %}
                             <p class="card-text small text-warning">{{ ('label.connection_scope_outdated'|trans({}, 'social')) }}</p>
                         {% endif %}
@@ -67,6 +71,12 @@
                                 <twig:ea:Button htmlElement="a" href="{{ path(network.route) }}" variant="{{ network.connected and not (network.outdated ?? false) ? 'default' : 'primary' }}">
                                     {{ (network.connected ? 'label.connection_reconnect' : 'label.connection_connect')|trans({}, 'social') }}
                                 </twig:ea:Button>
+                                {# Pinterest pins on one board of the account, picked again from here #}
+                                {% if network.connected and network.board_route is defined %}
+                                    <twig:ea:Button htmlElement="a" href="{{ path(network.board_route) }}" variant="{{ network.board_missing ? 'primary' : 'default' }}">
+                                        {{ ('label.social_pinterest_board'|trans({}, 'social')) }}
+                                    </twig:ea:Button>
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>

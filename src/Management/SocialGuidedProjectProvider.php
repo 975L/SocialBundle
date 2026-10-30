@@ -47,6 +47,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->blueskyConnectProject(),
             $this->linkedinConnectProject(),
             $this->youtubeConnectProject(),
+            $this->pinterestConnectProject(),
             $this->socialCalendarProject(),
         ];
     }
@@ -487,6 +488,47 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
         ];
     }
 
+    // LinkedIn's parcours for Pinterest, with a last step of its own: the pins go on one board of the account, picked once connected
+    private function pinterestConnectProject(): array
+    {
+        return [
+            'slug' => 'social-pinterest-connect',
+            'label' => 'label.guided_project_social_pinterest_connect',
+            'description' => 'description.guided_project_social_pinterest_connect',
+            'translation_domain' => 'social',
+            'order' => 4110,
+            // The two keys are restricted configs, with the same three roles as Google's (see googleConnectProject())
+            'role' => $this->restrictedConfigRoles(),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_social_pinterest_prerequisites',
+                    'description' => 'description.guided_step_social_pinterest_prerequisites',
+                    'narration' => 'narration.guided_step_social_pinterest_prerequisites',
+                    'url' => $this->indexUrl(ConfigCrudController::class),
+                ],
+                [
+                    'label' => 'label.guided_step_social_pinterest_credentials',
+                    'description' => 'description.guided_step_social_pinterest_credentials',
+                    'narration' => 'narration.guided_step_social_pinterest_credentials',
+                ],
+                $this->connectionsStep(),
+                [
+                    'label' => 'label.guided_step_social_pinterest_connect',
+                    'description' => 'description.guided_step_social_pinterest_connect',
+                    'narration' => 'narration.guided_step_social_pinterest_connect',
+                    'highlight' => 'a[href*="/social/pinterest/connect"]',
+                ],
+                [
+                    // On the screen the connection lands on when the account holds several boards - a single one is picked by the connection itself
+                    'label' => 'label.guided_step_social_pinterest_board',
+                    'description' => 'description.guided_step_social_pinterest_board',
+                    'narration' => 'narration.guided_step_social_pinterest_board',
+                    'highlight' => 'button[name="board"]',
+                ],
+            ],
+        ];
+    }
+
     // Every post at its moment, moved with a drag - the screen is a route of its own, not a CRUD index
     private function socialCalendarProject(): array
     {
@@ -495,7 +537,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_social_calendar',
             'description' => 'description.guided_project_social_calendar',
             'translation_domain' => 'social',
-            'order' => 4110,
+            'order' => 4120,
             // The bar SocialCalendarController states on its own actions
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [
