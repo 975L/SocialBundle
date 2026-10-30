@@ -27,7 +27,7 @@ class SocialSeriesGeneratorTest extends TestCase
     /** @var list<array{0: list<\DateTimeImmutable>, 1: list<string>}> */
     private array $drafted = [];
 
-    // A publisher writing each post's texts from its own, Bluesky and LinkedIn connected
+    // A publisher writing each post's texts from its own, Bluesky, LinkedIn and Instagram connected - Instagram taking stories
     private function generator(array $variants = [], ?\DateTimeImmutable $lastPlannedAt = null): SocialSeriesGenerator
     {
         $publisher = $this->createStub(SocialPublisher::class);
@@ -35,6 +35,7 @@ class SocialSeriesGeneratorTest extends TestCase
             $post = new SocialPost(SocialPost::SOURCE_MANUAL, bin2hex(random_bytes(4)), '', '', null, $at);
             new SocialPostTarget($post, 'bluesky', '');
             new SocialPostTarget($post, 'linkedin', '');
+            new SocialPostTarget($post, 'instagram', '');
 
             return $post;
         });
@@ -50,6 +51,7 @@ class SocialSeriesGeneratorTest extends TestCase
 
             return null === $id ? null : new SocialPost('gallery_media', $id, 'Photo ' . $id, 'https://example.org/photo-' . $id, 'https://example.org/' . $id . '.jpg', $at);
         });
+        $publisher->method('supportsStory')->willReturnCallback(static fn (string $network): bool => 'instagram' === $network);
         $publisher->method('getMaxLength')->willReturnCallback(static fn (string $network): ?int => ['bluesky' => 300, 'linkedin' => 3000][$network] ?? null);
         $publisher->method('prepareDrafts')->willReturnCallback(function (array $moments, array $sources): array {
             $this->drafted[] = [$moments, $sources];
@@ -112,6 +114,22 @@ class SocialSeriesGeneratorTest extends TestCase
         $this->assertEquals($moments[2], $posts[2]->getPlannedAt());
         $this->assertFalse($posts[0]->isApproved());
         $this->assertSame($series, $posts[2]->getSeries());
+    }
+
+    // A series asking for stories ticks them on the networks taking one, the others left alone - none ticked otherwise
+    public function testASeriesAskingForStoriesTicksThem(): void
+    {
+        $series = $this->series(1, SocialSeriesGenerator::MODE_TEXT, ['bluesky', 'instagram'], 'Bonjour')->setStory(true);
+        $post = $this->generator()->generate($series, new \DateTimeImmutable('2026-11-01 09:00'))[0];
+
+        $stories = [];
+        foreach ($post->getTargets() as $target) {
+            $stories[$target->getNetwork()] = $target->isStory();
+        }
+        $this->assertSame(['bluesky' => false, 'instagram' => true], $stories);
+
+        $plain = $this->generator()->generate($this->series(1, SocialSeriesGenerator::MODE_TEXT, ['instagram'], 'Bonjour'), new \DateTimeImmutable('2026-11-01 09:00'))[0];
+        $this->assertFalse($plain->getTargets()->first()->isStory());
     }
 
     // The series' picture written once as a JPEG, each draft referencing it with its size, so the networks' weight limits are checked

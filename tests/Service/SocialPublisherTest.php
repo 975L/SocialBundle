@@ -799,11 +799,11 @@ class SocialPublisherTest extends TestCase
 
             return 'm1';
         });
-        $network->method('story')->willReturnCallback(function (SocialContent $content) use (&$storyFailures): string {
+        $network->method('story')->willReturnCallback(function (SocialContent $content, ?PostMedia $video = null) use (&$storyFailures): string {
             if ($storyFailures-- > 0) {
                 throw new \RuntimeException('Throttled');
             }
-            $this->published[] = 'story:' . $content->imagePath . $content->imageUrl;
+            $this->published[] = 'story:' . (null === $video ? $content->imagePath . $content->imageUrl : 'video:' . basename($video->path));
 
             return 's1';
         });
@@ -825,6 +825,19 @@ class SocialPublisherTest extends TestCase
         $this->assertSame(['status' => 'published', 'message' => 'm1'], $report['instagram']);
         $this->assertSame('s1', $post->getTargets()->first()->getStoryId());
         $this->assertTrue($publisher->supportsStory('instagram'));
+    }
+
+    // A post carrying a video sends it as the story rather than a picture
+    public function testAStoryTakesThePostsVideoFirst(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', 'https://example.org/42.jpg', new \DateTimeImmutable());
+        $post->addMedia(SocialMedia::reference($post, '/medias/card.mp4', 'video/mp4', 1080, 1920));
+        new SocialPostTarget($post, 'instagram', 'Text')->setStory(true);
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createStoryNetwork()]);
+
+        $publisher->publish($post);
+
+        $this->assertSame('story:video:card.mp4', $this->published[1]);
     }
 
     // A refused story leaves the post published, and sending it again sends the story alone

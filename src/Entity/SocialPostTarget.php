@@ -63,7 +63,7 @@ class SocialPostTarget
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $reshareError = null;
 
-    // Whether the post's picture goes out as a story too, right after the post (see StoryPublisherInterface)
+    // Whether the post's video, or its picture, goes out as a story too, right after the post (see StoryPublisherInterface)
     #[ORM\Column(options: ['default' => false])]
     private bool $story = false;
 

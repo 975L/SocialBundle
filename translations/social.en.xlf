@@ -592,7 +592,7 @@
             </trans-unit>
             <trans-unit id="UvEM6_l">
                 <source>help.social_post_story</source>
-                <target>Right after the post, its picture goes out as a story too, seen for 24 hours: framed 9:16 (1080 × 1920) on the site's background, with no text nor link to the post, which the API does not allow. The post's first picture, else the content's; a video does not go.</target>
+                <target>Right after the post, it goes out as a story too, seen for 24 hours, with no text nor link to the post, which the API does not allow: its video when it has one (vertical, 60 s at most), else its first picture or the content's, framed 9:16 (1080 × 1920) on the site's background.</target>
             </trans-unit>
             <trans-unit id="BPzQBuz">
                 <source>help.social_post_text</source>
@@ -609,6 +609,10 @@
             <trans-unit id="a1xocww">
                 <source>help.social_series_sources</source>
                 <target>With the site's contents, nothing ticked takes them all, in turn. With a text or the AI, each post takes a picture at random among the ones ticked, reserved for it and changeable on its screen.</target>
+            </trans-unit>
+            <trans-unit id="J69dshv">
+                <source>help.social_series_story</source>
+                <target>Each post of the series, and of its prolongations, also goes out as a story on Facebook and Instagram: its video, else its picture.</target>
             </trans-unit>
             <trans-unit id="4h1xjIz">
                 <source>help.social_series_text</source>
@@ -1985,6 +1989,10 @@
             <trans-unit id="IfcRk0.">
                 <source>label.social_series_start</source>
                 <target>First post</target>
+            </trans-unit>
+            <trans-unit id="qsVRukQ">
+                <source>label.social_series_story</source>
+                <target>Also as a story</target>
             </trans-unit>
             <trans-unit id="UKWcsrC">
                 <source>label.social_series_submit</source>

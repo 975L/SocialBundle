@@ -169,6 +169,41 @@ class MetaPublishersTest extends TestCase
         $this->assertSame('/77/media_publish', $this->calls[2]['path']);
     }
 
+    // A post's video goes as an Instagram story through its url, waited for as a video, then published
+    public function testInstagramPublishesAVideoStory(): void
+    {
+        $graph = $this->graph([['id' => 'c1'], ['status_code' => 'FINISHED'], ['id' => 's1']]);
+        $video = new PostMedia('/var/medias/card.mp4', 'https://example.org/medias/card.mp4', 'video/mp4', width: 1080, height: 1920, duration: 7.0);
+
+        $id = new InstagramPublisher($graph, $this->exporter(null), $this->config(), 0)->story($this->content(), $video);
+
+        $this->assertSame('s1', $id);
+        $this->assertSame(['media_type' => 'STORIES', 'video_url' => 'https://example.org/medias/card.mp4', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
+        $this->assertSame('/77/media_publish', $this->calls[2]['path']);
+    }
+
+    // A post's video goes as a Facebook Page story in the reel's phases, on the video stories, with no text
+    public function testFacebookPublishesAVideoStory(): void
+    {
+        $graph = $this->graph([['video_id' => 'v1', 'upload_url' => 'https://rupload.example/v1'], ['success' => true, 'post_id' => '55_v1']]);
+        $video = new PostMedia('/var/medias/card.mp4', 'https://example.org/medias/card.mp4', 'video/mp4', width: 1080, height: 1920, duration: 7.0);
+
+        $id = new FacebookPublisher($graph, $this->exporter(null), $this->config())->story($this->content(), $video);
+
+        $this->assertSame('55_v1', $id);
+        $this->assertSame(['/55/video_stories', '/55/video_stories'], array_column($this->calls, 'path'));
+        $this->assertSame(['upload_phase' => 'finish', 'video_id' => 'v1', 'access_token' => 'page-token'], $this->calls[1]['parameters']);
+    }
+
+    // A video story neither said successful nor given an id is left to be sent again
+    public function testFacebookSaysWhenTheVideoStoryWasNotPublished(): void
+    {
+        $this->expectExceptionMessageIsOrContains('did not publish the story');
+        $video = new PostMedia('/var/medias/card.mp4', 'https://example.org/medias/card.mp4', 'video/mp4', width: 1080, height: 1920, duration: 7.0);
+
+        new FacebookPublisher($this->graph([['video_id' => 'v1'], ['success' => false]]), $this->exporter(null), $this->config())->story($this->content(), $video);
+    }
+
     public function testInstagramSaysWhenItCouldNotProcessTheImage(): void
     {
         $this->expectExceptionMessageIsOrContains('could not process the image (ERROR)');

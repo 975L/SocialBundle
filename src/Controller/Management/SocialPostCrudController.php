@@ -510,6 +510,7 @@ class SocialPostCrudController extends AbstractCrudController
                 $data['sources'] ?? [],
                 $data['networks'],
             );
+            $series->setStory((bool) ($data['story'] ?? false));
             $posts = $this->seriesGenerator->generate($series, $start, $data['media']);
 
             if ([] === $posts) {

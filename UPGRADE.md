@@ -1,5 +1,14 @@
 # Upgrade
 
+## To 2.23
+
+**Database:** `social_series` gains `story` (false by default) - a site's own migration (`doctrine:migrations:diff`,
+then `migrate`). A series created before asks for no story: set it on the ones that should,
+`UPDATE social_series SET story = 1 WHERE id IN (...)`, their next prolongations ticking it.
+
+**Code:** `StoryPublisherInterface::story()` takes the post's video as a second argument, `?PostMedia $video = null`:
+a network of a site's own implementing it adds it.
+
 ## To 2.14
 
 **Config:** run `c975l:config:load-all` for `social-meta-page-name` and `social-meta-instagram-username`, then

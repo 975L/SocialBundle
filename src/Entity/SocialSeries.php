@@ -36,6 +36,10 @@ class SocialSeries implements \Stringable
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $notifiedFor = null;
 
+    // Whether its drafts, and those of every prolongation, go out as a story too on the networks taking one
+    #[ORM\Column(options: ['default' => false])]
+    private bool $story = false;
+
     /**
      * @param list<int>    $weekdays
      * @param list<string> $sources
@@ -151,6 +155,18 @@ class SocialSeries implements \Stringable
     public function setNotifiedFor(?\DateTimeImmutable $notifiedFor): self
     {
         $this->notifiedFor = $notifiedFor;
+
+        return $this;
+    }
+
+    public function isStory(): bool
+    {
+        return $this->story;
+    }
+
+    public function setStory(bool $story): self
+    {
+        $this->story = $story;
 
         return $this;
     }

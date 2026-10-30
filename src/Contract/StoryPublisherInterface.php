@@ -10,11 +10,12 @@
 
 namespace c975L\SocialBundle\Contract;
 
+use c975L\SocialBundle\Model\PostMedia;
 use c975L\UiBundle\Model\SocialContent;
 
-// A network that shows the post's picture as a story too, for 24 hours, right after the post. A story created through the API takes no link nor sticker, so it never leads to the post: it is its own story. Implemented beside NetworkPublisherInterface, the publication checking for it
+// A network that shows the post's video or picture as a story too, for 24 hours, right after the post. A story created through the API takes no link nor sticker, so it never leads to the post: it is its own story. Implemented beside NetworkPublisherInterface, the publication checking for it
 interface StoryPublisherInterface
 {
-    // Publishes $content's image as a story, framed vertically, returning the story's id. Throws rather than reporting failure, the post itself staying published
-    public function story(SocialContent $content): string;
+    // Publishes $video as a story when the post has one, $content's image framed vertically otherwise, returning the story's id. Throws rather than reporting failure, the post itself staying published
+    public function story(SocialContent $content, ?PostMedia $video = null): string;
 }

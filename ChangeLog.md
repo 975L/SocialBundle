@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.23.0
+
+Stories: the post's video goes out as a story
+
+- `StoryPublisherInterface::story()`: the post's video passed, sent before any picture (30/10/2026)
+- Facebook: a video story in the reel's phases, on `/video_stories` (30/10/2026)
+- Instagram: a video story as a `STORIES` container with its `video_url` (30/10/2026)
+- Post's screen, README, skill: a story takes the video first (30/10/2026)
+- Added `SocialSeries::$story`: "Also as a story" on a series, ticked on each draft and prolongation (30/10/2026)
+- UPGRADE: `social_series.story` migration (30/10/2026)
+
 ## v2.22.0
 
 Pinterest: posts pinned on a board

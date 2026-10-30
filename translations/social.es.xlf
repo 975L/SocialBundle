@@ -592,7 +592,7 @@
             </trans-unit>
             <trans-unit id="UvEM6_l">
                 <source>help.social_post_story</source>
-                <target>Justo después de la publicación, su imagen sale también como historia, visible 24 h: encuadrada en 9:16 (1080 × 1920) sobre el fondo del sitio, sin texto ni enlace a la publicación, que la API no permite. La primera imagen de la publicación, si no la del contenido; un vídeo no va.</target>
+                <target>Justo después de la publicación, sale también como historia, visible 24 h, sin texto ni enlace a la publicación, que la API no permite: su vídeo si tiene uno (vertical, 60 s como máximo), si no su primera imagen o la del contenido, encuadrada en 9:16 (1080 × 1920) sobre el fondo del sitio.</target>
             </trans-unit>
             <trans-unit id="BPzQBuz">
                 <source>help.social_post_text</source>
@@ -609,6 +609,10 @@
             <trans-unit id="a1xocww">
                 <source>help.social_series_sources</source>
                 <target>Con los contenidos del sitio, nada marcado los toma todos, por turnos. Con un texto o la IA, cada publicación toma una foto al azar entre los marcados, reservada para ella y modificable en su ficha.</target>
+            </trans-unit>
+            <trans-unit id="J69dshv">
+                <source>help.social_series_story</source>
+                <target>Cada publicación de la serie, y de sus prolongaciones, sale también como historia en Facebook e Instagram: su vídeo, si no su imagen.</target>
             </trans-unit>
             <trans-unit id="4h1xjIz">
                 <source>help.social_series_text</source>
@@ -1985,6 +1989,10 @@
             <trans-unit id="IfcRk0.">
                 <source>label.social_series_start</source>
                 <target>Primera publicación</target>
+            </trans-unit>
+            <trans-unit id="qsVRukQ">
+                <source>label.social_series_story</source>
+                <target>También como historia</target>
             </trans-unit>
             <trans-unit id="UKWcsrC">
                 <source>label.social_series_submit</source>

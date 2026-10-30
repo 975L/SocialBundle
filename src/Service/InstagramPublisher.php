@@ -104,13 +104,18 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
         return (string) $published['id'];
     }
 
-    // The story's id: a STORIES container of the picture framed 9:16 (JPEG, 8 MB, no caption nor link sticker through the API), waited for, then published
-    public function story(SocialContent $content): string
+    // The story's id: a STORIES container of the video, fetched from its url, or of the picture framed 9:16 (JPEG, 8 MB) - no caption nor link sticker through the API - waited for, then published
+    public function story(SocialContent $content, ?PostMedia $video = null): string
     {
-        $imageUrl = $this->imageExporter->storyUrl($content) ?? throw new \RuntimeException('A story takes a picture, and this post has none.');
         $token = ['access_token' => (string) $this->metaGraphClient->pageToken()];
-        $containerId = $this->create(['media_type' => 'STORIES', 'image_url' => $imageUrl], $token);
-        $this->wait($containerId, $token, 'story');
+        if (null !== $video) {
+            $containerId = $this->create(['media_type' => 'STORIES', 'video_url' => $video->url], $token);
+            $this->wait($containerId, $token, 'video');
+        } else {
+            $imageUrl = $this->imageExporter->storyUrl($content) ?? throw new \RuntimeException('A story takes a picture, and this post has none.');
+            $containerId = $this->create(['media_type' => 'STORIES', 'image_url' => $imageUrl], $token);
+            $this->wait($containerId, $token, 'story');
+        }
 
         return (string) $this->metaGraphClient->request('POST', '/' . $this->instagramId() . '/media_publish', ['creation_id' => $containerId, ...$token])['id'];
     }

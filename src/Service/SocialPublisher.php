@@ -606,7 +606,7 @@ class SocialPublisher
         }
     }
 
-    // The post's picture as a story: its first own picture, the content's image otherwise - a video left out, a story through the API taking a picture here
+    // The post's video as a story when it has one, its picture otherwise: its first own picture, the content's image failing that
     private function sendStory(?NetworkPublisherInterface $network, SocialPostTarget $target, ?SocialContent $content): void
     {
         if (!$network instanceof StoryPublisherInterface || null === $content) {
@@ -615,9 +615,10 @@ class SocialPublisher
             return;
         }
 
-        // A post with no picture at all can never make a story, so the box is unticked rather than failing on every retry, its reason kept
+        // A post with neither video nor picture can never make a story, so the box is unticked rather than failing on every retry, its reason kept
+        $video = $this->storyVideo($target);
         $storyContent = $this->storyContent($target, $content);
-        if (null === $storyContent->imagePath && null === $storyContent->imageUrl) {
+        if (null === $video && null === $storyContent->imagePath && null === $storyContent->imageUrl) {
             $target->markStoryFailed('A story takes a picture, and this post has none.');
             $target->setStory(false);
 
@@ -625,11 +626,23 @@ class SocialPublisher
         }
 
         try {
-            $target->markStoried($network->story($storyContent));
+            $target->markStoried($network->story($storyContent, $video));
         } catch (\Throwable $exception) {
             $this->logger->error('Social story failed on {network}: {message}', ['network' => $target->getNetwork(), 'message' => $exception->getMessage()]);
             $target->markStoryFailed($exception->getMessage());
         }
+    }
+
+    // The post's first own video, the one a story shows before any picture
+    private function storyVideo(SocialPostTarget $target): ?PostMedia
+    {
+        foreach ($this->mediasOf($target->getPost()) as $media) {
+            if ($media->isVideo()) {
+                return $media;
+            }
+        }
+
+        return null;
     }
 
     // The content whose image the story shows, the post's first own picture when it has one

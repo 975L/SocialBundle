@@ -3,6 +3,16 @@
         "date": "2026-10-30",
         "description": [
             {
+                "en": "A post carrying a video sends that video as its Facebook and Instagram story",
+                "fr": "Une publication avec une vidéo envoie cette vidéo en story sur Facebook et Instagram",
+                "es": "Una publicación con un vídeo envía ese vídeo como historia en Facebook e Instagram"
+            },
+            {
+                "en": "A series can send all its posts as stories too, its prolongations included",
+                "fr": "Une série peut envoyer toutes ses publications aussi en story, ses prolongations comprises",
+                "es": "Una serie puede enviar todas sus publicaciones también como historia, incluidas sus prolongaciones"
+            },
+            {
                 "en": "Posts can go out on a Pinterest board as pins, with their picture and their link, the connection renewing itself every night",
                 "fr": "Les posts peuvent partir sur un tableau Pinterest en épingles, avec leur image et leur lien, la connexion se renouvelant seule chaque nuit",
                 "es": "Las publicaciones pueden salir en un tablero de Pinterest como pines, con su imagen y su enlace, y la conexión se renueva sola cada noche"

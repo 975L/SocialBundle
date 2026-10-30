@@ -240,11 +240,11 @@ every upload, an unaudited Google Cloud project's uploads possibly locked privat
 | Calendar | `Controller\Management\SocialCalendarController` ("Calendrier", `site-role-editor`), `Service\SocialPlanner`, `assets/js/social-calendar.js` |
 | Calendar feed | `Service\SocialCalendarFeed`, `Controller\SocialCalendarFeedController` (`/social/calendar/{token}.ics`, secret `social-calendar-ics-token`) |
 | Shared calendar | `Service\SocialSharedCalendar` (`social-calendar-shared-feeds`, json `{"Name": "feed address"}`, read with `?own=1`, all feeds asked at once, 3 s timeout, 10 min in `cache.app`, failures `unreachable`/`refused` (4xx)/`invalid`/`malformed`), `Service\SocialCalendarParser` (reads only what `SocialCalendarFeed` writes, skips `X-SOCIAL-SHARED`), `Management\SocialSharedCalendarAlertProvider` (last failures, from the cache) |
-| Series | `Entity\SocialSeries`, `Service\SocialSeriesGenerator`, `Command\SeriesEndingCommand` (`c975l:social:series:ending`, `social-series-ending-days`) |
+| Series | `Entity\SocialSeries` (`$story` ticking each draft's story, prolongations included), `Service\SocialSeriesGenerator`, `Command\SeriesEndingCommand` (`c975l:social:series:ending`, `social-series-ending-days`) |
 | Refusals | `Service\SocialAdminMailer` (emails `email-to`), `SocialPostCrudController::retryPost()` → `SocialPublisher::retryFailed()` |
 | First comment | `Contract\FirstCommentPublisherInterface` (`comment()`, LinkedIn alone), `SocialPostTarget::$comment`, `isCommentPending()` |
 | Profile reshare | `Contract\ProfileResharePublisherInterface` (`canReshare()`, `reshare()`, LinkedIn on a Page), `SocialPostTarget::$reshare`, `isResharePending()` |
-| Story | `Contract\StoryPublisherInterface` (`story()`, Facebook and Instagram), `SocialPostTarget::$story`, `isStoryPending()`, `SocialImageExporter::storyUrl()` |
+| Story | `Contract\StoryPublisherInterface` (`story()`, the post's video first - `/video_stories` on Facebook, a `STORIES` container's `video_url` on Instagram - its picture otherwise, Facebook and Instagram), `SocialPostTarget::$story`, `isStoryPending()`, `SocialImageExporter::storyUrl()` |
 | Imported drafts | `Service\SocialDraftImporter`, `Command\DraftCommand` (`c975l:social:draft`), a series of mode `SocialSeriesGenerator::MODE_IMPORT` |
 | LinkedIn reminder | `Command\LinkedInReminderCommand` (`c975l:social:linkedin:reminder`, nightly, 14 then 3 days ahead) |
 | Bluesky reminder | `Command\BlueskyReminderCommand` (`c975l:social:bluesky:reminder`, nightly, once per `BlueskyOAuthClient::SCOPE`) |

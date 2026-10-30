@@ -146,6 +146,7 @@ class SocialSeriesGenerator
             foreach ($posts as $post) {
                 $post->setNetworks($networks);
                 $post->setSeries($series);
+                $this->tickStories($series, $post);
             }
             $this->entityManager->flush();
 
@@ -166,6 +167,7 @@ class SocialSeriesGenerator
             $post->setText($texts[$i]);
             $this->socialPublisher->rewriteTargets($post);
             $this->socialPublisher->addTargets($post, $post->takeAddedNetworks());
+            $this->tickStories($series, $post);
             if (null !== $media) {
                 $post->addMedia(SocialMedia::reference($post, $media[0], $media[1], $media[2], $media[3], $media[4])->setSize($media[5]));
             }
@@ -179,6 +181,20 @@ class SocialSeriesGenerator
         $this->entityManager->flush();
 
         return $posts;
+    }
+
+    // A series asking for stories ticks "Also as a story" on each of the post's networks that take one
+    private function tickStories(SocialSeries $series, SocialPost $post): void
+    {
+        if (!$series->isStory()) {
+            return;
+        }
+
+        foreach ($post->getTargets() as $target) {
+            if ($this->socialPublisher->supportsStory($target->getNetwork())) {
+                $target->setStory(true);
+            }
+        }
     }
 
     // The AI writes for the shortest network ticked, so one text suits them all

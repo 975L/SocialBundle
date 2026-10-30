@@ -92,9 +92,13 @@ class FacebookPublisher implements NetworkPublisherInterface, StoryPublisherInte
         return $this->request($text, $content, $medias);
     }
 
-    // The story's id (developers.facebook.com/docs/page-stories-api): the picture framed 9:16 uploaded unpublished - a photo already used by a published post being refused - then made a Page story
-    public function story(SocialContent $content): string
+    // The story's id (developers.facebook.com/docs/page-stories-api): the video sent in the reel's phases to the Page's video stories, or the picture framed 9:16 uploaded unpublished - a photo already used by a published post being refused - then made a Page story
+    public function story(SocialContent $content, ?PostMedia $video = null): string
     {
+        if (null !== $video) {
+            return $this->publishVideoStory($video->path, (string) $this->metaGraphClient->pageToken());
+        }
+
         $imageUrl = $this->imageExporter->storyUrl($content) ?? throw new \RuntimeException('A story takes a picture, and this post has none.');
         $token = ['access_token' => (string) $this->metaGraphClient->pageToken()];
         $photo = $this->metaGraphClient->request('POST', '/' . $this->pageId() . '/photos', ['url' => $imageUrl, 'published' => 'false', ...$token]);
@@ -112,13 +116,7 @@ class FacebookPublisher implements NetworkPublisherInterface, StoryPublisherInte
     /** @param array{file: string, description: string} $reel */
     private function publishReel(string $path, array $reel, string $token): string
     {
-        $started = $this->metaGraphClient->request('POST', $path, ['upload_phase' => 'start', 'access_token' => $token]);
-        if (!isset($started['video_id'])) {
-            throw new \RuntimeException('Meta did not open a reel upload.');
-        }
-
-        $videoId = (string) $started['video_id'];
-        $this->metaGraphClient->uploadFile((string) ($started['upload_url'] ?? 'https://rupload.facebook.com/video-upload/' . MetaGraphClient::VERSION . '/' . $videoId), $reel['file'], $token);
+        $videoId = $this->uploadVideo($path, $reel['file'], $token, 'reel');
         $finished = $this->metaGraphClient->request('POST', $path, ['upload_phase' => 'finish', 'video_id' => $videoId, 'video_state' => 'PUBLISHED', 'description' => $reel['description'], 'access_token' => $token]);
 
         // A 200 may still say the reel did not go out (being processed, blocked on rights): left in error, so publishing tries it again
@@ -127,6 +125,35 @@ class FacebookPublisher implements NetworkPublisherInterface, StoryPublisherInte
         }
 
         return (string) ($finished['post_id'] ?? $videoId);
+    }
+
+    // A video story in the same phases, on the Page's video stories: no text, Meta taking none on a story
+    private function publishVideoStory(string $file, string $token): string
+    {
+        $path = '/' . $this->pageId() . '/video_stories';
+        $videoId = $this->uploadVideo($path, $file, $token, 'story');
+        $finished = $this->metaGraphClient->request('POST', $path, ['upload_phase' => 'finish', 'video_id' => $videoId, 'access_token' => $token]);
+
+        // A story said out by either its success or its id, never sent twice for a missing one
+        if (true !== ($finished['success'] ?? null) && !isset($finished['post_id'])) {
+            throw new \RuntimeException('Meta did not publish the story.');
+        }
+
+        return (string) ($finished['post_id'] ?? $videoId);
+    }
+
+    // The first two phases of a reel or a video story: a session started on $path, then the file sent where Meta said, answering the video's id
+    private function uploadVideo(string $path, string $file, string $token, string $what): string
+    {
+        $started = $this->metaGraphClient->request('POST', $path, ['upload_phase' => 'start', 'access_token' => $token]);
+        if (!isset($started['video_id'])) {
+            throw new \RuntimeException(sprintf('Meta did not open a %s upload.', $what));
+        }
+
+        $videoId = (string) $started['video_id'];
+        $this->metaGraphClient->uploadFile((string) ($started['upload_url'] ?? 'https://rupload.facebook.com/video-upload/' . MetaGraphClient::VERSION . '/' . $videoId), $file, $token);
+
+        return $videoId;
     }
 
     // Whether a video is one Meta takes as a reel, read off what was measured of it - an unmeasured one staying a plain video

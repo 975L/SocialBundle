@@ -14,6 +14,7 @@ use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -82,6 +83,12 @@ class SocialSeriesType extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'constraints' => [new Count(min: 1)],
+            ])
+            // Kept on the series, so its prolongations tick it as well
+            ->add('story', CheckboxType::class, [
+                'label' => t('label.social_series_story', [], 'social'),
+                'help' => t('help.social_series_story', [], 'social'),
+                'required' => false,
             ])
             ->add('mode', ChoiceType::class, [
                 'label' => t('label.social_series_mode', [], 'social'),
