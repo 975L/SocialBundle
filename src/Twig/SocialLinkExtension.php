@@ -22,6 +22,20 @@ class SocialLinkExtension
     // Kind of the "social_links" singleton Block (see SocialLinksCrudController) - not shared as a public constant there either, matching ShareButtonsExtension's own literal use of "share_buttons_settings" for the same reason (no other consumer needs it)
     private const string KIND = 'social_links';
 
+    // The networks whose name is not their key capitalized - every other one reads as "Facebook" from "facebook"
+    private const array LABELS = [
+        'applepodcasts' => 'Apple Podcasts',
+        'github' => 'GitHub',
+        'linkedin' => 'LinkedIn',
+        'soundcloud' => 'SoundCloud',
+        'tiktok' => 'TikTok',
+        'vk' => 'VK',
+        'wechat' => 'WeChat',
+        'whatsapp' => 'WhatsApp',
+        'wordpress' => 'WordPress',
+        'youtube' => 'YouTube',
+    ];
+
     public function __construct(
         private readonly BlockRepository $blockRepository,
         private readonly IconServiceInterface $iconService,
@@ -46,5 +60,12 @@ class SocialLinkExtension
     public function getSocialLinkIcon(string $network): ?string
     {
         return $this->iconService->getIcons()[$network] ?? null;
+    }
+
+    // The network's name as its brand writes it, for the link's label and aria-label
+    #[AsTwigFunction('social_link_label')]
+    public function getSocialLinkLabel(string $network): string
+    {
+        return self::LABELS[$network] ?? ucfirst($network);
     }
 }

@@ -67,6 +67,19 @@ footer .social-links-block {
   display: none;
 }
 
+.social-links--colored .social-link--applepodcasts a {
+  background-color: #9933cc;
+  color: #fff;
+}
+
+.social-links--colored .social-link--applepodcasts .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--applepodcasts a:hover {
+  background-color: rgb(54%, 18%, 72%);
+}
+
 .social-links--colored .social-link--behance a {
   background-color: #1769ff;
   color: #fff;
@@ -104,6 +117,19 @@ footer .social-links-block {
 
 .social-links--colored .social-link--bluesky a:hover {
   background-color: rgb(5.202559685%, 58.0285503323%, 90.4444991386%);
+}
+
+.social-links--colored .social-link--deezer a {
+  background-color: #a238ff;
+  color: #fff;
+}
+
+.social-links--colored .social-link--deezer .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--deezer a:hover {
+  background-color: rgb(57.8297369199%, 9.7647058824%, 100%);
 }
 
 .social-links--colored .social-link--discord a {
@@ -286,6 +312,19 @@ footer .social-links-block {
 
 .social-links--colored .social-link--pinterest a:hover {
   background-color: rgb(66.7058823529%, 2.8235294118%, 9.8823529412%);
+}
+
+.social-links--colored .social-link--podcast a {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.social-links--colored .social-link--podcast .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--podcast a:hover {
+  background-color: rgb(38.1176470588%, 41.2941176471%, 44.1176470588%);
 }
 
 .social-links--colored .social-link--reddit a {
@@ -496,6 +535,21 @@ footer .social-links-block {
   background-color: rgb(90%, 0%, 0%);
 }
 
+.social-links--outline .social-link--applepodcasts a {
+  background-color: transparent;
+  border: 3px solid #9933cc;
+  color: #9933cc;
+}
+
+.social-links--outline .social-link--applepodcasts a:hover {
+  background-color: #9933cc;
+  color: #fff;
+}
+
+.social-links--outline .social-link--applepodcasts a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
 .social-links--outline .social-link--behance a {
   background-color: transparent;
   border: 3px solid #1769ff;
@@ -538,6 +592,21 @@ footer .social-links-block {
 }
 
 .social-links--outline .social-link--bluesky a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--deezer a {
+  background-color: transparent;
+  border: 3px solid #a238ff;
+  color: #a238ff;
+}
+
+.social-links--outline .social-link--deezer a:hover {
+  background-color: #a238ff;
+  color: #fff;
+}
+
+.social-links--outline .social-link--deezer a:hover .social-link-icon {
   filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
 }
 
@@ -748,6 +817,21 @@ footer .social-links-block {
 }
 
 .social-links--outline .social-link--pinterest a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--podcast a {
+  background-color: transparent;
+  border: 3px solid #6c757d;
+  color: #6c757d;
+}
+
+.social-links--outline .social-link--podcast a:hover {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.social-links--outline .social-link--podcast a:hover .social-link-icon {
   filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
 }
 
@@ -1164,6 +1248,15 @@ footer .social-link a:hover {
     --social-share-icon-filter: invert(1);
   }
 }
+.social-share-btn--applepodcasts {
+  --network-color: #9933cc;
+  background-color: var(--social-share-btn-background, var(--network-color));
+}
+
+.social-share-btn--applepodcasts:hover {
+  background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
+}
+
 .social-share-btn--behance {
   --network-color: #1769ff;
   background-color: var(--social-share-btn-background, var(--network-color));
@@ -1188,6 +1281,15 @@ footer .social-link a:hover {
 }
 
 .social-share-btn--bluesky:hover {
+  background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
+}
+
+.social-share-btn--deezer {
+  --network-color: #a238ff;
+  background-color: var(--social-share-btn-background, var(--network-color));
+}
+
+.social-share-btn--deezer:hover {
   background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
 }
 
@@ -1314,6 +1416,15 @@ footer .social-link a:hover {
 }
 
 .social-share-btn--pinterest:hover {
+  background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
+}
+
+.social-share-btn--podcast {
+  --network-color: #6c757d;
+  background-color: var(--social-share-btn-background, var(--network-color));
+}
+
+.social-share-btn--podcast:hover {
   background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
 }
 

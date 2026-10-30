@@ -11,7 +11,7 @@
         <ul class="social-links social-links--{{ iconStyle|default('minimal') }}">
             {% for link in links %}
                 {# Falls back to the url: a custom entry left without a label would otherwise name nothing and, with no glyph, leave an empty link #}
-                {% set label = link.network is not empty ? link.network|capitalize : (link.customLabel ?: link.url) %}
+                {% set label = link.network is not empty ? social_link_label(link.network) : (link.customLabel ?: link.url) %}
                 {% set icon = link.network is not empty ? social_link_icon(link.network) : link.customIcon %}
                 <li class="social-link social-link--{{ link.network is not empty ? link.network : 'other' }}">
                     <a href="{{ link.url }}" aria-label="{{ label }}" target="_blank" rel="noopener">

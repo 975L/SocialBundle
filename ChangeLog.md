@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.21.2
+
+Social links: Apple Podcasts, Deezer and Podcast networks added
+
+- Social links: Apple Podcasts, Deezer and Podcast networks added (30/10/2026)
+- Added `social_link_label()`: a network's name as its brand writes it (30/10/2026)
+- README, skill: new networks, `social_link_label()` (30/10/2026)
+
 ## v2.21.1
 
 Series' panel opens the next draft once a post is approved

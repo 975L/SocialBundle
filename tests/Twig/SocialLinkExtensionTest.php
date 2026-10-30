@@ -51,14 +51,24 @@ class SocialLinkExtensionTest extends TestCase
     {
         $functions = new AttributeExtension(SocialLinkExtension::class)->getFunctions();
 
-        $this->assertCount(2, $functions);
+        $this->assertCount(3, $functions);
         $this->assertSame(
-            ['social_link_block', 'social_link_icon'],
+            ['social_link_block', 'social_link_icon', 'social_link_label'],
             array_map(static fn (TwigFunction $function) => $function->getName(), $functions)
         );
         foreach ($functions as $function) {
             $this->assertFalse($function->needsEnvironment());
         }
+    }
+
+    // A brand written its own way keeps it, any other network is its key capitalized
+    public function testGetSocialLinkLabelSpellsBrandsTheirOwnWay(): void
+    {
+        $extension = $this->createExtension(null);
+
+        $this->assertSame('Apple Podcasts', $extension->getSocialLinkLabel('applepodcasts'));
+        $this->assertSame('YouTube', $extension->getSocialLinkLabel('youtube'));
+        $this->assertSame('Deezer', $extension->getSocialLinkLabel('deezer'));
     }
 
     // The layout renders the "social_links" singleton block whenever it has been created

@@ -5,9 +5,11 @@ $white-icon-filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) bri
 
 /* Official-ish brand colors per network */
 $social-brand-colors: (
+    applepodcasts: #9933cc,
     behance: #1769ff,
     blogger: #f57d00,
     bluesky: #1da1f2,
+    deezer: #a238ff,
     discord: #5865f2,
     dribbble: #ea4c89,
     email: #2f4f4f,
@@ -22,6 +24,7 @@ $social-brand-colors: (
     medium: #000000,
     messenger: #0084ff,
     pinterest: #bd081c,
+    podcast: #6c757d,
     reddit: #ff4500,
     snapchat: #fffc00,
     soundcloud: #ff5500,

@@ -29,6 +29,10 @@
   filter: grayscale(1);
 }
 
+.social-network-badge--applepodcasts:not(.is-off) {
+  background-color: #9933cc;
+}
+
 .social-network-badge--behance:not(.is-off) {
   background-color: #1769ff;
 }
@@ -39,6 +43,10 @@
 
 .social-network-badge--bluesky:not(.is-off) {
   background-color: #1da1f2;
+}
+
+.social-network-badge--deezer:not(.is-off) {
+  background-color: #a238ff;
 }
 
 .social-network-badge--discord:not(.is-off) {
@@ -95,6 +103,10 @@
 
 .social-network-badge--pinterest:not(.is-off) {
   background-color: #bd081c;
+}
+
+.social-network-badge--podcast:not(.is-off) {
+  background-color: #6c757d;
 }
 
 .social-network-badge--reddit:not(.is-off) {
