@@ -1784,7 +1784,7 @@
             </trans-unit>
             <trans-unit id="RuMGVAu">
                 <source>label.social_media_video_required</source>
-                <target>YouTube solo acepta un vídeo: añada uno a la publicación.</target>
+                <target>Esta red solo acepta vídeos: añada uno a la publicación.</target>
             </trans-unit>
             <trans-unit id="kXejKxZ">
                 <source>label.social_media_video_too_big</source>

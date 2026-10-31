@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.24.1
+
+Posts: the medias checked once uploaded
+
+- Fixed the post's save: its medias checked once uploaded, a new video no longer read as missing (31/10/2026)
+- Post's screen: the medias headed by their file's name, the texts by their network's name (31/10/2026)
+- Fixed the "videos only" message: no longer naming YouTube alone (31/10/2026)
+
 ## v2.24.0
 
 TikTok: posts' videos on a TikTok account

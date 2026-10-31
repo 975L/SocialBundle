@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 #[ORM\Table(name: 'social_post_target')]
 #[ORM\UniqueConstraint(name: 'social_post_target_network', columns: ['post_id', 'network'])]
-class SocialPostTarget
+class SocialPostTarget implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -90,6 +90,12 @@ class SocialPostTarget
         private string $text,
     ) {
         $this->post->addTarget($this);
+    }
+
+    // The network's name, what the post's screen heads its text with
+    public function __toString(): string
+    {
+        return ucfirst($this->network);
     }
 
     public function getId(): ?int

@@ -353,6 +353,11 @@ class SocialPostCrudController extends AbstractCrudController
         }
 
         parent::persistEntity($entityManager, $entityInstance);
+
+        // Once saved, the uploads measured: a video not yet stored would read as no video at all
+        if ($entityInstance instanceof SocialPost) {
+            $this->flashMediaProblems($entityInstance, 'warning');
+        }
     }
 
     // A network ticked on the screen gets its text written before the post is saved, and a text changed is written again on every network not out yet
@@ -364,14 +369,17 @@ class SocialPostCrudController extends AbstractCrudController
         }
 
         parent::updateEntity($entityManager, $entityInstance);
+
+        if ($entityInstance instanceof SocialPost) {
+            $this->flashMediaProblems($entityInstance, 'warning');
+        }
     }
 
-    // Its texts written, then what its medias do not suit said - its approval being what refuses them
+    // Its texts written before it is saved - what its medias do not suit said after, its approval being what refuses them
     private function writeTargets(SocialPost $post): void
     {
         $this->socialPublisher->rewriteTargets($post);
         $this->socialPublisher->addTargets($post, $post->takeAddedNetworks());
-        $this->flashMediaProblems($post, 'warning');
     }
 
     // One message per network and problem the post's medias meet, saying so; whether there was any - a "danger" refusing the approval, the networks then asked live

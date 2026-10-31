@@ -16,6 +16,16 @@
                 "en": "A Pinterest app still in Trial access can pin in Pinterest's sandbox, to test the connection and film the demonstration before Standard access",
                 "fr": "Une app Pinterest encore en accès d'essai peut épingler dans la sandbox de Pinterest, pour tester la connexion et filmer la démonstration avant l'accès Standard",
                 "es": "Una app de Pinterest aún en acceso de prueba puede fijar pines en el sandbox de Pinterest, para probar la conexión y grabar la demostración antes del acceso Standard"
+            },
+            {
+                "en": "Saving a post with a new video no longer warns that the video is missing",
+                "fr": "Enregistrer une publication avec une nouvelle vidéo n'avertit plus que la vidéo manque",
+                "es": "Guardar una publicación con un vídeo nuevo ya no avisa de que falta el vídeo"
+            },
+            {
+                "en": "On the post's screen, each media shows its file's name and each text its network's name",
+                "fr": "Sur l'écran de la publication, chaque média affiche le nom de son fichier et chaque texte le nom de son réseau",
+                "es": "En la pantalla de la publicación, cada medio muestra el nombre de su archivo y cada texto el nombre de su red"
             }
         ]
     },

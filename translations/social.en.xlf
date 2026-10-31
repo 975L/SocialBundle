@@ -1784,7 +1784,7 @@
             </trans-unit>
             <trans-unit id="RuMGVAu">
                 <source>label.social_media_video_required</source>
-                <target>YouTube only takes a video: add one to the post.</target>
+                <target>This network only takes videos: add one to the post.</target>
             </trans-unit>
             <trans-unit id="kXejKxZ">
                 <source>label.social_media_video_too_big</source>

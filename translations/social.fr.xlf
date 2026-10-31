@@ -1784,7 +1784,7 @@
             </trans-unit>
             <trans-unit id="RuMGVAu">
                 <source>label.social_media_video_required</source>
-                <target>YouTube ne prend qu'une vidéo : ajoutez-en une à la publication.</target>
+                <target>Ce réseau ne prend que des vidéos : ajoutez-en une à la publication.</target>
             </trans-unit>
             <trans-unit id="kXejKxZ">
                 <source>label.social_media_video_too_big</source>

@@ -209,4 +209,12 @@ class SocialPostTest extends TestCase
         $post->addMedia(SocialMedia::reference($post, 'medias/social/b.mp4', 'video/mp4'));
         $this->assertSame(SocialMedia::reference($post, 'medias/social/a.mp4', 'video/mp4')->getPublicPath(), $post->getVideoUrl());
     }
+
+    // A network's text headed on the post's screen by the network's name
+    public function testATargetIsNamedByItsNetwork(): void
+    {
+        $post = new SocialPost(SocialPost::SOURCE_MANUAL, 'abc', 'Hello', '', null, new \DateTimeImmutable());
+
+        $this->assertSame('Tiktok', (string) new SocialPostTarget($post, 'tiktok', 'Text'));
+    }
 }

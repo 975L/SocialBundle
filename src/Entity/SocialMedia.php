@@ -20,7 +20,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Table(name: 'social_media')]
 #[ORM\Index(name: 'social_media_source', columns: ['source_type', 'source_id'])]
 #[Vich\Uploadable]
-class SocialMedia
+class SocialMedia implements \Stringable
 {
     // The video types the networks take, what an upload is kept as rather than turned into a JPEG
     public const array VIDEO_TYPES = ['video/mp4', 'video/quicktime'];
@@ -96,6 +96,12 @@ class SocialMedia
         $media->setDimensions($width, $height, $duration);
 
         return $media;
+    }
+
+    // The file's name, what the post's screen heads it with - empty until one is uploaded
+    public function __toString(): string
+    {
+        return null === $this->filename ? '' : basename($this->filename);
     }
 
     public function getId(): ?int

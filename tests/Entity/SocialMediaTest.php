@@ -38,4 +38,11 @@ class SocialMediaTest extends TestCase
         $this->assertNull($media->getSourceType());
         $this->assertNull($media->getSourceId());
     }
+
+    // Headed on the post's screen by its file's name, by nothing before an upload
+    public function testTheMediaIsNamedByItsFile(): void
+    {
+        $this->assertSame('', (string) new SocialMedia());
+        $this->assertSame('a.mp4', (string) new SocialMedia()->setFilename('medias/social/posts/a.mp4'));
+    }
 }
