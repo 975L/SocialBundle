@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.23.1
+
+Pinterest: the sandbox for an app with Trial access
+
+- Added `social-pinterest-sandbox`: calls sent to `api-sandbox.pinterest.com`, tokens excepted (31/10/2026)
+- `PinterestClient::boards()`: a "Sandbox" board created in an empty sandbox (31/10/2026)
+
 ## v2.23.0
 
 Stories: the post's video goes out as a story

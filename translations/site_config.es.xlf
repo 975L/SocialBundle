@@ -158,6 +158,10 @@
                 <source>description.social_pinterest_refresh_token_expires_at</source>
                 <target>Rellenado por la conexión: la fecha a partir de la cual hay que volver a conectar Pinterest si la renovación nocturna no se ejecutó.</target>
             </trans-unit>
+            <trans-unit id="JF0EDkE">
+                <source>description.social_pinterest_sandbox</source>
+                <target>Marcar mientras la app de Pinterest solo tenga el acceso de prueba (Trial): los pines van al sandbox de Pinterest, visibles solo para usted, en un tablero «Sandbox» creado al elegir el tablero. Desmarcar una vez concedido el acceso Standard y volver a elegir el tablero.</target>
+            </trans-unit>
             <trans-unit id="IuQbtES">
                 <source>description.social_pinterest_token_expires_at</source>
                 <target>Rellenado por la conexión: la fecha a partir de la cual Pinterest rechaza el token de acceso.</target>
@@ -345,6 +349,10 @@
             <trans-unit id="Oe0aDiG">
                 <source>label.social_pinterest_refresh_token_expires_at</source>
                 <target>Caducidad de la conexión de Pinterest</target>
+            </trans-unit>
+            <trans-unit id="ev_6FUG">
+                <source>label.social_pinterest_sandbox</source>
+                <target>Pinterest en sandbox</target>
             </trans-unit>
             <trans-unit id="mEuSNqN">
                 <source>label.social_pinterest_token_expires_at</source>

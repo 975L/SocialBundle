@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-31",
+        "description": [
+            {
+                "en": "A Pinterest app still in Trial access can pin in Pinterest's sandbox, to test the connection and film the demonstration before Standard access",
+                "fr": "Une app Pinterest encore en accès d'essai peut épingler dans la sandbox de Pinterest, pour tester la connexion et filmer la démonstration avant l'accès Standard",
+                "es": "Una app de Pinterest aún en acceso de prueba puede fijar pines en el sandbox de Pinterest, para probar la conexión y grabar la demostración antes del acceso Standard"
+            }
+        ]
+    },
+    {
         "date": "2026-10-30",
         "description": [
             {

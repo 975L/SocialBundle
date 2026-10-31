@@ -20,6 +20,12 @@ class PinterestClient
 
     public const string API = 'https://api.pinterest.com';
 
+    // Where an app with Trial access has to pin, its boards and pins kept apart from the account's real ones
+    public const string SANDBOX_API = 'https://api-sandbox.pinterest.com';
+
+    // The board created in the sandbox, which starts empty
+    public const string SANDBOX_BOARD = 'Sandbox';
+
     // Reading the boards and the account, and pinning - what POST /v5/pins asks for
     public const string SCOPES = 'boards:read,boards:write,pins:read,pins:write,user_accounts:read';
 
@@ -50,6 +56,12 @@ class PinterestClient
         $expiresAt = $this->refreshExpiresAt();
 
         return '' !== $this->config('social-pinterest-refresh-token') && (null === $expiresAt || $expiresAt > new \DateTimeImmutable());
+    }
+
+    // Whether the calls go to the sandbox, until Pinterest grants the app its Standard access
+    public function isSandbox(): bool
+    {
+        return \in_array($this->config('social-pinterest-sandbox'), ['1', 'true'], true);
     }
 
     // Whether a board is picked, a pin needing one
@@ -130,6 +142,14 @@ class PinterestClient
             $bookmark = \is_string($page['bookmark'] ?? null) && '' !== $page['bookmark'] ? $page['bookmark'] : null;
         } while (null !== $bookmark);
 
+        // The sandbox starts without any board: one is created there, the picker then taking it
+        if ([] === $boards && $this->isSandbox()) {
+            $board = $this->request('POST', '/v5/boards', ['name' => self::SANDBOX_BOARD, 'privacy' => 'PUBLIC']);
+            if (isset($board['id'])) {
+                $boards[] = ['id' => (string) $board['id'], 'name' => (string) ($board['name'] ?? self::SANDBOX_BOARD)];
+            }
+        }
+
         return $boards;
     }
 
@@ -183,7 +203,7 @@ class PinterestClient
         ];
     }
 
-    // One API call, JSON both ways, the access token refreshed first when it is over
+    // One API call, JSON both ways, the access token refreshed first when it is over - the tokens themselves always traded on the production API
     /**
      * @param array<string, mixed>|null $json
      *
@@ -196,7 +216,7 @@ class PinterestClient
             $this->refresh();
         }
 
-        $response = $this->httpClient->request($method, self::API . $path, [
+        $response = $this->httpClient->request($method, ($this->isSandbox() ? self::SANDBOX_API : self::API) . $path, [
             'auth_bearer' => $accessToken ?? $this->config('social-pinterest-access-token'),
             ...(null === $json ? [] : ['json' => $json]),
             'timeout' => 60,

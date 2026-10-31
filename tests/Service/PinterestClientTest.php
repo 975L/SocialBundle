@@ -180,6 +180,39 @@ class PinterestClientTest extends TestCase
         $this->client([new MockResponse('{"message": "Board not found"}', ['http_code' => 404])])->createPin(['title' => 'Titre']);
     }
 
+    // In the sandbox the calls go to its own API, the tokens still traded on the production one
+    public function testTheSandboxTakesTheCallsButNotTheTokens(): void
+    {
+        $client = $this->client([
+            new MockResponse('{"id": "987"}', ['http_code' => 201]),
+            new MockResponse('{"access_token": "pina-new"}'),
+        ], ['social-pinterest-sandbox' => 'true']);
+
+        $this->assertTrue($client->isSandbox());
+        $client->createPin(['title' => 'Titre']);
+        $client->refresh();
+
+        $this->assertSame(['https://api-sandbox.pinterest.com/v5/pins', 'https://api.pinterest.com/v5/oauth/token'], array_column($this->calls, 'url'));
+        $this->assertFalse($this->client()->isSandbox());
+    }
+
+    // The sandbox starts empty: a board is created there, never on the real account
+    public function testTheSandboxCreatesItsBoardWhenItHasNone(): void
+    {
+        $boards = $this->client([
+            new MockResponse('{"items": []}'),
+            new MockResponse('{"id": "7", "name": "Sandbox"}', ['http_code' => 201]),
+        ], ['social-pinterest-sandbox' => 'true'])->boards();
+
+        $this->assertSame([['id' => '7', 'name' => 'Sandbox']], $boards);
+        $this->assertSame(['method' => 'POST', 'url' => 'https://api-sandbox.pinterest.com/v5/boards'], ['method' => $this->calls[1]['method'], 'url' => $this->calls[1]['url']]);
+        $this->assertSame(['name' => PinterestClient::SANDBOX_BOARD, 'privacy' => 'PUBLIC'], json_decode((string) $this->calls[1]['body'], true));
+
+        $this->calls = [];
+        $this->assertSame([], $this->client([new MockResponse('{"items": []}')])->boards());
+        $this->assertCount(1, $this->calls);
+    }
+
     // Connected while the refresh token lives, whatever the access token says - it renews itself
     public function testConnectedWhileTheRefreshTokenLives(): void
     {

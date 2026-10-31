@@ -501,6 +501,18 @@
         "description": "description.social_pinterest_board_name"
     },
     {
+        "label": "label.social_pinterest_sandbox",
+        "slug": "social-pinterest-sandbox",
+        "feature": true,
+        "sensitive": false,
+        "restricted": true,
+        "value": "false",
+        "kind": "bool",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_pinterest_sandbox"
+    },
+    {
         "label": "label.social_youtube_oauth_refresh_token",
         "slug": "social-youtube-oauth-refresh-token",
         "feature": true,

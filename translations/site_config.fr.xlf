@@ -158,6 +158,10 @@
                 <source>description.social_pinterest_refresh_token_expires_at</source>
                 <target>Renseigné par la connexion : la date après laquelle il faut reconnecter Pinterest si le renouvellement nocturne n'a pas tourné.</target>
             </trans-unit>
+            <trans-unit id="JF0EDkE">
+                <source>description.social_pinterest_sandbox</source>
+                <target>À cocher tant que l'app Pinterest n'a que l'accès d'essai (Trial) : les épingles partent dans la sandbox de Pinterest, visibles de vous seul, sur un tableau « Sandbox » créé au choix du tableau. À décocher une fois l'accès Standard accordé, puis choisir de nouveau le tableau.</target>
+            </trans-unit>
             <trans-unit id="IuQbtES">
                 <source>description.social_pinterest_token_expires_at</source>
                 <target>Renseigné par la connexion : la date après laquelle Pinterest refuse le jeton d'accès.</target>
@@ -345,6 +349,10 @@
             <trans-unit id="Oe0aDiG">
                 <source>label.social_pinterest_refresh_token_expires_at</source>
                 <target>Expiration de la connexion Pinterest</target>
+            </trans-unit>
+            <trans-unit id="ev_6FUG">
+                <source>label.social_pinterest_sandbox</source>
+                <target>Pinterest en sandbox</target>
             </trans-unit>
             <trans-unit id="mEuSNqN">
                 <source>label.social_pinterest_token_expires_at</source>

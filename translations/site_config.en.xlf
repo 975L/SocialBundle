@@ -158,6 +158,10 @@
                 <source>description.social_pinterest_refresh_token_expires_at</source>
                 <target>Filled by the connection: the date after which Pinterest has to be connected again if the nightly renewal did not run.</target>
             </trans-unit>
+            <trans-unit id="JF0EDkE">
+                <source>description.social_pinterest_sandbox</source>
+                <target>Tick while the Pinterest app only has Trial access: the pins go to Pinterest's sandbox, seen by you alone, on a "Sandbox" board created when the board is picked. Untick once Standard access is granted, then pick the board again.</target>
+            </trans-unit>
             <trans-unit id="IuQbtES">
                 <source>description.social_pinterest_token_expires_at</source>
                 <target>Filled by the connection: the date after which Pinterest refuses the access token.</target>
@@ -345,6 +349,10 @@
             <trans-unit id="Oe0aDiG">
                 <source>label.social_pinterest_refresh_token_expires_at</source>
                 <target>Pinterest connection expiry</target>
+            </trans-unit>
+            <trans-unit id="ev_6FUG">
+                <source>label.social_pinterest_sandbox</source>
+                <target>Pinterest in sandbox</target>
             </trans-unit>
             <trans-unit id="mEuSNqN">
                 <source>label.social_pinterest_token_expires_at</source>
