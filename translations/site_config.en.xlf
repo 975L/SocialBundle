@@ -160,7 +160,7 @@
             </trans-unit>
             <trans-unit id="JF0EDkE">
                 <source>description.social_pinterest_sandbox</source>
-                <target>Tick while the Pinterest app only has Trial access: the pins go to Pinterest's sandbox, seen by you alone, on a "Sandbox" board created when the board is picked. Untick once Standard access is granted, then pick the board again.</target>
+                <target>Tick while the Pinterest app only has Trial access: the pins go to Pinterest's sandbox, seen by you alone, on a "Sandbox" board created when the board is picked. Reconnect Pinterest after each switch: a sandbox token means nothing in production, and the other way round. Untick once Standard access is granted, then reconnect and pick the board again.</target>
             </trans-unit>
             <trans-unit id="IuQbtES">
                 <source>description.social_pinterest_token_expires_at</source>

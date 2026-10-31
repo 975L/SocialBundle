@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.23.2
+
+Pinterest: the sandbox trades its own tokens
+
+- Fixed Pinterest sandbox: the token exchange sent there too (31/10/2026)
+- Pinterest sandbox: reconnecting asked after each switch (31/10/2026)
+
 ## v2.23.1
 
 Pinterest: the sandbox for an app with Trial access

@@ -160,7 +160,7 @@
             </trans-unit>
             <trans-unit id="JF0EDkE">
                 <source>description.social_pinterest_sandbox</source>
-                <target>Marcar mientras la app de Pinterest solo tenga el acceso de prueba (Trial): los pines van al sandbox de Pinterest, visibles solo para usted, en un tablero «Sandbox» creado al elegir el tablero. Desmarcar una vez concedido el acceso Standard y volver a elegir el tablero.</target>
+                <target>Marcar mientras la app de Pinterest solo tenga el acceso de prueba (Trial): los pines van al sandbox de Pinterest, visibles solo para usted, en un tablero «Sandbox» creado al elegir el tablero. Reconectar Pinterest tras cada cambio: un token del sandbox no vale nada en producción, y al revés. Desmarcar una vez concedido el acceso Standard, reconectar y volver a elegir el tablero.</target>
             </trans-unit>
             <trans-unit id="IuQbtES">
                 <source>description.social_pinterest_token_expires_at</source>

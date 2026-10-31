@@ -180,8 +180,8 @@ class PinterestClientTest extends TestCase
         $this->client([new MockResponse('{"message": "Board not found"}', ['http_code' => 404])])->createPin(['title' => 'Titre']);
     }
 
-    // In the sandbox the calls go to its own API, the tokens still traded on the production one
-    public function testTheSandboxTakesTheCallsButNotTheTokens(): void
+    // In the sandbox every call goes to its own API, the tokens traded there too
+    public function testTheSandboxTakesEveryCallTokensIncluded(): void
     {
         $client = $this->client([
             new MockResponse('{"id": "987"}', ['http_code' => 201]),
@@ -192,7 +192,7 @@ class PinterestClientTest extends TestCase
         $client->createPin(['title' => 'Titre']);
         $client->refresh();
 
-        $this->assertSame(['https://api-sandbox.pinterest.com/v5/pins', 'https://api.pinterest.com/v5/oauth/token'], array_column($this->calls, 'url'));
+        $this->assertSame(['https://api-sandbox.pinterest.com/v5/pins', 'https://api-sandbox.pinterest.com/v5/oauth/token'], array_column($this->calls, 'url'));
         $this->assertFalse($this->client()->isSandbox());
     }
 

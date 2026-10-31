@@ -20,7 +20,7 @@ class PinterestClient
 
     public const string API = 'https://api.pinterest.com';
 
-    // Where an app with Trial access has to pin, its boards and pins kept apart from the account's real ones
+    // Where an app with Trial access has to pin, its boards, pins and tokens kept apart from the account's real ones - a production token being refused there, and the other way round
     public const string SANDBOX_API = 'https://api-sandbox.pinterest.com';
 
     // The board created in the sandbox, which starts empty
@@ -173,7 +173,7 @@ class PinterestClient
      */
     private function token(array $body): array
     {
-        $response = $this->httpClient->request('POST', self::API . '/v5/oauth/token', [
+        $response = $this->httpClient->request('POST', $this->api() . '/v5/oauth/token', [
             'auth_basic' => [$this->config('social-pinterest-client-id'), $this->config('social-pinterest-client-secret')],
             'body' => $body,
             'timeout' => 30,
@@ -203,7 +203,7 @@ class PinterestClient
         ];
     }
 
-    // One API call, JSON both ways, the access token refreshed first when it is over - the tokens themselves always traded on the production API
+    // One API call, JSON both ways, the access token refreshed first when it is over
     /**
      * @param array<string, mixed>|null $json
      *
@@ -216,7 +216,7 @@ class PinterestClient
             $this->refresh();
         }
 
-        $response = $this->httpClient->request($method, ($this->isSandbox() ? self::SANDBOX_API : self::API) . $path, [
+        $response = $this->httpClient->request($method, $this->api() . $path, [
             'auth_bearer' => $accessToken ?? $this->config('social-pinterest-access-token'),
             ...(null === $json ? [] : ['json' => $json]),
             'timeout' => 60,
@@ -227,6 +227,12 @@ class PinterestClient
         $data = json_decode($response->getContent(false), true);
 
         return \is_array($data) ? $data : [];
+    }
+
+    // The sandbox's host until Standard access, the production one after
+    private function api(): string
+    {
+        return $this->isSandbox() ? self::SANDBOX_API : self::API;
     }
 
     private function date(string $slug): ?\DateTimeImmutable
