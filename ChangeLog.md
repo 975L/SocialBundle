@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.23.3
+
+Pinterest: the steps from Trial to Standard access
+
+- README: the steps from Trial to Standard access, the video and the form Pinterest asks for (31/10/2026)
+
 ## v2.23.2
 
 Pinterest: the sandbox trades its own tokens
