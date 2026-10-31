@@ -26,6 +26,7 @@ use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPostApprover;
 use c975L\SocialBundle\Service\SocialPublisher;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
+use c975L\SocialBundle\Tests\Controller\ControllerTestTrait;
 use c975L\UiBundle\Contract\BrowsableSocialContentSourceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -39,7 +40,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\BatchActionDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -47,7 +47,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -55,6 +54,8 @@ use Twig\Environment;
 
 class SocialPostCrudControllerTest extends TestCase
 {
+    use ControllerTestTrait;
+
     /** @var array<string, mixed> */
     private array $rendered = [];
 
@@ -182,22 +183,16 @@ class SocialPostCrudControllerTest extends TestCase
     // A selection sent without EasyAdmin's batch token, from another site, approves nothing
     public function testApprovingASelectionDemandsItsToken(): void
     {
-        $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
-        $authorizationChecker->method('isGranted')->willReturn(true);
         $csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
         $csrfTokenManager->expects($this->once())->method('isTokenValid')
             ->with(new CsrfToken('ea-batch-action-approveSelection-' . SocialPost::class, 'forged'))
             ->willReturn(false);
-        $services = ['security.authorization_checker' => $authorizationChecker, 'security.csrf.token_manager' => $csrfTokenManager];
-        $container = $this->createStub(ContainerInterface::class);
-        $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
-        $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
 
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())->method('find');
         $entityManager->expects($this->never())->method('flush');
         $controller = $this->controller($entityManager);
-        $controller->setContainer($container);
+        $controller->setContainer($this->serviceContainer(['security.csrf.token_manager' => $csrfTokenManager]));
 
         $controller->approveSelection(new BatchActionDto('approveSelection', [1, 2], SocialPost::class, 'forged'));
     }
@@ -215,8 +210,6 @@ class SocialPostCrudControllerTest extends TestCase
     private function wire(SocialPostCrudController $controller, Request $request): void
     {
         $request->setSession(new Session(new MockArraySessionStorage()));
-        $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
-        $authorizationChecker->method('isGranted')->willReturn(true);
         $csrf = $this->createStub(CsrfTokenManagerInterface::class);
         $csrf->method('isTokenValid')->willReturnCallback(static fn (CsrfToken $csrfToken): bool => 'social_post_publish' === $csrfToken->getId() && 'valid' === $csrfToken->getValue());
         $twig = $this->createStub(Environment::class);
@@ -228,17 +221,12 @@ class SocialPostCrudControllerTest extends TestCase
         });
         $router = $this->createStub(UrlGeneratorInterface::class);
         $router->method('generate')->willReturnCallback(static fn (string $route, array $parameters): string => '/' . $route . '?' . http_build_query($parameters));
-        $services = [
+        $controller->setContainer($this->serviceContainer([
             'request_stack' => new RequestStack([$request]),
-            'security.authorization_checker' => $authorizationChecker,
             'security.csrf.token_manager' => $csrf,
             'twig' => $twig,
             'router' => $router,
-        ];
-        $container = $this->createStub(ContainerInterface::class);
-        $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
-        $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
-        $controller->setContainer($container);
+        ]));
     }
 
     private function post(): SocialPost

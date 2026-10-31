@@ -17,7 +17,7 @@ use Symfony\Component\Translation\TranslatableMessage;
 
 use function Symfony\Component\Translation\t;
 
-// Whether a post's pictures and videos suit each network it goes to, read off that network's own rules (see NetworkPublisherInterface::getMediaRules()): said when the post is saved, and refusing its approval. A picture is not checked for its type or its shape, every network getting it as it takes it (a JPEG, framed for Instagram, see SocialImageExporter); a limit a network does not document is not checked either
+// Whether a post's pictures and videos suit each network it goes to, read off that network's own rules (see NetworkPublisherInterface::getMediaRules()), and the choices a network asks post by post are made (see PostOptionsPublisherInterface): said when the post is saved, and refusing its approval. A picture is not checked for its type or its shape, every network getting it as it takes it (a JPEG, framed for Instagram, see SocialImageExporter); a limit a network does not document is not checked either
 class SocialMediaChecker
 {
     public function __construct(
@@ -25,14 +25,14 @@ class SocialMediaChecker
     ) {
     }
 
-    // What does not suit, by network, among the networks the post still goes out on
+    // What does not suit, by network, among the networks the post still goes out on - $live, at the approval, asking the networks what their accounts allow right now, a mere save never waiting on them
     /** @return array<string, list<TranslatableMessage>> */
-    public function check(SocialPost $post): array
+    public function check(SocialPost $post, bool $live = false): array
     {
         $problems = [];
         foreach ($post->getTargets() as $target) {
             $rules = $target->isPending() ? $this->socialPublisher->getMediaRules($target->getNetwork()) : null;
-            $found = null === $rules ? [] : $this->problems($post, $rules);
+            $found = null === $rules ? [] : [...$this->problems($post, $rules), ...$this->socialPublisher->checkOptions($target, $live)];
             if ([] !== $found) {
                 $problems[$target->getNetwork()] = $found;
             }

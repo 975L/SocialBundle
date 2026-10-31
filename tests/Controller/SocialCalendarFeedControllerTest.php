@@ -14,26 +14,23 @@ use c975L\SocialBundle\Controller\Management\SocialCalendarController;
 use c975L\SocialBundle\Controller\SocialCalendarFeedController;
 use c975L\SocialBundle\Service\SocialCalendarFeed;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SocialCalendarFeedControllerTest extends TestCase
 {
+    use ControllerTestTrait;
+
     private const string TOKEN = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 
     private function controller(SocialCalendarFeed $feed): SocialCalendarFeedController
     {
         $router = $this->createStub(UrlGeneratorInterface::class);
         $router->method('generate')->willReturnCallback(static fn (string $route, array $parameters, int $referenceType): string => SocialCalendarController::ROUTE === $route && UrlGeneratorInterface::ABSOLUTE_URL === $referenceType ? 'https://example.org/management/social-calendar' : '/wrong');
-        $services = ['router' => $router];
-        $container = $this->createStub(ContainerInterface::class);
-        $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
-        $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
 
         $controller = new SocialCalendarFeedController($feed);
-        $controller->setContainer($container);
+        $controller->setContainer($this->serviceContainer(['router' => $router]));
 
         return $controller;
     }

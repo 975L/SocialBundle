@@ -56,24 +56,12 @@ class MetaOAuthController extends AbstractController
     {
         $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
 
-        $code = $this->callbackCode($request);
-
         // A list left by an earlier connection never picked from, so it cannot outlive this one
         $request->getSession()->remove(SocialMetaPageController::SESSION_PAGES);
 
-        if (null === $code) {
-            $this->addFlash('danger', t('flash.meta_refused', [], 'social'));
-
-            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
-        }
-
-        // Everything fetched before anything is written: a failure on a reconnection leaves the working connection as it was
-        try {
-            $pages = $this->metaGraphClient->connect($code, $this->redirectUri());
-        } catch (\Throwable $exception) {
-            $this->addFlash('danger', $exception->getMessage());
-
-            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
+        $pages = $this->callbackConnection($request, 'flash.meta_refused', fn (string $code) => $this->metaGraphClient->connect($code, $this->redirectUri()));
+        if ($pages instanceof RedirectResponse) {
+            return $pages;
         }
 
         // Held in the session, tokens included, for the screen that stores the site's Page - straight away when the account manages only one

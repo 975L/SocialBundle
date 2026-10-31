@@ -78,6 +78,10 @@
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Pick the networks offered to your visitors, their order and their look</target>
             </trans-unit>
+            <trans-unit id="ot1_rRx">
+                <source>description.guided_project_social_tiktok_connect</source>
+                <target>The agency part: the TikTok app, its two keys and the consent. Done once: the access then renews itself every night.</target>
+            </trans-unit>
             <trans-unit id="IsHF91L">
                 <source>description.guided_project_social_youtube_connect</source>
                 <target>The agency part: the Google OAuth client opened to YouTube, then the channel's consent. Done once.</target>
@@ -318,6 +322,22 @@
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Wide, square or round button: that is the room the buttons take under your pages.</target>
             </trans-unit>
+            <trans-unit id="UmUOu7_">
+                <source>description.guided_step_social_tiktok_connect</source>
+                <target>Click "Connect" on the "TikTok" tile, then allow access with the account that posts. The site stores the tokens and the account's name itself.</target>
+            </trans-unit>
+            <trans-unit id="X4u3z5G">
+                <source>description.guided_step_social_tiktok_credentials</source>
+                <target>Search for "social-tiktok-client-key" and "social-tiktok-client-secret" in the list, and paste in the Client key and the Client secret, the sandbox's ones until the app is audited. The secret only shows with the "Show sensitive data" button. The tokens and the account fill themselves in the next step.</target>
+            </trans-unit>
+            <trans-unit id="0Gnq4vD">
+                <source>description.guided_step_social_tiktok_options</source>
+                <target>TikTok asks its choices post by post: on the screen of a post going out on TikTok, the "TikTok choices" block gives the account, who can see the video, the interactions allowed, the commercial content disclosure and the consent. The post is not approved without them. The video has to be served from a domain verified in the app.</target>
+            </trans-unit>
+            <trans-unit id="253geAg">
+                <source>description.guided_step_social_tiktok_prerequisites</source>
+                <target>This part happens on developers.tiktok.com: create an app with the Login Kit and Content Posting API products (direct post turned on), declare as its redirect URI the site's address followed by "/social/tiktok/callback", and verify the site's domain, which TikTok fetches the videos from. Until TikTok audits the app, everything happens in its sandbox: the posting account is added there as a target user, set private, and its videos stay private. Come back here with the key and the secret.</target>
+            </trans-unit>
             <trans-unit id="2LBFP3E">
                 <source>description.guided_step_social_youtube_connect</source>
                 <target>Click "Connect" on the "YouTube" tile, pick the account holding the channel (a brand channel is picked in Google's list), then allow access. The tile then shows the channel's name: check it is the right one.</target>
@@ -389,6 +409,14 @@
             <trans-unit id="KWHHNzs">
                 <source>email.social_series_ending_subject</source>
                 <target>%count% post series coming to an end</target>
+            </trans-unit>
+            <trans-unit id="Coi_ugY">
+                <source>email.social_tiktok_refresh_failed_body</source>
+                <target>TikTok refused to renew the site's access (%error%). Nothing is posted on TikTok until the account is connected again from "Connections":</target>
+            </trans-unit>
+            <trans-unit id="9z3Zlp2">
+                <source>email.social_tiktok_refresh_failed_subject</source>
+                <target>Connect TikTok again</target>
             </trans-unit>
             <trans-unit id="0h0NDdA">
                 <source>flash.bluesky_connected</source>
@@ -530,6 +558,18 @@
                 <source>flash.social_series_none</source>
                 <target>No series is running: create one with "Generate a series".</target>
             </trans-unit>
+            <trans-unit id="K4CZlG4">
+                <source>flash.tiktok_connected</source>
+                <target>TikTok is connected with the account %name%.</target>
+            </trans-unit>
+            <trans-unit id="D4sXXDX">
+                <source>flash.tiktok_not_configured</source>
+                <target>Fill in your TikTok app's key and secret in the configuration first.</target>
+            </trans-unit>
+            <trans-unit id="a4J.l97">
+                <source>flash.tiktok_refused</source>
+                <target>The connection to TikTok was refused or interrupted.</target>
+            </trans-unit>
             <trans-unit id="cjgig6f">
                 <source>flash.youtube_connected</source>
                 <target>YouTube channel "%name%" connected.</target>
@@ -617,6 +657,30 @@
             <trans-unit id="4h1xjIz">
                 <source>help.social_series_text</source>
                 <target>Each post's text or, with the AI, what they are about: the AI writes a different take for each, at the length of the shortest network ticked. Not needed for the site's contents.</target>
+            </trans-unit>
+            <trans-unit id="I8AKzzK">
+                <source>help.social_tiktok_account</source>
+                <target>Posted on the TikTok account %name%.</target>
+            </trans-unit>
+            <trans-unit id="A798mEK">
+                <source>help.social_tiktok_brand_content</source>
+                <target>You are promoting another brand or a third party. The video will be labeled "Paid partnership" and cannot be private: it is switched to "Everyone" if need be.</target>
+            </trans-unit>
+            <trans-unit id="Chxpur_">
+                <source>help.social_tiktok_brand_organic</source>
+                <target>You are promoting yourself or your own business. The video will be labeled "Promotional content".</target>
+            </trans-unit>
+            <trans-unit id="aPHYhn1">
+                <source>help.social_tiktok_commercial</source>
+                <target>Indicate whether this video promotes yourself, a third party, or both.</target>
+            </trans-unit>
+            <trans-unit id="Z23.ypc">
+                <source>help.social_tiktok_interaction_disabled</source>
+                <target>Turned off in the TikTok account's settings.</target>
+            </trans-unit>
+            <trans-unit id="Em2VFga">
+                <source>help.social_tiktok_processing</source>
+                <target>Once sent, TikTok processes the video for a few minutes: it may not show on the profile at once.</target>
             </trans-unit>
             <trans-unit id="PmT6SQr">
                 <source>label.anchor</source>
@@ -841,6 +905,10 @@
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Set the share buttons</target>
+            </trans-unit>
+            <trans-unit id="K_sxbNO">
+                <source>label.guided_project_social_tiktok_connect</source>
+                <target>Connect TikTok</target>
             </trans-unit>
             <trans-unit id="iENBvgq">
                 <source>label.guided_project_social_youtube_connect</source>
@@ -1126,6 +1194,22 @@
                 <source>label.guided_step_social_share_buttons_shape</source>
                 <target>Pick the shape</target>
             </trans-unit>
+            <trans-unit id="a5R1HzE">
+                <source>label.guided_step_social_tiktok_connect</source>
+                <target>Start the connection</target>
+            </trans-unit>
+            <trans-unit id="2jIg5Ds">
+                <source>label.guided_step_social_tiktok_credentials</source>
+                <target>Fill in the app's two keys</target>
+            </trans-unit>
+            <trans-unit id="h_KwCrF">
+                <source>label.guided_step_social_tiktok_options</source>
+                <target>Make each post's TikTok choices</target>
+            </trans-unit>
+            <trans-unit id="v9cLa_x">
+                <source>label.guided_step_social_tiktok_prerequisites</source>
+                <target>Create the TikTok app</target>
+            </trans-unit>
             <trans-unit id="DYt2MRn">
                 <source>label.guided_step_social_youtube_connect</source>
                 <target>Start the connection</target>
@@ -1262,6 +1346,14 @@
                 <source>label.info_social_series_review</source>
                 <target>A series' coming posts side by side: each one read, its networks ticked, then approved alone or with the others.</target>
             </trans-unit>
+            <trans-unit id="WjZtbyj">
+                <source>label.info_tiktok_connect</source>
+                <target>Links the site to a TikTok account: each post's video is posted there, its text as the caption, with the choices TikTok asks on the post's screen. The tokens renew themselves every night.</target>
+            </trans-unit>
+            <trans-unit id="Q9cY5V4">
+                <source>label.info_tiktok_not_configured</source>
+                <target>Fill in the TikTok app's key and secret in the configuration first ("social-tiktok-client-key" and "social-tiktok-client-secret").</target>
+            </trans-unit>
             <trans-unit id="E9Dv0_T">
                 <source>label.info_youtube_connect</source>
                 <target>Links the site to a YouTube channel: a post carrying a video is sent there, as a Short when the video is vertical and lasts under three minutes.</target>
@@ -1317,6 +1409,10 @@
             <trans-unit id="tvLY2Yw">
                 <source>label.network_pinterest</source>
                 <target>Pinterest</target>
+            </trans-unit>
+            <trans-unit id="SBF0gXI">
+                <source>label.network_tiktok</source>
+                <target>TikTok</target>
             </trans-unit>
             <trans-unit id="ROhCU6T">
                 <source>label.network_youtube</source>
@@ -1457,6 +1553,10 @@
             <trans-unit id="7xBlqmM">
                 <source>label.social_calendar_open_failed</source>
                 <target>This post could not be opened: it may have been deleted meanwhile.</target>
+            </trans-unit>
+            <trans-unit id="cr3425p">
+                <source>label.social_calendar_options_pending</source>
+                <target>Make the %network% choices on the post's screen</target>
             </trans-unit>
             <trans-unit id="m2MIvc9">
                 <source>label.social_calendar_panel_next</source>
@@ -2041,6 +2141,90 @@
             <trans-unit id="6prrGwu">
                 <source>label.social_series_weekdays_required</source>
                 <target>Tick at least one day of the week.</target>
+            </trans-unit>
+            <trans-unit id="OHJ769G">
+                <source>label.social_tiktok_brand_content</source>
+                <target>Branded content</target>
+            </trans-unit>
+            <trans-unit id="PZCutA0">
+                <source>label.social_tiktok_brand_organic</source>
+                <target>Your brand</target>
+            </trans-unit>
+            <trans-unit id="u4DoElc">
+                <source>label.social_tiktok_branded_private</source>
+                <target>Branded content cannot be private on TikTok.</target>
+            </trans-unit>
+            <trans-unit id="Pk9awg.">
+                <source>label.social_tiktok_cannot_post</source>
+                <target>TikTok does not allow posting on this account right now: %error%</target>
+            </trans-unit>
+            <trans-unit id="TQSdAwx">
+                <source>label.social_tiktok_comment</source>
+                <target>Allow comments</target>
+            </trans-unit>
+            <trans-unit id="RXOUwnj">
+                <source>label.social_tiktok_commercial</source>
+                <target>Disclose commercial content</target>
+            </trans-unit>
+            <trans-unit id="8bqQfDZ">
+                <source>label.social_tiktok_commercial_required</source>
+                <target>Tick "Your brand", "Branded content" or both, or untick the commercial content disclosure.</target>
+            </trans-unit>
+            <trans-unit id="2PtEV.F">
+                <source>label.social_tiktok_consent</source>
+                <target>By posting, I agree to TikTok's &lt;a href="%music%" target="_blank" rel="noopener noreferrer"&gt;Music Usage Confirmation&lt;/a&gt;, and to its &lt;a href="%branded%" target="_blank" rel="noopener noreferrer"&gt;Branded Content Policy&lt;/a&gt; for branded content.</target>
+            </trans-unit>
+            <trans-unit id="ymVqNgY">
+                <source>label.social_tiktok_consent_required</source>
+                <target>Tick the TikTok consent.</target>
+            </trans-unit>
+            <trans-unit id="ErsI2fh">
+                <source>label.social_tiktok_duet</source>
+                <target>Allow Duet</target>
+            </trans-unit>
+            <trans-unit id="BHTiLZZ">
+                <source>label.social_tiktok_options</source>
+                <target>TikTok choices</target>
+            </trans-unit>
+            <trans-unit id="Bni75m3">
+                <source>label.social_tiktok_privacy</source>
+                <target>Who can view this video</target>
+            </trans-unit>
+            <trans-unit id="WmyP1L3">
+                <source>label.social_tiktok_privacy_follower_of_creator</source>
+                <target>Followers</target>
+            </trans-unit>
+            <trans-unit id="xNEDPdU">
+                <source>label.social_tiktok_privacy_mutual_follow_friends</source>
+                <target>Friends</target>
+            </trans-unit>
+            <trans-unit id="6tBajV6">
+                <source>label.social_tiktok_privacy_pick</source>
+                <target>Pick…</target>
+            </trans-unit>
+            <trans-unit id="JwGpP59">
+                <source>label.social_tiktok_privacy_public_to_everyone</source>
+                <target>Everyone</target>
+            </trans-unit>
+            <trans-unit id="SEvvsxi">
+                <source>label.social_tiktok_privacy_required</source>
+                <target>Pick who can view the video on TikTok.</target>
+            </trans-unit>
+            <trans-unit id="lqqTDCI">
+                <source>label.social_tiktok_privacy_self_only</source>
+                <target>Only me</target>
+            </trans-unit>
+            <trans-unit id="Uyi0lAE">
+                <source>label.social_tiktok_privacy_unavailable</source>
+                <target>The TikTok account no longer offers this privacy: pick another one.</target>
+            </trans-unit>
+            <trans-unit id="IeKT3He">
+                <source>label.social_tiktok_stitch</source>
+                <target>Allow Stitch</target>
+            </trans-unit>
+            <trans-unit id="8gwiHSV">
+                <source>label.social_tiktok_video_too_long</source>
+                <target>This TikTok account takes videos of %max% seconds at most.</target>
             </trans-unit>
             <trans-unit id="XWMpUxP">
                 <source>label.style</source>

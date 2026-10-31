@@ -10,7 +10,6 @@
 
 namespace c975L\SocialBundle\Tests\Controller;
 
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\LinkedInOAuthController;
 use c975L\SocialBundle\Controller\Management\SocialLinkedInPageController;
 use c975L\SocialBundle\Service\ConfigValueWriter;
@@ -35,16 +34,7 @@ class LinkedInOAuthControllerTest extends TestCase
     // Same seam as GoogleOAuthControllerTest: AbstractController resolves security, routing and the flash bag through its container
     private function createController(Request $request, ?LinkedInClient $linkedInClient = null, ?ConfigValueWriter $configValueWriter = null): LinkedInOAuthController
     {
-        $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturnCallback(static fn (string $key) => 'site-role-editor' === $key ? 'ROLE_EDITOR' : null);
-
-        if (null === $linkedInClient) {
-            $linkedInClient = $this->createStub(LinkedInClient::class);
-            $linkedInClient->method('isConfigured')->willReturn(true);
-            $linkedInClient->method('getAuthorizationUrl')->willReturn('https://www.linkedin.com/oauth/v2/authorization?state=x');
-        }
-
-        $controller = new LinkedInOAuthController($configService, $configValueWriter ?? $this->createStub(ConfigValueWriter::class), $linkedInClient);
+        $controller = new LinkedInOAuthController($this->configService(), $configValueWriter ?? $this->createStub(ConfigValueWriter::class), $linkedInClient ?? $this->oauthClient(LinkedInClient::class, 'https://www.linkedin.com/oauth/v2/authorization?state=x'));
         $controller->setContainer($this->createContainer($request));
 
         return $controller;
@@ -52,8 +42,7 @@ class LinkedInOAuthControllerTest extends TestCase
 
     private function callbackRequest(bool $page = false): Request
     {
-        $request = $this->createRequest(['code' => 'auth-code', 'state' => 'expected-state']);
-        $request->getSession()->set('social_linkedin_oauth_state', 'expected-state');
+        $request = $this->oauthCallbackRequest('social_linkedin_oauth_state');
         $request->getSession()->set('social_linkedin_oauth_page', $page);
 
         return $request;
@@ -67,17 +56,6 @@ class LinkedInOAuthControllerTest extends TestCase
         $linkedInClient->expects($this->once())->method('connect')->with('auth-code', $this->anything(), $page)->willReturn(['accessToken' => 'token', 'memberId' => 'abc', 'expiresAt' => new \DateTimeImmutable('2026-12-02T10:00:00+01:00'), 'name' => 'Laurent', 'organizations' => $organizations]);
 
         return $linkedInClient;
-    }
-
-    // A writer keeping what it is asked to write
-    private function recordingWriter(array &$written): ConfigValueWriter
-    {
-        $configValueWriter = $this->createStub(ConfigValueWriter::class);
-        $configValueWriter->method('write')->willReturnCallback(function (array $values) use (&$written): void {
-            $written[] = $values;
-        });
-
-        return $configValueWriter;
     }
 
     public function testConnectStoresAStateAndSendsItAlongToLinkedIn(): void

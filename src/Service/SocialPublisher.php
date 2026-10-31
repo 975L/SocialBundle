@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Service;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use c975L\SocialBundle\Contract\FirstCommentPublisherInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
+use c975L\SocialBundle\Contract\PostOptionsPublisherInterface;
 use c975L\SocialBundle\Contract\ProfileResharePublisherInterface;
 use c975L\SocialBundle\Contract\StoryPublisherInterface;
 use c975L\SocialBundle\Entity\SocialPost;
@@ -28,6 +29,7 @@ use c975L\UiBundle\Model\SocialContent;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Lock\LockFactory;
+use Symfony\Component\Translation\TranslatableMessage;
 
 // The publication on the site's networks: prepares a post as a draft planned for a moment - one target per configured network, each with its own text - which the planned run sends once approved, or the screen's "Publish" at once. Every method answers the same report, keyed by network: ['status' => a SocialPostStatus value or "dry_run", 'message' => the post's id there or the network's refusal, 'payload' => what would be sent, on a dry run only]
 class SocialPublisher
@@ -364,7 +366,8 @@ class SocialPublisher
         foreach ($targets as $name => $network) {
             $text = $post->hasOwnText() ? $this->textBuilder->cut((string) $post->getText(), $network->getMaxLength()) : ($written[$name] ?? $this->textBuilder->build($content, $network->getMaxLength()));
             $target = new SocialPostTarget($post, $name, $text);
-            if ($post->isApproved()) {
+            // A network asking choices of its own waits for them to be made, approved from the post's screen
+            if ($post->isApproved() && !$network instanceof PostOptionsPublisherInterface) {
                 $target->approve();
             }
         }
@@ -533,7 +536,7 @@ class SocialPublisher
         }
 
         try {
-            $target->markPublished($network->publish($target->getText(), $this->sentContent($network, $target, $content), $this->mediasOf($target->getPost())));
+            $target->markPublished($this->optioned($network, $target)->publish($target->getText(), $this->sentContent($network, $target, $content), $this->mediasOf($target->getPost())));
         } catch (\Throwable $exception) {
             // One network refusing never keeps the others from posting - the refusal is kept on the target, where "Publish" tries it again
             $this->logger->error('Social publication failed on {network}: {message}', ['network' => $target->getNetwork(), 'message' => $exception->getMessage()]);
@@ -665,7 +668,7 @@ class SocialPublisher
             return ['status' => self::DRY_RUN, 'message' => $target->getStatus()->value, 'payload' => ['error' => 'Nothing to send it with.']];
         }
 
-        $preview = $this->preview($network, $target->getText(), $this->sentContent($network, $target, $content), $this->mediasOf($target->getPost()));
+        $preview = $this->preview($this->optioned($network, $target), $target->getText(), $this->sentContent($network, $target, $content), $this->mediasOf($target->getPost()));
         if ($network instanceof FirstCommentPublisherInterface && null !== $target->getComment()) {
             $preview['payload']['first_comment'] = $target->getComment();
         }
@@ -689,6 +692,29 @@ class SocialPublisher
     public function supportsStory(string $network): bool
     {
         return ($this->allNetworks()[$network] ?? null) instanceof StoryPublisherInterface;
+    }
+
+    // The form type of the choices a network asks post by post, which the post's screen then offers - null for one asking none
+    public function getOptionsType(string $network): ?string
+    {
+        $publisher = $this->allNetworks()[$network] ?? null;
+
+        return $publisher instanceof PostOptionsPublisherInterface ? $publisher->getOptionsType() : null;
+    }
+
+    // What keeps a target from being approved with the choices made on it, empty on a network asking none - $live asking the network too
+    /** @return list<TranslatableMessage> */
+    public function checkOptions(SocialPostTarget $target, bool $live = false): array
+    {
+        $publisher = $this->networksByName()[$target->getNetwork()] ?? null;
+
+        return $publisher instanceof PostOptionsPublisherInterface ? $publisher->checkOptions($target->getOptions(), $target->getPost(), $live) : [];
+    }
+
+    // The network publishing with the choices made on the target, as it is on a network asking none
+    private function optioned(NetworkPublisherInterface $network, SocialPostTarget $target): NetworkPublisherInterface
+    {
+        return $network instanceof PostOptionsPublisherInterface ? $network->withOptions($target->getOptions()) : $network;
     }
 
     // Whether a network posts as a Page it can share again on the member's profile, which the post's screen then offers

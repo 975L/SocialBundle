@@ -10,16 +10,13 @@
 
 namespace c975L\SocialBundle\Tests\Service;
 
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Service\LinkedInClient;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
 class LinkedInClientTest extends TestCase
 {
-    /** @var list<array{method: string, url: string, headers: list<string>, body: mixed}> */
-    private array $calls = [];
+    use ClientTestTrait;
 
     /**
      * @param list<MockResponse>    $responses
@@ -34,16 +31,8 @@ class LinkedInClientTest extends TestCase
             'social-linkedin-member-id' => 'abc',
             'social-linkedin-token-expires-at' => new \DateTimeImmutable('+30 days')->format(\DateTimeInterface::ATOM),
         ];
-        $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturnCallback(static fn (string $key): ?string => $config[$key] ?? null);
 
-        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$responses): MockResponse {
-            $this->calls[] = ['method' => $method, 'url' => $url, 'headers' => $options['headers'] ?? [], 'body' => $options['body'] ?? null];
-
-            return array_shift($responses) ?? new MockResponse('{}');
-        });
-
-        return new LinkedInClient($httpClient, $configService, 0);
+        return new LinkedInClient($this->httpClient($responses), $this->configService($config), 0);
     }
 
     // The code traded for the token, then the member asked who they are - what the posts are signed with

@@ -282,6 +282,22 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>Debajo, elija la forma: botón ancho, cuadrado o redondo. Es el espacio que ocuparán los botones bajo sus páginas.</target>
             </trans-unit>
+            <trans-unit id="pX2axbN">
+                <source>narration.guided_step_social_tiktok_connect</source>
+                <target>Haga clic en Conectar en la ficha TikTok, y autorice el acceso con la cuenta que publica.</target>
+            </trans-unit>
+            <trans-unit id="gTEwbZ3">
+                <source>narration.guided_step_social_tiktok_credentials</source>
+                <target>Busque «social-tiktok-client-key» y «social-tiktok-client-secret» en la lista de ajustes, y pegue allí los dos valores de la aplicación.</target>
+            </trans-unit>
+            <trans-unit id="iXgAN9E">
+                <source>narration.guided_step_social_tiktok_options</source>
+                <target>En cada publicación que sale en TikTok, haga las opciones del bloque TikTok, y marque el consentimiento: sin ellas, la publicación no se valida.</target>
+            </trans-unit>
+            <trans-unit id="WFLwjwv">
+                <source>narration.guided_step_social_tiktok_prerequisites</source>
+                <target>En developers.tiktok.com, cree una aplicación con Login Kit y Content Posting API, declare la dirección de retorno del sitio y verifique su dominio.</target>
+            </trans-unit>
             <trans-unit id="ogVgOWn">
                 <source>narration.guided_step_social_youtube_connect</source>
                 <target>Haga clic en «Conectar» en la ficha «YouTube», elija la cuenta del canal y autorice el acceso. Compruebe luego el nombre del canal en la ficha.</target>

@@ -10,7 +10,6 @@
 
 namespace c975L\SocialBundle\Tests\Controller;
 
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\YoutubeOAuthController;
 use c975L\SocialBundle\Service\ConfigValueWriter;
 use c975L\SocialBundle\Service\YoutubeClient;
@@ -34,27 +33,15 @@ class YoutubeOAuthControllerTest extends TestCase
     // Same seam as GoogleOAuthControllerTest: AbstractController resolves security, routing and the flash bag through its container
     private function createController(Request $request, ?YoutubeClient $youtubeClient = null, ?ConfigValueWriter $configValueWriter = null): YoutubeOAuthController
     {
-        $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturnCallback(static fn (string $key) => 'site-role-editor' === $key ? 'ROLE_EDITOR' : null);
-
-        if (null === $youtubeClient) {
-            $youtubeClient = $this->createStub(YoutubeClient::class);
-            $youtubeClient->method('isConfigured')->willReturn(true);
-            $youtubeClient->method('getAuthorizationUrl')->willReturn('https://accounts.google.com/o/oauth2/v2/auth?state=x');
-        }
-
-        $controller = new YoutubeOAuthController($configService, $configValueWriter ?? $this->createStub(ConfigValueWriter::class), $youtubeClient);
+        $controller = new YoutubeOAuthController($this->configService(), $configValueWriter ?? $this->createStub(ConfigValueWriter::class), $youtubeClient ?? $this->oauthClient(YoutubeClient::class, 'https://accounts.google.com/o/oauth2/v2/auth?state=x'));
         $controller->setContainer($this->createContainer($request));
 
         return $controller;
     }
 
-    private function callbackRequest(): Request
+    private function callbackRequest(string $state = 'expected-state'): Request
     {
-        $request = $this->createRequest(['code' => 'auth-code', 'state' => 'expected-state']);
-        $request->getSession()->set('social_youtube_oauth_state', 'expected-state');
-
-        return $request;
+        return $this->oauthCallbackRequest('social_youtube_oauth_state', $state);
     }
 
     public function testConnectStoresAStateAndSendsItAlongToGoogle(): void
@@ -86,13 +73,8 @@ class YoutubeOAuthControllerTest extends TestCase
         $youtubeClient->method('connect')->willReturn(['refreshToken' => 'refresh', 'channelId' => 'UC123', 'channelTitle' => 'Papa Câlin']);
 
         $written = [];
-        $configValueWriter = $this->createStub(ConfigValueWriter::class);
-        $configValueWriter->method('write')->willReturnCallback(function (array $values) use (&$written): void {
-            $written[] = $values;
-        });
-
         $request = $this->callbackRequest();
-        $this->createController($request, $youtubeClient, $configValueWriter)->callback($request);
+        $this->createController($request, $youtubeClient, $this->recordingWriter($written))->callback($request);
 
         $this->assertSame([['social-youtube-oauth-refresh-token' => 'refresh', 'social-youtube-channel-id' => 'UC123', 'social-youtube-channel-title' => 'Papa Câlin']], $written);
         $this->assertSame(['success' => ['flash.youtube_connected']], $this->flashes($request));
@@ -103,8 +85,7 @@ class YoutubeOAuthControllerTest extends TestCase
         $configValueWriter = $this->createMock(ConfigValueWriter::class);
         $configValueWriter->expects($this->never())->method('write');
 
-        $request = $this->createRequest(['code' => 'auth-code', 'state' => 'forged-state']);
-        $request->getSession()->set('social_youtube_oauth_state', 'expected-state');
+        $request = $this->callbackRequest('forged-state');
 
         $this->createController($request, configValueWriter: $configValueWriter)->callback($request);
 

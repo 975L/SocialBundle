@@ -484,6 +484,8 @@ class SocialCalendarController extends AbstractController
             'networks' => $post->getNetworks(),
             'texts_saved' => $textsSaved,
             'media_problems' => $this->problemsText($problems),
+            // The networks whose own choices, made on the post's screen alone (TikTok's), are still undone - the panel linking there, a post otherwise staying a draft with no way to them from the calendar
+            'options_networks' => array_values(array_map(static fn (SocialPostTarget $target): string => $target->getNetwork(), array_filter($post->getTargets()->toArray(), fn (SocialPostTarget $target): bool => $target->isPending() && [] !== $this->publisher->checkOptions($target)))),
             'series_drafts' => null === $post->getSeries() ? 0 : $this->postRepository->countComingDraftsBySeries($post->getSeries(), new \DateTimeImmutable()),
             // Its series' posts side by side, to be read one by one
             'series_url' => null === $post->getSeries() ? null : $this->generateUrl(self::SERIES_ROUTE, ['id' => $post->getSeries()->getId()]),
@@ -525,7 +527,7 @@ class SocialCalendarController extends AbstractController
         }
 
         // A media a network does not take refuses the approval, its reasons said in the answer
-        $problems = self::TO_APPROVE === $to ? $this->mediaChecker->check($post) : [];
+        $problems = self::TO_APPROVE === $to ? $this->mediaChecker->check($post, true) : [];
         if ([] !== $problems) {
             return new Response($this->problemsText($problems), Response::HTTP_UNPROCESSABLE_ENTITY);
         }

@@ -3,6 +3,16 @@
         "date": "2026-10-31",
         "description": [
             {
+                "en": "Posts carrying a video can go out on a TikTok account, with TikTok's own choices made on the post's screen and the connection renewing itself every night",
+                "fr": "Les publications avec une vidéo peuvent partir sur un compte TikTok, avec les choix propres à TikTok faits sur l'écran de la publication et la connexion se renouvelant seule chaque nuit",
+                "es": "Las publicaciones con un vídeo pueden salir en una cuenta de TikTok, con las opciones propias de TikTok elegidas en la pantalla de la publicación y la conexión renovándose sola cada noche"
+            },
+            {
+                "en": "The calendar's panel links to the post's screen while its TikTok choices are still to be made",
+                "fr": "Le panneau du calendrier renvoie à l'écran de la publication tant que ses choix TikTok restent à faire",
+                "es": "El panel del calendario lleva a la pantalla de la publicación mientras sus opciones de TikTok quedan por hacer"
+            },
+            {
                 "en": "A Pinterest app still in Trial access can pin in Pinterest's sandbox, to test the connection and film the demonstration before Standard access",
                 "fr": "Une app Pinterest encore en accès d'essai peut épingler dans la sandbox de Pinterest, pour tester la connexion et filmer la démonstration avant l'accès Standard",
                 "es": "Una app de Pinterest aún en acceso de prueba puede fijar pines en el sandbox de Pinterest, para probar la conexión y grabar la demostración antes del acceso Standard"

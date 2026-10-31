@@ -18,17 +18,19 @@ use c975L\SocialBundle\Service\GoogleOAuthClient;
 use c975L\SocialBundle\Service\LinkedInClient;
 use c975L\SocialBundle\Service\MetaGraphClient;
 use c975L\SocialBundle\Service\PinterestClient;
+use c975L\SocialBundle\Service\TikTokClient;
 use c975L\SocialBundle\Service\YoutubeClient;
+use c975L\SocialBundle\Tests\Controller\ControllerTestTrait;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Translation\TranslatableMessage;
 use Twig\Environment;
 
 // What each tile of "Connexions" is handed: the screen only reads the networks' clients, it never writes
 class SocialConnectionsControllerTest extends TestCase
 {
+    use ControllerTestTrait;
+
     /** @var array<string, mixed> */
     private array $rendered = [];
 
@@ -64,6 +66,9 @@ class SocialConnectionsControllerTest extends TestCase
         $pinterest->method('isConfigured')->willReturn(true);
         $pinterest->method('isConnected')->willReturn(true);
         $pinterest->method('hasBoard')->willReturn('' !== ($configs['social-pinterest-board-id'] ?? ''));
+        $tikTok = $this->createStub(TikTokClient::class);
+        $tikTok->method('isConfigured')->willReturn(true);
+        $tikTok->method('isConnected')->willReturn('' !== ($configs['social-tiktok-display-name'] ?? ''));
 
         $twig = $this->createStub(Environment::class);
         $twig->method('render')->willReturnCallback(function (string $view, array $parameters): string {
@@ -71,15 +76,9 @@ class SocialConnectionsControllerTest extends TestCase
 
             return '';
         });
-        $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
-        $authorizationChecker->method('isGranted')->willReturn(true);
-        $services = ['security.authorization_checker' => $authorizationChecker, 'twig' => $twig];
-        $container = $this->createStub(ContainerInterface::class);
-        $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
-        $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
 
-        $controller = new SocialConnectionsController($configService, $bluesky, $meta, $google, $linkedIn, $youtube, $pinterest);
-        $controller->setContainer($container);
+        $controller = new SocialConnectionsController($configService, $bluesky, $meta, $google, $linkedIn, $youtube, $pinterest, $tikTok);
+        $controller->setContainer($this->serviceContainer(['twig' => $twig]));
         $controller->index(Request::create('https://' . $host . '/management/social-connections'));
 
         return array_column($this->rendered['networks'], null, 'name');
@@ -101,8 +100,8 @@ class SocialConnectionsControllerTest extends TestCase
     {
         $networks = $this->networks($this->bluesky());
 
-        $this->assertSame(['bluesky', 'meta', 'linkedin', 'youtube', 'pinterest', 'google'], array_keys($networks));
-        $this->assertSame(['social_bluesky_oauth_connect', 'social_meta_oauth_connect', 'social_linkedin_oauth_connect', 'social_youtube_oauth_connect', 'social_pinterest_oauth_connect', 'social_google_oauth_connect'], array_column($networks, 'route'));
+        $this->assertSame(['bluesky', 'meta', 'linkedin', 'youtube', 'pinterest', 'tiktok', 'google'], array_keys($networks));
+        $this->assertSame(['social_bluesky_oauth_connect', 'social_meta_oauth_connect', 'social_linkedin_oauth_connect', 'social_youtube_oauth_connect', 'social_pinterest_oauth_connect', 'social_tiktok_oauth_connect', 'social_google_oauth_connect'], array_column($networks, 'route'));
         $this->assertSame([['icon' => 'fab fa-bluesky', 'name' => 'me.bsky.social', 'url' => 'https://bsky.app/profile/me.bsky.social']], $networks['bluesky']['accounts']);
         $this->assertSame([['icon' => 'fab fa-facebook', 'name' => '123', 'url' => 'https://www.facebook.com/123']], $networks['meta']['accounts']);
         $this->assertTrue($networks['meta']['configured']);
@@ -121,6 +120,13 @@ class SocialConnectionsControllerTest extends TestCase
 
         $this->assertTrue($networks['youtube']['connected']);
         $this->assertSame([['icon' => 'fab fa-youtube', 'name' => 'Papa Câlin', 'url' => 'https://www.youtube.com/channel/UC123']], $networks['youtube']['accounts']);
+    }
+
+    // The account under its name alone, TikTok handing no profile address with the basic scope - one not connected showing none
+    public function testTheTikTokTileNamesTheAccount(): void
+    {
+        $this->assertSame([['icon' => 'fab fa-tiktok', 'name' => 'Mystic Fable Studios', 'url' => null]], $this->networks($this->bluesky(), configs: ['social-tiktok-display-name' => 'Mystic Fable Studios'])['tiktok']['accounts']);
+        $this->assertFalse($this->networks($this->bluesky())['tiktok']['connected']);
     }
 
     // The account under its name, linked to its profile, and the board under its own - one connected without a board flagged, so the owner picks one

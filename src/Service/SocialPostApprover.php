@@ -33,7 +33,7 @@ class SocialPostApprover
     {
         $refused = [];
         foreach ($posts as $post) {
-            $problems = $this->mediaChecker->check($post);
+            $problems = $this->mediaChecker->check($post, true);
             if ([] === $problems) {
                 $post->approve();
             } else {

@@ -10,7 +10,6 @@
 
 namespace c975L\SocialBundle\Tests\Controller;
 
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\SocialPinterestBoardController;
 use c975L\SocialBundle\Controller\PinterestOAuthController;
 use c975L\SocialBundle\Service\ConfigValueWriter;
@@ -36,16 +35,7 @@ class PinterestOAuthControllerTest extends TestCase
     // Same seam as LinkedInOAuthControllerTest
     private function createController(Request $request, ?PinterestClient $pinterestClient = null, ?ConfigValueWriter $configValueWriter = null, ?string $username = null): PinterestOAuthController
     {
-        $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturnCallback(static fn (string $key) => ['site-role-editor' => 'ROLE_EDITOR', 'social-pinterest-username' => $username][$key] ?? null);
-
-        if (null === $pinterestClient) {
-            $pinterestClient = $this->createStub(PinterestClient::class);
-            $pinterestClient->method('isConfigured')->willReturn(true);
-            $pinterestClient->method('getAuthorizationUrl')->willReturn('https://www.pinterest.com/oauth/?state=x');
-        }
-
-        $controller = new PinterestOAuthController($configService, $configValueWriter ?? $this->createStub(ConfigValueWriter::class), $pinterestClient);
+        $controller = new PinterestOAuthController($this->configService(['social-pinterest-username' => $username]), $configValueWriter ?? $this->createStub(ConfigValueWriter::class), $pinterestClient ?? $this->oauthClient(PinterestClient::class, 'https://www.pinterest.com/oauth/?state=x'));
         $controller->setContainer($this->createContainer($request));
 
         return $controller;
@@ -53,10 +43,7 @@ class PinterestOAuthControllerTest extends TestCase
 
     private function callbackRequest(string $state = 'expected-state'): Request
     {
-        $request = $this->createRequest(['code' => 'auth-code', 'state' => $state]);
-        $request->getSession()->set('social_pinterest_oauth_state', 'expected-state');
-
-        return $request;
+        return $this->oauthCallbackRequest('social_pinterest_oauth_state', $state);
     }
 
     public function testConnectStoresAStateAndSendsItAlongToPinterest(): void
@@ -88,10 +75,7 @@ class PinterestOAuthControllerTest extends TestCase
         $pinterestClient = $this->createMock(PinterestClient::class);
         $pinterestClient->expects($this->once())->method('connect')->with('auth-code', $this->anything())->willReturn(['social-pinterest-access-token' => 'pina', 'social-pinterest-username' => 'papacalin']);
         $written = [];
-        $configValueWriter = $this->createStub(ConfigValueWriter::class);
-        $configValueWriter->method('write')->willReturnCallback(function (array $values) use (&$written): void {
-            $written[] = $values;
-        });
+        $configValueWriter = $this->recordingWriter($written);
 
         $request = $this->callbackRequest();
         $response = $this->createController($request, $pinterestClient, $configValueWriter, $storedUsername)->callback($request);

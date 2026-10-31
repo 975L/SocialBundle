@@ -16,6 +16,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 // Everything that talks to Meta's Graph API: the connection of the site's Facebook Page (and the Instagram account linked to it), then the calls the two publishers make with the Page token it stores - one stubable seam, same shape as GoogleOAuthClient. The app is the site owner's own, created on developers.facebook.com and used by its admin alone: in development mode it needs neither App Review nor Business Verification
 class MetaGraphClient
 {
+    use ConfigValuesTrait;
+
     // The version every call is pinned to, v26.0 being current in September 2026 - bumped here, once, when Meta retires it (see the changelog on developers.facebook.com)
     public const string VERSION = 'v26.0';
 
@@ -139,10 +141,5 @@ class MetaGraphClient
             'instagramId' => isset($instagram['id']) ? (string) $instagram['id'] : null,
             'instagram' => isset($instagram['username']) ? (string) $instagram['username'] : null,
         ];
-    }
-
-    private function config(string $slug): string
-    {
-        return trim((string) $this->configService->get($slug));
     }
 }

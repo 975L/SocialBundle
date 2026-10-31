@@ -48,6 +48,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->linkedinConnectProject(),
             $this->youtubeConnectProject(),
             $this->pinterestConnectProject(),
+            $this->tikTokConnectProject(),
             $this->socialCalendarProject(),
         ];
     }
@@ -323,6 +324,13 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'narration' => 'narration.guided_step_social_posts_story',
                 ],
                 [
+                    // The block shown on a network asking its own choices post by post alone (TikTok's), the TikTok parcours' own step said again where its screen is
+                    'label' => 'label.guided_step_social_tiktok_options',
+                    'description' => 'description.guided_step_social_tiktok_options',
+                    'narration' => 'narration.guided_step_social_tiktok_options',
+                    'highlight' => '.social-post-options',
+                ],
+                [
                     'label' => 'label.guided_step_social_posts_save',
                     'narration' => 'narration.guided_step_social_posts_save',
                     'highlight' => '.action-saveAndReturn',
@@ -529,6 +537,46 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
         ];
     }
 
+    // Pinterest's parcours for TikTok, with a last step of its own: TikTok asks its choices post by post, on the post's screen
+    private function tikTokConnectProject(): array
+    {
+        return [
+            'slug' => 'social-tiktok-connect',
+            'label' => 'label.guided_project_social_tiktok_connect',
+            'description' => 'description.guided_project_social_tiktok_connect',
+            'translation_domain' => 'social',
+            'order' => 4120,
+            // The two keys are restricted configs, with the same three roles as Google's (see googleConnectProject())
+            'role' => $this->restrictedConfigRoles(),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_social_tiktok_prerequisites',
+                    'description' => 'description.guided_step_social_tiktok_prerequisites',
+                    'narration' => 'narration.guided_step_social_tiktok_prerequisites',
+                    'url' => $this->indexUrl(ConfigCrudController::class),
+                ],
+                [
+                    'label' => 'label.guided_step_social_tiktok_credentials',
+                    'description' => 'description.guided_step_social_tiktok_credentials',
+                    'narration' => 'narration.guided_step_social_tiktok_credentials',
+                ],
+                $this->connectionsStep(),
+                [
+                    'label' => 'label.guided_step_social_tiktok_connect',
+                    'description' => 'description.guided_step_social_tiktok_connect',
+                    'narration' => 'narration.guided_step_social_tiktok_connect',
+                    'highlight' => 'a[href*="/social/tiktok/connect"]',
+                ],
+                [
+                    // Made on each post's screen, which this parcours does not open: said here, the post's own parcours walking that screen
+                    'label' => 'label.guided_step_social_tiktok_options',
+                    'description' => 'description.guided_step_social_tiktok_options',
+                    'narration' => 'narration.guided_step_social_tiktok_options',
+                ],
+            ],
+        ];
+    }
+
     // Every post at its moment, moved with a drag - the screen is a route of its own, not a CRUD index
     private function socialCalendarProject(): array
     {
@@ -537,7 +585,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_social_calendar',
             'description' => 'description.guided_project_social_calendar',
             'translation_domain' => 'social',
-            'order' => 4120,
+            'order' => 4130,
             // The bar SocialCalendarController states on its own actions
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [

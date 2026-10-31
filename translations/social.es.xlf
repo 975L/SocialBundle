@@ -78,6 +78,10 @@
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Elegir las redes que se ofrecen a sus visitantes, su orden y su aspecto</target>
             </trans-unit>
+            <trans-unit id="ot1_rRx">
+                <source>description.guided_project_social_tiktok_connect</source>
+                <target>La parte de la agencia: la aplicación de TikTok, sus dos claves y el consentimiento. Se hace una vez: el acceso se renueva luego solo cada noche.</target>
+            </trans-unit>
             <trans-unit id="IsHF91L">
                 <source>description.guided_project_social_youtube_connect</source>
                 <target>La parte de la agencia: el cliente OAuth de Google abierto a YouTube y luego el consentimiento del canal. Se hace una vez.</target>
@@ -318,6 +322,22 @@
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Botón ancho, cuadrado o redondo: es el espacio que ocupan los botones bajo sus páginas.</target>
             </trans-unit>
+            <trans-unit id="UmUOu7_">
+                <source>description.guided_step_social_tiktok_connect</source>
+                <target>Hacer clic en «Conectar» en la ficha «TikTok», y autorizar el acceso con la cuenta que publica. El sitio guarda él mismo los tokens y el nombre de la cuenta.</target>
+            </trans-unit>
+            <trans-unit id="X4u3z5G">
+                <source>description.guided_step_social_tiktok_credentials</source>
+                <target>Buscar «social-tiktok-client-key» y «social-tiktok-client-secret» en la lista, y pegar allí el Client key y el Client secret, los de la sandbox mientras la aplicación no esté auditada. El secreto solo se muestra con el botón «Ver datos sensibles». Los tokens y la cuenta se rellenan solos en el paso siguiente.</target>
+            </trans-unit>
+            <trans-unit id="0Gnq4vD">
+                <source>description.guided_step_social_tiktok_options</source>
+                <target>TikTok pide sus opciones publicación por publicación: en la pantalla de una publicación que sale en TikTok, el bloque «Opciones de TikTok» da la cuenta, quién puede ver el vídeo, las interacciones permitidas, la divulgación de un contenido comercial y el consentimiento. La publicación no se valida sin ellas. El vídeo debe servirse desde un dominio verificado en la aplicación.</target>
+            </trans-unit>
+            <trans-unit id="253geAg">
+                <source>description.guided_step_social_tiktok_prerequisites</source>
+                <target>Esta parte se hace en developers.tiktok.com: crear una aplicación con los productos Login Kit y Content Posting API (publicación directa activada), declarar como dirección de redirección la del sitio seguida de «/social/tiktok/callback», y verificar el dominio del sitio, desde el que TikTok recoge los vídeos. Mientras TikTok no haya auditado la aplicación, todo se hace en su sandbox: la cuenta que publica se añade allí como usuario de prueba, en privado, y sus vídeos quedan privados. Volver aquí con la clave y el secreto.</target>
+            </trans-unit>
             <trans-unit id="2LBFP3E">
                 <source>description.guided_step_social_youtube_connect</source>
                 <target>Hacer clic en «Conectar» en la ficha «YouTube», elegir la cuenta que tiene el canal (un canal de marca se elige en la lista de Google) y autorizar el acceso. La ficha muestra luego el nombre del canal: comprobar que es el correcto.</target>
@@ -389,6 +409,14 @@
             <trans-unit id="KWHHNzs">
                 <source>email.social_series_ending_subject</source>
                 <target>%count% serie(s) de publicaciones a punto de terminar</target>
+            </trans-unit>
+            <trans-unit id="Coi_ugY">
+                <source>email.social_tiktok_refresh_failed_body</source>
+                <target>TikTok se negó a renovar el acceso del sitio (%error%). No se publica nada en TikTok hasta que la cuenta se vuelva a conectar desde «Conexiones»:</target>
+            </trans-unit>
+            <trans-unit id="9z3Zlp2">
+                <source>email.social_tiktok_refresh_failed_subject</source>
+                <target>Vuelva a conectar TikTok</target>
             </trans-unit>
             <trans-unit id="0h0NDdA">
                 <source>flash.bluesky_connected</source>
@@ -530,6 +558,18 @@
                 <source>flash.social_series_none</source>
                 <target>Ninguna serie en curso: cree una con «Generar una serie».</target>
             </trans-unit>
+            <trans-unit id="K4CZlG4">
+                <source>flash.tiktok_connected</source>
+                <target>TikTok está conectado con la cuenta %name%.</target>
+            </trans-unit>
+            <trans-unit id="D4sXXDX">
+                <source>flash.tiktok_not_configured</source>
+                <target>Indique primero la clave y el secreto de su app de TikTok en la configuración.</target>
+            </trans-unit>
+            <trans-unit id="a4J.l97">
+                <source>flash.tiktok_refused</source>
+                <target>La conexión con TikTok fue rechazada o interrumpida.</target>
+            </trans-unit>
             <trans-unit id="cjgig6f">
                 <source>flash.youtube_connected</source>
                 <target>Canal de YouTube «%name%» conectado.</target>
@@ -617,6 +657,30 @@
             <trans-unit id="4h1xjIz">
                 <source>help.social_series_text</source>
                 <target>El texto de cada publicación o, con la IA, de qué tratan: la IA escribe una versión distinta para cada una, a la longitud de la red marcada más corta. Innecesario para los contenidos del sitio.</target>
+            </trans-unit>
+            <trans-unit id="I8AKzzK">
+                <source>help.social_tiktok_account</source>
+                <target>Publicado en la cuenta de TikTok %name%.</target>
+            </trans-unit>
+            <trans-unit id="A798mEK">
+                <source>help.social_tiktok_brand_content</source>
+                <target>Promociona otra marca o a un tercero. El vídeo se etiquetará como «Colaboración pagada» y no puede ser privado: pasa a «Todo el mundo» si hace falta.</target>
+            </trans-unit>
+            <trans-unit id="Chxpur_">
+                <source>help.social_tiktok_brand_organic</source>
+                <target>Se promociona a usted mismo o a su propio negocio. El vídeo se etiquetará como «Contenido promocional».</target>
+            </trans-unit>
+            <trans-unit id="aPHYhn1">
+                <source>help.social_tiktok_commercial</source>
+                <target>Indique si este vídeo promociona a usted mismo, a un tercero, o a ambos.</target>
+            </trans-unit>
+            <trans-unit id="Z23.ypc">
+                <source>help.social_tiktok_interaction_disabled</source>
+                <target>Desactivado en los ajustes de la cuenta de TikTok.</target>
+            </trans-unit>
+            <trans-unit id="Em2VFga">
+                <source>help.social_tiktok_processing</source>
+                <target>Tras el envío, TikTok procesa el vídeo unos minutos: puede que no aparezca enseguida en el perfil.</target>
             </trans-unit>
             <trans-unit id="PmT6SQr">
                 <source>label.anchor</source>
@@ -841,6 +905,10 @@
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Ajustar los botones de compartir</target>
+            </trans-unit>
+            <trans-unit id="K_sxbNO">
+                <source>label.guided_project_social_tiktok_connect</source>
+                <target>Conectar TikTok</target>
             </trans-unit>
             <trans-unit id="iENBvgq">
                 <source>label.guided_project_social_youtube_connect</source>
@@ -1126,6 +1194,22 @@
                 <source>label.guided_step_social_share_buttons_shape</source>
                 <target>Elegir la forma</target>
             </trans-unit>
+            <trans-unit id="a5R1HzE">
+                <source>label.guided_step_social_tiktok_connect</source>
+                <target>Iniciar la conexión</target>
+            </trans-unit>
+            <trans-unit id="2jIg5Ds">
+                <source>label.guided_step_social_tiktok_credentials</source>
+                <target>Indicar las dos claves de la aplicación</target>
+            </trans-unit>
+            <trans-unit id="h_KwCrF">
+                <source>label.guided_step_social_tiktok_options</source>
+                <target>Hacer las opciones de TikTok de cada publicación</target>
+            </trans-unit>
+            <trans-unit id="v9cLa_x">
+                <source>label.guided_step_social_tiktok_prerequisites</source>
+                <target>Crear la aplicación de TikTok</target>
+            </trans-unit>
             <trans-unit id="DYt2MRn">
                 <source>label.guided_step_social_youtube_connect</source>
                 <target>Iniciar la conexión</target>
@@ -1262,6 +1346,14 @@
                 <source>label.info_social_series_review</source>
                 <target>Los próximos posts de una serie uno al lado del otro: cada uno releído, sus redes marcadas y luego validado solo o con los demás.</target>
             </trans-unit>
+            <trans-unit id="WjZtbyj">
+                <source>label.info_tiktok_connect</source>
+                <target>Vincula el sitio a una cuenta de TikTok: el vídeo de cada publicación se publica allí, su texto como descripción, con las opciones que TikTok pide en la pantalla de la publicación. Los tokens se renuevan solos cada noche.</target>
+            </trans-unit>
+            <trans-unit id="Q9cY5V4">
+                <source>label.info_tiktok_not_configured</source>
+                <target>Indique primero la clave y el secreto de la app de TikTok en la configuración («social-tiktok-client-key» y «social-tiktok-client-secret»).</target>
+            </trans-unit>
             <trans-unit id="E9Dv0_T">
                 <source>label.info_youtube_connect</source>
                 <target>Vincula el sitio a un canal de YouTube: una publicación con un vídeo se envía allí, como Short cuando el vídeo es vertical y dura menos de tres minutos.</target>
@@ -1317,6 +1409,10 @@
             <trans-unit id="tvLY2Yw">
                 <source>label.network_pinterest</source>
                 <target>Pinterest</target>
+            </trans-unit>
+            <trans-unit id="SBF0gXI">
+                <source>label.network_tiktok</source>
+                <target>TikTok</target>
             </trans-unit>
             <trans-unit id="ROhCU6T">
                 <source>label.network_youtube</source>
@@ -1457,6 +1553,10 @@
             <trans-unit id="7xBlqmM">
                 <source>label.social_calendar_open_failed</source>
                 <target>No se ha podido abrir esta publicación: quizá se haya eliminado entretanto.</target>
+            </trans-unit>
+            <trans-unit id="cr3425p">
+                <source>label.social_calendar_options_pending</source>
+                <target>Ajustar las opciones de %network% en la pantalla de la publicación</target>
             </trans-unit>
             <trans-unit id="m2MIvc9">
                 <source>label.social_calendar_panel_next</source>
@@ -2041,6 +2141,90 @@
             <trans-unit id="6prrGwu">
                 <source>label.social_series_weekdays_required</source>
                 <target>Marque al menos un día de la semana.</target>
+            </trans-unit>
+            <trans-unit id="OHJ769G">
+                <source>label.social_tiktok_brand_content</source>
+                <target>Contenido de marca</target>
+            </trans-unit>
+            <trans-unit id="PZCutA0">
+                <source>label.social_tiktok_brand_organic</source>
+                <target>Su marca</target>
+            </trans-unit>
+            <trans-unit id="u4DoElc">
+                <source>label.social_tiktok_branded_private</source>
+                <target>Un contenido de marca no puede ser privado en TikTok.</target>
+            </trans-unit>
+            <trans-unit id="Pk9awg.">
+                <source>label.social_tiktok_cannot_post</source>
+                <target>TikTok no permite publicar en esta cuenta por ahora: %error%</target>
+            </trans-unit>
+            <trans-unit id="TQSdAwx">
+                <source>label.social_tiktok_comment</source>
+                <target>Permitir comentarios</target>
+            </trans-unit>
+            <trans-unit id="RXOUwnj">
+                <source>label.social_tiktok_commercial</source>
+                <target>Divulgar contenido comercial</target>
+            </trans-unit>
+            <trans-unit id="8bqQfDZ">
+                <source>label.social_tiktok_commercial_required</source>
+                <target>Marque «Su marca», «Contenido de marca» o ambos, o desmarque la divulgación de contenido comercial.</target>
+            </trans-unit>
+            <trans-unit id="2PtEV.F">
+                <source>label.social_tiktok_consent</source>
+                <target>Al publicar, acepto la &lt;a href="%music%" target="_blank" rel="noopener noreferrer"&gt;Music Usage Confirmation&lt;/a&gt; de TikTok, y su &lt;a href="%branded%" target="_blank" rel="noopener noreferrer"&gt;Branded Content Policy&lt;/a&gt; para un contenido de marca.</target>
+            </trans-unit>
+            <trans-unit id="ymVqNgY">
+                <source>label.social_tiktok_consent_required</source>
+                <target>Marque el consentimiento de TikTok.</target>
+            </trans-unit>
+            <trans-unit id="ErsI2fh">
+                <source>label.social_tiktok_duet</source>
+                <target>Permitir dúos</target>
+            </trans-unit>
+            <trans-unit id="BHTiLZZ">
+                <source>label.social_tiktok_options</source>
+                <target>Opciones de TikTok</target>
+            </trans-unit>
+            <trans-unit id="Bni75m3">
+                <source>label.social_tiktok_privacy</source>
+                <target>Quién puede ver este vídeo</target>
+            </trans-unit>
+            <trans-unit id="WmyP1L3">
+                <source>label.social_tiktok_privacy_follower_of_creator</source>
+                <target>Seguidores</target>
+            </trans-unit>
+            <trans-unit id="xNEDPdU">
+                <source>label.social_tiktok_privacy_mutual_follow_friends</source>
+                <target>Amigos</target>
+            </trans-unit>
+            <trans-unit id="6tBajV6">
+                <source>label.social_tiktok_privacy_pick</source>
+                <target>Elegir…</target>
+            </trans-unit>
+            <trans-unit id="JwGpP59">
+                <source>label.social_tiktok_privacy_public_to_everyone</source>
+                <target>Todo el mundo</target>
+            </trans-unit>
+            <trans-unit id="SEvvsxi">
+                <source>label.social_tiktok_privacy_required</source>
+                <target>Elija quién puede ver el vídeo en TikTok.</target>
+            </trans-unit>
+            <trans-unit id="lqqTDCI">
+                <source>label.social_tiktok_privacy_self_only</source>
+                <target>Solo yo</target>
+            </trans-unit>
+            <trans-unit id="Uyi0lAE">
+                <source>label.social_tiktok_privacy_unavailable</source>
+                <target>La cuenta de TikTok ya no ofrece esta privacidad: elija otra.</target>
+            </trans-unit>
+            <trans-unit id="IeKT3He">
+                <source>label.social_tiktok_stitch</source>
+                <target>Permitir pegar</target>
+            </trans-unit>
+            <trans-unit id="8gwiHSV">
+                <source>label.social_tiktok_video_too_long</source>
+                <target>Esta cuenta de TikTok acepta vídeos de %max% segundos como máximo.</target>
             </trans-unit>
             <trans-unit id="XWMpUxP">
                 <source>label.style</source>

@@ -57,20 +57,9 @@ class YoutubeOAuthController extends AbstractController
     {
         $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
 
-        $code = $this->callbackCode($request);
-        if (null === $code) {
-            $this->addFlash('danger', t('flash.youtube_refused', [], 'social'));
-
-            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
-        }
-
-        // Everything fetched before anything is written: a failure on a reconnection leaves the working connection as it was
-        try {
-            $connection = $this->youtubeClient->connect($code, $this->redirectUri());
-        } catch (\Throwable $exception) {
-            $this->addFlash('danger', $exception->getMessage());
-
-            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
+        $connection = $this->callbackConnection($request, 'flash.youtube_refused', fn (string $code) => $this->youtubeClient->connect($code, $this->redirectUri()));
+        if ($connection instanceof RedirectResponse) {
+            return $connection;
         }
 
         $this->configValueWriter->write([

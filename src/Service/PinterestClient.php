@@ -16,6 +16,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 // Everything that talks to Pinterest: the connection of the business account the pins go out on, the board they are pinned to, then the calls PinterestPublisher makes - one stubable seam, same shape as LinkedInClient. Pinterest hands a refresh token: the access token lasts 30 days, the refresh token 60, and each refresh hands both anew (asked as "continuous_refresh"), so the nightly c975l:social:pinterest:refresh keeps the connection alive for as long as it runs
 class PinterestClient
 {
+    use ConfigValuesTrait;
+
     public const string AUTHORIZE = 'https://www.pinterest.com/oauth/';
 
     public const string API = 'https://api.pinterest.com';
@@ -233,21 +235,5 @@ class PinterestClient
     private function api(): string
     {
         return $this->isSandbox() ? self::SANDBOX_API : self::API;
-    }
-
-    private function date(string $slug): ?\DateTimeImmutable
-    {
-        $value = $this->config($slug);
-
-        try {
-            return '' === $value ? null : new \DateTimeImmutable($value);
-        } catch (\Exception) {
-            return null;
-        }
-    }
-
-    private function config(string $slug): string
-    {
-        return trim((string) $this->configService->get($slug));
     }
 }

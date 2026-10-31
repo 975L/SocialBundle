@@ -10,18 +10,15 @@
 
 namespace c975L\SocialBundle\Tests\Service;
 
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Service\GoogleOAuthClient;
 use c975L\SocialBundle\Service\YoutubeClient;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
-use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
 class YoutubeClientTest extends TestCase
 {
-    /** @var list<array{method: string, url: string, headers: list<string>, body: mixed}> */
-    private array $calls = [];
+    use ClientTestTrait;
 
     private string $video = '';
 
@@ -47,16 +44,10 @@ class YoutubeClientTest extends TestCase
             'social-google-oauth-client-secret' => 'secret',
             'social-youtube-oauth-refresh-token' => 'refresh',
         ];
-        $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturnCallback(static fn (string $key): ?string => $config[$key] ?? null);
 
-        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$responses): MockResponse {
-            $this->calls[] = ['method' => $method, 'url' => $url, 'headers' => $options['headers'] ?? [], 'body' => $options['body'] ?? null];
+        $httpClient = $this->httpClient($responses);
 
-            return array_shift($responses) ?? new MockResponse('{}');
-        });
-
-        return new YoutubeClient($httpClient, new GoogleOAuthClient($httpClient, $configService, new ArrayAdapter()));
+        return new YoutubeClient($httpClient, new GoogleOAuthClient($httpClient, $this->configService($config), new ArrayAdapter()));
     }
 
     // The Google OAuth client the listing uses is all it needs, the refresh token being what the connection fetches

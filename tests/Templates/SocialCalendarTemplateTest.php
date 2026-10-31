@@ -86,8 +86,9 @@ class SocialCalendarTemplateTest extends TestCase
     /**
      * @param list<SocialMedia>                                                                           $medias
      * @param array{previous: ?array{id: int, edit_url: string}, next: ?array{id: int, edit_url: string}} $siblings
+     * @param list<string>                                                                                $optionsNetworks
      */
-    private function panel(string $state, array $medias = [], ?string $image = null, bool $editable = true, int $seriesDrafts = 0, string $plannedAt = '2026-10-04 19:00', bool $textsSaved = false, string $mediaProblems = '', ?string $seriesUrl = null, array $siblings = ['previous' => null, 'next' => null]): string
+    private function panel(string $state, array $medias = [], ?string $image = null, bool $editable = true, int $seriesDrafts = 0, string $plannedAt = '2026-10-04 19:00', bool $textsSaved = false, string $mediaProblems = '', ?string $seriesUrl = null, array $siblings = ['previous' => null, 'next' => null], array $optionsNetworks = []): string
     {
         $post = new SocialPost('gallery_media', '42', 'La sieste', 'https://example.org/42', null, new \DateTimeImmutable($plannedAt));
         $target = new SocialPostTarget($post, 'bluesky', 'Le texte de Bluesky');
@@ -117,6 +118,7 @@ class SocialCalendarTemplateTest extends TestCase
             'max_lengths' => [300],
             'texts_saved' => $textsSaved,
             'media_problems' => $mediaProblems,
+            'options_networks' => $optionsNetworks,
             'series_drafts' => $seriesDrafts,
             'series_url' => $seriesUrl,
             'siblings' => $siblings,
@@ -276,6 +278,12 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringNotContainsString('alert-warning', $this->panel('draft'));
     }
 
+    // A network whose own choices are undone links to the post's screen, where alone they are made
+    public function testThePanelLinksToTheChoicesANetworkStillAsks(): void
+    {
+        $this->assertMatchesRegularExpression('#alert-warning.*<a href="/edit/7">label.social_calendar_options_pending</a>#s', $this->panel('draft', optionsNetworks: ['tiktok']));
+    }
+
     // The panel of an approved post offers to take it back to a draft instead
     public function testThePanelOfAnApprovedPostOffersItsWithdrawal(): void
     {
@@ -412,7 +420,6 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringNotContainsString('social-calendar-panel-drop', $this->panel('published', editable: false));
     }
 
-    // Escape closes the panel, from anywhere on the screen
     // The coming posts of its series around it open in the same panel, nothing offered past either end
     public function testThePanelStepsToTheSeriesPostsAround(): void
     {

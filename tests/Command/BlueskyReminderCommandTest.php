@@ -12,16 +12,12 @@ namespace c975L\SocialBundle\Tests\Command;
 
 use c975L\SocialBundle\Command\BlueskyReminderCommand;
 use c975L\SocialBundle\Service\BlueskyOAuthClient;
-use c975L\SocialBundle\Service\SocialAdminMailer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BlueskyReminderCommandTest extends TestCase
 {
-    /** @var list<string> */
-    private array $mailed = [];
+    use ConnectionCommandTestTrait;
 
     private int $marked = 0;
 
@@ -35,18 +31,7 @@ class BlueskyReminderCommandTest extends TestCase
             ++$this->marked;
         });
 
-        $mailer = $this->createStub(SocialAdminMailer::class);
-        $mailer->method('url')->willReturn('https://example.org/management/social-connections');
-        $mailer->method('send')->willReturnCallback(function (string $subject, string $body) use ($error): ?string {
-            $this->mailed[] = $subject . "\n" . $body;
-
-            return $error;
-        });
-
-        $translator = $this->createStub(TranslatorInterface::class);
-        $translator->method('trans')->willReturnArgument(0);
-
-        return new CommandTester(new BlueskyReminderCommand($client, $mailer, $translator))->execute([]);
+        return $this->runCommand(BlueskyReminderCommand::class, $client, $error);
     }
 
     // One email with the screen to connect again, then marked so the next nights stay quiet

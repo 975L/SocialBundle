@@ -282,6 +282,22 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>Below, pick the shape: wide, square or round button. That is the room the buttons will take under your pages.</target>
             </trans-unit>
+            <trans-unit id="pX2axbN">
+                <source>narration.guided_step_social_tiktok_connect</source>
+                <target>Click Connect on the TikTok tile, then allow access with the account that posts.</target>
+            </trans-unit>
+            <trans-unit id="gTEwbZ3">
+                <source>narration.guided_step_social_tiktok_credentials</source>
+                <target>Search for "social-tiktok-client-key" and "social-tiktok-client-secret" in the settings list, and paste in the app's two values.</target>
+            </trans-unit>
+            <trans-unit id="iXgAN9E">
+                <source>narration.guided_step_social_tiktok_options</source>
+                <target>On each post going out on TikTok, make the TikTok block's choices, then tick the consent: without them, the post is not approved.</target>
+            </trans-unit>
+            <trans-unit id="WFLwjwv">
+                <source>narration.guided_step_social_tiktok_prerequisites</source>
+                <target>On developers.tiktok.com, create an app with Login Kit and Content Posting API, declare the site's callback address and verify its domain.</target>
+            </trans-unit>
             <trans-unit id="ogVgOWn">
                 <source>narration.guided_step_social_youtube_connect</source>
                 <target>Click "Connect" on the "YouTube" tile, pick the channel's account, then allow access. Then check the channel's name on the tile.</target>

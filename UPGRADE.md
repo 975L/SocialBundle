@@ -1,5 +1,11 @@
 # Upgrade
 
+## To 2.24
+
+**Database:** `social_post_target` gains `options` (JSON, null by default), the choices a network asks post by post (TikTok's) - a site's own migration (`doctrine:migrations:diff`, then `migrate`).
+
+**Config:** run `c975l:config:load-all` for the `social-tiktok-*` configs, then follow "TikTok account, step by step" in the README to connect an account. `c975l:social:tiktok:refresh` is scheduled nightly by `SocialMaintenanceTaskProvider`.
+
 ## To 2.23
 
 **Database:** `social_series` gains `story` (false by default) - a site's own migration (`doctrine:migrations:diff`,

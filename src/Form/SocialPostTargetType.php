@@ -88,6 +88,16 @@ class SocialPostTargetType extends AbstractType
                     'disabled' => null !== $target->getStoryId(),
                 ]);
             }
+
+            // Offered on a network asking choices of its own post by post (TikTok's privacy, interactions and consent), frozen once the post is out
+            $optionsType = $this->socialPublisher->getOptionsType($target->getNetwork());
+            if (null !== $optionsType) {
+                $event->getForm()->add('options', $optionsType, [
+                    'disabled' => SocialPostStatus::Published === $target->getStatus(),
+                    // What the post's parcours highlights, the field's id depending on the network's place among the post's
+                    'row_attr' => ['class' => 'social-post-options'],
+                ]);
+            }
         });
     }
 

@@ -75,6 +75,11 @@ class SocialPostTarget
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $storyError = null;
 
+    // The choices a network asks post by post, beyond the text (see PostOptionsPublisherInterface)
+    /** @var array<string, mixed>|null */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $options = null;
+
     public function __construct(
         #[ORM\ManyToOne(targetEntity: SocialPost::class, inversedBy: 'targets')]
         #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -251,6 +256,20 @@ class SocialPostTarget
     public function markStoryFailed(string $error): void
     {
         $this->storyError = $error;
+    }
+
+    /** @return array<string, mixed> */
+    public function getOptions(): array
+    {
+        return $this->options ?? [];
+    }
+
+    /** @param array<string, mixed>|null $options */
+    public function setOptions(?array $options): self
+    {
+        $this->options = [] === $options ? null : $options;
+
+        return $this;
     }
 
     // Published, with its first comment, its reshare or its story still to send, what "Send again" then does alone

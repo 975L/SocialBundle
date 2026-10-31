@@ -12,46 +12,19 @@ namespace c975L\SocialBundle\Tests\Command;
 
 use c975L\SocialBundle\Command\PinterestRefreshCommand;
 use c975L\SocialBundle\Service\PinterestClient;
-use c975L\SocialBundle\Service\SocialAdminMailer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PinterestRefreshCommandTest extends TestCase
 {
-    /** @var list<string> */
-    private array $mailed = [];
-
-    private int $refreshed = 0;
+    use ConnectionCommandTestTrait;
 
     private function refresh(bool $needsRefresh = true, bool $connected = true, ?\RuntimeException $refusal = null, string $expiresAt = '+6 days 12 hours', string $refreshExpiresAt = '+36 days'): int
     {
-        $client = $this->createStub(PinterestClient::class);
-        $client->method('expiresAt')->willReturn(new \DateTimeImmutable($expiresAt));
-        $client->method('refreshExpiresAt')->willReturn(new \DateTimeImmutable($refreshExpiresAt));
-        $client->method('isConfigured')->willReturn(true);
-        $client->method('isConnected')->willReturn($connected);
+        $client = $this->refreshingClient(PinterestClient::class, $connected, $refusal, $expiresAt, $refreshExpiresAt);
         $client->method('needsRefresh')->willReturn($needsRefresh);
-        $client->method('refresh')->willReturnCallback(function () use ($refusal): void {
-            ++$this->refreshed;
-            if (null !== $refusal) {
-                throw $refusal;
-            }
-        });
 
-        $mailer = $this->createStub(SocialAdminMailer::class);
-        $mailer->method('url')->willReturn('https://example.org/management/social-connections');
-        $mailer->method('send')->willReturnCallback(function (string $subject, string $body): ?string {
-            $this->mailed[] = $subject . "\n" . $body;
-
-            return null;
-        });
-
-        $translator = $this->createStub(TranslatorInterface::class);
-        $translator->method('trans')->willReturnArgument(0);
-
-        return new CommandTester(new PinterestRefreshCommand($client, $mailer, $translator))->execute([]);
+        return $this->runCommand(PinterestRefreshCommand::class, $client);
     }
 
     // An access token near its end is renewed, quietly

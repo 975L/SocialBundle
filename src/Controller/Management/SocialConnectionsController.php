@@ -16,6 +16,7 @@ use c975L\SocialBundle\Service\GoogleOAuthClient;
 use c975L\SocialBundle\Service\LinkedInClient;
 use c975L\SocialBundle\Service\MetaGraphClient;
 use c975L\SocialBundle\Service\PinterestClient;
+use c975L\SocialBundle\Service\TikTokClient;
 use c975L\SocialBundle\Service\YoutubeClient;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,6 +40,7 @@ class SocialConnectionsController extends AbstractController
         private readonly LinkedInClient $linkedInClient,
         private readonly YoutubeClient $youtubeClient,
         private readonly PinterestClient $pinterestClient,
+        private readonly TikTokClient $tikTokClient,
     ) {
     }
 
@@ -54,6 +56,7 @@ class SocialConnectionsController extends AbstractController
                 $this->linkedIn(),
                 $this->youtube(),
                 $this->pinterest(),
+                $this->tikTok(),
                 $this->google(),
             ],
         ]);
@@ -162,6 +165,20 @@ class SocialConnectionsController extends AbstractController
             ),
             'board_route' => SocialPinterestBoardController::ROUTE,
             'board_missing' => !$this->pinterestClient->hasBoard(),
+        ];
+    }
+
+    // The account the videos go out on, its tokens renewing themselves nightly - named rather than linked, TikTok handing the display name alone with the basic scope
+    /** @return array<string, mixed> */
+    private function tikTok(): array
+    {
+        return [
+            'name' => 'tiktok',
+            'icon' => 'fab fa-tiktok',
+            'route' => 'social_tiktok_oauth_connect',
+            'configured' => $this->tikTokClient->isConfigured(),
+            'connected' => $this->tikTokClient->isConnected(),
+            'accounts' => $this->accounts(['fab fa-tiktok', $this->value('social-tiktok-display-name'), null]),
         ];
     }
 

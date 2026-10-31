@@ -28,6 +28,11 @@
     <twig:ea:Alert variant="warning" role="status" class="small">{{ media_problems|nl2br }}</twig:ea:Alert>
 {% endif %}
 
+{# The choices a network asks post by post (TikTok's), made on the post's screen alone, a link away #}
+{% for network in options_networks %}
+    <twig:ea:Alert variant="warning" role="status" class="small"><a href="{{ post.edit_url }}">{{ 'label.social_calendar_options_pending'|trans({'%network%': network|capitalize}, 'social') }}</a></twig:ea:Alert>
+{% endfor %}
+
 {# The card's network badges and state as they now read, which the card on the calendar takes #}
 <template data-social-calendar-target="badges" data-post-id="{{ post.id }}" data-state="{{ state }}">{{ calendar.networks(post.networks, connected) }}</template>
 

@@ -10,7 +10,6 @@
 
 namespace c975L\SocialBundle\Tests\Controller;
 
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\Management\SocialMetaPageController;
 use c975L\SocialBundle\Controller\MetaOAuthController;
 use c975L\SocialBundle\Service\MetaGraphClient;
@@ -38,16 +37,7 @@ class MetaOAuthControllerTest extends TestCase
     // Same seam as GoogleOAuthControllerTest: AbstractController resolves security, routing and the flash bag through its container
     private function createController(Request $request, ?MetaGraphClient $metaGraphClient = null): MetaOAuthController
     {
-        $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturnCallback(static fn (string $key) => 'site-role-editor' === $key ? 'ROLE_EDITOR' : null);
-
-        if (null === $metaGraphClient) {
-            $metaGraphClient = $this->createStub(MetaGraphClient::class);
-            $metaGraphClient->method('isConfigured')->willReturn(true);
-            $metaGraphClient->method('getAuthorizationUrl')->willReturn('https://www.facebook.com/v26.0/dialog/oauth?state=x');
-        }
-
-        $controller = new MetaOAuthController($configService, $metaGraphClient);
+        $controller = new MetaOAuthController($this->configService(), $metaGraphClient ?? $this->oauthClient(MetaGraphClient::class, 'https://www.facebook.com/v26.0/dialog/oauth?state=x'));
         $controller->setContainer($this->createContainer($request));
 
         return $controller;
@@ -55,10 +45,7 @@ class MetaOAuthControllerTest extends TestCase
 
     private function callbackRequest(): Request
     {
-        $request = $this->createRequest(['code' => 'auth-code', 'state' => 'expected-state']);
-        $request->getSession()->set('social_meta_oauth_state', 'expected-state');
-
-        return $request;
+        return $this->oauthCallbackRequest('social_meta_oauth_state');
     }
 
     public function testConnectStoresAStateAndSendsItAlongToMeta(): void

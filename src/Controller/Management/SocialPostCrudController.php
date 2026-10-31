@@ -374,10 +374,10 @@ class SocialPostCrudController extends AbstractCrudController
         $this->flashMediaProblems($post, 'warning');
     }
 
-    // One message per network and problem the post's medias meet, saying so; whether there was any
+    // One message per network and problem the post's medias meet, saying so; whether there was any - a "danger" refusing the approval, the networks then asked live
     private function flashMediaProblems(SocialPost $post, string $type): bool
     {
-        $problems = $this->mediaChecker->check($post);
+        $problems = $this->mediaChecker->check($post, 'danger' === $type);
         $this->flashProblems($problems, $type);
 
         return [] !== $problems;

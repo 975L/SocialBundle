@@ -58,20 +58,9 @@ class PinterestOAuthController extends AbstractController
     {
         $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
 
-        $code = $this->callbackCode($request);
-        if (null === $code) {
-            $this->addFlash('danger', t('flash.pinterest_refused', [], 'social'));
-
-            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
-        }
-
-        // Everything fetched before anything is written: a failure on a reconnection leaves the working connection as it was
-        try {
-            $values = $this->pinterestClient->connect($code, $this->redirectUri());
-        } catch (\Throwable $exception) {
-            $this->addFlash('danger', $exception->getMessage());
-
-            return $this->redirectToRoute(SocialConnectionsController::ROUTE);
+        $values = $this->callbackConnection($request, 'flash.pinterest_refused', fn (string $code) => $this->pinterestClient->connect($code, $this->redirectUri()));
+        if ($values instanceof RedirectResponse) {
+            return $values;
         }
 
         // Another account's board would not take this one's pins: the board is picked again, the same account's kept

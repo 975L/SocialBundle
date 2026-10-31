@@ -282,6 +282,22 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>En dessous, choisissez la forme : bouton large, carré ou rond. C'est la place que les boutons prendront sous vos pages.</target>
             </trans-unit>
+            <trans-unit id="pX2axbN">
+                <source>narration.guided_step_social_tiktok_connect</source>
+                <target>Cliquez sur Connecter dans la tuile TikTok, puis autorisez l'accès avec le compte qui publie.</target>
+            </trans-unit>
+            <trans-unit id="gTEwbZ3">
+                <source>narration.guided_step_social_tiktok_credentials</source>
+                <target>Cherchez « social-tiktok-client-key » et « social-tiktok-client-secret » dans la liste des réglages, et collez-y les deux valeurs de l'application.</target>
+            </trans-unit>
+            <trans-unit id="iXgAN9E">
+                <source>narration.guided_step_social_tiktok_options</source>
+                <target>Sur chaque post qui part sur TikTok, faites les choix du bloc TikTok, puis cochez le consentement : sans eux, le post ne se valide pas.</target>
+            </trans-unit>
+            <trans-unit id="WFLwjwv">
+                <source>narration.guided_step_social_tiktok_prerequisites</source>
+                <target>Sur developers.tiktok.com, créez une application avec Login Kit et Content Posting API, déclarez l'adresse de rappel du site et vérifiez son domaine.</target>
+            </trans-unit>
             <trans-unit id="ogVgOWn">
                 <source>narration.guided_step_social_youtube_connect</source>
                 <target>Cliquez sur « Connecter » dans la tuile « YouTube », choisissez le compte de la chaîne, puis autorisez l'accès. Vérifiez ensuite le nom de la chaîne sur la tuile.</target>

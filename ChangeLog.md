@@ -1,5 +1,22 @@
 # Changelog
 
+## v2.24.0
+
+TikTok: posts' videos on a TikTok account
+
+- Added `TikTokPublisher`: the post's video on the connected TikTok account, fetched from the site (31/10/2026)
+- Added `TikTokClient` and `TikTokOAuthController`: the TikTok connection, on "Connections" (31/10/2026)
+- Added `PostOptionsPublisherInterface`: a network's own choices post by post, checked before approval [Needs db update] (31/10/2026)
+- Added `TikTokOptionsType`: TikTok's privacy, interactions, disclosure and consent on the post's screen (31/10/2026)
+- Added `c975l:social:tiktok:refresh`: the TikTok tokens renewed nightly (31/10/2026)
+- Added `TikTokHealthCheckProvider`: a TikTok connection no longer renewed (31/10/2026)
+- Added the "Connect TikTok" guided project (31/10/2026)
+- Added the TikTok choices step to the posts' guided project (31/10/2026)
+- Calendar panel: a link to the post's screen while TikTok's choices are undone (31/10/2026)
+- Added `ConfigValuesTrait`: the network clients' config reading shared (31/10/2026)
+- `OAuthStateTrait::callbackConnection()`: the OAuth callbacks' refusal and failure handling shared (31/10/2026)
+- README: the TikTok app, its sandbox and its audit, step by step (31/10/2026)
+
 ## v2.23.3
 
 Pinterest: the steps from Trial to Standard access

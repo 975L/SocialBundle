@@ -10,20 +10,13 @@
 
 namespace c975L\SocialBundle\Tests\Service;
 
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
-use c975L\SocialBundle\Service\ConfigValueWriter;
 use c975L\SocialBundle\Service\PinterestClient;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
 class PinterestClientTest extends TestCase
 {
-    /** @var list<array{method: string, url: string, headers: list<string>, body: mixed}> */
-    private array $calls = [];
-
-    /** @var list<array<string, string|null>> */
-    private array $written = [];
+    use ClientTestTrait;
 
     /**
      * @param list<MockResponse>    $responses
@@ -40,21 +33,8 @@ class PinterestClientTest extends TestCase
             'social-pinterest-refresh-token-expires-at' => new \DateTimeImmutable('+50 days')->format(\DateTimeInterface::ATOM),
             'social-pinterest-board-id' => '42',
         ];
-        $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturnCallback(static fn (string $key): ?string => $config[$key] ?? null);
 
-        $writer = $this->createStub(ConfigValueWriter::class);
-        $writer->method('write')->willReturnCallback(function (array $values): void {
-            $this->written[] = $values;
-        });
-
-        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$responses): MockResponse {
-            $this->calls[] = ['method' => $method, 'url' => $url, 'headers' => $options['headers'] ?? [], 'body' => $options['body'] ?? null];
-
-            return array_shift($responses) ?? new MockResponse('{}');
-        });
-
-        return new PinterestClient($httpClient, $configService, $writer);
+        return new PinterestClient($this->httpClient($responses), $this->configService($config), $this->configValueWriter());
     }
 
     // The consent asks what pinning needs, back to the route the app declares

@@ -26,10 +26,10 @@ use c975L\SocialBundle\Service\SocialPostApprover;
 use c975L\SocialBundle\Service\SocialPostDuplicator;
 use c975L\SocialBundle\Service\SocialPublisher;
 use c975L\SocialBundle\Service\SocialSharedCalendar;
+use c975L\SocialBundle\Tests\Controller\ControllerTestTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -38,7 +38,6 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Translation\TranslatableMessage;
@@ -48,6 +47,8 @@ use Twig\Environment;
 // What a card dropped on the calendar, or the panel's buttons, do to its post: the move is the one thing this screen writes
 class SocialCalendarControllerTest extends TestCase
 {
+    use ControllerTestTrait;
+
     // The media checker the next controller built is given, a stub answering no problem otherwise
     private ?SocialMediaChecker $mediaChecker = null;
 
@@ -78,6 +79,10 @@ class SocialCalendarControllerTest extends TestCase
     // The networks handed to SocialPublisher::addTargets(), to have their texts written
     /** @var list<string> */
     private array $added = [];
+
+    // The networks whose own choices, made on the post's screen, are still undone
+    /** @var list<string> */
+    private array $optionsUndone = [];
 
     // What the repository answers: every series with the moment of its last post, ended or not
     /** @var list<array{series: SocialSeries, lastPlannedAt: \DateTimeImmutable}> */
@@ -244,6 +249,7 @@ class SocialCalendarControllerTest extends TestCase
         $publisher->method('getMaxLength')->willReturnCallback(fn (): ?int => $this->maxLength);
         $publisher->method('getNetworkNames')->willReturn(['bluesky', 'facebook', 'linkedin']);
         $publisher->method('getConnectedNetworkNames')->willReturnCallback(fn (): array => $this->connected);
+        $publisher->method('checkOptions')->willReturnCallback(fn (SocialPostTarget $target): array => \in_array($target->getNetwork(), $this->optionsUndone, true) ? [new TranslatableMessage('label.social_tiktok_consent_required')] : []);
         $publisher->method('retryFailed')->willReturnCallback(function (SocialPost $post, ?string $network): ?array {
             $this->retried[] = $network;
 
@@ -276,8 +282,6 @@ class SocialCalendarControllerTest extends TestCase
             $this->sharedCalendar(),
         );
 
-        $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
-        $authorizationChecker->method('isGranted')->willReturn(true);
         $csrf = $this->createStub(CsrfTokenManagerInterface::class);
         $csrf->method('isTokenValid')->willReturnCallback(static fn (CsrfToken $csrfToken): bool => 'valid' === $csrfToken->getValue());
         // The panel answered is what the template was handed, kept to be read
@@ -290,11 +294,7 @@ class SocialCalendarControllerTest extends TestCase
         // A route answered by its name, a redirection needing an address that is not empty
         $router = $this->createStub(UrlGeneratorInterface::class);
         $router->method('generate')->willReturnCallback(static fn (string $name): string => '/' . $name);
-        $services = ['request_stack' => new RequestStack([$request]), 'security.authorization_checker' => $authorizationChecker, 'security.csrf.token_manager' => $csrf, 'twig' => $twig, 'router' => $router];
-        $container = $this->createStub(ContainerInterface::class);
-        $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
-        $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
-        $controller->setContainer($container);
+        $controller->setContainer($this->serviceContainer(['request_stack' => new RequestStack([$request]), 'security.csrf.token_manager' => $csrf, 'twig' => $twig, 'router' => $router]));
 
         return $controller;
     }
@@ -803,6 +803,15 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertSame(Response::HTTP_OK, $this->networks(['linkedin'])->getStatusCode());
         $this->assertSame(['linkedin'], $this->post->getNetworks());
         $this->assertSame('Instagram : label.social_media_required', $this->rendered['media_problems']);
+    }
+
+    // A network whose own choices are undone is named, the panel linking to the post's screen where alone they are made
+    public function testANetworkWhoseChoicesAreUndoneIsLinkedToThePostsScreen(): void
+    {
+        $this->optionsUndone = ['linkedin'];
+
+        $this->assertSame(Response::HTTP_OK, $this->networks(['linkedin'])->getStatusCode());
+        $this->assertSame(['linkedin'], $this->rendered['options_networks']);
     }
 
     // A network not connected is not offered: sent anyway it is not added, and one the post already goes to stays

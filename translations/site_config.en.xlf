@@ -178,6 +178,38 @@
                 <source>description.social_series_ending_days</source>
                 <target>Days before a series' last post when an email is sent to "email-to" to prolong it. 0 sends nothing.</target>
             </trans-unit>
+            <trans-unit id="PV535Z9">
+                <source>description.social_tiktok_access_token</source>
+                <target>Filled by the connection of the TikTok tile of "Connections", renewed every night by c975l:social:tiktok:refresh. Valid 24 hours.</target>
+            </trans-unit>
+            <trans-unit id="GI90rUs">
+                <source>description.social_tiktok_client_key</source>
+                <target>Client key of the app created on developers.tiktok.com (Login Kit and Content Posting API), with the site's callback address /social/tiktok/callback. The sandbox's one until TikTok audits the app.</target>
+            </trans-unit>
+            <trans-unit id="KSZU0on">
+                <source>description.social_tiktok_client_secret</source>
+                <target>Client secret of the same TikTok app.</target>
+            </trans-unit>
+            <trans-unit id="nu.tkms">
+                <source>description.social_tiktok_display_name</source>
+                <target>Filled by the connection: the name of the connected TikTok account, shown in "Connections".</target>
+            </trans-unit>
+            <trans-unit id="IPvqSFH">
+                <source>description.social_tiktok_open_id</source>
+                <target>Filled by the connection: the id TikTok gives the connected account for this app.</target>
+            </trans-unit>
+            <trans-unit id="ygs8BW8">
+                <source>description.social_tiktok_refresh_token</source>
+                <target>Filled by the connection, replaced when TikTok hands a new one. Valid one year.</target>
+            </trans-unit>
+            <trans-unit id="C0FKBx.">
+                <source>description.social_tiktok_refresh_token_expires_at</source>
+                <target>Filled by the connection: the date after which TikTok has to be connected again if the nightly renewal did not run.</target>
+            </trans-unit>
+            <trans-unit id="Q8eJDTF">
+                <source>description.social_tiktok_token_expires_at</source>
+                <target>Filled by the connection: the date after which TikTok refuses the access token.</target>
+            </trans-unit>
             <trans-unit id="..3_lm_">
                 <source>description.social_youtube_channel_id</source>
                 <target>Filled by the connection: the channel the videos go out on.</target>
@@ -369,6 +401,38 @@
             <trans-unit id="icVmnRG">
                 <source>label.social_series_ending_days</source>
                 <target>Series ending: warn (days before)</target>
+            </trans-unit>
+            <trans-unit id="fTG7nuq">
+                <source>label.social_tiktok_access_token</source>
+                <target>TikTok access token</target>
+            </trans-unit>
+            <trans-unit id="opsLofJ">
+                <source>label.social_tiktok_client_key</source>
+                <target>TikTok app client key</target>
+            </trans-unit>
+            <trans-unit id="VL51E21">
+                <source>label.social_tiktok_client_secret</source>
+                <target>TikTok app secret</target>
+            </trans-unit>
+            <trans-unit id="IO60Y9P">
+                <source>label.social_tiktok_display_name</source>
+                <target>TikTok account</target>
+            </trans-unit>
+            <trans-unit id="o.v6aUf">
+                <source>label.social_tiktok_open_id</source>
+                <target>TikTok account id</target>
+            </trans-unit>
+            <trans-unit id="GUBlYxo">
+                <source>label.social_tiktok_refresh_token</source>
+                <target>TikTok refresh token</target>
+            </trans-unit>
+            <trans-unit id="u35vYB5">
+                <source>label.social_tiktok_refresh_token_expires_at</source>
+                <target>TikTok connection expiry</target>
+            </trans-unit>
+            <trans-unit id="Ee7LYIn">
+                <source>label.social_tiktok_token_expires_at</source>
+                <target>TikTok token expiry</target>
             </trans-unit>
             <trans-unit id="xz.l018">
                 <source>label.social_youtube_channel_id</source>

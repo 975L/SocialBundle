@@ -10,22 +10,19 @@
 
 namespace c975L\SocialBundle\Tests\Controller;
 
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\GoogleOAuthController;
 use c975L\SocialBundle\Service\ConfigValueWriter;
 use c975L\SocialBundle\Service\GoogleBusinessLocationResolver;
 use c975L\SocialBundle\Service\GoogleOAuthClient;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class GoogleOAuthControllerTest extends TestCase
 {
+    use ControllerTestTrait;
+
     private function createRequest(array $query = []): Request
     {
         $request = new Request($query);
@@ -41,58 +38,16 @@ class GoogleOAuthControllerTest extends TestCase
         ?ConfigValueWriter $configValueWriter = null,
         ?GoogleBusinessLocationResolver $googleBusinessLocationResolver = null,
     ): GoogleOAuthController {
-        $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturnCallback(
-            static fn (string $key) => 'site-role-editor' === $key ? 'ROLE_ADMIN' : null
-        );
-
-        if (null === $googleOAuthClient) {
-            $googleOAuthClient = $this->createStub(GoogleOAuthClient::class);
-            $googleOAuthClient->method('isConfigured')->willReturn(true);
-            $googleOAuthClient->method('getAuthorizationUrl')->willReturn('https://accounts.google.com/o/oauth2/v2/auth?state=x');
-        }
-
         $controller = new GoogleOAuthController(
-            $configService,
+            $this->configService(),
             $configValueWriter ?? $this->createStub(ConfigValueWriter::class),
-            $googleOAuthClient,
+            $googleOAuthClient ?? $this->oauthClient(GoogleOAuthClient::class, 'https://accounts.google.com/o/oauth2/v2/auth?state=x'),
             $googleBusinessLocationResolver ?? $this->createStub(GoogleBusinessLocationResolver::class),
         );
 
         $controller->setContainer($this->createContainer($request));
 
         return $controller;
-    }
-
-    private function createContainer(Request $request): ContainerInterface
-    {
-        $requestStack = new RequestStack([$request]);
-
-        $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
-        $authorizationChecker->method('isGranted')->willReturn(true);
-
-        $router = $this->createStub(UrlGeneratorInterface::class);
-        $router->method('generate')->willReturnCallback(static fn (string $route): string => '/' . $route);
-
-        $services = [
-            'request_stack' => $requestStack,
-            'security.authorization_checker' => $authorizationChecker,
-            'router' => $router,
-        ];
-
-        $container = $this->createStub(ContainerInterface::class);
-        $container->method('has')->willReturnCallback(static fn (string $id): bool => isset($services[$id]));
-        $container->method('get')->willReturnCallback(static fn (string $id) => $services[$id] ?? null);
-
-        return $container;
-    }
-
-    private function flashes(Request $request): array
-    {
-        $session = $request->getSession();
-        \assert($session instanceof Session);
-
-        return $session->getFlashBag()->all();
     }
 
     // Without the state held in the session, the callback would accept a code obtained by anyone able to make the editor's browser follow a link

@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use c975L\SocialBundle\Contract\FirstCommentPublisherInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
+use c975L\SocialBundle\Contract\PostOptionsPublisherInterface;
 use c975L\SocialBundle\Contract\ProfileResharePublisherInterface;
 use c975L\SocialBundle\Contract\StoryPublisherInterface;
 use c975L\SocialBundle\Entity\SocialMedia;
@@ -39,6 +40,7 @@ use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\InMemoryStore;
+use Symfony\Component\Translation\TranslatableMessage;
 
 class SocialPublisherTest extends TestCase
 {
@@ -962,5 +964,63 @@ class SocialPublisherTest extends TestCase
         $publisher->publish($post->setLocale('en'));
 
         $this->assertSame(['en'], $locales);
+    }
+
+    // A network asking choices post by post: the one withOptions() hands back publishes, with the target's choices recorded in $this->asked
+    private function createOptionsNetwork(): NetworkPublisherInterface
+    {
+        $network = $this->createFollowingNetwork(PostOptionsPublisherInterface::class, 'tiktok', 2200, 0);
+        $network->method('getOptionsType')->willReturn('App\\Form\\TikTokOptionsType');
+        $network->method('checkOptions')->willReturnCallback(static fn (array $options): array => [] === $options ? [new TranslatableMessage('label.social_tiktok_consent_required', [], 'social')] : []);
+        $network->method('withOptions')->willReturnCallback(function (array $options): NetworkPublisherInterface {
+            $this->asked['options'] = $options;
+
+            return $this->createNetwork('tiktok');
+        });
+
+        return $network;
+    }
+
+    // The post goes out with the choices made on its target, through the publisher withOptions() hands back
+    public function testANetworkAskingChoicesPublishesWithThem(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'tiktok', 'Text')->setOptions(['privacy' => 'SELF_ONLY', 'consent' => true]);
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createOptionsNetwork()]);
+
+        $report = $publisher->publish($post);
+
+        $this->assertSame(['privacy' => 'SELF_ONLY', 'consent' => true], $this->asked['options']);
+        $this->assertSame(['status' => 'published', 'message' => 'tiktok-post-id'], $report['tiktok']);
+        $this->assertSame('App\\Form\\TikTokOptionsType', $publisher->getOptionsType('tiktok'));
+        $this->assertNull($publisher->getOptionsType('bluesky'));
+    }
+
+    // Its choices checked on the target, none asked of a network asking none
+    public function testTheChoicesOfATargetAreChecked(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        $tiktok = new SocialPostTarget($post, 'tiktok', 'Text');
+        $bluesky = new SocialPostTarget($post, 'bluesky', 'Text');
+        $publisher = $this->createPublisher([], [$this->createOptionsNetwork(), $this->createNetwork('bluesky')]);
+
+        $this->assertCount(1, $publisher->checkOptions($tiktok));
+        $this->assertSame([], $publisher->checkOptions($bluesky));
+        $this->assertSame([], $publisher->checkOptions($tiktok->setOptions(['consent' => true])));
+    }
+
+    // Added to an approved post, a network asking choices waits for them, the others approved with the post
+    public function testATargetAskingChoicesIsNotApprovedWithThePost(): void
+    {
+        $post = $this->approvedPost(new \DateTimeImmutable('+1 day'), 'linkedin');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createOptionsNetwork(), $this->createNetwork('bluesky')]);
+
+        $publisher->addTargets($post, ['tiktok', 'bluesky']);
+
+        $statuses = [];
+        foreach ($post->getTargets() as $target) {
+            $statuses[$target->getNetwork()] = $target->getStatus();
+        }
+        $this->assertSame(['linkedin' => SocialPostStatus::Approved, 'tiktok' => SocialPostStatus::Draft, 'bluesky' => SocialPostStatus::Approved], $statuses);
     }
 }

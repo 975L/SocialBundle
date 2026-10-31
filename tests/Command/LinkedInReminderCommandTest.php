@@ -12,16 +12,12 @@ namespace c975L\SocialBundle\Tests\Command;
 
 use c975L\SocialBundle\Command\LinkedInReminderCommand;
 use c975L\SocialBundle\Service\LinkedInClient;
-use c975L\SocialBundle\Service\SocialAdminMailer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class LinkedInReminderCommandTest extends TestCase
 {
-    /** @var list<string> */
-    private array $mailed = [];
+    use ConnectionCommandTestTrait;
 
     // The token ending $days days from today, at noon - or at the moment given
     private function remind(?int $days, bool $connected = true, ?\DateTimeImmutable $expiresAt = null): int
@@ -30,18 +26,7 @@ class LinkedInReminderCommandTest extends TestCase
         $client->method('isConnected')->willReturn($connected);
         $client->method('expiresAt')->willReturn($expiresAt ?? (null === $days ? null : new \DateTimeImmutable('today')->modify(sprintf('+%d days', $days))->setTime(12, 0)));
 
-        $mailer = $this->createStub(SocialAdminMailer::class);
-        $mailer->method('url')->willReturn('https://example.org/management/social-connections');
-        $mailer->method('send')->willReturnCallback(function (string $subject, string $body): ?string {
-            $this->mailed[] = $subject . "\n" . $body;
-
-            return null;
-        });
-
-        $translator = $this->createStub(TranslatorInterface::class);
-        $translator->method('trans')->willReturnArgument(0);
-
-        return new CommandTester(new LinkedInReminderCommand($client, $mailer, $translator))->execute([]);
+        return $this->runCommand(LinkedInReminderCommand::class, $client);
     }
 
     // One email 14 days ahead and one 3 days ahead, with the screen to connect again

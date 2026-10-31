@@ -107,4 +107,26 @@ class SocialMediaCheckerTest extends TestCase
 
         $this->assertSame([], $this->checker()->check($post));
     }
+
+    // The choices a network asks post by post said with its medias' problems, refusing the approval alike
+    public function testTheChoicesOfANetworkAreSaidWithItsMedias(): void
+    {
+        $publisher = $this->createStub(SocialPublisher::class);
+        $publisher->method('getMediaRules')->willReturn(new MediaRules(maxImages: 0, video: true, required: true, imageTypes: [], videoRequired: true));
+        $publisher->method('checkOptions')->willReturn([new TranslatableMessage('label.social_tiktok_consent_required', [], 'social')]);
+
+        $this->assertSame(['tiktok' => ['label.social_media_video_required', 'label.social_tiktok_consent_required']], $this->keys(new SocialMediaChecker($publisher)->check($this->post(['tiktok'], []))));
+    }
+
+    // The network's account asked live at the approval alone, a save never waiting on it
+    public function testTheAccountIsAskedLiveAtTheApprovalAlone(): void
+    {
+        $publisher = $this->createStub(SocialPublisher::class);
+        $publisher->method('getMediaRules')->willReturn(new MediaRules(maxImages: 0, video: true, required: true, imageTypes: [], videoRequired: true));
+        $publisher->method('checkOptions')->willReturnCallback(static fn (SocialPostTarget $target, bool $live = false): array => $live ? [new TranslatableMessage('label.social_tiktok_cannot_post', [], 'social')] : []);
+        $checker = new SocialMediaChecker($publisher);
+
+        $this->assertSame(['tiktok' => ['label.social_media_video_required']], $this->keys($checker->check($this->post(['tiktok'], []))));
+        $this->assertSame(['tiktok' => ['label.social_media_video_required', 'label.social_tiktok_cannot_post']], $this->keys($checker->check($this->post(['tiktok'], []), true)));
+    }
 }

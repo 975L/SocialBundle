@@ -17,6 +17,8 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 // Everything that talks to LinkedIn: the connection of the member whose profile, or whose Page, the posts go out on, then the calls LinkedInPublisher makes with the token it stores - one stubable seam, same shape as MetaGraphClient. A profile is reached through an app with the two self-serve products "Share on LinkedIn" and "Sign In with LinkedIn using OpenID Connect", a Page through an app with the "Community Management API" alone, which LinkedIn wants as the only product of its app: no refresh token either way, so the token lasts its 60 days and the member connects again
 class LinkedInClient
 {
+    use ConfigValuesTrait;
+
     public const string AUTHORIZE = 'https://www.linkedin.com/oauth/v2/authorization';
 
     public const string TOKEN = 'https://www.linkedin.com/oauth/v2/accessToken';
@@ -412,10 +414,5 @@ class LinkedInClient
     private function memberId(): string
     {
         return $this->config('social-linkedin-member-id');
-    }
-
-    private function config(string $slug): string
-    {
-        return trim((string) $this->configService->get($slug));
     }
 }
