@@ -24,6 +24,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(name: 'social_post_source', columns: ['source_type', 'source_id'])]
 #[ORM\Index(name: 'social_post_created_at', columns: ['created_at'])]
 #[ORM\Index(name: 'social_post_planned_at', columns: ['planned_at'])]
+#[ORM\UniqueConstraint(name: 'social_post_series_import_key', columns: ['series_id', 'import_key'])]
 class SocialPost implements \Stringable
 {
     // The source type of a post prepared from a page's url rather than handed by a source
@@ -65,6 +66,14 @@ class SocialPost implements \Stringable
     #[ORM\ManyToOne(targetEntity: SocialSeries::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?SocialSeries $series = null;
+
+    // The key a JSON import gave the post, unique in its series: importing the file again updates the post rather than making it twice (see SocialDraftImporter)
+    #[ORM\Column(length: 190, nullable: true)]
+    private ?string $importKey = null;
+
+    // What that import wrote, hashed: a post imported again unchanged is left as it is, approval included
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $importHash = null;
 
     /** @var Collection<int, SocialMedia> */
     #[ORM\OneToMany(targetEntity: SocialMedia::class, mappedBy: 'post', cascade: ['persist', 'remove'], orphanRemoval: true)]
@@ -214,6 +223,42 @@ class SocialPost implements \Stringable
         }
     }
 
+    // Ties the post to a content of any source, its own text kept - what an imported draft says it was written from, the content then reserved as a series' draft holds its own. Refused once it went out anywhere
+    public function takeSource(string $sourceType, SocialContent $content): bool
+    {
+        if ($this->hasGoneOut()) {
+            return false;
+        }
+
+        $this->sourceType = $sourceType;
+
+        return $this->changeContent($content);
+    }
+
+    // Unties the post from the content it held, back to a post written by hand whose title its text gives - what an imported draft no longer naming a source makes of it, the content freed as soon as it is saved. Refused once it went out anywhere
+    public function dropSource(): bool
+    {
+        if ($this->hasGoneOut()) {
+            return false;
+        }
+
+        $this->sourceType = self::SOURCE_MANUAL;
+        $this->sourceId = bin2hex(random_bytes(8));
+        $this->title = '';
+        $this->imageUrl = null;
+        $this->locale = null;
+
+        return true;
+    }
+
+    // Lets go of the content's picture, the post going out with its own medias alone
+    public function dropImageUrl(): self
+    {
+        $this->imageUrl = null;
+
+        return $this;
+    }
+
     // Ties the post to another content of its source, the one it held freed as soon as it is saved - refused once it went out anywhere, the networks showing the picture it went out with
     public function changeContent(SocialContent $content): bool
     {
@@ -250,6 +295,25 @@ class SocialPost implements \Stringable
     public function setSeries(?SocialSeries $series): self
     {
         $this->series = $series;
+
+        return $this;
+    }
+
+    public function getImportKey(): ?string
+    {
+        return $this->importKey;
+    }
+
+    public function getImportHash(): ?string
+    {
+        return $this->importHash;
+    }
+
+    // The key and the hash of what an import wrote, both null for a post written otherwise
+    public function setImport(?string $key, ?string $hash): self
+    {
+        $this->importKey = $key;
+        $this->importHash = null === $key ? null : $hash;
 
         return $this;
     }

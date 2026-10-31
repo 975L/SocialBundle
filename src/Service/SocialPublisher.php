@@ -271,6 +271,60 @@ class SocialPublisher
         return null === $content ? null : new SocialPost($sourceType, $content->sourceId, $content->title, $content->url, $content->imageUrl, $at)->setLocale($content->locale);
     }
 
+    // One content of an installed source, read again - null for a source not installed here or a content gone
+    public function findContent(string $sourceType, string $sourceId): ?SocialContent
+    {
+        foreach ($this->sources as $source) {
+            if ($source->getSourceType() === $sourceType) {
+                return $source->getContent($sourceId);
+            }
+        }
+
+        return null;
+    }
+
+    // Whether a content is still free: held by no post, nor gone out within its source's repeat delay - $except, the post asking, not counting when it holds it itself. A source not installed here has nothing free
+    public function isFree(string $sourceType, string $sourceId, ?SocialPost $except = null): bool
+    {
+        if (null !== $except && $except->getSourceType() === $sourceType && $except->getSourceId() === $sourceId) {
+            return true;
+        }
+
+        foreach ($this->sources as $source) {
+            if ($source->getSourceType() === $sourceType) {
+                return !\in_array($sourceId, $this->excludedIds($source), true);
+            }
+        }
+
+        return false;
+    }
+
+    // The contents still free in each source, or in the ones named: up to $limit of each for a source that lists them, its next one alone for a source that only hands them out one by one - what a post written elsewhere is chosen among (see c975l:social:contents)
+    /**
+     * @param list<string> $sourceTypes
+     *
+     * @return list<array{source: string, scope: ?string, content: SocialContent}>
+     */
+    public function freeContents(array $sourceTypes, int $limit): array
+    {
+        $free = [];
+        foreach ($this->sources as $source) {
+            $type = $source->getSourceType();
+            if ([] !== $sourceTypes && !\in_array($type, $sourceTypes, true)) {
+                continue;
+            }
+
+            $excludedIds = $this->excludedIds($source);
+            $contents = $source instanceof BrowsableSocialContentSourceInterface ? $source->findContents($excludedIds, [], $limit) : array_filter([$source->getNextContent($excludedIds)]);
+            foreach ($contents as $content) {
+                $scope = $source instanceof BrowsableSocialContentSourceInterface ? $source->getContentScope($content->sourceId) : null;
+                $free[] = ['source' => $type, 'scope' => $scope, 'content' => $content];
+            }
+        }
+
+        return $free;
+    }
+
     // The source of a post whose content may be changed on its screen, null for one written there, read from a page, gone out already, or whose source lists nothing
     public function browsableSourceOf(SocialPost $post): ?BrowsableSocialContentSourceInterface
     {

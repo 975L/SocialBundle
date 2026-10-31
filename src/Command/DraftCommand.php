@@ -19,7 +19,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-// Makes drafts written elsewhere from a JSON file, as one series (see SocialDraftImporter) - a picture's path read from the file's folder. Nothing is sent: they wait on the calendar to be read and approved
+// Makes drafts written elsewhere from a JSON file, as one series (see SocialDraftImporter) - a picture's path read from the file's folder. Nothing is sent: they wait on the calendar to be read and approved. Run again on the same file, a post given a "key" is updated rather than made twice
 #[AsCommand(
     name: 'c975l:social:draft',
     description: 'Makes drafts from a JSON file, as one series waiting for approval',
@@ -35,7 +35,7 @@ class DraftCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('file', InputArgument::REQUIRED, 'The JSON file: {"title": "...", "posts": [{"at": "2026-11-02 09:30", "networks": ["linkedin"], "text": "...", "comment": "...", "reshare": "...", "story": true, "media": "card.png", "url": "..."}]}')
+            ->addArgument('file', InputArgument::REQUIRED, 'The JSON file: {"title": "...", "posts": [{"key": "...", "at": "2026-11-02 09:30", "networks": ["linkedin"], "text": "...", "comment": "...", "reshare": "...", "story": true, "media": "card.png", "url": "..."}]}')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Check the file and list the drafts without writing anything')
         ;
     }
@@ -66,6 +66,9 @@ class DraftCommand extends Command
             null === $draft['comment'] ? '' : mb_strimwidth(str_replace("\n", ' ', $draft['comment']), 0, 30, '…'),
             null === $draft['media'] ? '' : basename($draft['media']),
         ], $read['drafts']));
+        if ([] !== $read['notes']) {
+            $io->note($read['notes']);
+        }
 
         if ($input->getOption('dry-run')) {
             $io->note('Dry run: nothing written.');
@@ -73,8 +76,15 @@ class DraftCommand extends Command
             return Command::SUCCESS;
         }
 
-        $posts = $this->importer->import(trim((string) $data['title']), $read['drafts']);
-        $io->success(sprintf('%d draft(s) waiting for approval on the calendar.', \count($posts)));
+        $result = $this->importer->import(trim((string) $data['title']), $read['drafts']);
+        $io->success(sprintf(
+            '%d draft(s) made, %d updated and back to a draft, %d unchanged, %d already out and left as they went, %d gone by and left as they are.',
+            \count($result['created']),
+            \count($result['updated']),
+            $result['unchanged'],
+            $result['out'],
+            $result['past'],
+        ));
 
         return Command::SUCCESS;
     }

@@ -1,5 +1,11 @@
 # Upgrade
 
+## To 2.25
+
+**Database:** `social_post` gains `import_key` and `import_hash` (null by default), the key a JSON import gave the post and the hash of what it wrote, `import_key` unique in its series (`social_post_series_import_key`) - a site's own migration (`doctrine:migrations:diff`, then `migrate`).
+
+**Code:** `SocialDraftImporter::import()` returns `{created, updated, unchanged, out, past}` rather than the list of posts made.
+
 ## To 2.24
 
 **Database:** `social_post_target` gains `options` (JSON, null by default), the choices a network asks post by post (TikTok's) - a site's own migration (`doctrine:migrations:diff`, then `migrate`).

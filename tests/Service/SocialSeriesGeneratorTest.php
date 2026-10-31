@@ -211,6 +211,16 @@ class SocialSeriesGeneratorTest extends TestCase
         $this->assertEquals(new \DateTimeImmutable('2026-11-09 21:00'), $mondays[0]->getPlannedAt());
     }
 
+    // Prolonged up to a day, no draft is made past it
+    public function testAProlongationStopsAtTheDayGiven(): void
+    {
+        $series = $this->series(5, SocialSeriesGenerator::MODE_TEXT, ['bluesky'], 'Soir', interval: 7);
+
+        $posts = $this->generator(lastPlannedAt: new \DateTimeImmutable('2026-11-07 21:00'))->prolong($series, new \DateTimeImmutable('2026-11-30 23:59:59'));
+
+        $this->assertEquals([new \DateTimeImmutable('2026-11-14 21:00'), new \DateTimeImmutable('2026-11-21 21:00'), new \DateTimeImmutable('2026-11-28 21:00')], array_map(static fn (SocialPost $post): \DateTimeImmutable => $post->getPlannedAt(), $posts));
+    }
+
     // Imported drafts have nothing to be prolonged with, the next ones being imported in turn
     public function testAnImportedSeriesIsNotProlonged(): void
     {

@@ -133,6 +133,16 @@ class SocialSeries implements \Stringable
         return $this->networks;
     }
 
+    // What an imported series taken up again counts and goes to, its page showing them
+    /** @param list<string> $networks */
+    public function setImported(int $count, array $networks): self
+    {
+        $this->count = $count;
+        $this->networks = $networks;
+
+        return $this;
+    }
+
     /** @return ?array{0: string, 1: string, 2: ?int, 3: ?int, 4: ?float, 5: int} */
     public function getMedia(): ?array
     {

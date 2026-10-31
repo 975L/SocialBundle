@@ -67,10 +67,16 @@ class SocialMediaCheckerTest extends TestCase
         $this->assertSame([], $this->checker()->check($this->post(['bluesky', 'instagram'], [['image/jpeg', 500000, null], ['image/jpeg', 500000, null]])));
     }
 
-    // Instagram takes no post without a picture or a video, Bluesky does
+    // Instagram takes no post without a picture or a video, Bluesky does - a post from a content standing in with that content's picture, never without one
     public function testAMediaIsRequiredWhereTheNetworkSaysSo(): void
     {
         $this->assertSame(['instagram' => ['label.social_media_required']], $this->keys($this->checker()->check($this->post(['bluesky', 'instagram'], []))));
+
+        $content = new SocialPost('book', '12', 'Le Cerf-volant', 'https://example.org', 'https://example.org/cover.jpg', new \DateTimeImmutable('+1 day'));
+        new SocialPostTarget($content, 'instagram', 'Hello');
+        $this->assertSame([], $this->checker()->check($content));
+        $content->dropImageUrl();
+        $this->assertSame(['instagram' => ['label.social_media_required']], $this->keys($this->checker()->check($content)));
     }
 
     // YouTube takes a video only: a picture is no stand-in, and neither is nothing at all

@@ -65,11 +65,11 @@ class SocialMediaChecker
         $videos = \count(array_filter($medias, static fn (SocialMedia $media): bool => $media->isVideo()));
         $images = \count($medias) - $videos;
 
-        // A network made of videos alone, where neither a picture nor the content's one stands in, says that alone; elsewhere a post prepared from a content goes out with that content's picture when it has none of its own
+        // A network made of videos alone, where neither a picture nor the content's one stands in, says that alone; elsewhere a post prepared from a content goes out with that content's picture when it has none of its own, a post with neither needing one
         $problems = [];
         if ($rules->videoRequired && 0 === $videos) {
             $problems[] = t('label.social_media_video_required', [], 'social');
-        } elseif ($rules->required && [] === $medias && null === $post->getImageUrl() && $post->isManual()) {
+        } elseif ($rules->required && [] === $medias && null === $post->getImageUrl()) {
             $problems[] = t('label.social_media_required', [], 'social');
         }
         if ($images > $rules->maxImages) {

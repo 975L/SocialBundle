@@ -24,11 +24,11 @@ class DraftCommandTest extends TestCase
     private function tester(array $errors = []): CommandTester
     {
         $importer = $this->createStub(SocialDraftImporter::class);
-        $importer->method('read')->willReturn(['errors' => $errors, 'drafts' => [] === $errors ? [['at' => new \DateTimeImmutable('2026-11-02 09:30'), 'networks' => ['linkedin'], 'text' => 'One idea', 'comment' => 'Link', 'url' => null, 'media' => '/tmp/card.png']] : []]);
+        $importer->method('read')->willReturn(['errors' => $errors, 'notes' => [], 'drafts' => [] === $errors ? [['at' => new \DateTimeImmutable('2026-11-02 09:30'), 'networks' => ['linkedin'], 'text' => 'One idea', 'comment' => 'Link', 'url' => null, 'media' => '/tmp/card.png']] : []]);
         $importer->method('import')->willReturnCallback(function (): array {
             $this->imported = true;
 
-            return [];
+            return ['created' => [], 'updated' => [], 'unchanged' => 2, 'out' => 1, 'past' => 0];
         });
 
         return new CommandTester(new DraftCommand($importer));
@@ -71,8 +71,10 @@ class DraftCommandTest extends TestCase
     // Without --dry-run the drafts are imported
     public function testTheDraftsAreImported(): void
     {
-        $this->tester()->execute(['file' => $this->file()]);
+        $tester = $this->tester();
+        $tester->execute(['file' => $this->file()]);
 
         $this->assertTrue($this->imported);
+        $this->assertStringContainsString('2 unchanged, 1 already out', preg_replace('/\s+/', ' ', $tester->getDisplay()));
     }
 }

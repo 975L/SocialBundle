@@ -112,12 +112,21 @@ class SocialSeriesGenerator
         return $posts;
     }
 
-    // As many drafts again, from the moment after the series' last post, at its pace - none for a series whose posts were all deleted. Its ending is announced again once this new end comes near
+    // As many drafts again, from the moment after the series' last post, at its pace - none for a series whose posts were all deleted, and none past $until when given. Its ending is announced again once this new end comes near
     /** @return list<SocialPost> */
-    public function prolong(SocialSeries $series): array
+    public function prolong(SocialSeries $series, ?\DateTimeImmutable $until = null): array
     {
         $last = $this->seriesRepository->findLastPlannedAt($series);
-        if (null === $last || self::MODE_IMPORT === $series->getMode()) {
+        $moments = null === $last ? [] : $this->prolongMoments($series, $last, $until);
+
+        return [] === $moments ? [] : $this->make($series, $moments);
+    }
+
+    // The moments a prolongation from $last takes, at the series' pace, none past $until when given - none for an imported series, its next posts being imported. Nothing is written, so a dry run counts them
+    /** @return list<\DateTimeImmutable> */
+    public function prolongMoments(SocialSeries $series, \DateTimeImmutable $last, ?\DateTimeImmutable $until = null): array
+    {
+        if (self::MODE_IMPORT === $series->getMode()) {
             return [];
         }
 
@@ -126,8 +135,9 @@ class SocialSeriesGenerator
             'weekdays' => $last->modify('+1 day'),
             default => $last->modify(sprintf('+%d days', max(1, $series->getInterval()))),
         };
+        $moments = $this->moments($start, $series->getCount(), $series->getFrequency(), $series->getInterval(), $series->getWeekdays());
 
-        return $this->make($series, $this->moments($start, $series->getCount(), $series->getFrequency(), $series->getInterval(), $series->getWeekdays()));
+        return null === $until ? $moments : array_values(array_filter($moments, static fn (\DateTimeImmutable $moment): bool => $moment <= $until));
     }
 
     // The drafts of the series at its moments, on its networks - fewer than asked when the AI answers fewer texts or the sources run out. With sources picked, each draft written from a text takes the picture of their next content, reserved as a draft of its own is; the series' media goes with every draft instead

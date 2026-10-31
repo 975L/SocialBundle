@@ -1023,4 +1023,30 @@ class SocialPublisherTest extends TestCase
         }
         $this->assertSame(['linkedin' => SocialPostStatus::Approved, 'tiktok' => SocialPostStatus::Draft, 'bluesky' => SocialPostStatus::Approved], $statuses);
     }
+
+    // The contents still free: a source listing them lists them, its posted ids left out, one handing them out gives its next; a source not named, or not installed, gives nothing
+    public function testTheFreeContentsOfEachSource(): void
+    {
+        $publisher = $this->createPublisher([$this->createBrowsableSource(), $this->createSource('book', '12')], [$this->createNetwork('bluesky')]);
+
+        $free = $publisher->freeContents([], 10);
+        $this->assertSame(['gallery_media:44:3', 'book:12:'], array_map(static fn (array $row): string => $row['source'] . ':' . $row['content']->sourceId . ':' . $row['scope'], $free));
+        $this->assertSame(['7'], $this->asked['gallery_media']['excluded']);
+
+        $this->assertSame(['book'], array_column($publisher->freeContents(['book'], 10), 'source'));
+        $this->assertSame('Fresh', $publisher->findContent('book', '12')?->title);
+        $this->assertNull($publisher->findContent('page', '1'));
+    }
+
+    // A content taken is not free, unless the post asking holds it itself; a source not installed has nothing free
+    public function testAContentIsFreeUntilTaken(): void
+    {
+        $publisher = $this->createPublisher([$this->createBrowsableSource()], [$this->createNetwork('bluesky')]);
+        $holder = new SocialPost('gallery_media', '7', 'Photo 7', 'https://example.org/7', null, new \DateTimeImmutable('+1 day'));
+
+        $this->assertTrue($publisher->isFree('gallery_media', '44'));
+        $this->assertFalse($publisher->isFree('gallery_media', '7'));
+        $this->assertTrue($publisher->isFree('gallery_media', '7', $holder));
+        $this->assertFalse($publisher->isFree('page', '1'));
+    }
 }

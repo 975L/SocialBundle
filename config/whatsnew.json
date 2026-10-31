@@ -3,6 +3,31 @@
         "date": "2026-10-31",
         "description": [
             {
+                "en": "Drafts imported from a JSON file can be imported again after a correction: a post given a key is updated and taken back to a draft rather than made twice, and never touched once it went out",
+                "fr": "Les brouillons importés d'un fichier JSON peuvent être réimportés après une correction : une publication qui porte une clé est mise à jour et repasse en brouillon au lieu d'être créée deux fois, et n'est plus touchée une fois partie",
+                "es": "Los borradores importados de un archivo JSON pueden importarse de nuevo tras una corrección: una publicación con una clave se actualiza y vuelve a borrador en lugar de crearse dos veces, y no se toca una vez publicada"
+            },
+            {
+                "en": "A new command prolongs the running series until a given day, without going past it",
+                "fr": "Une nouvelle commande prolonge les séries en cours jusqu'à un jour donné, sans le dépasser",
+                "es": "Un nuevo comando prolonga las series en curso hasta un día dado, sin pasarlo"
+            },
+            {
+                "en": "A post imported from a JSON file can name the content it was written from, which is then held and never offered again; a new command lists the contents still free",
+                "fr": "Une publication importée d'un fichier JSON peut nommer le contenu dont elle parle, qui est alors réservé et jamais reproposé ; une nouvelle commande liste les contenus encore libres",
+                "es": "Una publicación importada de un archivo JSON puede nombrar el contenido del que habla, que queda reservado y nunca se vuelve a proponer; un nuevo comando lista los contenidos aún libres"
+            },
+            {
+                "en": "A post without any picture is flagged before it goes out on a network asking for one, even when prepared from a content",
+                "fr": "Une publication sans aucune image est signalée avant de partir sur un réseau qui en exige une, même préparée depuis un contenu",
+                "es": "Una publicación sin ninguna imagen se señala antes de salir en una red que exige una, incluso preparada desde un contenido"
+            }
+        ]
+    },
+    {
+        "date": "2026-10-31",
+        "description": [
+            {
                 "en": "Posts carrying a video can go out on a TikTok account, with TikTok's own choices made on the post's screen and the connection renewing itself every night",
                 "fr": "Les publications avec une vidéo peuvent partir sur un compte TikTok, avec les choix propres à TikTok faits sur l'écran de la publication et la connexion se renouvelant seule chaque nuit",
                 "es": "Las publicaciones con un vídeo pueden salir en una cuenta de TikTok, con las opciones propias de TikTok elegidas en la pantalla de la publicación y la conexión renovándose sola cada noche"

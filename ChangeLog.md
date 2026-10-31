@@ -1,5 +1,28 @@
 # Changelog
 
+## v2.25.0
+
+Imported drafts updated rather than made twice, series prolonged until a day
+
+- Imported drafts: a post given a `key` imported again rather than twice [Needs db update] (31/10/2026)
+- Imported drafts: a changed keyed post updated and taken back to a draft, one gone out never touched (31/10/2026)
+- Imported drafts: the series of the same title taken up when the file gives a key, a new one otherwise (31/10/2026)
+- Imported drafts: a keyed post gone by left as it is rather than refusing the file (31/10/2026)
+- Imported drafts: a post imported before keys existed taking its key (31/10/2026)
+- Imported drafts: an unchanged picture kept on update rather than copied again (31/10/2026)
+- Imported drafts: a keyed file gives every post a key (31/10/2026)
+- Imported drafts: a keyed post whose key left the file taken back to a draft (31/10/2026)
+- Imported drafts: the series made with keys taken up rather than a later keyless one (31/10/2026)
+- Imported drafts: a post's `source` ("book:12") holds that content as a series' draft does, never offered again (31/10/2026)
+- Imported drafts: a source already held or gone out lately refused, a source dropped freeing its content (31/10/2026)
+- Imported drafts: a post naming a source goes out with its own picture alone (31/10/2026)
+- Media required on any post with neither a picture nor a content's one (31/10/2026)
+- Added `c975l:social:contents`: the contents still free in each source, as an imported draft names them, in a table or as JSON (31/10/2026)
+- Added `c975l:social:series:prolong --until=YYYY-MM-DD`: the series prolonged until that day, none past it (31/10/2026)
+- `series:prolong --dry-run` counts the drafts to come, unknown or imported ids warned of (31/10/2026)
+- `series:prolong` warns when its rounds run out before the day (31/10/2026)
+- Added `SocialSeriesGenerator::prolongMoments()`, `prolong()` taking the day no draft goes past (31/10/2026)
+
 ## v2.24.1
 
 Posts: the medias checked once uploaded
