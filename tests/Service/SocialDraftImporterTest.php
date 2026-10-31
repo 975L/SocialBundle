@@ -45,7 +45,7 @@ class SocialDraftImporterTest extends TestCase
         rmdir($this->dir);
     }
 
-    // LinkedIn taking a first comment and a reshare, Bluesky a story alone - both connected. $series is the series of the same title already there, $existing the post found in it by its key, $keyless the posts a former import made without a key at the draft's moment, $held the contents already held elsewhere, $keyed the series a keyed import made when it is not the latest one
+    // LinkedIn taking a first comment and a reshare, Bluesky a story alone - both connected. $series is the series of the same title already there, $existing the post found in it by its key, $keyless the posts a former import made without a key at the draft's moment, $held the contents held by a post to come of another series, $keyed the series a keyed import made when it is not the latest one
     /**
      * @param list<SocialPost> $keyless
      * @param list<string>     $held
@@ -58,7 +58,7 @@ class SocialDraftImporterTest extends TestCase
         $publisher->method('supportsReshare')->willReturnCallback(static fn (string $network): bool => 'linkedin' === $network);
         $publisher->method('supportsStory')->willReturnCallback(static fn (string $network): bool => 'bluesky' === $network);
         $publisher->method('findContent')->willReturnCallback(static fn (string $type, string $id): ?SocialContent => 'book' === $type && \in_array($id, ['12', '13'], true) ? new SocialContent($id, 'Le Cerf-volant', 'https://example.org/histoire/cerf-volant', imageUrl: 'https://example.org/cover.jpg') : null);
-        $publisher->method('isFree')->willReturnCallback(static fn (string $type, string $id, ?SocialPost $except): bool => ($except?->getSourceType() === $type && $except->getSourceId() === $id) || !\in_array($type . ':' . $id, $held, true));
+        $publisher->method('isHeldOutside')->willReturnCallback(static fn (string $type, string $id, ?SocialSeries $own): bool => null === $own && \in_array($type . ':' . $id, $held, true));
         $publisher->method('createManual')->willReturnCallback(static function (\DateTimeImmutable $at): SocialPost {
             $post = new SocialPost(SocialPost::SOURCE_MANUAL, 'id', '', '', null, $at);
             new SocialPostTarget($post, 'bluesky', '');
@@ -371,17 +371,17 @@ class SocialDraftImporterTest extends TestCase
         $this->assertSame('', $post->getUrl());
     }
 
-    // A content held by another post or gone out lately is refused, as twice in the file; the post holding it imported again keeps it
+    // A content held by a post to come of another series is refused; the posts of the file share one, the same content on several networks or days, and keep it when imported again
     public function testASourceAlreadyHeldIsRefused(): void
     {
         $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 09:30';
         $post = ['key' => 'k', 'at' => $at, 'networks' => ['linkedin'], 'text' => 'One idea', 'source' => 'book:12'];
 
         $held = $this->importer(held: ['book:12'])->read(['title' => 'T', 'posts' => [$post]], $this->dir);
-        $this->assertStringContainsString('the source "book:12" is already held by a post or went out lately', implode("\n", $held['errors']));
+        $this->assertStringContainsString('the source "book:12" is already held by a post to come of another series', implode("\n", $held['errors']));
 
-        $twice = $this->importer()->read(['title' => 'T', 'posts' => [$post, ['key' => 'l'] + $post]], $this->dir);
-        $this->assertStringContainsString('Post 2: the source "book:12" is already the one of post 1', implode("\n", $twice['errors']));
+        $shared = $this->importer()->read(['title' => 'T', 'posts' => [$post, ['key' => 'l', 'networks' => ['bluesky']] + $post]], $this->dir);
+        $this->assertSame([], $shared['errors']);
 
         $first = $this->importer();
         $own = $first->import('T', $first->read(['title' => 'T', 'posts' => [$post]], $this->dir)['drafts'])['created'][0];

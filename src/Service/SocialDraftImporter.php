@@ -19,7 +19,7 @@ use c975L\UiBundle\Model\SocialContent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
-// Drafts written elsewhere - each its own text, picture, first comment, reshare on the member's profile and story, which no series draws from the site's contents - made at once from a JSON file (see c975l:social:draft), as one series so that its ending is announced like any other. Never sent before being read and approved, as every draft. A post given a "key" is imported again rather than twice: left as it is when unchanged, updated and taken back to a draft when it changed, never touched once it went out, taken back to a draft when its key left the file - a file gives every post a key, or none. A post saying the content it was written from ("source": "book:12") holds it as a series' draft does, so that nothing else posts it again - a content held or gone out lately being refused - and goes out with its own picture alone
+// Drafts written elsewhere - each its own text, picture, first comment, reshare on the member's profile and story, which no series draws from the site's contents - made at once from a JSON file (see c975l:social:draft), as one series so that its ending is announced like any other. Never sent before being read and approved, as every draft. A post given a "key" is imported again rather than twice: left as it is when unchanged, updated and taken back to a draft when it changed, never touched once it went out, taken back to a draft when its key left the file - a file gives every post a key, or none. A post saying the content it was written from ("source": "book:12") holds it as a series' draft does, so that nothing else posts it again - a content held by a post to come of another series being refused, the posts of the file sharing one at will - and goes out with its own picture alone
 class SocialDraftImporter
 {
     // The pictures' sha1, by path, each file read once
@@ -62,7 +62,7 @@ class SocialDraftImporter
             $draft = $this->draft(\is_array($post) ? $post : [], $baseDir);
             $found = $this->findPost($seriesPosts, $draft);
             if (null === $draft['at'] || true !== $found?->hasGoneOut()) {
-                $errors = [...$errors, ...$this->draftErrors(sprintf('Post %d', $index + 1), $draft, $connected, $found)];
+                $errors = [...$errors, ...$this->draftErrors(sprintf('Post %d', $index + 1), $draft, $connected, $series)];
             }
             $all[] = $draft;
         }
@@ -72,7 +72,7 @@ class SocialDraftImporter
         return ['errors' => $errors, 'notes' => $this->notes($series, array_values(array_filter(array_column($all, 'key'))), $seriesPosts), 'drafts' => [] === $errors ? $drafts : []];
     }
 
-    // What is wrong across the posts of the file: a key or a source given twice, and a post without a key beside keyed ones, which would be made again at each import
+    // What is wrong across the posts of the file: a key given twice - a source may be shared, the same content going out on several networks or days - and a post without a key beside keyed ones, which would be made again at each import
     /**
      * @param list<array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: ?string, key: ?string, source: ?string}> $drafts
      *
@@ -81,7 +81,7 @@ class SocialDraftImporter
     private function fileErrors(array $drafts): array
     {
         $errors = [];
-        $seen = ['key' => [], 'source' => []];
+        $seen = ['key' => []];
         $keyed = [] !== array_filter(array_column($drafts, 'key'));
         foreach ($drafts as $index => $draft) {
             $name = sprintf('Post %d', $index + 1);
@@ -170,14 +170,14 @@ class SocialDraftImporter
         ];
     }
 
-    // What is wrong with a draft, $name saying which post of the file it is, $post the one a former import made for it
+    // What is wrong with a draft, $name saying which post of the file it is, $series the one a former import made of the file
     /**
      * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: ?string, key: ?string, source: ?string} $draft
      * @param list<string>                                                                                                                                                                       $connected
      *
      * @return list<string>
      */
-    private function draftErrors(string $name, array $draft, array $connected, ?SocialPost $post): array
+    private function draftErrors(string $name, array $draft, array $connected, ?SocialSeries $series): array
     {
         $errors = [];
         if (null === $draft['at']) {
@@ -196,8 +196,8 @@ class SocialDraftImporter
             $errors[] = sprintf('%s: the source "%s" is no content of this site, written "<source type>:<id>" (see c975l:social:contents).', $name, $draft['source']);
         } elseif (null !== $draft['source']) {
             [$type, $id] = explode(':', $draft['source'], 2);
-            if (!$this->socialPublisher->isFree($type, $id, $post)) {
-                $errors[] = sprintf('%s: the source "%s" is already held by a post or went out lately (see c975l:social:contents).', $name, $draft['source']);
+            if ($this->socialPublisher->isHeldOutside($type, $id, $series)) {
+                $errors[] = sprintf('%s: the source "%s" is already held by a post to come of another series (see c975l:social:contents).', $name, $draft['source']);
             }
         }
         if (null !== $draft['media'] && !is_file($draft['media'])) {

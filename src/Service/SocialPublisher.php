@@ -18,6 +18,7 @@ use c975L\SocialBundle\Contract\ProfileResharePublisherInterface;
 use c975L\SocialBundle\Contract\StoryPublisherInterface;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
+use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Model\MediaRules;
 use c975L\SocialBundle\Model\PostMedia;
@@ -281,6 +282,14 @@ class SocialPublisher
         }
 
         return null;
+    }
+
+    // Whether a content is held by a post still to come outside a series - what an imported draft cannot take, the posts of its own file sharing it at will and a content gone out being posted again when a person chose it
+    public function isHeldOutside(string $sourceType, string $sourceId, ?SocialSeries $series): bool
+    {
+        $now = new \DateTimeImmutable();
+
+        return array_any($this->postRepository->findBySourceIds($sourceType, [$sourceId]), static fn (SocialPost $post): bool => (null === $series || $post->getSeries() !== $series) && $post->getPlannedAt() > $now && !$post->hasGoneOut());
     }
 
     // Whether a content is still free: held by no post, nor gone out within its source's repeat delay - $except, the post asking, not counting when it holds it itself. A source not installed here has nothing free

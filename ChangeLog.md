@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.25.1
+
+Imported drafts: a source shared by several posts of the file
+
+- Imported drafts: several posts of a file sharing a source (31/10/2026)
+- Imported drafts: a source refused only when held by a post to come of another series (31/10/2026)
+- Added `SocialPublisher::isHeldOutside()` (31/10/2026)
+
 ## v2.25.0
 
 Imported drafts updated rather than made twice, series prolonged until a day

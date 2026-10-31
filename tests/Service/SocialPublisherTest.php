@@ -20,6 +20,7 @@ use c975L\SocialBundle\Contract\StoryPublisherInterface;
 use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
+use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Model\MediaRules;
 use c975L\SocialBundle\Model\PostMedia;
@@ -134,8 +135,9 @@ class SocialPublisherTest extends TestCase
      * @param array<string, string>              $lastBySourceType
      * @param list<SocialPost>                   $approved
      * @param array<string, string>              $written
+     * @param list<SocialPost>                   $holders
      */
-    private function createPublisher(array $sources, array $networks, array $lastBySourceType = [], string $page = '', array $approved = [], array $written = []): SocialPublisher
+    private function createPublisher(array $sources, array $networks, array $lastBySourceType = [], string $page = '', array $approved = [], array $written = [], array $holders = []): SocialPublisher
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnMap([
@@ -145,6 +147,7 @@ class SocialPublisherTest extends TestCase
         $repository = $this->createStub(SocialPostRepository::class);
         $repository->method('findLastCreatedAtBySourceType')->willReturn($lastBySourceType);
         $repository->method('findApproved')->willReturn($approved);
+        $repository->method('findBySourceIds')->willReturn($holders);
         $repository->method('findSourceIds')->willReturnCallback(function (string $type, ?\DateTimeImmutable $since): array {
             $this->asked[$type]['since'] = $since;
 
@@ -1048,5 +1051,21 @@ class SocialPublisherTest extends TestCase
         $this->assertFalse($publisher->isFree('gallery_media', '7'));
         $this->assertTrue($publisher->isFree('gallery_media', '7', $holder));
         $this->assertFalse($publisher->isFree('page', '1'));
+    }
+
+    // A content is held outside a series by a post of another one still to come; gone out, past, or of the series asking, it is not
+    public function testAContentIsHeldOutsideByAPostToComeOfAnotherSeries(): void
+    {
+        $series = new SocialSeries('Teasers', 3, 'daily', 1, [], 'text', 'Text', [], ['bluesky']);
+        $coming = new SocialPost('book', '8', 'Book 8', 'https://example.org/8', null, new \DateTimeImmutable('+1 day'));
+        $sent = new SocialPost('book', '8', 'Book 8', 'https://example.org/8', null, new \DateTimeImmutable('+1 day'));
+        new SocialPostTarget($sent, 'bluesky', '')->markPublished('id');
+        $past = new SocialPost('book', '8', 'Book 8', 'https://example.org/8', null, new \DateTimeImmutable('-1 day'));
+
+        $this->assertTrue($this->createPublisher([], [], holders: [$coming])->isHeldOutside('book', '8', null));
+        $this->assertTrue($this->createPublisher([], [], holders: [$coming])->isHeldOutside('book', '8', $series));
+        $coming->setSeries($series);
+        $this->assertFalse($this->createPublisher([], [], holders: [$coming])->isHeldOutside('book', '8', $series));
+        $this->assertFalse($this->createPublisher([], [], holders: [$sent, $past])->isHeldOutside('book', '8', null));
     }
 }

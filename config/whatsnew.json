@@ -21,6 +21,11 @@
                 "en": "A post without any picture is flagged before it goes out on a network asking for one, even when prepared from a content",
                 "fr": "Une publication sans aucune image est signalée avant de partir sur un réseau qui en exige une, même préparée depuis un contenu",
                 "es": "Una publicación sin ninguna imagen se señala antes de salir en una red que exige una, incluso preparada desde un contenido"
+            },
+            {
+                "en": "Several posts of an imported file can talk about the same content, on several networks or days",
+                "fr": "Plusieurs publications d'un fichier importé peuvent parler du même contenu, sur plusieurs réseaux ou plusieurs jours",
+                "es": "Varias publicaciones de un archivo importado pueden hablar del mismo contenido, en varias redes o varios días"
             }
         ]
     },
