@@ -6,7 +6,7 @@
     <div id="sl-links-preview">
         {% if links is not empty %}
             {% if intro is not empty %}
-                <div class="social-links-intro">{{ intro|raw }}</div>
+                <div class="social-links-intro">{{ intro|sanitize_html('c975l.rich') }}</div>
             {% endif %}
             <ul class="social-links social-links--{{ icon_style }}" data-social-links-preview-list>
                 {% for link in links %}

@@ -13,11 +13,14 @@ namespace c975L\SocialBundle\Tests\Form\Block;
 use c975L\SocialBundle\Form\Block\SocialLinkEntryType;
 use c975L\UiBundle\Form\IconPickerType;
 use c975L\UiBundle\Service\IconServiceInterface;
+use c975L\UiBundle\Validator\SafeUrl;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
+use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\PreloadedExtension;
 use Symfony\Component\Form\Test\TypeTestCase;
+use Symfony\Component\Validator\Validation;
 
 class SocialLinkEntryTypeTest extends TypeTestCase
 {
@@ -35,7 +38,7 @@ class SocialLinkEntryTypeTest extends TypeTestCase
         $iconService = $this->createStub(IconServiceInterface::class);
         $iconService->method('getIcons')->willReturn(['facebook' => 'icons/facebook.svg', 'alert' => 'icons/alert.svg']);
 
-        return [new PreloadedExtension([new IconPickerType($iconService)], [])];
+        return [new PreloadedExtension([new IconPickerType($iconService)], []), new ValidatorExtension(Validation::createValidator())];
     }
 
     public function testBuildFormAddsNetworkUrlCustomLabelAndCustomIconFields(): void
@@ -77,6 +80,14 @@ class SocialLinkEntryTypeTest extends TypeTestCase
         $urlField = $form->get('url');
         $this->assertInstanceOf(UrlType::class, $urlField->getConfig()->getType()->getInnerType());
         $this->assertTrue($urlField->getConfig()->getRequired());
+    }
+
+    // SafeUrl and not Url: the "email" network links to a mailto:
+    public function testUrlFieldIsASafeUrl(): void
+    {
+        $form = $this->factory->create(SocialLinkEntryType::class);
+
+        $this->assertInstanceOf(SafeUrl::class, $form->get('url')->getConfig()->getOption('constraints')[0]);
     }
 
     // Only used when "network" is left empty - see social_link_entry_form_theme.html.twig

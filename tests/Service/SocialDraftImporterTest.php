@@ -103,6 +103,27 @@ class SocialDraftImporterTest extends TestCase
         }
     }
 
+    // Written as they are on the post, whose link the networks and the shared calendar's feed carry: nothing but a web address, and no post made while one is wrong
+    public function testAUrlThatIsNoWebAddressRefusesTheFile(): void
+    {
+        $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 09:30';
+        foreach (['javascript:alert(1)', 'data:text/html,x', 'mailto:a@example.org', '/a/path', 'https://'] as $url) {
+            $read = $this->importer()->read(['title' => 'T', 'posts' => [['at' => $at, 'networks' => ['linkedin'], 'text' => 'One idea', 'url' => $url]]], $this->dir);
+
+            $this->assertSame(['Post 1: "url" is not an http or https address.'], $read['errors'], $url);
+            $this->assertSame([], $read['drafts'], $url);
+        }
+    }
+
+    public function testAWebAddressPasses(): void
+    {
+        $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 09:30';
+        $read = $this->importer()->read(['title' => 'T', 'posts' => [['at' => $at, 'networks' => ['linkedin'], 'text' => 'One idea', 'url' => 'https://example.org/page']]], $this->dir);
+
+        $this->assertSame([], $read['errors']);
+        $this->assertSame('https://example.org/page', $read['drafts'][0]['url']);
+    }
+
     // The drafts make one imported series, each on its own networks alone, with its text, its picture and its first comment
     public function testTheDraftsMakeOneImportedSeries(): void
     {

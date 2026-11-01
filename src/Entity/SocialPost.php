@@ -17,6 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // One content posted, whatever the networks: what the scheduled run prepared, with one target per network it goes to (see SocialPostTarget). Its rows are what keeps a content from being offered again - whatever its targets became, a post prepared is a content taken. Title, url and image url are kept as they were when prepared: a post made from a page's Open Graph tags has no source to read them from again, and the list names each post by them
 #[ORM\Entity(repositoryClass: SocialPostRepository::class)]
@@ -92,7 +93,9 @@ class SocialPost implements \Stringable
         #[ORM\Column(length: 64)]
         private string $sourceId,
         string $title,
+        // What goes out to the networks, so absolute - no top-level domain demanded, a source's own address on a local site having none, on a screen where that field cannot be retouched
         #[ORM\Column(length: 2048)]
+        #[Assert\Url(protocols: ['http', 'https'], requireTld: false)]
         private string $url,
         #[ORM\Column(length: 2048, nullable: true)]
         private ?string $imageUrl,

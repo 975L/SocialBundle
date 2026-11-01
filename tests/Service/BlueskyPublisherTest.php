@@ -149,9 +149,9 @@ class BlueskyPublisherTest extends TestCase
 
     public function testTheImageOfAContentReadFromAPageIsDownloaded(): void
     {
-        $this->createPublisher(remoteImage: $this->png())->publish('Hello', new SocialContent('1', 'Title', 'https://example.org', imageUrl: 'https://example.org/og.png'));
+        $this->createPublisher(remoteImage: $this->png())->publish('Hello', new SocialContent('1', 'Title', 'https://example.org', imageUrl: 'https://93.184.216.34/og.png'));
 
-        $this->assertSame('https://example.org/og.png', $this->requests[0]['url']);
+        $this->assertSame('https://93.184.216.34/og.png', $this->requests[0]['url']);
         $this->assertSame(['width' => 4, 'height' => 2], $this->postedRecord()['embed']['images'][0]['aspectRatio']);
     }
 
@@ -172,7 +172,7 @@ class BlueskyPublisherTest extends TestCase
         $second = $this->tempFile('second');
 
         try {
-            $this->createPublisher()->publish('Hello', new SocialContent('1', 'Title', 'https://example.org', imageUrl: 'https://example.org/og.png'), [
+            $this->createPublisher()->publish('Hello', new SocialContent('1', 'Title', 'https://example.org', imageUrl: 'https://93.184.216.34/og.png'), [
                 new PostMedia($first, 'https://example.org/1.jpg', 'image/jpeg', width: 2048, height: 1536, alt: 'Lake'),
                 new PostMedia($second, 'https://example.org/2.jpg', 'image/jpeg'),
             ]);

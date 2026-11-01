@@ -49,7 +49,7 @@ class SocialImageExporter
         return null === $bytes || !$this->isSquare() ? $bytes : $this->toJpeg($bytes, 1.0, 1.0, self::SQUARE);
     }
 
-    // The image's bytes, read from disk when the content has it there, downloaded otherwise (a post prepared from a page's Open Graph tags) - null when there is none, or none that answers
+    // The image's bytes, read from disk when the content has it there, downloaded otherwise (a post prepared from a page's Open Graph tags) - null when there is none, or none that answers, and throwing on an address off the public web
     public function read(SocialContent $content): ?string
     {
         if (null !== $content->imagePath && is_file($content->imagePath)) {
@@ -60,7 +60,7 @@ class SocialImageExporter
             return null;
         }
 
-        $response = $this->httpClient->request('GET', $content->imageUrl, ['timeout' => 30]);
+        $response = PublicWeb::get($this->httpClient, $content->imageUrl);
 
         return 200 === $response->getStatusCode() ? $response->getContent() : null;
     }

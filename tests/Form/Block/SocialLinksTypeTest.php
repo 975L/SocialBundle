@@ -19,8 +19,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\PreloadedExtension;
 use Symfony\Component\Form\Test\TypeTestCase;
+use Symfony\Component\Validator\Validation;
 
 class SocialLinksTypeTest extends TypeTestCase
 {
@@ -38,7 +40,7 @@ class SocialLinksTypeTest extends TypeTestCase
         $iconService = $this->createStub(IconServiceInterface::class);
         $iconService->method('getIcons')->willReturn(['facebook' => 'icons/facebook.svg']);
 
-        return [new PreloadedExtension([new IconPickerType($iconService)], [])];
+        return [new PreloadedExtension([new IconPickerType($iconService)], []), new ValidatorExtension(Validation::createValidator())];
     }
 
     public function testBuildFormAddsIntroIconStyleDisplayLabelAndLinksFields(): void

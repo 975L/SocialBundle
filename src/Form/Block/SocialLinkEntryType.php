@@ -11,6 +11,7 @@
 namespace c975L\SocialBundle\Form\Block;
 
 use c975L\UiBundle\Form\IconPickerType;
+use c975L\UiBundle\Validator\SafeUrl;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -42,8 +43,10 @@ class SocialLinkEntryType extends AbstractType
                 // Read by assets/js/social-link-network-toggle.js to show/hide customLabel/customIcon
                 'attr' => ['data-social-link-network-select' => true],
             ])
+            // SafeUrl and not Url: the "email" network links to a mailto:
             ->add('url', UrlType::class, [
                 'label' => 'label.url',
+                'constraints' => [new SafeUrl()],
             ])
             // Written by the drag handle, never typed (see UiBundle's ea-sortable.js) - read back and dropped on submit by SocialLinksType (see UiBundle's PositionSorter), the array order being what is stored
             ->add('position', HiddenType::class, [

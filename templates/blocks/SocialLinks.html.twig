@@ -2,9 +2,9 @@
 {% if links is defined and links is not empty %}
     {# A <div>, not a <section>: this block carries no heading of its own, and a headingless <section> is invalid HTML (same fallback as UiBundle's own block components). It owns the vertical room above it, see sass/_social.scss #}
     <div class="social-links-block">
-        {# Rich text (TrixEditorType), rendered raw; no wrapper at all when left empty #}
+        {# Rich text (TrixEditorType), sanitized; no wrapper at all when left empty #}
         {% if intro is defined and intro is not empty %}
-            <div class="social-links-intro">{{ intro|raw }}</div>
+            <div class="social-links-intro">{{ intro|sanitize_html('c975l.rich') }}</div>
         {% endif %}
         {# The one style showing no glyph at all: the network's name is the link, for a row set as words rather than as icons #}
         {% set textOnly = iconStyle|default('minimal') == 'text' %}

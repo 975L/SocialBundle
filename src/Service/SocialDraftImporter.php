@@ -200,8 +200,24 @@ class SocialDraftImporter
                 $errors[] = sprintf('%s: the source "%s" is already held by a post to come of another series (see c975l:social:contents).', $name, $draft['source']);
             }
         }
+
+        return [...$errors, ...$this->attachedErrors($name, $draft)];
+    }
+
+    // What is wrong with what a draft points at: a picture that is not there, a link no post may hold
+    /**
+     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: ?string, key: ?string, source: ?string} $draft
+     *
+     * @return list<string>
+     */
+    private function attachedErrors(string $name, array $draft): array
+    {
+        $errors = [];
         if (null !== $draft['media'] && !is_file($draft['media'])) {
             $errors[] = sprintf('%s: the media "%s" does not exist.', $name, $draft['media']);
+        }
+        if (null !== $draft['url'] && !PublicWeb::isAddress($draft['url'])) {
+            $errors[] = $name . ': "url" is not an http or https address.';
         }
 
         return $errors;

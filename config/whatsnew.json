@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-11-01",
+        "description": [
+            {
+                "en": "A post prepared from a page, and the image it names, now only read public web addresses.",
+                "fr": "Un post préparé depuis une page, et l'image qu'elle indique, ne lisent désormais que des adresses publiques du web.",
+                "es": "Una publicación preparada desde una página, y la imagen que esta indica, solo leen ahora direcciones públicas de la web."
+            },
+            {
+                "en": "The links block now refuses an address that would run code instead of opening a page.",
+                "fr": "Le bloc de liens refuse désormais une adresse qui exécuterait du code au lieu d'ouvrir une page.",
+                "es": "El bloque de enlaces rechaza ahora una dirección que ejecutaría código en lugar de abrir una página."
+            }
+        ]
+    },
+    {
         "date": "2026-10-31",
         "description": [
             {

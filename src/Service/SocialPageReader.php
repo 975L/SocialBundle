@@ -22,10 +22,14 @@ class SocialPageReader
     ) {
     }
 
-    // Throws when the page does not answer, or carries no title at all: a post with nothing to say is not worth preparing
+    // Throws when the address could not be a post's link, when the page does not answer, or carries no title at all: a post with nothing to say is not worth preparing. The page chooses its own address and image only when a post may hold them, the requested address standing otherwise and no image at all - a relative one is not resolved
     public function read(string $url): SocialContent
     {
-        $response = $this->httpClient->request('GET', $url, ['timeout' => 30]);
+        if (!PublicWeb::isAddress($url)) {
+            throw new \RuntimeException(sprintf('The address %s cannot be the link of a post.', $url));
+        }
+
+        $response = PublicWeb::get($this->httpClient, $url);
         if (200 !== $response->getStatusCode()) {
             throw new \RuntimeException(sprintf('The page %s answered %d.', $url, $response->getStatusCode()));
         }
@@ -35,11 +39,14 @@ class SocialPageReader
             throw new \RuntimeException(sprintf('The page %s carries no title.', $url));
         }
 
+        $ownUrl = $tags['og:url'] ?? '';
+        $image = $tags['og:image'] ?? '';
+
         return new SocialContent(
             sourceId: sha1($url),
             title: $tags['title'],
-            url: $tags['og:url'] ?? $url,
-            imageUrl: $tags['og:image'] ?? null,
+            url: PublicWeb::isAddress($ownUrl) ? $ownUrl : $url,
+            imageUrl: PublicWeb::isAddress($image) ? $image : null,
             imageAlt: $tags['og:image:alt'] ?? null,
             variables: array_filter(['description' => $tags['og:description'] ?? $tags['description'] ?? '']),
         );

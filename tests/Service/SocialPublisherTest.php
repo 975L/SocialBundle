@@ -349,12 +349,12 @@ class SocialPublisherTest extends TestCase
         $publisher = $this->createPublisher([], [$this->createNetwork('bluesky')], page: $page);
         $at = new \DateTimeImmutable('2026-10-06 19:00');
 
-        $report = $publisher->prepareUrl('https://example.org/histoires/loup', $at);
+        $report = $publisher->prepareUrl('https://93.184.216.34/histoires/loup', $at);
 
         $this->assertSame(['bluesky' => ['status' => 'draft', 'message' => '']], $report);
         $post = $this->preparedPost();
         $this->assertSame(SocialPost::SOURCE_URL, $post->getSourceType());
-        $this->assertSame(sha1('https://example.org/histoires/loup'), $post->getSourceId());
+        $this->assertSame(sha1('https://93.184.216.34/histoires/loup'), $post->getSourceId());
         $this->assertSame('https://example.org/loup.png', $post->getImageUrl());
         $this->assertEquals($at, $post->getPlannedAt());
         $this->assertSame(SocialPostStatus::Draft, $post->getTargets()->first()->getStatus());
@@ -366,7 +366,7 @@ class SocialPublisherTest extends TestCase
     {
         $this->expectExceptionMessageIsOrContains('No network is connected yet');
 
-        $this->createPublisher([], [$this->createNetwork('bluesky', configured: false)])->prepareUrl('https://example.org/page', new \DateTimeImmutable('+1 day'));
+        $this->createPublisher([], [$this->createNetwork('bluesky', configured: false)])->prepareUrl('https://93.184.216.34/page', new \DateTimeImmutable('+1 day'));
     }
 
     // What makes a dry run safe to try before any credential is plugged in: nothing written, nothing sent, the AI not asked, the template's payload shown
@@ -375,10 +375,10 @@ class SocialPublisherTest extends TestCase
         $page = '<html><head><meta property="og:title" content="Le loup"></head></html>';
         $publisher = $this->createPublisher([], [$this->createNetwork('bluesky')], page: $page, written: ['bluesky' => 'Written by the AI']);
 
-        $report = $publisher->prepareUrl('https://example.org/loup', new \DateTimeImmutable('+1 day'), true);
+        $report = $publisher->prepareUrl('https://93.184.216.34/loup', new \DateTimeImmutable('+1 day'), true);
 
         $this->assertSame(SocialPublisher::DRY_RUN, $report['bluesky']['status']);
-        $this->assertSame("Le loup\n\nhttps://example.org/loup", $report['bluesky']['payload']['text']);
+        $this->assertSame("Le loup\n\nhttps://93.184.216.34/loup", $report['bluesky']['payload']['text']);
         $this->assertSame([], $this->persisted);
         $this->assertSame([], $this->published);
         $this->assertArrayNotHasKey('writer', $this->asked);
@@ -389,7 +389,7 @@ class SocialPublisherTest extends TestCase
     {
         $publisher = $this->createPublisher([], [$this->createNetwork('bluesky', configured: false)], page: '<html><head><meta property="og:title" content="Page"></head></html>');
 
-        $report = $publisher->prepareUrl('https://example.org/page', new \DateTimeImmutable('+1 day'), true);
+        $report = $publisher->prepareUrl('https://93.184.216.34/page', new \DateTimeImmutable('+1 day'), true);
 
         $this->assertSame('not configured', $report['bluesky']['message']);
     }

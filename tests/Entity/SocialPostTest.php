@@ -16,9 +16,22 @@ use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\UiBundle\Model\SocialContent;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Validator\Validation;
 
 class SocialPostTest extends TestCase
 {
+    // Sent to the networks and the shared calendar's feed: nothing but a web address, a post linking nowhere staying valid
+    public function testTheUrlIsAnAbsoluteWebAddress(): void
+    {
+        $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
+
+        $this->assertCount(0, $validator->validatePropertyValue(SocialPost::class, 'url', 'https://example.org/42'));
+        $this->assertCount(0, $validator->validatePropertyValue(SocialPost::class, 'url', 'http://localhost:8000/42'));
+        $this->assertCount(0, $validator->validatePropertyValue(SocialPost::class, 'url', ''));
+        $this->assertCount(1, $validator->validatePropertyValue(SocialPost::class, 'url', 'javascript:alert(1)'));
+        $this->assertCount(1, $validator->validatePropertyValue(SocialPost::class, 'url', '/pages/42'));
+    }
+
     private function post(): SocialPost
     {
         $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable('2026-10-05 10:00'));

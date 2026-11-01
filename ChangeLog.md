@@ -1,5 +1,19 @@
 # Changelog
 
+## v2.25.2
+
+Pages and images read on the public web alone, intros sanitized
+
+- `PublicWeb`: `SocialPageReader` and `SocialImageExporter` read http and https only, through `NoPrivateNetworkHttpClient`, redirects included (01/11/2026)
+- `SocialLinks.html.twig` and its back-office preview: the intro printed through `sanitize_html('c975l.rich')` rather than `|raw` (01/11/2026)
+- `SocialLinkEntryType::url`: `SafeUrl` (01/11/2026)
+- `SocialPost::$url`: `Assert\Url` http and https (01/11/2026)
+- `SocialPageReader`: an `og:url` or `og:image` no post may hold ignored (01/11/2026)
+- `SocialPageReader`: an address no post may link to refused before it is read (01/11/2026)
+- `c975l:social:draft`: a `url` not http or https refuses the file (01/11/2026)
+- Added `PublicWeb::isAddress()` (01/11/2026)
+- Requires `c975l/core-bundle` ^1.85.0, `symfony/http-client` and `symfony/validator` (01/11/2026)
+
 ## v2.25.1
 
 Imported drafts: a source shared by several posts of the file
