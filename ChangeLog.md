@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.26.1
+
+Corrected stale ci.sh comment
+
+- Corrected `bin/ci.sh` comment and message: vendor follows composer.lock, no symlinks (02/11/2026)
+
 ## v2.26.0
 
 LinkedIn: the token of a Page renewed on its own
