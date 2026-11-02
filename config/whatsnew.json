@@ -11,6 +11,11 @@
                 "en": "The TikTok connection follows TikTok's new rules from December 1: it keeps renewing itself, with nothing to do.",
                 "fr": "La connexion TikTok suit les nouvelles règles de TikTok du 1er décembre : elle continue de se renouveler toute seule, sans rien à faire.",
                 "es": "La conexión de TikTok sigue las nuevas reglas de TikTok del 1 de diciembre: sigue renovándose sola, sin nada que hacer."
+            },
+            {
+                "en": "A series can draw on contents tied to a date, such as anniversaries: each post takes the content of its own day, and a day without any is simply skipped.",
+                "fr": "Une série peut puiser dans des contenus liés à une date, comme des anniversaires : chaque post prend le contenu de son jour, et un jour sans contenu est simplement passé.",
+                "es": "Una serie puede usar contenidos ligados a una fecha, como aniversarios: cada publicación toma el contenido de su día, y un día sin contenido simplemente se omite."
             }
         ]
     },

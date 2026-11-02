@@ -648,7 +648,7 @@
             </trans-unit>
             <trans-unit id="a1xocww">
                 <source>help.social_series_sources</source>
-                <target>Con los contenidos del sitio, nada marcado los toma todos, por turnos. Con un texto o la IA, cada publicación toma una foto al azar entre los marcados, reservada para ella y modificable en su ficha.</target>
+                <target>Con los contenidos del sitio, nada marcado los toma todos, por turnos. Con un texto o la IA, cada publicación toma una foto al azar entre los marcados, reservada para ella y modificable en su ficha. Un contenido ligado a una fecha solo sale ese día, y un día sin contenido se omite.</target>
             </trans-unit>
             <trans-unit id="J69dshv">
                 <source>help.social_series_story</source>

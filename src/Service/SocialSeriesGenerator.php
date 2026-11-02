@@ -38,6 +38,9 @@ class SocialSeriesGenerator
     // A series is generated again once it has gone out: neither a pace nor a gap longer than a month
     public const int MAX_INTERVAL = 31;
 
+    // How far a prolongation reading dates looks past days without content when no end is given: every date of the year has then been asked
+    private const string DATED_REACH = '+1 year';
+
     public function __construct(
         private readonly SocialPublisher $socialPublisher,
         private readonly SocialPostWriter $writer,
@@ -112,14 +115,31 @@ class SocialSeriesGenerator
         return $posts;
     }
 
-    // As many drafts again, from the moment after the series' last post, at its pace - none for a series whose posts were all deleted, and none past $until when given. Its ending is announced again once this new end comes near
+    // As many drafts again, from the moment after the series' last post, at its pace - none for a series whose posts were all deleted, and none past $until when given. Its ending is announced again once this new end comes near. A series reading dates goes on past a stretch without content, which would otherwise stop it for good, its last post staying the same - but not past an AI giving no text, whose contents would be lost
     /** @return list<SocialPost> */
     public function prolong(SocialSeries $series, ?\DateTimeImmutable $until = null): array
     {
         $last = $this->seriesRepository->findLastPlannedAt($series);
-        $moments = null === $last ? [] : $this->prolongMoments($series, $last, $until);
+        if (null === $last) {
+            return [];
+        }
 
-        return [] === $moments ? [] : $this->make($series, $moments);
+        $readsDates = $this->readsDates($series);
+        $limit = $until ?? ($readsDates ? $last->modify(self::DATED_REACH) : null);
+        $textMissing = false;
+        do {
+            $moments = $this->prolongMoments($series, $last, $limit);
+            $posts = [] === $moments ? [] : $this->make($series, $moments, $textMissing);
+            $last = [] === $moments ? $last : end($moments);
+        } while ($readsDates && !$textMissing && [] === $posts && [] !== $moments);
+
+        return $posts;
+    }
+
+    // Whether the series' contents depend on the date of each draft: drawn from its sources, one of them choosing by date
+    private function readsDates(SocialSeries $series): bool
+    {
+        return (self::MODE_SOURCE === $series->getMode() || [] !== $series->getSources()) && $this->socialPublisher->hasDatedSource($series->getSources());
     }
 
     // The moments a prolongation from $last takes, at the series' pace, none past $until when given - none for an imported series, its next posts being imported. Nothing is written, so a dry run counts them
@@ -140,13 +160,13 @@ class SocialSeriesGenerator
         return null === $until ? $moments : array_values(array_filter($moments, static fn (\DateTimeImmutable $moment): bool => $moment <= $until));
     }
 
-    // The drafts of the series at its moments, on its networks - fewer than asked when the AI answers fewer texts or the sources run out. With sources picked, each draft written from a text takes the picture of their next content, reserved as a draft of its own is; the series' media goes with every draft instead
+    // The drafts of the series at its moments, on its networks - fewer than asked when the AI answers fewer texts or the sources run out, a dated source only passing over the moments without content. With sources picked, each draft written from a text takes the picture of their next content, reserved as a draft of its own is; the series' media goes with every draft instead. $textMissing says the AI left a draft without a text
     /**
      * @param list<\DateTimeImmutable> $moments
      *
      * @return list<SocialPost>
      */
-    private function make(SocialSeries $series, array $moments): array
+    private function make(SocialSeries $series, array $moments, bool &$textMissing = false): array
     {
         $networks = $series->getNetworks();
         $sources = $series->getSources();
@@ -163,18 +183,29 @@ class SocialSeriesGenerator
             return $posts;
         }
 
-        $texts = self::MODE_AI === $series->getMode() ? $this->writer->variants($series->getText(), \count($moments), $this->shortestLength($networks)) : array_fill(0, \count($moments), $series->getText());
         $media = $series->getMedia();
+        $passesOver = $this->readsDates($series);
+        $texts = null;
 
         $posts = [];
-        foreach (array_slice($moments, 0, \count($texts)) as $i => $moment) {
+        foreach ($moments as $moment) {
             $post = [] === $sources ? $this->socialPublisher->createManual($moment) : $this->socialPublisher->createFromSources($moment, $sources);
             if (null === $post) {
+                if ($passesOver) {
+                    continue;
+                }
+                break;
+            }
+            // Asked of the AI once a draft exists, a stretch without content costing no call
+            $texts ??= self::MODE_AI === $series->getMode() ? $this->writer->variants($series->getText(), \count($moments), $this->shortestLength($networks)) : array_fill(0, \count($moments), $series->getText());
+            $text = $texts[\count($posts)] ?? null;
+            if (null === $text) {
+                $textMissing = true;
                 break;
             }
             $post->setSeries($series);
             $post->setNetworks($networks);
-            $post->setText($texts[$i]);
+            $post->setText($text);
             $this->socialPublisher->rewriteTargets($post);
             $this->socialPublisher->addTargets($post, $post->takeAddedNetworks());
             $this->tickStories($series, $post);

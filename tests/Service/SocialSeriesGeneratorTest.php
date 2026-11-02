@@ -27,6 +27,8 @@ class SocialSeriesGeneratorTest extends TestCase
     /** @var list<array{0: list<\DateTimeImmutable>, 1: list<string>}> */
     private array $drafted = [];
 
+    private int $aiCalls = 0;
+
     // A publisher writing each post's texts from its own, Bluesky, LinkedIn and Instagram connected - Instagram taking stories
     private function generator(array $variants = [], ?\DateTimeImmutable $lastPlannedAt = null): SocialSeriesGenerator
     {
@@ -61,6 +63,36 @@ class SocialSeriesGeneratorTest extends TestCase
 
         $writer = $this->createStub(SocialPostWriter::class);
         $writer->method('variants')->willReturnCallback(static fn (string $instruction, int $count, int $maxLength): array => array_map(static fn (string $text): string => $text . ' ' . $maxLength, $variants));
+
+        $seriesRepository = $this->createStub(SocialSeriesRepository::class);
+        $seriesRepository->method('findLastPlannedAt')->willReturn($lastPlannedAt);
+
+        return new SocialSeriesGenerator($publisher, $writer, new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $seriesRepository, sys_get_temp_dir());
+    }
+
+    // A publisher whose only source is dated, holding contents on the days given - the moments it was asked and the AI's calls being recorded
+    /**
+     * @param list<string> $days
+     * @param list<string> $variants
+     */
+    private function datedGenerator(array $days, \DateTimeImmutable $lastPlannedAt, array $variants = []): SocialSeriesGenerator
+    {
+        $held = static fn (\DateTimeImmutable $at): bool => \in_array($at->format('Y-m-d'), $days, true);
+        $publisher = $this->createStub(SocialPublisher::class);
+        $publisher->method('hasDatedSource')->willReturn(true);
+        $publisher->method('createFromSources')->willReturnCallback(static fn (\DateTimeImmutable $at): ?SocialPost => $held($at) ? new SocialPost('dated', $at->format('Ymd'), 'Title', 'https://example.org/item', null, $at) : null);
+        $publisher->method('prepareDrafts')->willReturnCallback(function (array $moments) use ($held): array {
+            $this->drafted[] = [$moments, []];
+
+            return array_values(array_map(static fn (\DateTimeImmutable $at): SocialPost => new SocialPost('dated', $at->format('Ymd'), 'Title', 'https://example.org/item', null, $at), array_filter($moments, $held)));
+        });
+
+        $writer = $this->createStub(SocialPostWriter::class);
+        $writer->method('variants')->willReturnCallback(function () use ($variants): array {
+            ++$this->aiCalls;
+
+            return $variants;
+        });
 
         $seriesRepository = $this->createStub(SocialSeriesRepository::class);
         $seriesRepository->method('findLastPlannedAt')->willReturn($lastPlannedAt);
@@ -231,5 +263,75 @@ class SocialSeriesGeneratorTest extends TestCase
     public function testASeriesWithoutPostsIsNotProlonged(): void
     {
         $this->assertSame([], $this->generator()->prolong($this->series(3, SocialSeriesGenerator::MODE_TEXT, ['bluesky'], 'Soir')));
+    }
+
+    // A series of one text with a dated source passes over the days without content, each draft taking the next text
+    public function testATextSeriesPassesOverTheDaysWithoutContent(): void
+    {
+        $last = new \DateTimeImmutable('2026-11-01 09:00');
+        $series = $this->series(3, SocialSeriesGenerator::MODE_AI, ['bluesky'], 'Instruction', ['dated']);
+
+        $posts = $this->datedGenerator(['2026-11-02', '2026-11-04'], $last, ['One', 'Two', 'Three'])->prolong($series);
+
+        $this->assertSame(['20261102', '20261104'], array_map(static fn (SocialPost $post): string => $post->getSourceId(), $posts));
+        $this->assertSame(['One', 'Two'], array_map(static fn (SocialPost $post): ?string => $post->getText(), $posts));
+        $this->assertSame(1, $this->aiCalls);
+    }
+
+    // Prolonged across a whole stretch without content, a series reading dates reaches the next content: its last post would otherwise stay the same and stop it for good
+    public function testADatedProlongationGoesOnPastAStretchWithoutContent(): void
+    {
+        $series = $this->series(2, SocialSeriesGenerator::MODE_SOURCE, ['bluesky'], '', ['dated']);
+
+        $posts = $this->datedGenerator(['2026-11-20'], new \DateTimeImmutable('2026-11-07 09:00'))->prolong($series);
+
+        $this->assertSame(['20261120'], array_map(static fn (SocialPost $post): string => $post->getSourceId(), $posts));
+        $this->assertCount(7, $this->drafted);
+        $this->assertEquals(new \DateTimeImmutable('2026-11-08 09:00'), $this->drafted[0][0][0]);
+        $this->assertEquals(new \DateTimeImmutable('2026-11-10 09:00'), $this->drafted[1][0][0]);
+    }
+
+    // Past the day given a dated prolongation makes nothing and asks nothing, and without one it gives up after a year: nothing goes on for ever
+    public function testADatedProlongationEnds(): void
+    {
+        $series = $this->series(5, SocialSeriesGenerator::MODE_SOURCE, ['bluesky'], '', ['dated'], interval: 7);
+        $last = new \DateTimeImmutable('2026-11-07 09:00');
+
+        $this->assertSame([], $this->datedGenerator(['2026-12-26'], $last)->prolong($series, new \DateTimeImmutable('2026-12-15 23:59:59')));
+        $this->assertLessThanOrEqual(new \DateTimeImmutable('2026-12-15 23:59:59'), end($this->drafted)[0][\count(end($this->drafted)[0]) - 1]);
+
+        $this->drafted = [];
+        $this->assertSame([], $this->datedGenerator([], $last)->prolong($series));
+        $this->assertLessThanOrEqual($last->modify('+1 year'), end($this->drafted)[0][\count(end($this->drafted)[0]) - 1]);
+    }
+
+    // A stretch without content costs the AI nothing: no draft, no text to ask for
+    public function testAStretchWithoutContentCallsNoAi(): void
+    {
+        $series = $this->series(3, SocialSeriesGenerator::MODE_AI, ['bluesky'], 'Instruction', ['dated']);
+
+        $this->assertSame([], $this->datedGenerator([], new \DateTimeImmutable('2026-11-07 09:00'), ['One'])->prolong($series));
+        $this->assertSame(0, $this->aiCalls);
+    }
+
+    // An AI giving no text ends the prolongation at the first content found: the series would otherwise jump past it, calling the AI at each content further on
+    public function testADatedProlongationStopsWhenTheAiGivesNoText(): void
+    {
+        $series = $this->series(2, SocialSeriesGenerator::MODE_AI, ['bluesky'], 'Instruction', ['dated']);
+
+        $this->assertSame([], $this->datedGenerator(['2026-11-08', '2026-11-20'], new \DateTimeImmutable('2026-11-07 09:00'))->prolong($series));
+        $this->assertSame(1, $this->aiCalls);
+    }
+
+    // A series without a dated source asks one stretch only, what ran out having run out, and stops at the first moment without content
+    public function testASeriesWithoutDatesStopsAsItDid(): void
+    {
+        $series = $this->series(2, SocialSeriesGenerator::MODE_SOURCE, ['bluesky'], '', ['gallery_media']);
+        $this->assertSame([], $this->generator(lastPlannedAt: new \DateTimeImmutable('2026-11-07 09:00'))->prolong($series));
+        $this->assertCount(1, $this->drafted);
+
+        // Two photographs left, then the third moment ends the series and the fourth is never reached
+        $posts = $this->generator()->generate($this->series(4, SocialSeriesGenerator::MODE_TEXT, ['bluesky'], 'Soir', ['gallery_media']), new \DateTimeImmutable('2026-11-01 09:00'));
+        $this->assertCount(2, $posts);
     }
 }

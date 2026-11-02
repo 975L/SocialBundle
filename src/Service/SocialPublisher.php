@@ -24,6 +24,7 @@ use c975L\SocialBundle\Model\MediaRules;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\UiBundle\Contract\BrowsableSocialContentSourceInterface;
+use c975L\UiBundle\Contract\DatedSocialContentSourceInterface;
 use c975L\UiBundle\Contract\ScopedSocialContentSourceInterface;
 use c975L\UiBundle\Contract\SocialContentSourceInterface;
 use c975L\UiBundle\Model\SocialContent;
@@ -113,7 +114,7 @@ class SocialPublisher
         return $report;
     }
 
-    // One draft per moment, the next content each time, $sources narrowing them to some sources or groups of them (the keys of getSourceChoices()) - never sent until approved. Fewer when the contents run out, none while no network is connected
+    // One draft per moment, the next content each time, $sources narrowing them to some sources or groups of them (the keys of getSourceChoices()) - never sent until approved. Fewer when the contents run out, a dated source only passing over the moments without content, none while no network is connected
     /**
      * @param list<\DateTimeImmutable> $moments
      * @param list<string>             $sources
@@ -123,9 +124,13 @@ class SocialPublisher
     public function prepareDrafts(array $moments, array $sources = []): array
     {
         $posts = [];
+        $passesOver = $this->hasDatedSource($sources);
         foreach ($moments as $moment) {
-            [$sourceType, $content] = $this->hasConnectedNetwork() ? $this->nextContent($this->scopesOf($sources)) : ['', null];
+            [$sourceType, $content] = $this->hasConnectedNetwork() ? $this->nextContent($this->scopesOf($sources), $moment) : ['', null];
             if (null === $content) {
+                if ($passesOver) {
+                    continue;
+                }
                 break;
             }
 
@@ -263,11 +268,20 @@ class SocialPublisher
         return $post;
     }
 
-    // A post planned at $at from the next content of $sources (see prepareDrafts()), with no network yet: its text and its networks are its caller's - null when no network is connected or the sources ran out
+    // Whether $sources (see prepareDrafts()) ask a source choosing by date, whose empty day says nothing of the days after it
+    /** @param list<string> $sources */
+    public function hasDatedSource(array $sources): bool
+    {
+        $scopes = $this->scopesOf($sources);
+
+        return array_any(iterator_to_array($this->sources, false), static fn (SocialContentSourceInterface $source): bool => $source instanceof DatedSocialContentSourceInterface && ([] === $scopes || isset($scopes[$source->getSourceType()])));
+    }
+
+    // A post planned at $at from the next content of $sources (see prepareDrafts()), with no network yet: its text and its networks are its caller's - null when no network is connected, the sources ran out or hold nothing for $at
     /** @param list<string> $sources */
     public function createFromSources(\DateTimeImmutable $at, array $sources): ?SocialPost
     {
-        [$sourceType, $content] = $this->hasConnectedNetwork() ? $this->nextContent($this->scopesOf($sources)) : ['', null];
+        [$sourceType, $content] = $this->hasConnectedNetwork() ? $this->nextContent($this->scopesOf($sources), $at) : ['', null];
 
         return null === $content ? null : new SocialPost($sourceType, $content->sourceId, $content->title, $content->url, $content->imageUrl, $at)->setLocale($content->locale);
     }
@@ -359,7 +373,7 @@ class SocialPublisher
         return $source?->findContents($this->excludedIds($source), '' === $scope ? [] : [$scope], $limit) ?? [];
     }
 
-    // Another content drawn for the post in the group of the one it holds, its texts written again from it - false when none is left there
+    // Another content drawn for the post in the group of the one it holds, or for its planned date from a dated source, its texts written again from it - false when none is left there
     public function redraw(SocialPost $post): bool
     {
         $source = $this->browsableSourceOf($post);
@@ -368,11 +382,8 @@ class SocialPublisher
         }
 
         $scope = $source->getContentScope($post->getSourceId());
-        $content = $source instanceof ScopedSocialContentSourceInterface && null !== $scope
-            ? $source->getNextScopedContent($this->excludedIds($source), [$scope])
-            : $source->getNextContent($this->excludedIds($source));
 
-        return $this->switchContent($post, $content);
+        return $this->switchContent($post, $this->askSource($source, $this->excludedIds($source), null === $scope ? [] : [$scope], $post->getPlannedAt()));
     }
 
     // The content chosen for the post, only among those still free, its texts written again from it - an id typed by hand, or taken meanwhile, changing nothing
@@ -496,17 +507,17 @@ class SocialPublisher
         return $report;
     }
 
-    // The next content, asked of the source that had a post least recently first, so a site with photos and stories alternates between them. $scopes narrows it to some sources (see scopesOf())
+    // The next content, asked of the source that had a post least recently first, so a site with photos and stories alternates between them, a source with nothing for $at leaving the moment to the next one. At equal recency a dated source goes first, what it has being good for this date alone. $scopes narrows it to some sources (see scopesOf())
     /**
      * @param array<string, list<string>> $scopes
      *
      * @return array{0: string, 1: ?SocialContent}
      */
-    private function nextContent(array $scopes = []): array
+    private function nextContent(array $scopes = [], ?\DateTimeImmutable $at = null): array
     {
         $lastCreated = $this->postRepository->findLastCreatedAtBySourceType();
         $sources = iterator_to_array($this->sources, false);
-        usort($sources, static fn (SocialContentSourceInterface $a, SocialContentSourceInterface $b): int => ($lastCreated[$a->getSourceType()] ?? '') <=> ($lastCreated[$b->getSourceType()] ?? ''));
+        usort($sources, static fn (SocialContentSourceInterface $a, SocialContentSourceInterface $b): int => [$lastCreated[$a->getSourceType()] ?? '', $b instanceof DatedSocialContentSourceInterface] <=> [$lastCreated[$b->getSourceType()] ?? '', $a instanceof DatedSocialContentSourceInterface]);
 
         foreach ($sources as $source) {
             $type = $source->getSourceType();
@@ -514,16 +525,29 @@ class SocialPublisher
                 continue;
             }
 
-            $excludedIds = $this->excludedIds($source);
-            $content = $source instanceof ScopedSocialContentSourceInterface && [] !== ($scopes[$type] ?? [])
-                ? $source->getNextScopedContent($excludedIds, $scopes[$type])
-                : $source->getNextContent($excludedIds);
+            $content = $this->askSource($source, $this->excludedIds($source), $scopes[$type] ?? [], $at);
             if (null !== $content) {
                 return [$source->getSourceType(), $content];
             }
         }
 
         return ['', null];
+    }
+
+    // What a source hands out: for $at when it chooses by date, its contract taking no group, otherwise within its groups picked
+    /**
+     * @param list<string> $excludedIds
+     * @param list<string> $scopeIds
+     */
+    private function askSource(SocialContentSourceInterface $source, array $excludedIds, array $scopeIds, ?\DateTimeImmutable $at): ?SocialContent
+    {
+        if (null !== $at && $source instanceof DatedSocialContentSourceInterface) {
+            return $source->getContentForDate($at, $excludedIds);
+        }
+
+        return $source instanceof ScopedSocialContentSourceInterface && [] !== $scopeIds
+            ? $source->getNextScopedContent($excludedIds, $scopeIds)
+            : $source->getNextContent($excludedIds);
     }
 
     // The ids of a source a post holds, the ones past its repeat delay offered again

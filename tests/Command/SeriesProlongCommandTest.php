@@ -14,7 +14,11 @@ use c975L\SocialBundle\Command\SeriesProlongCommand;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Repository\SocialSeriesRepository;
+use c975L\SocialBundle\Service\SocialMediaFile;
+use c975L\SocialBundle\Service\SocialPostWriter;
+use c975L\SocialBundle\Service\SocialPublisher;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -117,5 +121,41 @@ class SeriesProlongCommandTest extends TestCase
 
         $tester->execute(['--until' => new \DateTimeImmutable('+1000 days')->format('Y-m-d'), '--dry-run' => true]);
         $this->assertStringContainsString('short of --until: run the command again', (string) preg_replace('/\s+/', ' ', $tester->getDisplay()));
+    }
+
+    // Through the real generator, a dated series whose next moments are empty still reaches the day: the content past the stretch is drafted, nothing past --until, and the table says where it now ends
+    public function testADatedSeriesReachesTheDayPastAStretchWithoutContent(): void
+    {
+        $base = new \DateTimeImmutable('+3 days 21:00');
+        $held = $base->modify('+10 days');
+        $series = new SocialSeries('Series 1', 2, 'days', 1, [], SocialSeriesGenerator::MODE_SOURCE, '', ['dated'], ['bluesky']);
+        new \ReflectionProperty(SocialSeries::class, 'id')->setValue($series, 1);
+
+        $last = $base;
+        $publisher = $this->createStub(SocialPublisher::class);
+        $publisher->method('hasDatedSource')->willReturn(true);
+        $publisher->method('prepareDrafts')->willReturnCallback(static function (array $moments) use ($held, &$last): array {
+            $posts = [];
+            foreach ($moments as $moment) {
+                if ($moment->format('Y-m-d') === $held->format('Y-m-d')) {
+                    $last = $moment;
+                    $posts[] = new SocialPost('dated', 'item-1', 'Title', 'https://example.org/item-1', null, $moment);
+                }
+            }
+
+            return $posts;
+        });
+        $repository = $this->createStub(SocialSeriesRepository::class);
+        $repository->method('findWithLastPlannedAt')->willReturn([['series' => $series, 'lastPlannedAt' => $base]]);
+        $repository->method('findLastPlannedAt')->willReturnCallback(static function () use (&$last): \DateTimeImmutable {
+            return $last;
+        });
+        $generator = new SocialSeriesGenerator($publisher, $this->createStub(SocialPostWriter::class), new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $repository, sys_get_temp_dir());
+
+        $tester = new CommandTester(new SeriesProlongCommand($repository, $generator));
+
+        $this->assertSame(Command::SUCCESS, $tester->execute(['--until' => $base->modify('+30 days')->format('Y-m-d')]));
+        $this->assertStringContainsString($held->format('d/m/Y H:i'), $tester->getDisplay());
+        $this->assertSame($held->format('Y-m-d'), $last->format('Y-m-d'));
     }
 }

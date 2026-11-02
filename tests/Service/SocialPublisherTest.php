@@ -30,6 +30,7 @@ use c975L\SocialBundle\Service\SocialPostTextBuilder;
 use c975L\SocialBundle\Service\SocialPostWriter;
 use c975L\SocialBundle\Service\SocialPublisher;
 use c975L\UiBundle\Contract\BrowsableSocialContentSourceInterface;
+use c975L\UiBundle\Contract\DatedSocialContentSourceInterface;
 use c975L\UiBundle\Contract\ScopedSocialContentSourceInterface;
 use c975L\UiBundle\Contract\SocialContentSourceInterface;
 use c975L\UiBundle\Model\SocialContent;
@@ -67,6 +68,37 @@ class SocialPublisherTest extends TestCase
             return null === $nextId ? null : new SocialContent($nextId, 'Title ' . $nextId, 'https://example.org/' . $nextId);
         });
         $source->method('getContent')->willReturnCallback(static fn (string $id): ?SocialContent => $gone ? null : new SocialContent($id, 'Fresh', 'https://example.org/' . $id, imagePath: $pictureless ? null : '/moved.webp'));
+
+        return $source;
+    }
+
+    // A source choosing by date, its contents keyed by day and the days it was asked for being recorded
+    /** @param array<string, string> $contents */
+    private function createDatedSource(string $type, array $contents): DatedSocialContentSourceInterface
+    {
+        $source = $this->createStub(DatedSocialContentSourceInterface::class);
+        $source->method('getSourceType')->willReturn($type);
+        $source->method('getContentForDate')->willReturnCallback(function (\DateTimeImmutable $date, array $excludedIds) use ($type, $contents): ?SocialContent {
+            $day = $date->format('Y-m-d');
+            $this->asked[$type]['dates'][] = $day;
+            $this->asked[$type]['excluded'] = $excludedIds;
+
+            return isset($contents[$day]) ? new SocialContent($contents[$day], 'Title', 'https://example.org/' . $contents[$day]) : null;
+        });
+
+        return $source;
+    }
+
+    // A source answering $left times, then running out, the times it was asked being recorded
+    private function createCountedSource(string $type, int $left): SocialContentSourceInterface
+    {
+        $source = $this->createStub(SocialContentSourceInterface::class);
+        $source->method('getSourceType')->willReturn($type);
+        $source->method('getNextContent')->willReturnCallback(function () use ($type, &$left): ?SocialContent {
+            $this->asked[$type]['times'] = ($this->asked[$type]['times'] ?? 0) + 1;
+
+            return $left-- > 0 ? new SocialContent('item-' . $left, 'Title', 'https://example.org/item') : null;
+        });
 
         return $source;
     }
@@ -325,6 +357,162 @@ class SocialPublisherTest extends TestCase
         $this->assertSame('gallery_media', $this->preparedPost()->getSourceType());
         $this->assertSame([], $this->asked['gallery_media']['scopes']);
         $this->assertArrayHasKey('story', $this->asked);
+    }
+
+    // A dated source is asked for each moment's date with the ids it may not give, and a day without content passes to the next instead of ending the series
+    public function testADatedSourcePassesOverTheMomentsWithoutContent(): void
+    {
+        $publisher = $this->createPublisher([$this->createDatedSource('dated', ['2026-11-04' => 'item-1', '2026-11-06' => 'item-2'])], [$this->createNetwork('bluesky')]);
+        $moments = array_map(static fn (string $day): \DateTimeImmutable => new \DateTimeImmutable($day . ' 09:00'), ['2026-11-03', '2026-11-04', '2026-11-05', '2026-11-06']);
+
+        $posts = $publisher->prepareDrafts($moments);
+
+        $this->assertSame(['2026-11-03', '2026-11-04', '2026-11-05', '2026-11-06'], $this->asked['dated']['dates']);
+        $this->assertSame(['7'], $this->asked['dated']['excluded']);
+        $this->assertSame(['item-1', 'item-2'], array_map(static fn (SocialPost $post): string => $post->getSourceId(), $posts));
+        $this->assertEquals([$moments[1], $moments[3]], array_map(static fn (SocialPost $post): \DateTimeImmutable => $post->getPlannedAt(), $posts));
+    }
+
+    // Without a dated source the first moment without content still ends the batch: the next moments ask nothing
+    public function testSourcesWithoutDatesStillStopAtTheFirstMomentWithoutContent(): void
+    {
+        $publisher = $this->createPublisher([$this->createCountedSource('story', 1)], [$this->createNetwork('bluesky')]);
+
+        $posts = $publisher->prepareDrafts([new \DateTimeImmutable('+1 day'), new \DateTimeImmutable('+2 days'), new \DateTimeImmutable('+3 days')]);
+
+        $this->assertCount(1, $posts);
+        $this->assertSame(2, $this->asked['story']['times']);
+    }
+
+    // A dated source installed but not picked changes nothing: the sources picked ran out for good
+    public function testADatedSourceNotPickedLeavesTheStopAsItWas(): void
+    {
+        $publisher = $this->createPublisher([$this->createCountedSource('story', 0), $this->createDatedSource('dated', ['2026-11-04' => 'item-1'])], [$this->createNetwork('bluesky')]);
+
+        $this->assertSame([], $publisher->prepareDrafts([new \DateTimeImmutable('2026-11-03 09:00'), new \DateTimeImmutable('2026-11-04 09:00')], ['story']));
+        $this->assertSame(1, $this->asked['story']['times']);
+        $this->assertArrayNotHasKey('dated', $this->asked);
+    }
+
+    // Which sources ask a date: a dated one picked, by its whole or a group, or none picked at all
+    public function testHasDatedSourceFollowsTheSourcesPicked(): void
+    {
+        $publisher = $this->createPublisher([$this->createSource('story', '1'), $this->createDatedSource('dated', [])], []);
+
+        $this->assertTrue($publisher->hasDatedSource([]));
+        $this->assertTrue($publisher->hasDatedSource(['dated']));
+        $this->assertTrue($publisher->hasDatedSource(['story', 'dated:3']));
+        $this->assertFalse($publisher->hasDatedSource(['story']));
+        $this->assertFalse($this->createPublisher([$this->createSource('story', '1')], [])->hasDatedSource([]));
+    }
+
+    // No network connected asks no source, a dated one included
+    public function testADatedSourceIsNotAskedWithoutANetwork(): void
+    {
+        $publisher = $this->createPublisher([$this->createDatedSource('dated', ['2026-11-03' => 'item-1'])], []);
+
+        $this->assertSame([], $publisher->prepareDrafts([new \DateTimeImmutable('2026-11-03 09:00')]));
+        $this->assertArrayNotHasKey('dated', $this->asked);
+    }
+
+    // A dated source's turn with nothing at this date goes to the next source in that same moment, and it is asked first again at the next one, having had no post
+    public function testADatedSourceWithoutContentLeavesTheMomentToTheNextSource(): void
+    {
+        $publisher = $this->createPublisher(
+            [$this->createSource('story', '2'), $this->createDatedSource('dated', ['2026-11-04' => 'item-1'])],
+            [$this->createNetwork('bluesky')],
+            lastBySourceType: ['dated' => '2026-09-01 10:00:00', 'story' => '2026-09-02 10:00:00'],
+        );
+
+        $posts = $publisher->prepareDrafts([new \DateTimeImmutable('2026-11-03 09:00'), new \DateTimeImmutable('2026-11-04 09:00')]);
+
+        $this->assertSame(['story', 'dated'], array_map(static fn (SocialPost $post): string => $post->getSourceType(), $posts));
+    }
+
+    // The source that posted least recently keeps its turn over a dated one, which is asked once it has nothing
+    public function testADatedSourceTakesItsTurnAmongTheOthers(): void
+    {
+        $publisher = $this->createPublisher(
+            [$this->createDatedSource('dated', ['2026-11-03' => 'item-1']), $this->createSource('story', '2')],
+            [$this->createNetwork('bluesky')],
+            lastBySourceType: ['dated' => '2026-09-02 10:00:00', 'story' => '2026-09-01 10:00:00'],
+        );
+
+        $publisher->prepareDrafts([new \DateTimeImmutable('2026-11-03 09:00')]);
+
+        $this->assertSame('story', $this->preparedPost()->getSourceType());
+        $this->assertArrayNotHasKey('dated', $this->asked);
+    }
+
+    // Two sources prepared within one second stay tied: the dated one goes first whatever the order they are declared in, its content being good for this date alone
+    public function testAtEqualRecencyADatedSourceGoesFirst(): void
+    {
+        $publisher = $this->createPublisher(
+            [$this->createSource('story', '2'), $this->createDatedSource('dated', ['2026-11-03' => 'item-1'])],
+            [$this->createNetwork('bluesky')],
+            lastBySourceType: ['dated' => '2026-09-01 10:00:00', 'story' => '2026-09-01 10:00:00'],
+        );
+
+        $publisher->prepareDrafts([new \DateTimeImmutable('2026-11-03 09:00')]);
+
+        $this->assertSame('dated', $this->preparedPost()->getSourceType());
+    }
+
+    // A source both dated and grouped answers by date, its contract taking no group
+    public function testADatedSourceWithGroupsAnswersByDate(): void
+    {
+        $source = new class implements DatedSocialContentSourceInterface, ScopedSocialContentSourceInterface {
+            public function getSourceType(): string
+            {
+                return 'dated';
+            }
+
+            public function getRepeatAfterDays(): ?int
+            {
+                return null;
+            }
+
+            public function getNextContent(array $excludedIds): ?SocialContent
+            {
+                return null;
+            }
+
+            public function getContent(string $sourceId): ?SocialContent
+            {
+                return null;
+            }
+
+            public function getScopes(): array
+            {
+                return ['3' => 'Group'];
+            }
+
+            public function getNextScopedContent(array $excludedIds, array $scopeIds): ?SocialContent
+            {
+                return new SocialContent('item-2', 'Title', 'https://example.org/item-2');
+            }
+
+            public function getContentForDate(\DateTimeImmutable $date, array $excludedIds): ?SocialContent
+            {
+                return new SocialContent('item-1', 'Title', 'https://example.org/item-1');
+            }
+        };
+
+        $this->createPublisher([$source], [$this->createNetwork('bluesky')])->prepareDrafts([new \DateTimeImmutable('2026-11-03 09:00')], ['dated:3']);
+
+        $this->assertSame('item-1', $this->preparedPost()->getSourceId());
+    }
+
+    // A post built from the sources takes the content of its own date, and null for a date without one
+    public function testAPostFromTheSourcesTakesTheContentOfItsDate(): void
+    {
+        $publisher = $this->createPublisher([$this->createDatedSource('dated', ['2026-11-03' => 'item-1'])], [$this->createNetwork('bluesky')]);
+
+        $post = $publisher->createFromSources(new \DateTimeImmutable('2026-11-03 09:00'), ['dated']);
+
+        $this->assertSame('item-1', $post?->getSourceId());
+        $this->assertNull($publisher->createFromSources(new \DateTimeImmutable('2026-11-04 09:00'), ['dated']));
+        $this->assertSame(['2026-11-03', '2026-11-04'], $this->asked['dated']['dates']);
     }
 
     public function testTheSourceChoicesListEachSourceThenItsGroups(): void
@@ -603,6 +791,52 @@ class SocialPublisherTest extends TestCase
 
         $this->assertTrue($publisher->redraw($post));
         $this->assertSame(['43', 'Photo 43'], [$post->getSourceId(), $post->getTitle()]);
+    }
+
+    // Drawn again from a dated source, the post takes another content of its own planned date
+    public function testARedrawFromADatedSourceKeepsThePlannedDate(): void
+    {
+        $source = new class implements DatedSocialContentSourceInterface, BrowsableSocialContentSourceInterface {
+            public function getSourceType(): string
+            {
+                return 'dated';
+            }
+
+            public function getRepeatAfterDays(): ?int
+            {
+                return null;
+            }
+
+            public function getNextContent(array $excludedIds): ?SocialContent
+            {
+                return new SocialContent('item-undated', 'Title', 'https://example.org/item');
+            }
+
+            public function getContent(string $sourceId): ?SocialContent
+            {
+                return null;
+            }
+
+            public function findContents(array $excludedIds, array $scopeIds, int $limit): array
+            {
+                return [];
+            }
+
+            public function getContentScope(string $sourceId): ?string
+            {
+                return null;
+            }
+
+            public function getContentForDate(\DateTimeImmutable $date, array $excludedIds): ?SocialContent
+            {
+                return new SocialContent('item-' . $date->format('Ymd'), 'Title', 'https://example.org/item');
+            }
+        };
+        $publisher = $this->createPublisher([$source], [$this->createNetwork('bluesky')]);
+        $post = new SocialPost('dated', 'item-1', 'Title', 'https://example.org/item-1', null, new \DateTimeImmutable('2026-11-03 09:00'));
+
+        $this->assertTrue($publisher->redraw($post));
+        $this->assertSame('item-20261103', $post->getSourceId());
     }
 
     // Moved to another content, a post writes its texts not out yet from it again; one with its own text keeps it

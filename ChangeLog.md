@@ -1,5 +1,21 @@
 # Changelog
 
+## v2.28.0
+
+Series choosing their contents by each post's planned date
+
+- `SocialPublisher` asks a `DatedSocialContentSourceInterface` for the post's planned date (02/11/2026)
+- Added `SocialPublisher::hasDatedSource()` (02/11/2026)
+- `prepareDrafts()` and a series written from a text pass over a moment without content when a dated source is asked (02/11/2026)
+- `SocialSeriesGenerator::prolong()`: a dated series goes on past a stretch without content, up to `--until` or a year (02/11/2026)
+- A dated source goes first at equal recency (02/11/2026)
+- A series written by the AI asks its texts once a first draft exists (02/11/2026)
+- A dated prolongation stops when the AI gives no text (02/11/2026)
+- `SocialPublisher::redraw()` asks a dated source for the post's planned date (02/11/2026)
+- `help.social_series_sources`: a content tied to a date (02/11/2026)
+- README and skill: the dated source (02/11/2026)
+- Requires `c975l/core-bundle` ^1.86.3 (02/11/2026)
+
 ## v2.27.0
 
 TikTok: 2-hour access tokens and rotating refresh tokens

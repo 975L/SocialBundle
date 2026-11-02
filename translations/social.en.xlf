@@ -648,7 +648,7 @@
             </trans-unit>
             <trans-unit id="a1xocww">
                 <source>help.social_series_sources</source>
-                <target>With the site's contents, nothing ticked takes them all, in turn. With a text or the AI, each post takes a picture at random among the ones ticked, reserved for it and changeable on its screen.</target>
+                <target>With the site's contents, nothing ticked takes them all, in turn. With a text or the AI, each post takes a picture at random among the ones ticked, reserved for it and changeable on its screen. A content tied to a date goes out on that day alone, a day without any being passed over.</target>
             </trans-unit>
             <trans-unit id="J69dshv">
                 <source>help.social_series_story</source>

@@ -648,7 +648,7 @@
             </trans-unit>
             <trans-unit id="a1xocww">
                 <source>help.social_series_sources</source>
-                <target>Avec les contenus du site, rien de coché les prend tous, à tour de rôle. Avec un texte ou l'IA, chaque publication prend une photo au hasard parmi ceux cochés, réservée jusqu'à sa publication et modifiable dans sa fiche.</target>
+                <target>Avec les contenus du site, rien de coché les prend tous, à tour de rôle. Avec un texte ou l'IA, chaque publication prend une photo au hasard parmi ceux cochés, réservée jusqu'à sa publication et modifiable dans sa fiche. Un contenu lié à une date ne sort que ce jour-là, un jour sans contenu étant passé.</target>
             </trans-unit>
             <trans-unit id="J69dshv">
                 <source>help.social_series_story</source>
