@@ -72,7 +72,7 @@
             </trans-unit>
             <trans-unit id="BANWhG0">
                 <source>description.social_linkedin_access_token</source>
-                <target>Renseigné par la connexion de la tuile LinkedIn de « Connexions ». Valable 60 jours : il faut se reconnecter avant son expiration.</target>
+                <target>Renseigné par la connexion de la tuile LinkedIn de « Connexions ». Valable 60 jours : renouvelé tout seul sur une Page, à reconnecter avant son expiration sur un profil.</target>
             </trans-unit>
             <trans-unit id="XIOiN6Y">
                 <source>description.social_linkedin_client_id</source>
@@ -93,6 +93,14 @@
             <trans-unit id="eGCpWt7">
                 <source>description.social_linkedin_organization_name</source>
                 <target>Renseigné par la connexion : le nom de la Page, affiché sur la tuile LinkedIn de « Connexions ».</target>
+            </trans-unit>
+            <trans-unit id="QeAxBQh">
+                <source>description.social_linkedin_refresh_token</source>
+                <target>Renseigné par la connexion d'une Page : l'app LinkedIn d'un profil n'en reçoit pas. Valable un an.</target>
+            </trans-unit>
+            <trans-unit id="SFW30on">
+                <source>description.social_linkedin_refresh_token_expires_at</source>
+                <target>Renseigné par la connexion : la date après laquelle il faut reconnecter LinkedIn.</target>
             </trans-unit>
             <trans-unit id="36ObS3d">
                 <source>description.social_linkedin_token_expires_at</source>
@@ -317,6 +325,14 @@
             <trans-unit id="cTdwkFS">
                 <source>label.social_linkedin_organization_name</source>
                 <target>Nom de la Page LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="b2hgyvv">
+                <source>label.social_linkedin_refresh_token</source>
+                <target>Jeton de renouvellement LinkedIn</target>
+            </trans-unit>
+            <trans-unit id="TUJgLwv">
+                <source>label.social_linkedin_refresh_token_expires_at</source>
+                <target>Expiration de la connexion LinkedIn</target>
             </trans-unit>
             <trans-unit id="VNIF16G">
                 <source>label.social_linkedin_token_expires_at</source>

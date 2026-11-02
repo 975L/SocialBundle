@@ -101,25 +101,11 @@ class LinkedInOAuthControllerTest extends TestCase
         $this->createController($request, $this->connectingClient([], false), $this->recordingWriter($written))->callback($request);
 
         $this->assertSame([
-            ['social-linkedin-access-token' => 'token', 'social-linkedin-member-id' => 'abc', 'social-linkedin-token-expires-at' => '2026-12-02T10:00:00+01:00'],
+            ['social-linkedin-access-token' => 'token', 'social-linkedin-member-id' => 'abc', 'social-linkedin-token-expires-at' => '2026-12-02T10:00:00+01:00', 'social-linkedin-refresh-token' => null, 'social-linkedin-refresh-token-expires-at' => null],
             ['social-linkedin-organization-id' => null, 'social-linkedin-organization-name' => null],
         ], $written);
         $this->assertSame(['success' => ['flash.linkedin_connected']], $this->flashes($request));
         $this->assertNull($request->getSession()->get('social_linkedin_oauth_page'));
-    }
-
-    // A refresh token handed is said on the screen, in days, and written nowhere
-    public function testCallbackSaysWhenLinkedInHandsARefreshToken(): void
-    {
-        $written = [];
-        $linkedInClient = $this->createStub(LinkedInClient::class);
-        $linkedInClient->method('connect')->willReturn(['accessToken' => 'token', 'memberId' => 'abc', 'expiresAt' => new \DateTimeImmutable('2026-12-02T10:00:00+01:00'), 'name' => 'Laurent', 'organizations' => [], 'refreshTokenExpiresIn' => 31536000]);
-        $request = $this->callbackRequest();
-
-        $this->createController($request, $linkedInClient, $this->recordingWriter($written))->callback($request);
-
-        $this->assertSame(['success' => ['LinkedIn handed a refresh token, valid 365 days.', 'flash.linkedin_connected']], $this->flashes($request));
-        $this->assertSame(['social-linkedin-access-token', 'social-linkedin-member-id', 'social-linkedin-token-expires-at'], array_keys($written[0]));
     }
 
     // A site not yet through load-all has no Page to empty: the profile still connects
@@ -152,6 +138,8 @@ class LinkedInOAuthControllerTest extends TestCase
             'social-linkedin-access-token' => 'token',
             'social-linkedin-member-id' => 'abc',
             'social-linkedin-token-expires-at' => '2026-12-02T10:00:00+01:00',
+            'social-linkedin-refresh-token' => null,
+            'social-linkedin-refresh-token-expires-at' => null,
             'social-linkedin-organization-id' => '111',
             'social-linkedin-organization-name' => '975L',
         ]], $written);
@@ -171,6 +159,20 @@ class LinkedInOAuthControllerTest extends TestCase
         $held = $request->getSession()->get(SocialLinkedInPageController::SESSION_CONNECTION);
         $this->assertGreaterThan(time(), $held['expires']);
         $this->assertSame(['expiresAt' => '2026-12-02T10:00:00+01:00', 'accessToken' => 'token', 'memberId' => 'abc', 'name' => 'Laurent', 'organizations' => [['id' => '111', 'name' => '975L'], ['id' => '222', 'name' => 'EIPT']]], $held['connection']);
+    }
+
+    // The refresh token is held with the rest, or a site with several Pages would never renew
+    public function testCallbackOfSeveralPagesHoldsTheRefreshToken(): void
+    {
+        $linkedInClient = $this->createStub(LinkedInClient::class);
+        $linkedInClient->method('connect')->willReturn(['accessToken' => 'token', 'memberId' => 'abc', 'expiresAt' => new \DateTimeImmutable('2026-12-02T10:00:00+01:00'), 'name' => 'Laurent', 'organizations' => [['id' => '111', 'name' => '975L'], ['id' => '222', 'name' => 'EIPT']], 'refreshToken' => 'the-refresh', 'refreshExpiresAt' => '2027-11-02T10:00:00+01:00']);
+        $request = $this->callbackRequest(true);
+
+        $this->createController($request, $linkedInClient)->callback($request);
+
+        $held = $request->getSession()->get(SocialLinkedInPageController::SESSION_CONNECTION);
+        $this->assertSame('the-refresh', $held['connection']['refreshToken']);
+        $this->assertSame('2027-11-02T10:00:00+01:00', $held['connection']['refreshExpiresAt']);
     }
 
     // A member administering no Page is told so, the working connection left as it was

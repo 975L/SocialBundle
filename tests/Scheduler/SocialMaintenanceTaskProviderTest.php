@@ -24,12 +24,12 @@ class SocialMaintenanceTaskProviderTest extends TestCase
         $this->assertSame('# #(2-5) * * *', $tasks[0]->expression);
     }
 
-    // The planned posts are sent every quarter of an hour, the calendar's grid, the medias of the posts gone out purged nightly, the series coming to their end announced nightly, the LinkedIn and Bluesky reminders checked nightly, and the Pinterest and TikTok tokens renewed nightly
+    // The planned posts are sent every quarter of an hour, the calendar's grid, the medias of the posts gone out purged nightly, the series coming to their end announced nightly, the LinkedIn and Bluesky reminders checked nightly, and the Pinterest, TikTok and LinkedIn tokens renewed nightly
     public function testThePlannedPostsAreSentEveryQuarterAndTheMediasPurgedNightly(): void
     {
         $tasks = new SocialMaintenanceTaskProvider()->getMaintenanceTasks();
 
-        $this->assertCount(8, $tasks);
+        $this->assertCount(9, $tasks);
         $this->assertSame(['*/15 * * * *', 'c975l:social:publish'], [$tasks[1]->expression, $tasks[1]->command]);
         $this->assertSame(['# #(2-5) * * *', 'c975l:social:media:purge'], [$tasks[2]->expression, $tasks[2]->command]);
         $this->assertSame(['# #(2-5) * * *', 'c975l:social:series:ending'], [$tasks[3]->expression, $tasks[3]->command]);
@@ -37,5 +37,6 @@ class SocialMaintenanceTaskProviderTest extends TestCase
         $this->assertSame(['# #(2-5) * * *', 'c975l:social:bluesky:reminder'], [$tasks[5]->expression, $tasks[5]->command]);
         $this->assertSame(['# #(2-5) * * *', 'c975l:social:pinterest:refresh'], [$tasks[6]->expression, $tasks[6]->command]);
         $this->assertSame(['# #(2-5) * * *', 'c975l:social:tiktok:refresh'], [$tasks[7]->expression, $tasks[7]->command]);
+        $this->assertSame(['# #(2-5) * * *', 'c975l:social:linkedin:refresh'], [$tasks[8]->expression, $tasks[8]->command]);
     }
 }

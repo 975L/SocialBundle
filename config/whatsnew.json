@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-02",
+        "description": [
+            {
+                "en": "The LinkedIn access of a Page now renews itself for a year, without connecting again every 60 days. Connect the Page once more to start it.",
+                "fr": "L'accès LinkedIn d'une Page se renouvelle désormais tout seul pendant un an, sans se reconnecter tous les 60 jours. Reconnectez la Page une fois pour l'activer.",
+                "es": "El acceso a LinkedIn de una Página ahora se renueva solo durante un año, sin volver a conectarse cada 60 días. Vuelva a conectar la Página una vez para activarlo."
+            }
+        ]
+    },
+    {
         "date": "2026-11-01",
         "description": [
             {

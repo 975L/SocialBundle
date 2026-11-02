@@ -52,7 +52,7 @@
             </trans-unit>
             <trans-unit id="1Qxr9lg">
                 <source>description.guided_project_social_linkedin_connect</source>
-                <target>La parte de la agencia: la aplicación de LinkedIn, sus dos claves y el consentimiento. Se hace una vez, y luego cada 60 días, la duración del acceso.</target>
+                <target>La parte de la agencia: la aplicación de LinkedIn, sus dos claves y el consentimiento. Se hace una vez: en una Página, el acceso se renueva solo durante un año; en un perfil, hay que volver a conectarse cada 60 días.</target>
             </trans-unit>
             <trans-unit id="FrDtWdT">
                 <source>description.guided_project_social_links</source>
@@ -364,7 +364,7 @@
             </trans-unit>
             <trans-unit id="fcDzyeM">
                 <source>email.social_linkedin_reminder_body</source>
-                <target>El acceso del sitio a LinkedIn termina el %date%, ya que LinkedIn solo lo concede por 60 días. Después, ya no se publica nada allí. En la ficha LinkedIn de «Connexions», haga clic en «Connecter un profil» o en «Connecter une Page», según la cuenta en la que publica el sitio:</target>
+                <target>El acceso del sitio a LinkedIn termina el %date%. Después, ya no se publica nada allí. En la ficha LinkedIn de «Connexions», haga clic en «Connecter un profil» o en «Connecter une Page», según la cuenta en la que publica el sitio:</target>
             </trans-unit>
             <trans-unit id="D5AHhy9">
                 <source>email.social_linkedin_reminder_subject</source>
@@ -1260,7 +1260,7 @@
             </trans-unit>
             <trans-unit id="0cTMFAS">
                 <source>label.info_linkedin_connect</source>
-                <target>Vincula el sitio a su perfil personal de LinkedIn, o a una Página que usted administra con una app propia. El acceso dura 60 días: vuelva a conectarse antes de que caduque.</target>
+                <target>Vincula el sitio a su perfil personal de LinkedIn, o a una Página que usted administra con una app propia. En una Página, el acceso se renueva solo durante un año; en un perfil, dura 60 días: vuelva a conectarse antes de que caduque.</target>
             </trans-unit>
             <trans-unit id="95gY_Ya">
                 <source>label.info_linkedin_not_configured</source>

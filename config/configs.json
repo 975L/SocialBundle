@@ -395,6 +395,30 @@
         "description": "description.social_linkedin_token_expires_at"
     },
     {
+        "label": "label.social_linkedin_refresh_token",
+        "slug": "social-linkedin-refresh-token",
+        "feature": true,
+        "sensitive": true,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_linkedin_refresh_token"
+    },
+    {
+        "label": "label.social_linkedin_refresh_token_expires_at",
+        "slug": "social-linkedin-refresh-token-expires-at",
+        "feature": true,
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_linkedin_refresh_token_expires_at"
+    },
+    {
         "label": "label.social_pinterest_client_id",
         "slug": "social-pinterest-client-id",
         "sensitive": false,

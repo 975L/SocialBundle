@@ -72,7 +72,7 @@
             </trans-unit>
             <trans-unit id="BANWhG0">
                 <source>description.social_linkedin_access_token</source>
-                <target>Filled by the connection on the LinkedIn tile of "Connections". Valid for 60 days: connect again before it expires.</target>
+                <target>Filled by the connection on the LinkedIn tile of "Connections". Valid for 60 days: renewed on its own on a Page, to connect again before it expires on a profile.</target>
             </trans-unit>
             <trans-unit id="XIOiN6Y">
                 <source>description.social_linkedin_client_id</source>
@@ -93,6 +93,14 @@
             <trans-unit id="eGCpWt7">
                 <source>description.social_linkedin_organization_name</source>
                 <target>Filled by the connection: the Page's name, shown on the LinkedIn tile of "Connections".</target>
+            </trans-unit>
+            <trans-unit id="QeAxBQh">
+                <source>description.social_linkedin_refresh_token</source>
+                <target>Filled by a Page's connection: a profile's LinkedIn app gets none. Valid one year.</target>
+            </trans-unit>
+            <trans-unit id="SFW30on">
+                <source>description.social_linkedin_refresh_token_expires_at</source>
+                <target>Filled by the connection: the date after which LinkedIn has to be connected again.</target>
             </trans-unit>
             <trans-unit id="36ObS3d">
                 <source>description.social_linkedin_token_expires_at</source>
@@ -317,6 +325,14 @@
             <trans-unit id="cTdwkFS">
                 <source>label.social_linkedin_organization_name</source>
                 <target>LinkedIn Page name</target>
+            </trans-unit>
+            <trans-unit id="b2hgyvv">
+                <source>label.social_linkedin_refresh_token</source>
+                <target>LinkedIn refresh token</target>
+            </trans-unit>
+            <trans-unit id="TUJgLwv">
+                <source>label.social_linkedin_refresh_token_expires_at</source>
+                <target>LinkedIn connection expiry</target>
             </trans-unit>
             <trans-unit id="VNIF16G">
                 <source>label.social_linkedin_token_expires_at</source>

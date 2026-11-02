@@ -52,7 +52,7 @@
             </trans-unit>
             <trans-unit id="1Qxr9lg">
                 <source>description.guided_project_social_linkedin_connect</source>
-                <target>La partie agence : l'application LinkedIn, ses deux clés, et le consentement. À faire une fois, puis tous les 60 jours, la durée de l'accès.</target>
+                <target>La partie agence : l'application LinkedIn, ses deux clés, et le consentement. À faire une fois : sur une Page, l'accès se renouvelle ensuite tout seul pendant un an ; sur un profil, il faut se reconnecter tous les 60 jours.</target>
             </trans-unit>
             <trans-unit id="FrDtWdT">
                 <source>description.guided_project_social_links</source>
@@ -364,7 +364,7 @@
             </trans-unit>
             <trans-unit id="fcDzyeM">
                 <source>email.social_linkedin_reminder_body</source>
-                <target>L'accès du site à LinkedIn se termine le %date%, LinkedIn ne l'accordant que pour 60 jours. Passé cette date, plus rien n'y part. Dans la tuile LinkedIn de « Connexions », cliquez sur « Connecter un profil » ou sur « Connecter une Page », selon le compte sur lequel le site publie :</target>
+                <target>L'accès du site à LinkedIn se termine le %date%. Passé cette date, plus rien n'y part. Dans la tuile LinkedIn de « Connexions », cliquez sur « Connecter un profil » ou sur « Connecter une Page », selon le compte sur lequel le site publie :</target>
             </trans-unit>
             <trans-unit id="D5AHhy9">
                 <source>email.social_linkedin_reminder_subject</source>
@@ -1260,7 +1260,7 @@
             </trans-unit>
             <trans-unit id="0cTMFAS">
                 <source>label.info_linkedin_connect</source>
-                <target>Relie le site à votre profil LinkedIn personnel, ou à une Page que vous administrez avec une app dédiée. L'accès dure 60 jours : reconnectez-vous avant son expiration.</target>
+                <target>Relie le site à votre profil LinkedIn personnel, ou à une Page que vous administrez avec une app dédiée. Sur une Page, l'accès se renouvelle tout seul pendant un an ; sur un profil, il dure 60 jours : reconnectez-vous avant son expiration.</target>
             </trans-unit>
             <trans-unit id="95gY_Ya">
                 <source>label.info_linkedin_not_configured</source>

@@ -32,7 +32,7 @@ class LinkedInClientTest extends TestCase
             'social-linkedin-token-expires-at' => new \DateTimeImmutable('+30 days')->format(\DateTimeInterface::ATOM),
         ];
 
-        return new LinkedInClient($this->httpClient($responses), $this->configService($config), 0);
+        return new LinkedInClient($this->httpClient($responses), $this->configService($config), $this->configValueWriter(), 0);
     }
 
     // The code traded for the token, then the member asked who they are - what the posts are signed with
@@ -50,23 +50,89 @@ class LinkedInClientTest extends TestCase
         $this->assertSame('https://api.linkedin.com/v2/userinfo', $this->calls[1]['url']);
     }
 
-    // A refresh token LinkedIn hands is told by its lifetime alone, the token itself going nowhere - none handed, nothing told
-    public function testTheConnectionTellsARefreshTokenWithoutKeepingIt(): void
+    // The refresh token a Page app is handed comes with the connection, with its end - a profile app's connection having neither
+    public function testTheConnectionCarriesARefreshTokenWhenLinkedInHandsOne(): void
     {
         $connection = $this->client([
-            new MockResponse('{"access_token": "new-token", "expires_in": 5184000, "refresh_token": "secret-refresh", "refresh_token_expires_in": 31536000}'),
+            new MockResponse('{"access_token": "new-token", "expires_in": 5184000, "refresh_token": "new-refresh", "refresh_token_expires_in": 31536000}'),
             new MockResponse('{"sub": "xyz"}'),
         ])->connect('code', 'https://example.org/social/linkedin/callback');
 
-        $this->assertSame(31536000, $connection['refreshTokenExpiresIn']);
-        $this->assertNotContains('secret-refresh', $connection);
+        $this->assertSame('new-refresh', $connection['refreshToken'] ?? null);
+        $this->assertEqualsWithDelta(new \DateTimeImmutable('+365 days')->getTimestamp(), new \DateTimeImmutable($connection['refreshExpiresAt'] ?? 'now')->getTimestamp(), 5);
 
         $connection = $this->client([
             new MockResponse('{"access_token": "new-token", "expires_in": 5184000}'),
             new MockResponse('{"sub": "xyz"}'),
         ])->connect('code', 'https://example.org/social/linkedin/callback');
 
-        $this->assertArrayNotHasKey('refreshTokenExpiresIn', $connection);
+        $this->assertArrayNotHasKey('refreshToken', $connection);
+    }
+
+    // A refresh sends the refresh token and the app's keys, and stores the new access token and both ends at once
+    public function testARefreshStoresTheNewToken(): void
+    {
+        $this->client([new MockResponse('{"access_token": "next-token", "expires_in": 5184000, "refresh_token": "the-refresh", "refresh_token_expires_in": 20000000}')], ['social-linkedin-refresh-token' => 'the-refresh'])->refresh();
+
+        $this->assertSame(LinkedInClient::TOKEN, $this->calls[0]['url']);
+        $this->assertStringContainsString('grant_type=refresh_token', (string) $this->calls[0]['body']);
+        $this->assertStringContainsString('refresh_token=the-refresh', (string) $this->calls[0]['body']);
+        $this->assertSame('next-token', $this->written[0]['social-linkedin-access-token']);
+        $this->assertSame('the-refresh', $this->written[0]['social-linkedin-refresh-token']);
+        $this->assertEqualsWithDelta(new \DateTimeImmutable('+60 days')->getTimestamp(), new \DateTimeImmutable((string) $this->written[0]['social-linkedin-token-expires-at'])->getTimestamp(), 5);
+    }
+
+    // A refresh answer without a refresh token leaves the one in place and its end
+    public function testARefreshHandingNoRefreshTokenKeepsTheOneInPlace(): void
+    {
+        $this->client([new MockResponse('{"access_token": "next-token", "expires_in": 5184000}')], ['social-linkedin-refresh-token' => 'the-refresh'])->refresh();
+
+        $this->assertArrayNotHasKey('social-linkedin-refresh-token', $this->written[0]);
+        $this->assertArrayNotHasKey('social-linkedin-refresh-token-expires-at', $this->written[0]);
+    }
+
+    // An answer not saying what the token lasts counts LinkedIn's 60 days, rather than a token over at once
+    public function testARefreshNotSayingTheLifetimeCountsSixtyDays(): void
+    {
+        $this->client([new MockResponse('{"access_token": "next-token"}')], ['social-linkedin-refresh-token' => 'the-refresh'])->refresh();
+
+        $this->assertEqualsWithDelta(new \DateTimeImmutable('+60 days')->getTimestamp(), new \DateTimeImmutable((string) $this->written[0]['social-linkedin-token-expires-at'])->getTimestamp(), 5);
+    }
+
+    // A connection renewing itself lasts until its refresh token's end, another until its token's
+    public function testTheDayAConnectionLastsUntil(): void
+    {
+        $connection = ['expiresAt' => new \DateTimeImmutable('2026-12-02T10:00:00+01:00')];
+
+        $this->assertSame('02/12/2026', LinkedInClient::connectedUntil($connection));
+        $this->assertSame('02/11/2027', LinkedInClient::connectedUntil($connection + ['refreshExpiresAt' => '2027-11-02T10:00:00+01:00']));
+    }
+
+    // A refused refresh, even as an HTML page, says so and writes nothing
+    public function testARefusedRefreshWritesNothing(): void
+    {
+        foreach (['{"error_description": "The token is revoked"}', '<html>Bad gateway</html>'] as $body) {
+            try {
+                $this->client([new MockResponse($body, ['http_code' => 400])], ['social-linkedin-refresh-token' => 'the-refresh'])->refresh();
+                $this->fail('A refused refresh has to throw.');
+            } catch (\RuntimeException $exception) {
+                $this->assertStringContainsString('LinkedIn refused the refresh', $exception->getMessage());
+            }
+        }
+
+        $this->assertSame([], $this->written);
+    }
+
+    // Only a refresh token still valid can renew, and a token renews once within REFRESH_BEFORE of its end, or gone
+    public function testWhenARenewalIsPossibleAndDue(): void
+    {
+        $this->assertFalse($this->client()->canRefresh());
+        $this->assertTrue($this->client(config: ['social-linkedin-refresh-token' => 'r', 'social-linkedin-refresh-token-expires-at' => '+10 days'])->canRefresh());
+        $this->assertFalse($this->client(config: ['social-linkedin-refresh-token' => 'r', 'social-linkedin-refresh-token-expires-at' => '-1 day'])->canRefresh());
+
+        $this->assertFalse($this->client(config: ['social-linkedin-token-expires-at' => '+30 days'])->needsRefresh());
+        $this->assertTrue($this->client(config: ['social-linkedin-token-expires-at' => '+20 days'])->needsRefresh());
+        $this->assertTrue($this->client(config: ['social-linkedin-token-expires-at' => '-1 day'])->needsRefresh());
     }
 
     // A profile asks what OpenID Connect gives, a Page what the Community Management API gives - its app having no OpenID Connect
@@ -145,9 +211,10 @@ class LinkedInClientTest extends TestCase
     public function testTheConnectionValuesCarryThePageWhenThereIsOne(): void
     {
         $connection = ['accessToken' => 'token', 'memberId' => 'xyz', 'expiresAt' => new \DateTimeImmutable('2026-12-02T10:00:00+01:00')];
-        $values = ['social-linkedin-access-token' => 'token', 'social-linkedin-member-id' => 'xyz', 'social-linkedin-token-expires-at' => '2026-12-02T10:00:00+01:00'];
+        $values = ['social-linkedin-access-token' => 'token', 'social-linkedin-member-id' => 'xyz', 'social-linkedin-token-expires-at' => '2026-12-02T10:00:00+01:00', 'social-linkedin-refresh-token' => null, 'social-linkedin-refresh-token-expires-at' => null];
 
         $this->assertSame($values, LinkedInClient::connectionValues($connection));
+        $this->assertSame(array_merge($values, ['social-linkedin-refresh-token' => 'r', 'social-linkedin-refresh-token-expires-at' => '2027-11-02T10:00:00+01:00']), LinkedInClient::connectionValues($connection + ['refreshToken' => 'r', 'refreshExpiresAt' => '2027-11-02T10:00:00+01:00']));
         $this->assertSame($values + ['social-linkedin-organization-id' => '111', 'social-linkedin-organization-name' => '975L'], LinkedInClient::connectionValues($connection, ['id' => '111', 'name' => '975L']));
     }
 

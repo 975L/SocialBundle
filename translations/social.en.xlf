@@ -52,7 +52,7 @@
             </trans-unit>
             <trans-unit id="1Qxr9lg">
                 <source>description.guided_project_social_linkedin_connect</source>
-                <target>The agency's part: the LinkedIn app, its two keys, and the consent. Done once, then every 60 days, the length of the access.</target>
+                <target>The agency's part: the LinkedIn app, its two keys, and the consent. Done once: on a Page, the access then renews itself for a year; on a profile, connect again every 60 days.</target>
             </trans-unit>
             <trans-unit id="FrDtWdT">
                 <source>description.guided_project_social_links</source>
@@ -364,7 +364,7 @@
             </trans-unit>
             <trans-unit id="fcDzyeM">
                 <source>email.social_linkedin_reminder_body</source>
-                <target>The site's access to LinkedIn ends on %date%, LinkedIn granting it for 60 days only. After that, nothing goes out there any more. On the LinkedIn tile of "Connexions", click "Connecter un profil" or "Connecter une Page", whichever the site posts on:</target>
+                <target>The site's access to LinkedIn ends on %date%. After that, nothing goes out there any more. On the LinkedIn tile of "Connexions", click "Connecter un profil" or "Connecter une Page", whichever the site posts on:</target>
             </trans-unit>
             <trans-unit id="D5AHhy9">
                 <source>email.social_linkedin_reminder_subject</source>
@@ -1260,7 +1260,7 @@
             </trans-unit>
             <trans-unit id="0cTMFAS">
                 <source>label.info_linkedin_connect</source>
-                <target>Links the site to your personal LinkedIn profile, or to a Page you administer through an app of its own. The access lasts 60 days: connect again before it expires.</target>
+                <target>Links the site to your personal LinkedIn profile, or to a Page you administer through an app of its own. On a Page, the access renews itself for a year; on a profile, it lasts 60 days: connect again before it expires.</target>
             </trans-unit>
             <trans-unit id="95gY_Ya">
                 <source>label.info_linkedin_not_configured</source>

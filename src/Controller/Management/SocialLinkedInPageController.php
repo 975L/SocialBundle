@@ -77,7 +77,7 @@ class SocialLinkedInPageController extends AbstractController
     }
 
     // The connection the callback held, unless held too long or not of the shape this code writes (a session from another version of it) - its Pages that are not left out
-    /** @return array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable, name: string, organizations: list<array{id: string, name: string}>}|null */
+    /** @return array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable, name: string, organizations: list<array{id: string, name: string}>, refreshToken?: string, refreshExpiresAt?: string}|null */
     private function heldConnection(Request $request): ?array
     {
         $held = $request->getSession()->get(self::SESSION_CONNECTION);
@@ -97,19 +97,30 @@ class SocialLinkedInPageController extends AbstractController
             return null;
         }
 
-        return ['accessToken' => $connection['accessToken'], 'memberId' => $connection['memberId'], 'expiresAt' => $expiresAt, 'name' => (string) ($connection['name'] ?? ''), 'organizations' => $organizations];
+        return ['accessToken' => $connection['accessToken'], 'memberId' => $connection['memberId'], 'expiresAt' => $expiresAt, 'name' => (string) ($connection['name'] ?? ''), 'organizations' => $organizations, ...$this->heldRefresh($connection)];
+    }
+
+    // The refresh token the callback held with its end, a profile app having none
+    /**
+     * @param array<mixed> $connection
+     *
+     * @return array{refreshToken: string, refreshExpiresAt: string}|array{}
+     */
+    private function heldRefresh(array $connection): array
+    {
+        return \is_string($connection['refreshToken'] ?? null) && \is_string($connection['refreshExpiresAt'] ?? null) ? ['refreshToken' => $connection['refreshToken'], 'refreshExpiresAt' => $connection['refreshExpiresAt']] : [];
     }
 
     // The token, the member and the Page picked, written at once - its name kept for "Connexions" to show and link it
     /**
-     * @param array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable} $connection
-     * @param array{id: string, name: string}                                             $organization
+     * @param array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable, refreshToken?: string, refreshExpiresAt?: string} $connection
+     * @param array{id: string, name: string}                                                                                               $organization
      */
     private function store(array $connection, array $organization): RedirectResponse
     {
         $this->configValueWriter->write(LinkedInClient::connectionValues($connection, $organization));
 
-        $this->addFlash('success', t('flash.linkedin_page_connected', ['%name%' => $organization['name'], '%date%' => $connection['expiresAt']->format('d/m/Y')], 'social'));
+        $this->addFlash('success', t('flash.linkedin_page_connected', ['%name%' => $organization['name'], '%date%' => LinkedInClient::connectedUntil($connection)], 'social'));
 
         return $this->redirectToRoute(SocialConnectionsController::ROUTE);
     }

@@ -1,5 +1,19 @@
 # Changelog
 
+## v2.26.0
+
+LinkedIn: the token of a Page renewed on its own
+
+- Added `c975l:social:linkedin:refresh`, nightly, three weeks before the token ends, `--force` to renew at once (02/11/2026)
+- `LinkedInClient`: the refresh token LinkedIn hands a Page app kept, added `canRefresh()`, `needsRefresh()`, `refresh()`, `refreshExpiresAt()` (02/11/2026)
+- Added configs `social-linkedin-refresh-token` and `social-linkedin-refresh-token-expires-at`, a connection handing none emptying them (02/11/2026) [Needs `c975l:config:load-all`]
+- `LinkedInClient`'s constructor takes `ConfigValueWriter` before `$statusDelay` (02/11/2026) [BC-Break]
+- `SocialLinkedInPageController`: the refresh token carried through the Page picked (02/11/2026)
+- The flash of a Page connected gives the refresh token's end, added `LinkedInClient::connectedUntil()` (02/11/2026)
+- A token answer not saying its lifetime counts 60 days (02/11/2026)
+- Removed the temporary message of v2.25.3 (02/11/2026)
+- The emails, the tile and the guided project no longer say 60 days for a Page (02/11/2026)
+
 ## v2.25.3
 
 LinkedIn: whether the app gets a refresh token, said at the connection

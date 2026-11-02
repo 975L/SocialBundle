@@ -15,7 +15,7 @@ use c975L\ConfigBundle\Management\HealthCheckProviderInterface;
 use c975L\SocialBundle\Service\LinkedInClient;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// The LinkedIn token ends on its own after 60 days, LinkedIn handing no refresh token: the posts then fail one after the other. Said a fortnight ahead, while reconnecting is one click, and again once it is too late. Read from the config only, no call to LinkedIn
+// The LinkedIn token ends on its own after 60 days, on a profile app always, on a Page app when its renewal stopped or its refresh token nears its end: the posts then fail one after the other. Said a fortnight ahead, while reconnecting is one click, and again once it is too late. Read from the config only, no call to LinkedIn
 class LinkedInHealthCheckProvider implements HealthCheckProviderInterface
 {
     public const string KIND = 'social-linkedin';

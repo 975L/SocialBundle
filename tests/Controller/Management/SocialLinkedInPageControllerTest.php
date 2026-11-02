@@ -100,12 +100,28 @@ class SocialLinkedInPageControllerTest extends TestCase
             'social-linkedin-access-token' => 'token',
             'social-linkedin-member-id' => 'abc',
             'social-linkedin-token-expires-at' => '2026-12-02T10:00:00+01:00',
+            'social-linkedin-refresh-token' => null,
+            'social-linkedin-refresh-token-expires-at' => null,
             'social-linkedin-organization-id' => '111',
             'social-linkedin-organization-name' => '975L',
         ]], $this->written);
         $this->assertSame(['success' => ['flash.linkedin_page_connected']], $this->flashes($request));
         $this->assertNull($request->getSession()->get(SocialLinkedInPageController::SESSION_CONNECTION));
         $this->assertSame('/management_social_connections', $response->getTargetUrl());
+    }
+
+    // The refresh token a Page app was handed goes through the session with the rest, or the site with several Pages would never renew
+    public function testTheRefreshTokenHeldIsStoredWithThePagePicked(): void
+    {
+        $request = $this->createRequest(organizationId: '111');
+        $held = $request->getSession()->get(SocialLinkedInPageController::SESSION_CONNECTION);
+        $held['connection'] += ['refreshToken' => 'the-refresh', 'refreshExpiresAt' => '2027-11-02T10:00:00+01:00'];
+        $request->getSession()->set(SocialLinkedInPageController::SESSION_CONNECTION, $held);
+
+        $this->createController($request)->index($request);
+
+        $this->assertSame('the-refresh', $this->written[0]['social-linkedin-refresh-token']);
+        $this->assertSame('2027-11-02T10:00:00+01:00', $this->written[0]['social-linkedin-refresh-token-expires-at']);
     }
 
     // A forged form, or a Page the member does not administer, writes nothing and says so

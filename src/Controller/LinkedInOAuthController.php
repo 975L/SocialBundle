@@ -23,7 +23,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use function Symfony\Component\Translation\t;
 
-// The two routes of the LinkedIn connection, the same shape as the Meta one (see MetaOAuthController): the member consents, and the site keeps the token the posts on the member's profile, or on a Page they administer, are made with - for its 60 days, LinkedIn handing no refresh token. One callback for both, so the redirect url declared in the app stays the same
+// The two routes of the LinkedIn connection, the same shape as the Meta one (see MetaOAuthController): the member consents, and the site keeps the token the posts on the member's profile, or on a Page they administer, are made with, and the refresh token LinkedIn hands a Page app. One callback for both, so the redirect url declared in the app stays the same
 class LinkedInOAuthController extends AbstractController
 {
     use OAuthStateTrait;
@@ -91,16 +91,11 @@ class LinkedInOAuthController extends AbstractController
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
-        // Temporary, the answer to whether this app gets a refresh token: no such message means none. Not translated, it goes with the test
-        if (isset($connection['refreshTokenExpiresIn'])) {
-            $this->addFlash('success', sprintf('LinkedIn handed a refresh token, valid %d days.', (int) ($connection['refreshTokenExpiresIn'] / 86400)));
-        }
-
         return $page ? $this->page($request, $connection) : $this->profile($connection);
     }
 
     // The member's own profile: a Page connected before is emptied, or the posts would still go out on it
-    /** @param array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable, name: string, organizations: list<array{id: string, name: string}>} $connection */
+    /** @param array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable, name: string, organizations: list<array{id: string, name: string}>, refreshToken?: string, refreshExpiresAt?: string} $connection */
     private function profile(array $connection): RedirectResponse
     {
         $this->configValueWriter->write(LinkedInClient::connectionValues($connection));
@@ -117,7 +112,7 @@ class LinkedInOAuthController extends AbstractController
     }
 
     // A Page the member administers: none refused, a single one stored at once, several held in the session - the end as a string - for "Choisir la Page LinkedIn" to pick from
-    /** @param array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable, name: string, organizations: list<array{id: string, name: string}>} $connection */
+    /** @param array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable, name: string, organizations: list<array{id: string, name: string}>, refreshToken?: string, refreshExpiresAt?: string} $connection */
     private function page(Request $request, array $connection): RedirectResponse
     {
         if ([] === $connection['organizations']) {
@@ -128,7 +123,7 @@ class LinkedInOAuthController extends AbstractController
 
         if (1 === \count($connection['organizations'])) {
             $this->configValueWriter->write(LinkedInClient::connectionValues($connection, $connection['organizations'][0]));
-            $this->addFlash('success', t('flash.linkedin_page_connected', ['%name%' => $connection['organizations'][0]['name'], '%date%' => $connection['expiresAt']->format('d/m/Y')], 'social'));
+            $this->addFlash('success', t('flash.linkedin_page_connected', ['%name%' => $connection['organizations'][0]['name'], '%date%' => LinkedInClient::connectedUntil($connection)], 'social'));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }

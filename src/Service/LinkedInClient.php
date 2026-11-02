@@ -14,7 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-// Everything that talks to LinkedIn: the connection of the member whose profile, or whose Page, the posts go out on, then the calls LinkedInPublisher makes with the token it stores - one stubable seam, same shape as MetaGraphClient. A profile is reached through an app with the two self-serve products "Share on LinkedIn" and "Sign In with LinkedIn using OpenID Connect", a Page through an app with the "Community Management API" alone, which LinkedIn wants as the only product of its app: no refresh token either way, so the token lasts its 60 days and the member connects again
+// Everything that talks to LinkedIn: the connection of the member whose profile, or whose Page, the posts go out on, then the calls LinkedInPublisher makes with the token it stores - one stubable seam, same shape as MetaGraphClient. A profile is reached through an app with the two self-serve products "Share on LinkedIn" and "Sign In with LinkedIn using OpenID Connect", a Page through an app with the "Community Management API" alone, which LinkedIn wants as the only product of its app. The token lasts 60 days: a Page app is handed a refresh token, a year long, that c975l:social:linkedin:refresh renews it from; a profile app none, its member connecting again
 class LinkedInClient
 {
     use ConfigValuesTrait;
@@ -34,6 +34,14 @@ class LinkedInClient
     // Posting as a Page the member administers, and reading who the member is and which Pages they administer - an app of the Community Management API having no OpenID Connect to ask "openid profile" of
     public const string PAGE_SCOPES = 'r_basicprofile w_member_social w_organization_social rw_organization_admin';
 
+    // An access token this close to its end is renewed by the nightly command - ahead of the first reminder, which only goes when the renewal did not work
+    public const string REFRESH_BEFORE = '+21 days';
+
+    // What the tokens last when LinkedIn does not say
+    private const int ACCESS_LIFETIME = 5184000;
+
+    private const int REFRESH_LIFETIME = 31536000;
+
     // LinkedIn processes an uploaded video before a post may carry it: asked again this many times, this many seconds apart - about five minutes in 30 calls, the development tier of the Community Management API counting every one of them in its daily quota
     private const int VIDEO_STATUS_ATTEMPTS = 30;
 
@@ -46,6 +54,7 @@ class LinkedInClient
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly ConfigServiceInterface $configService,
+        private readonly ConfigValueWriter $configValueWriter,
         private readonly int $statusDelay = 10,
     ) {
     }
@@ -76,6 +85,73 @@ class LinkedInClient
         }
     }
 
+    // When the refresh token stops working, null when there is none
+    public function refreshExpiresAt(): ?\DateTimeImmutable
+    {
+        return $this->date('social-linkedin-refresh-token-expires-at');
+    }
+
+    // Whether a refresh token is held and still valid - a profile app never having one
+    public function canRefresh(): bool
+    {
+        $refreshExpiresAt = $this->refreshExpiresAt();
+
+        return '' !== $this->config('social-linkedin-refresh-token') && (null === $refreshExpiresAt || $refreshExpiresAt > new \DateTimeImmutable());
+    }
+
+    // Whether the access token ends within REFRESH_BEFORE, or is gone
+    public function needsRefresh(): bool
+    {
+        $expiresAt = $this->expiresAt();
+
+        return null === $expiresAt || $expiresAt <= new \DateTimeImmutable(self::REFRESH_BEFORE);
+    }
+
+    // Trades the refresh token for a new access token and stores it at once. The refresh token's end does not move: past it the member consents again, the last access token ending with it for the reminders to say so
+    public function refresh(): void
+    {
+        $response = $this->httpClient->request('POST', self::TOKEN, [
+            'body' => [
+                'grant_type' => 'refresh_token',
+                'refresh_token' => $this->config('social-linkedin-refresh-token'),
+                'client_id' => $this->config('social-linkedin-client-id'),
+                'client_secret' => $this->config('social-linkedin-client-secret'),
+            ],
+            'timeout' => 30,
+        ]);
+
+        // Decoded rather than toArray(): an HTML error page has to end as the refusal below, not as a JsonException no caller expects
+        $token = json_decode($response->getContent(false), true);
+        $token = \is_array($token) ? $token : [];
+        if (200 !== $response->getStatusCode() || !isset($token['access_token'])) {
+            throw new \RuntimeException('LinkedIn refused the refresh: ' . ($token['error_description'] ?? $response->getStatusCode()));
+        }
+
+        $refresh = $this->refreshValues($token);
+        $this->configValueWriter->write([
+            'social-linkedin-access-token' => (string) $token['access_token'],
+            'social-linkedin-token-expires-at' => new \DateTimeImmutable('+' . (int) ($token['expires_in'] ?? self::ACCESS_LIFETIME) . ' seconds')->format(\DateTimeInterface::ATOM),
+        ] + ([] === $refresh ? [] : ['social-linkedin-refresh-token' => $refresh['refreshToken'], 'social-linkedin-refresh-token-expires-at' => $refresh['refreshExpiresAt']]));
+    }
+
+    // The refresh token of a token answer and its end as a string, what the picker's session holds too - nothing when LinkedIn hands none
+    /**
+     * @param array<mixed> $token
+     *
+     * @return array{refreshToken: string, refreshExpiresAt: string}|array{}
+     */
+    private function refreshValues(array $token): array
+    {
+        if (!isset($token['refresh_token'])) {
+            return [];
+        }
+
+        return [
+            'refreshToken' => (string) $token['refresh_token'],
+            'refreshExpiresAt' => new \DateTimeImmutable('+' . (int) ($token['refresh_token_expires_in'] ?? self::REFRESH_LIFETIME) . ' seconds')->format(\DateTimeInterface::ATOM),
+        ];
+    }
+
     // Whether the posts go out on a Page rather than on the member's profile
     public function isPage(): bool
     {
@@ -101,7 +177,7 @@ class LinkedInClient
     }
 
     // Trades the code the callback received for the token, then asks who the member is - what the posts are signed with - and, for a Page, which Pages they administer, none being for the caller to refuse
-    /** @return array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable, name: string, organizations: list<array{id: string, name: string}>, refreshTokenExpiresIn?: int} */
+    /** @return array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable, name: string, organizations: list<array{id: string, name: string}>, refreshToken?: string, refreshExpiresAt?: string} */
     public function connect(string $code, string $redirectUri, bool $page = false): array
     {
         $response = $this->httpClient->request('POST', self::TOKEN, [
@@ -122,20 +198,14 @@ class LinkedInClient
         $accessToken = (string) $token['access_token'];
         [$memberId, $name] = $page ? $this->pageMember($accessToken) : $this->profileMember($accessToken);
 
-        $connection = [
+        return [
             'accessToken' => $accessToken,
             'memberId' => $memberId,
-            'expiresAt' => new \DateTimeImmutable('+' . (int) ($token['expires_in'] ?? 0) . ' seconds'),
+            'expiresAt' => new \DateTimeImmutable('+' . (int) ($token['expires_in'] ?? self::ACCESS_LIFETIME) . ' seconds'),
             'name' => $name,
             'organizations' => $page ? $this->organizations($accessToken) : [],
+            ...$this->refreshValues($token),
         ];
-
-        // Temporary, to learn whether LinkedIn hands this app a refresh token: only its lifetime is read, the token itself is not kept
-        if (isset($token['refresh_token'])) {
-            $connection['refreshTokenExpiresIn'] = (int) ($token['refresh_token_expires_in'] ?? 0);
-        }
-
-        return $connection;
     }
 
     // The member's id and name through OpenID Connect, the profile app's
@@ -208,12 +278,12 @@ class LinkedInClient
         return $names;
     }
 
-    // The configs a connection writes, all at once: the token, the member - whom isConnected() reads, a Page connected or not - and its end, plus the Page picked when there is one
+    // The configs a connection writes, all at once: the token, the member - whom isConnected() reads, a Page connected or not - and its end, the refresh token emptied when none came so an earlier one cannot outlive it, plus the Page picked when there is one
     /**
-     * @param array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable} $connection
-     * @param array{id: string, name: string}|null                                        $organization
+     * @param array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable, refreshToken?: string, refreshExpiresAt?: string} $connection
+     * @param array{id: string, name: string}|null                                                                                          $organization
      *
-     * @return array<string, string>
+     * @return array<string, string|null>
      */
     public static function connectionValues(array $connection, ?array $organization = null): array
     {
@@ -221,9 +291,18 @@ class LinkedInClient
             'social-linkedin-access-token' => $connection['accessToken'],
             'social-linkedin-member-id' => $connection['memberId'],
             'social-linkedin-token-expires-at' => $connection['expiresAt']->format(\DateTimeInterface::ATOM),
+            'social-linkedin-refresh-token' => $connection['refreshToken'] ?? null,
+            'social-linkedin-refresh-token-expires-at' => $connection['refreshExpiresAt'] ?? null,
         ];
 
         return null === $organization ? $values : $values + ['social-linkedin-organization-id' => $organization['id'], 'social-linkedin-organization-name' => $organization['name']];
+    }
+
+    // The day a connection lasts until, as its flash says it: its refresh token's end when it renews itself, its token's otherwise
+    /** @param array{expiresAt: \DateTimeImmutable, refreshExpiresAt?: string} $connection */
+    public static function connectedUntil(array $connection): string
+    {
+        return (isset($connection['refreshExpiresAt']) ? new \DateTimeImmutable($connection['refreshExpiresAt']) : $connection['expiresAt'])->format('d/m/Y');
     }
 
     // Uploads an image for a post, answering the urn the post refers to it by

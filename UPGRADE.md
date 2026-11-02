@@ -1,5 +1,11 @@
 # Upgrade
 
+## To 2.26
+
+**Config:** run `c975l:config:load-all` for `social-linkedin-refresh-token` and `social-linkedin-refresh-token-expires-at` (a LinkedIn connection refuses to store itself without them), then "Connecter une Page" once on each site publishing on a Page, the token until then not renewing. `c975l:social:linkedin:refresh` is scheduled nightly by `SocialMaintenanceTaskProvider`.
+
+**Code:** `LinkedInClient`'s constructor takes `ConfigValueWriter` as its third argument, before `$statusDelay`.
+
 ## To 2.25
 
 **Database:** `social_post` gains `import_key` and `import_hash` (null by default), the key a JSON import gave the post and the hash of what it wrote, `import_key` unique in its series (`social_post_series_import_key`) - a site's own migration (`doctrine:migrations:diff`, then `migrate`).

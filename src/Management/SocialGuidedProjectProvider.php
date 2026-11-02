@@ -462,7 +462,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
         ];
     }
 
-    // Meta's parcours again, for LinkedIn: the app is created on linkedin.com/developers, its two keys are restricted configs, then consenting fills the token and the member, and the Page when it is a Page app - for 60 days, LinkedIn handing no refresh token
+    // Meta's parcours again, for LinkedIn: the app is created on linkedin.com/developers, its two keys are restricted configs, then consenting fills the token and the member, and the Page when it is a Page app - for 60 days on a profile, a Page app's token renewing itself for a year
     private function linkedinConnectProject(): array
     {
         return [
