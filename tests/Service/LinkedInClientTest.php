@@ -50,6 +50,25 @@ class LinkedInClientTest extends TestCase
         $this->assertSame('https://api.linkedin.com/v2/userinfo', $this->calls[1]['url']);
     }
 
+    // A refresh token LinkedIn hands is told by its lifetime alone, the token itself going nowhere - none handed, nothing told
+    public function testTheConnectionTellsARefreshTokenWithoutKeepingIt(): void
+    {
+        $connection = $this->client([
+            new MockResponse('{"access_token": "new-token", "expires_in": 5184000, "refresh_token": "secret-refresh", "refresh_token_expires_in": 31536000}'),
+            new MockResponse('{"sub": "xyz"}'),
+        ])->connect('code', 'https://example.org/social/linkedin/callback');
+
+        $this->assertSame(31536000, $connection['refreshTokenExpiresIn']);
+        $this->assertNotContains('secret-refresh', $connection);
+
+        $connection = $this->client([
+            new MockResponse('{"access_token": "new-token", "expires_in": 5184000}'),
+            new MockResponse('{"sub": "xyz"}'),
+        ])->connect('code', 'https://example.org/social/linkedin/callback');
+
+        $this->assertArrayNotHasKey('refreshTokenExpiresIn', $connection);
+    }
+
     // A profile asks what OpenID Connect gives, a Page what the Community Management API gives - its app having no OpenID Connect
     public function testTheConsentAsksTheScopesOfTheConnection(): void
     {

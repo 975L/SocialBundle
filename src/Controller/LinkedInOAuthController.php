@@ -91,6 +91,11 @@ class LinkedInOAuthController extends AbstractController
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
+        // Temporary, the answer to whether this app gets a refresh token: no such message means none. Not translated, it goes with the test
+        if (isset($connection['refreshTokenExpiresIn'])) {
+            $this->addFlash('success', sprintf('LinkedIn handed a refresh token, valid %d days.', (int) ($connection['refreshTokenExpiresIn'] / 86400)));
+        }
+
         return $page ? $this->page($request, $connection) : $this->profile($connection);
     }
 

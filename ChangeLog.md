@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.25.3
+
+LinkedIn: whether the app gets a refresh token, said at the connection
+
+- `LinkedInClient::connect()`: the lifetime of a refresh token LinkedIn hands, the token itself not kept (02/11/2026)
+- `LinkedInOAuthController`: a temporary message when there is one, none otherwise (02/11/2026)
+
 ## v2.25.2
 
 Pages and images read on the public web alone, intros sanitized

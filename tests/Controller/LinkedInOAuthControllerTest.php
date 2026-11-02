@@ -108,6 +108,20 @@ class LinkedInOAuthControllerTest extends TestCase
         $this->assertNull($request->getSession()->get('social_linkedin_oauth_page'));
     }
 
+    // A refresh token handed is said on the screen, in days, and written nowhere
+    public function testCallbackSaysWhenLinkedInHandsARefreshToken(): void
+    {
+        $written = [];
+        $linkedInClient = $this->createStub(LinkedInClient::class);
+        $linkedInClient->method('connect')->willReturn(['accessToken' => 'token', 'memberId' => 'abc', 'expiresAt' => new \DateTimeImmutable('2026-12-02T10:00:00+01:00'), 'name' => 'Laurent', 'organizations' => [], 'refreshTokenExpiresIn' => 31536000]);
+        $request = $this->callbackRequest();
+
+        $this->createController($request, $linkedInClient, $this->recordingWriter($written))->callback($request);
+
+        $this->assertSame(['success' => ['LinkedIn handed a refresh token, valid 365 days.', 'flash.linkedin_connected']], $this->flashes($request));
+        $this->assertSame(['social-linkedin-access-token', 'social-linkedin-member-id', 'social-linkedin-token-expires-at'], array_keys($written[0]));
+    }
+
     // A site not yet through load-all has no Page to empty: the profile still connects
     public function testCallbackOfAProfileConnectsWithoutThePageConfigs(): void
     {

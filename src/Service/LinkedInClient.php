@@ -101,7 +101,7 @@ class LinkedInClient
     }
 
     // Trades the code the callback received for the token, then asks who the member is - what the posts are signed with - and, for a Page, which Pages they administer, none being for the caller to refuse
-    /** @return array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable, name: string, organizations: list<array{id: string, name: string}>} */
+    /** @return array{accessToken: string, memberId: string, expiresAt: \DateTimeImmutable, name: string, organizations: list<array{id: string, name: string}>, refreshTokenExpiresIn?: int} */
     public function connect(string $code, string $redirectUri, bool $page = false): array
     {
         $response = $this->httpClient->request('POST', self::TOKEN, [
@@ -122,13 +122,20 @@ class LinkedInClient
         $accessToken = (string) $token['access_token'];
         [$memberId, $name] = $page ? $this->pageMember($accessToken) : $this->profileMember($accessToken);
 
-        return [
+        $connection = [
             'accessToken' => $accessToken,
             'memberId' => $memberId,
             'expiresAt' => new \DateTimeImmutable('+' . (int) ($token['expires_in'] ?? 0) . ' seconds'),
             'name' => $name,
             'organizations' => $page ? $this->organizations($accessToken) : [],
         ];
+
+        // Temporary, to learn whether LinkedIn hands this app a refresh token: only its lifetime is read, the token itself is not kept
+        if (isset($token['refresh_token'])) {
+            $connection['refreshTokenExpiresIn'] = (int) ($token['refresh_token_expires_in'] ?? 0);
+        }
+
+        return $connection;
     }
 
     // The member's id and name through OpenID Connect, the profile app's
