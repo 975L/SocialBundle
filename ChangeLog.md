@@ -1,5 +1,19 @@
 # Changelog
 
+## v2.27.0
+
+TikTok: 2-hour access tokens and rotating refresh tokens
+
+- `TikTokClient::refresh()`: under a lock, the config read again behind it (02/11/2026)
+- `TikTokClient`'s constructor takes `LockFactory` and the environment (02/11/2026) [BC-Break]
+- Added `TikTokClient::renewsHere()`: the tokens renewed in `prod` only (02/11/2026)
+- `TikTokClient`: an access token refreshed a minute before it ends (02/11/2026)
+- A token answer not saying its lifetimes counts 2 hours and 180 days (02/11/2026)
+- `c975l:social:tiktok:refresh`: the first failing night still mailed with 2-hour tokens (02/11/2026)
+- `TikTokHealthCheckProvider`: an error past 36 hours without renewal (02/11/2026)
+- Config descriptions, README and skill: the new lifetimes (02/11/2026)
+- Requires `c975l/core-bundle` ^1.86.2 (02/11/2026)
+
 ## v2.26.1
 
 Corrected stale ci.sh comment

@@ -19,12 +19,15 @@ class TikTokRefreshCommandTest extends TestCase
 {
     use ConnectionCommandTestTrait;
 
-    private function refresh(bool $connected = true, ?\RuntimeException $refusal = null, string $expiresAt = '+2 hours', string $refreshExpiresAt = '+300 days'): int
+    private function refresh(bool $connected = true, ?\RuntimeException $refusal = null, string $expiresAt = '+2 hours', string $refreshExpiresAt = '+150 days', bool $renewsHere = true): int
     {
-        return $this->runCommand(TikTokRefreshCommand::class, $this->refreshingClient(TikTokClient::class, $connected, $refusal, $expiresAt, $refreshExpiresAt));
+        $client = $this->refreshingClient(TikTokClient::class, $connected, $refusal, $expiresAt, $refreshExpiresAt);
+        $client->method('renewsHere')->willReturn($renewsHere);
+
+        return $this->runCommand(TikTokRefreshCommand::class, $client);
     }
 
-    // A token lasting 24 hours is renewed every night, quietly
+    // A token lasting 2 hours is renewed every night, quietly
     public function testTheTokensAreRenewedEveryNight(): void
     {
         $this->assertSame(Command::SUCCESS, $this->refresh());
@@ -39,6 +42,31 @@ class TikTokRefreshCommandTest extends TestCase
         $this->refresh(connected: false);
 
         $this->assertSame(0, $this->refreshed);
+    }
+
+    // Outside production nothing is asked of TikTok nor mailed, a database imported locally holding production's tokens
+    public function testNothingIsAskedOutsideProduction(): void
+    {
+        $this->assertSame(Command::SUCCESS, $this->refresh(refusal: new \RuntimeException('never reached'), renewsHere: false));
+
+        $this->assertSame(0, $this->refreshed);
+        $this->assertSame([], $this->mailed);
+    }
+
+    // The token of the night before, over for 22 hours when the night's run comes: the first failure, mailed all the same
+    public function testAFailureIsMailedWithATokenOverSinceTheNightBefore(): void
+    {
+        $this->refresh(refusal: new \RuntimeException('TikTok refused the connection: invalid_grant'), expiresAt: '-22 hours');
+
+        $this->assertCount(1, $this->mailed);
+    }
+
+    // The night's run hours late is still the first failure, mailed all the same
+    public function testAFailureIsMailedWhenTheNightsRunIsLate(): void
+    {
+        $this->refresh(refusal: new \RuntimeException('TikTok refused the connection: invalid_grant'), expiresAt: '-30 hours');
+
+        $this->assertCount(1, $this->mailed);
     }
 
     // A renewal TikTok refuses is mailed the first night, with the screen to connect again, the run still a success - an error would raise a CRITICAL alert
@@ -58,8 +86,8 @@ class TikTokRefreshCommandTest extends TestCase
         $this->refresh(refusal: $refusal, expiresAt: '-3 days');
         $this->assertSame([], $this->mailed);
 
-        // The second night, its run a little earlier than the first one's, stays quiet
-        $this->refresh(refusal: $refusal, expiresAt: '-23 hours 59 minutes');
+        // The second night, its token over for a day more, stays quiet
+        $this->refresh(refusal: $refusal, expiresAt: '-46 hours');
         $this->assertSame([], $this->mailed);
 
         $this->refresh(refusal: $refusal, expiresAt: '-20 days', refreshExpiresAt: 'today +' . TikTokRefreshCommand::LAST_REMINDER . ' days 12 hours');

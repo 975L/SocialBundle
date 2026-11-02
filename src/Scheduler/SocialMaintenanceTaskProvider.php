@@ -33,7 +33,7 @@ class SocialMaintenanceTaskProvider implements MaintenanceTaskProviderInterface
             new MaintenanceTask('# #(2-5) * * *', 'c975l:social:bluesky:reminder'),
             // The Pinterest tokens renewed, nightly - a no-op until the access token is a week from its end, the refresh token living 60 days
             new MaintenanceTask('# #(2-5) * * *', 'c975l:social:pinterest:refresh'),
-            // The TikTok tokens renewed, nightly - the access token lasting 24 hours, the refresh token a year
+            // The TikTok tokens renewed, nightly - the access token lasting 2 hours, the refresh token 180 days
             new MaintenanceTask('# #(2-5) * * *', 'c975l:social:tiktok:refresh'),
             // The LinkedIn token of a Page app renewed, nightly - a no-op until it is three weeks from its end, the refresh token living a year
             new MaintenanceTask('# #(2-5) * * *', 'c975l:social:linkedin:refresh'),

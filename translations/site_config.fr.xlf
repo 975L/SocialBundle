@@ -188,7 +188,7 @@
             </trans-unit>
             <trans-unit id="PV535Z9">
                 <source>description.social_tiktok_access_token</source>
-                <target>Renseigné par la connexion de la tuile TikTok de « Connexions », renouvelé chaque nuit par c975l:social:tiktok:refresh. Valable 24 heures.</target>
+                <target>Renseigné par la connexion de la tuile TikTok de « Connexions », renouvelé chaque nuit par c975l:social:tiktok:refresh. Valable 2 heures.</target>
             </trans-unit>
             <trans-unit id="GI90rUs">
                 <source>description.social_tiktok_client_key</source>
@@ -208,7 +208,7 @@
             </trans-unit>
             <trans-unit id="ygs8BW8">
                 <source>description.social_tiktok_refresh_token</source>
-                <target>Renseigné par la connexion, remplacé quand TikTok en donne un nouveau. Valable un an.</target>
+                <target>Renseigné par la connexion, remplacé à chaque renouvellement. Valable 180 jours.</target>
             </trans-unit>
             <trans-unit id="C0FKBx.">
                 <source>description.social_tiktok_refresh_token_expires_at</source>

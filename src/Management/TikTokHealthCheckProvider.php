@@ -15,7 +15,7 @@ use c975L\ConfigBundle\Management\HealthCheckProviderInterface;
 use c975L\SocialBundle\Service\TikTokClient;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// The TikTok tokens renew themselves nightly (see TikTokRefreshCommand): an access token over for more than a day says the refresh stopped working, a refresh token past its end that the account has to connect again. Read from the config only, no call to TikTok
+// The TikTok tokens renew themselves nightly (see TikTokRefreshCommand): an access token over for more than a day and a half says the refresh stopped working, a refresh token past its end that the account has to connect again. Read from the config only, no call to TikTok
 class TikTokHealthCheckProvider implements HealthCheckProviderInterface
 {
     public const string KIND = 'social-tiktok';
@@ -48,10 +48,10 @@ class TikTokHealthCheckProvider implements HealthCheckProviderInterface
             'editUrl' => $this->urlGenerator->generate('social_tiktok_oauth_connect'),
         ];
 
-        // A token lasting 24 hours is over for part of each day: only one not renewed for a day says the nightly refresh stopped
+        // A token lasting 2 hours is over for most of each day, up to 22 hours before the next night: only one over well past that says the nightly refresh stopped
         return [match (true) {
             $refreshExpiresAt <= $now => [...$row, 'status' => HealthCheckResult::STATUS_ERROR, 'summary' => 'The TikTok connection ended on ' . $refreshExpiresAt->format('d/m/Y') . ': nothing is posted until TikTok is connected again.'],
-            null === $expiresAt || $expiresAt <= $now->modify('-1 day') => [...$row, 'status' => HealthCheckResult::STATUS_ERROR, 'summary' => 'The TikTok access token is no longer renewed: is c975l:social:tiktok:refresh scheduled?'],
+            null === $expiresAt || $expiresAt <= $now->modify('-36 hours') => [...$row, 'status' => HealthCheckResult::STATUS_ERROR, 'summary' => 'The TikTok access token is no longer renewed: is c975l:social:tiktok:refresh scheduled?'],
             default => [...$row, 'status' => HealthCheckResult::STATUS_OK, 'summary' => 'TikTok is connected until ' . $refreshExpiresAt->format('d/m/Y') . ', its access token renewed every night.'],
         }];
     }

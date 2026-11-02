@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 // The tokens renew themselves: what is said is a renewal that stopped or a connection that ended
 class TikTokHealthCheckProviderTest extends TestCase
 {
-    private function checkStatus(?string $refreshExpiresAt, ?string $expiresAt = '+20 hours', bool $configured = true): ?string
+    private function checkStatus(?string $refreshExpiresAt, ?string $expiresAt = '+1 hour', bool $configured = true): ?string
     {
         $client = $this->createStub(TikTokClient::class);
         $client->method('isConfigured')->willReturn($configured);
@@ -38,14 +38,14 @@ class TikTokHealthCheckProviderTest extends TestCase
         $this->assertNull($this->checkStatus(null));
     }
 
-    // A token lasting 24 hours over for a few hours is the day's ordinary state
+    // A token lasting 2 hours over until the next night is the day's ordinary state, a night's run a little late included
     public function testARenewedConnectionIsFine(): void
     {
         $this->assertSame(HealthCheckResult::STATUS_OK, $this->checkStatus('+300 days'));
-        $this->assertSame(HealthCheckResult::STATUS_OK, $this->checkStatus('+300 days', '-3 hours'));
+        $this->assertSame(HealthCheckResult::STATUS_OK, $this->checkStatus('+300 days', '-26 hours'));
     }
 
-    // An access token not renewed for a day says the nightly renewal stopped, a refresh token past its end that the account has to connect again
+    // An access token not renewed for a day and a half says the nightly renewal stopped, a refresh token past its end that the account has to connect again
     public function testARenewalThatStoppedOrAConnectionThatEndedIsAnError(): void
     {
         $this->assertSame(HealthCheckResult::STATUS_ERROR, $this->checkStatus('+300 days', '-2 days'));

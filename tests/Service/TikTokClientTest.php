@@ -10,9 +10,13 @@
 
 namespace c975L\SocialBundle\Tests\Service;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Service\TikTokClient;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\Lock\LockFactory;
+use Symfony\Component\Lock\SharedLockInterface;
+use Symfony\Component\Lock\Store\InMemoryStore;
 
 class TikTokClientTest extends TestCase
 {
@@ -29,11 +33,11 @@ class TikTokClientTest extends TestCase
             'social-tiktok-client-secret' => 'secret',
             'social-tiktok-access-token' => 'act.token',
             'social-tiktok-refresh-token' => 'rft.token',
-            'social-tiktok-token-expires-at' => new \DateTimeImmutable('+20 hours')->format(\DateTimeInterface::ATOM),
+            'social-tiktok-token-expires-at' => new \DateTimeImmutable('+1 hour')->format(\DateTimeInterface::ATOM),
             'social-tiktok-refresh-token-expires-at' => new \DateTimeImmutable('+300 days')->format(\DateTimeInterface::ATOM),
         ];
 
-        return new TikTokClient($this->httpClient($responses, '{"data": {}, "error": {"code": "ok"}}'), $this->configService($config), $this->configValueWriter());
+        return new TikTokClient($this->httpClient($responses, '{"data": {}, "error": {"code": "ok"}}'), $this->configService($config), $this->configValueWriter(), new LockFactory(new InMemoryStore()));
     }
 
     // The consent asks reading the account and posting on it, nothing else, back to the route the app declares
@@ -48,13 +52,13 @@ class TikTokClientTest extends TestCase
     public function testTheConnectionKeepsBothTokensTheirEndsAndTheAccount(): void
     {
         $values = $this->client([
-            new MockResponse('{"access_token": "act.new", "refresh_token": "rft.new", "expires_in": 86400, "refresh_expires_in": 31536000, "open_id": "open-1"}'),
+            new MockResponse('{"access_token": "act.new", "refresh_token": "rft.new", "expires_in": 7200, "refresh_expires_in": 15552000, "open_id": "open-1"}'),
             new MockResponse('{"data": {"user": {"open_id": "open-1", "display_name": "Mystic Fable Studios"}}, "error": {"code": "ok"}}'),
         ])->connect('code', 'https://example.org/social/tiktok/callback');
 
         $this->assertSame(['act.new', 'rft.new', 'open-1', 'Mystic Fable Studios'], [$values['social-tiktok-access-token'], $values['social-tiktok-refresh-token'], $values['social-tiktok-open-id'], $values['social-tiktok-display-name']]);
-        $this->assertEqualsWithDelta(new \DateTimeImmutable('+1 day')->getTimestamp(), new \DateTimeImmutable($values['social-tiktok-token-expires-at'])->getTimestamp(), 5);
-        $this->assertEqualsWithDelta(new \DateTimeImmutable('+365 days')->getTimestamp(), new \DateTimeImmutable($values['social-tiktok-refresh-token-expires-at'])->getTimestamp(), 5);
+        $this->assertEqualsWithDelta(new \DateTimeImmutable('+2 hours')->getTimestamp(), new \DateTimeImmutable($values['social-tiktok-token-expires-at'])->getTimestamp(), 5);
+        $this->assertEqualsWithDelta(new \DateTimeImmutable('+180 days')->getTimestamp(), new \DateTimeImmutable($values['social-tiktok-refresh-token-expires-at'])->getTimestamp(), 5);
         $this->assertSame('https://open.tiktokapis.com/v2/oauth/token/', $this->calls[0]['url']);
         parse_str((string) $this->calls[0]['body'], $body);
         $this->assertSame(['key', 'secret', 'authorization_code', 'code'], [$body['client_key'], $body['client_secret'], $body['grant_type'], $body['code']]);
@@ -72,22 +76,127 @@ class TikTokClientTest extends TestCase
     // The refresh token traded for new tokens, stored at once
     public function testTheRefreshStoresTheNewTokens(): void
     {
-        $this->client([new MockResponse('{"access_token": "act.next", "refresh_token": "rft.next", "expires_in": 86400, "refresh_expires_in": 31536000}')])->refresh();
+        $this->client([new MockResponse('{"access_token": "act.next", "refresh_token": "rft.next", "expires_in": 7200, "refresh_expires_in": 15552000}')])->refresh();
 
         parse_str((string) $this->calls[0]['body'], $body);
         $this->assertSame(['refresh_token', 'rft.token'], [$body['grant_type'], $body['refresh_token']]);
         $this->assertSame(['act.next', 'rft.next'], [$this->written[0]['social-tiktok-access-token'], $this->written[0]['social-tiktok-refresh-token']]);
     }
 
+    // No refresh token left behind the lock: refused, nothing asked of TikTok
+    public function testARefreshWithoutAccountIsRefused(): void
+    {
+        try {
+            $this->client([], ['social-tiktok-refresh-token' => ''])->refresh();
+            $this->fail('A refresh without a refresh token has to be refused.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('No TikTok account is connected.', $exception->getMessage());
+        }
+        $this->assertSame([], $this->calls);
+    }
+
     // An access token over is refreshed before the call, the call then made with the new one
     public function testACallRefreshesAnAccessTokenOver(): void
     {
         $this->client([
-            new MockResponse('{"access_token": "act.next", "refresh_token": "rft.next", "expires_in": 86400}'),
+            new MockResponse('{"access_token": "act.next", "refresh_token": "rft.next", "expires_in": 7200}'),
             new MockResponse('{"data": {"publish_id": "p1"}, "error": {"code": "ok"}}'),
         ], ['social-tiktok-token-expires-at' => new \DateTimeImmutable('-1 hour')->format(\DateTimeInterface::ATOM)])->postVideo(['privacy_level' => 'SELF_ONLY'], 'https://example.org/video.mp4');
 
         $this->assertSame(['https://open.tiktokapis.com/v2/oauth/token/', 'https://open.tiktokapis.com/v2/post/publish/video/init/'], array_column($this->calls, 'url'));
+    }
+
+    // An answer not saying the lifetimes counts what TikTok documents
+    public function testAnAnswerWithoutLifetimesCountsTheDocumentedOnes(): void
+    {
+        $this->client([new MockResponse('{"access_token": "act.next", "refresh_token": "rft.next"}')])->refresh();
+
+        $this->assertEqualsWithDelta(new \DateTimeImmutable('+2 hours')->getTimestamp(), new \DateTimeImmutable((string) $this->written[0]['social-tiktok-token-expires-at'])->getTimestamp(), 5);
+        $this->assertEqualsWithDelta(new \DateTimeImmutable('+180 days')->getTimestamp(), new \DateTimeImmutable((string) $this->written[0]['social-tiktok-refresh-token-expires-at'])->getTimestamp(), 5);
+    }
+
+    // An access token a few seconds from its end is refreshed too, rather than dying on the way to TikTok
+    public function testACallRefreshesAnAccessTokenAboutToEnd(): void
+    {
+        $this->client([
+            new MockResponse('{"access_token": "act.next", "refresh_token": "rft.next", "expires_in": 7200}'),
+            new MockResponse('{"data": {"publish_id": "p1"}, "error": {"code": "ok"}}'),
+        ], ['social-tiktok-token-expires-at' => new \DateTimeImmutable('+30 seconds')->format(\DateTimeInterface::ATOM)])->postVideo(['privacy_level' => 'SELF_ONLY'], 'https://example.org/video.mp4');
+
+        $this->assertSame('https://open.tiktokapis.com/v2/oauth/token/', $this->calls[0]['url']);
+    }
+
+    // The configuration answering other values once its cache is dropped, as when another process stored new tokens during the wait for the lock
+    /** @param array<string, string> $after */
+    private function clientWhoseConfigChanges(array $after, MockResponse ...$responses): TikTokClient
+    {
+        $config = [
+            'social-tiktok-access-token' => 'act.token',
+            'social-tiktok-refresh-token' => 'rft.spent',
+            'social-tiktok-token-expires-at' => new \DateTimeImmutable('-1 hour')->format(\DateTimeInterface::ATOM),
+        ];
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnCallback(static function (string $key) use (&$config): ?string {
+            return $config[$key] ?? null;
+        });
+        $configService->method('invalidateCache')->willReturnCallback(static function () use (&$config, $after): void {
+            $config = $after + $config;
+        });
+
+        return new TikTokClient($this->httpClient(array_values($responses), '{"data": {}, "error": {"code": "ok"}}'), $configService, $this->configValueWriter(), new LockFactory(new InMemoryStore()));
+    }
+
+    // The refresh token read behind the lock, the one read before it possibly spent by another process
+    public function testTheRefreshSpendsTheTokenStoredBehindTheLock(): void
+    {
+        $this->clientWhoseConfigChanges(['social-tiktok-refresh-token' => 'rft.latest'], new MockResponse('{"access_token": "act.next", "refresh_token": "rft.next", "expires_in": 7200}'))->refresh();
+
+        parse_str((string) $this->calls[0]['body'], $body);
+        $this->assertSame('rft.latest', $body['refresh_token']);
+    }
+
+    // A call that waited for the lock uses what the other process renewed, spending nothing
+    public function testACallLeavesAloneATokenRenewedDuringItsWait(): void
+    {
+        $this->clientWhoseConfigChanges([
+            'social-tiktok-access-token' => 'act.renewed',
+            'social-tiktok-token-expires-at' => new \DateTimeImmutable('+2 hours')->format(\DateTimeInterface::ATOM),
+        ], new MockResponse('{"data": {"publish_id": "p1"}, "error": {"code": "ok"}}'))->postVideo(['privacy_level' => 'SELF_ONLY'], 'https://example.org/video.mp4');
+
+        $this->assertSame(['https://open.tiktokapis.com/v2/post/publish/video/init/'], array_column($this->calls, 'url'));
+        $this->assertContains('Authorization: Bearer act.renewed', $this->calls[0]['headers']);
+        $this->assertSame([], $this->written);
+    }
+
+    // The lock given back when TikTok refuses too, the next refresh not waiting on it
+    public function testTheLockIsReleasedOnARefusal(): void
+    {
+        $lock = $this->createMock(SharedLockInterface::class);
+        $lock->expects($this->once())->method('acquire')->with(true)->willReturn(true);
+        $lock->expects($this->once())->method('release');
+        $lockFactory = $this->createStub(LockFactory::class);
+        $lockFactory->method('createLock')->willReturn($lock);
+        $config = ['social-tiktok-refresh-token' => 'rft.token'];
+
+        $this->expectExceptionMessage('TikTok refused the connection: invalid_grant');
+
+        new TikTokClient($this->httpClient([new MockResponse('{"error": "invalid_grant"}', ['http_code' => 400])]), $this->configService($config), $this->configValueWriter(), $lockFactory)->refresh();
+    }
+
+    // Outside production nothing is spent, a database imported locally holding production's refresh token
+    public function testTheTokensAreOnlyRenewedInProduction(): void
+    {
+        $client = new TikTokClient($this->httpClient([]), $this->configService(['social-tiktok-refresh-token' => 'rft.token']), $this->configValueWriter(), new LockFactory(new InMemoryStore()), 'dev');
+
+        $this->assertFalse($client->renewsHere());
+        try {
+            $client->refresh();
+            $this->fail('A refresh outside production has to be refused.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('The TikTok tokens are only renewed in production.', $exception->getMessage());
+        }
+        $this->assertSame([], $this->calls);
+        $this->assertSame([], $this->written);
     }
 
     // What the account allows, read once in a request, the post's screen and its check asking it together

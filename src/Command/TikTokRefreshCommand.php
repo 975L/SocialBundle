@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// TikTok's access token lasts 24 hours and its refresh token a year, a refresh possibly handing a new one: refreshed every night, the connection never lapses, even on a site posting nothing for months. A refresh TikTok refuses is mailed to "email-to", the account having to connect again - the first night it fails and 3 days before the connection ends, the nights between only warning. Scheduled nightly (see SocialMaintenanceTaskProvider)
+// TikTok's access token lasts 2 hours and its refresh token 180 days, a refresh handing a new one: refreshed every night, the connection never lapses, even on a site posting nothing for months. A refresh TikTok refuses is mailed to "email-to", the account having to connect again - the first night it fails and 3 days before the connection ends, the nights between only warning. Scheduled nightly (see SocialMaintenanceTaskProvider)
 #[AsCommand(
     name: 'c975l:social:tiktok:refresh',
     description: 'Renews the TikTok tokens before they expire',
@@ -44,7 +44,7 @@ class TikTokRefreshCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        if (!$this->tikTokClient->isConfigured() || !$this->tikTokClient->isConnected()) {
+        if (!$this->tikTokClient->isConfigured() || !$this->tikTokClient->isConnected() || !$this->tikTokClient->renewsHere()) {
             $io->success('No TikTok refresh due.');
 
             return Command::SUCCESS;
@@ -76,10 +76,10 @@ class TikTokRefreshCommand extends Command
         return Command::SUCCESS;
     }
 
-    // The first failing night - the access token, renewed every night, still valid or over for less than half a day, the next night's run then well past that whatever the scheduler's jitter - or LAST_REMINDER days before the refresh token ends
+    // The first failing night - the access token, renewed by the night before and lasting 2 hours, over for about 22 hours, the next night's run about 46, half a day of margin either way whatever the scheduler's jitter - or LAST_REMINDER days before the refresh token ends
     private function isMailDue(?\DateTimeImmutable $expiresAt): bool
     {
-        $firstNight = null !== $expiresAt && $expiresAt > new \DateTimeImmutable('-12 hours');
+        $firstNight = null !== $expiresAt && $expiresAt > new \DateTimeImmutable('-34 hours');
 
         return $firstNight || self::LAST_REMINDER === $this->daysLeft($this->tikTokClient->refreshExpiresAt());
     }

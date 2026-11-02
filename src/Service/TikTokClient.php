@@ -11,10 +11,12 @@
 namespace c975L\SocialBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Lock\LockFactory;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\Service\ResetInterface;
 
-// Everything that talks to TikTok: the connection of the account the videos go out on, what that account may post right now, then the post and its processing - one stubable seam, same shape as PinterestClient. TikTok hands a refresh token: the access token lasts 24 hours, the refresh token a year, and each refresh may hand a new one, so the nightly c975l:social:tiktok:refresh keeps the connection alive. A sandbox is no other host: its own client key and secret are the whole difference
+// Everything that talks to TikTok: the connection of the account the videos go out on, what that account may post right now, then the post and its processing - one stubable seam, same shape as PinterestClient. TikTok hands a refresh token: the access token lasts 2 hours, the refresh token 180 days, and each refresh hands a new one and kills the old, so the nightly c975l:social:tiktok:refresh keeps the connection alive. A sandbox is no other host: its own client key and secret are the whole difference
 class TikTokClient implements ResetInterface
 {
     use ConfigValuesTrait;
@@ -27,9 +29,15 @@ class TikTokClient implements ResetInterface
     public const string SCOPES = 'user.info.basic,video.publish';
 
     // What TikTok's documentation gives, for a token exchange that would not say
-    private const int ACCESS_LIFETIME = 86400;
+    private const int ACCESS_LIFETIME = 7200;
 
-    private const int REFRESH_LIFETIME = 31536000;
+    private const int REFRESH_LIFETIME = 15552000;
+
+    // An access token refreshed this many seconds before it ends, so it never runs out between the check and the call
+    private const int EXPIRY_MARGIN = 60;
+
+    // What every refresh takes (see refresh()), two processes spending the same refresh token ending the connection
+    private const string REFRESH_LOCK = 'social_tiktok_refresh';
 
     // The account's settings once asked in this request, the post's screen and its check asking them together - forgotten between a worker's messages (see reset())
     /** @var array{nickname: string, privacy_options: list<string>, comment_disabled: bool, duet_disabled: bool, stitch_disabled: bool, max_duration: ?int}|null */
@@ -39,6 +47,9 @@ class TikTokClient implements ResetInterface
         private readonly HttpClientInterface $httpClient,
         private readonly ConfigServiceInterface $configService,
         private readonly ConfigValueWriter $configValueWriter,
+        private readonly LockFactory $lockFactory,
+        #[Autowire(param: 'kernel.environment')]
+        private readonly string $environment = 'prod',
     ) {
     }
 
@@ -100,15 +111,36 @@ class TikTokClient implements ResetInterface
         return $values + ['social-tiktok-display-name' => $name];
     }
 
-    // Trades the refresh token for new ones and stores them at once, a new refresh token replacing the old one
-    public function refresh(): void
+    // Whether this environment may spend the refresh token: a database imported locally holds production's, the vault key being the same, and refreshing it there would end production's connection
+    public function renewsHere(): bool
     {
-        $refreshToken = $this->config('social-tiktok-refresh-token');
-        if ('' === $refreshToken) {
-            throw new \RuntimeException('No TikTok account is connected.');
+        return 'prod' === $this->environment;
+    }
+
+    // Trades the refresh token for new ones and stores them at once, the old one dying with the exchange: under a lock, the config read again behind it for the token another process just stored, $onlyIfOver leaving alone an access token it just renewed
+    public function refresh(bool $onlyIfOver = false): void
+    {
+        if (!$this->renewsHere()) {
+            throw new \RuntimeException('The TikTok tokens are only renewed in production.');
         }
 
-        $this->configValueWriter->write($this->token(['grant_type' => 'refresh_token', 'refresh_token' => $refreshToken]));
+        $lock = $this->lockFactory->createLock(self::REFRESH_LOCK);
+        $lock->acquire(true);
+        try {
+            $this->configService->invalidateCache();
+            if ($onlyIfOver && !$this->isAccessOver()) {
+                return;
+            }
+
+            $refreshToken = $this->config('social-tiktok-refresh-token');
+            if ('' === $refreshToken) {
+                throw new \RuntimeException('No TikTok account is connected.');
+            }
+
+            $this->configValueWriter->write($this->token(['grant_type' => 'refresh_token', 'refresh_token' => $refreshToken]));
+        } finally {
+            $lock->release();
+        }
     }
 
     // What the account may post right now: its name, the privacy levels it offers, the interactions it turned off, the longest video it takes - asked live, as TikTok requires of the screen a post is approved on, and again by $fresh just before each post
@@ -182,6 +214,14 @@ class TikTokClient implements ResetInterface
         ], static fn (string $value): bool => '' !== $value);
     }
 
+    // Whether the access token is over, or about to be
+    private function isAccessOver(): bool
+    {
+        $expiresAt = $this->expiresAt();
+
+        return null === $expiresAt || $expiresAt <= new \DateTimeImmutable('+' . self::EXPIRY_MARGIN . ' seconds');
+    }
+
     // One API call, JSON both ways, the access token refreshed first when it is over. TikTok may refuse with a 200, its "error.code" then saying so rather than the status line
     /**
      * @param array<string, mixed>|null $json
@@ -190,9 +230,8 @@ class TikTokClient implements ResetInterface
      */
     private function request(string $method, string $path, ?array $json, ?string $accessToken = null): array
     {
-        $expiresAt = $this->expiresAt();
-        if (null === $accessToken && (null === $expiresAt || $expiresAt <= new \DateTimeImmutable())) {
-            $this->refresh();
+        if (null === $accessToken && $this->isAccessOver()) {
+            $this->refresh(true);
         }
 
         $response = $this->httpClient->request($method, self::API . $path, [

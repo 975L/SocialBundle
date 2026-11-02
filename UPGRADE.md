@@ -1,5 +1,9 @@
 # Upgrade
 
+## To 2.27
+
+**Code:** `TikTokClient`'s constructor takes `LockFactory` as its fourth argument, then the environment. Its tokens are only renewed in the `prod` environment.
+
 ## To 2.26
 
 **Config:** run `c975l:config:load-all` for `social-linkedin-refresh-token` and `social-linkedin-refresh-token-expires-at` (a LinkedIn connection refuses to store itself without them), then "Connecter une Page" once on each site publishing on a Page, the token until then not renewing. `c975l:social:linkedin:refresh` is scheduled nightly by `SocialMaintenanceTaskProvider`.
