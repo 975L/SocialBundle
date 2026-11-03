@@ -55,6 +55,16 @@ class SocialLinksTextStyleTest extends TestCase
         $this->assertStringContainsString("{% if not display_label and icon_style != 'text' %} hidden{% endif %}", $template);
     }
 
+    // A custom logo is rarely square, and its box is: without this a wide one comes out squeezed
+    public function testTheStylesheetKeepsTheProportionsOfACustomLogo(): void
+    {
+        foreach (['public/css/styles.css', 'public/css/styles.min.css'] as $file) {
+            $css = $this->read($file);
+
+            $this->assertStringContainsString('object-fit', $css, sprintf('"%s" stretches a logo that is not square - rebuild it from sass/_social.scss.', $file));
+        }
+    }
+
     // The pill belongs to the glyph: drawn around a bare word, a background and a radius read as a button
     public function testTheStylesheetStripsThePillFromTheTextStyle(): void
     {

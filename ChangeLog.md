@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.28.1
+
+Custom logos keep their proportions, CI on PHP 8.5 and 8.6
+
+- CI runs the tests on PHP 8.5 and 8.6 besides the quality job on 8.4 (03/11/2026)
+- `bin/ci.sh` runs the tests on each other PHP version installed locally (03/11/2026)
+- `bin/ci.sh`: lizard unpinned, as in the CI (03/11/2026)
+- `ci.yml`: lizard comment corrected (03/11/2026)
+- Custom logos keep their proportions in the social links (03/11/2026)
+- `bin/ci.sh`: Composer states why a PHP version failed to resolve (03/11/2026)
+
 ## v2.28.0
 
 Series choosing their contents by each post's planned date

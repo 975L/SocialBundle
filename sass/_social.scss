@@ -60,10 +60,12 @@ footer .social-links-block {
     background-color: color-mix(in srgb, currentColor 15%, transparent);
 }
 
+// "contain": a custom logo is rarely square, and the box would otherwise stretch it
 .icon.social-link-icon {
     width: 32px;
     height: 32px;
     flex-shrink: 0;
+    object-fit: contain;
 }
 
 // Text only, the network's name standing as the link. The pill goes with the glyph: a background and a radius drawn around a bare word read as a button rather than as a link, and the row is meant to sit in a footer among the site's other text links. Nothing is colored here, so the row follows whatever it is placed in
