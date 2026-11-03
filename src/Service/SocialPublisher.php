@@ -258,6 +258,31 @@ class SocialPublisher
         }
     }
 
+    // A post removed, false while a "Publish" is sending it: what goes out then would leave no record. $keepGoneOut also keeps one that "Publish" just saved as gone out
+    public function delete(SocialPost $post, bool $keepGoneOut = false): bool
+    {
+        $lock = $this->lockFactory->createLock('social_post_publish_' . $post->getId());
+        if (!$lock->acquire()) {
+            return false;
+        }
+
+        try {
+            foreach ($post->getTargets() as $target) {
+                $this->entityManager->refresh($target);
+            }
+            if ($keepGoneOut && $post->hasGoneOut()) {
+                return false;
+            }
+
+            $this->entityManager->remove($post);
+            $this->entityManager->flush();
+
+            return true;
+        } finally {
+            $lock->release();
+        }
+    }
+
     // A post written on its screen, planned at $at and ticked on every network connected but those of videos alone, ticked once a video is added - one empty text each, written from the post's text once it is saved (see rewriteTargets())
     public function createManual(\DateTimeImmutable $at): SocialPost
     {

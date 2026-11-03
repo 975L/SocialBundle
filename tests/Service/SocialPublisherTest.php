@@ -50,6 +50,9 @@ class SocialPublisherTest extends TestCase
     /** @var list<object> */
     private array $persisted = [];
 
+    /** @var list<object> */
+    private array $removed = [];
+
     /** @var array<string, array{excluded?: list<string>, since?: ?\DateTimeImmutable, scopes?: list<string>, networks?: list<string>}> */
     private array $asked = [];
 
@@ -201,6 +204,9 @@ class SocialPublisherTest extends TestCase
         $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('persist')->willReturnCallback(function (object $entity): void {
             $this->persisted[] = $entity;
+        });
+        $entityManager->method('remove')->willReturnCallback(function (object $entity): void {
+            $this->removed[] = $entity;
         });
 
         return new SocialPublisher(
@@ -692,6 +698,38 @@ class SocialPublisherTest extends TestCase
         $this->assertNull($publisher->publish($post));
         $this->assertSame([], $this->published);
         $this->assertSame(SocialPostStatus::Draft, $post->getTargets()->first()->getStatus());
+    }
+
+    // A post is deleted once no "Publish" holds it, what goes out meanwhile would leave no record
+    public function testAPostBeingPublishedIsNotDeleted(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'bluesky', 'Text');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createNetwork('bluesky')]);
+        // Held in a variable: a lock nothing refers to anymore releases itself
+        $firstClick = $this->lockFactory->createLock('social_post_publish_' . $post->getId());
+        $firstClick->acquire();
+
+        $this->assertFalse($publisher->delete($post));
+        $this->assertSame([], $this->removed);
+
+        $firstClick->release();
+        $this->assertTrue($publisher->delete($post));
+        $this->assertSame([$post], $this->removed);
+    }
+
+    // A post gone out stays when asked to, the list's deletion alone removing it
+    public function testAPostGoneOutIsKeptWhenAsked(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'bluesky', 'Text')->markPublished('ext-1');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createNetwork('bluesky')]);
+
+        $this->assertFalse($publisher->delete($post, true));
+        $this->assertSame([], $this->removed);
+
+        $this->assertTrue($publisher->delete($post));
+        $this->assertSame([$post], $this->removed);
     }
 
     // A content gone since it was prepared fails its targets rather than posting

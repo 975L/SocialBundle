@@ -92,6 +92,12 @@ class SocialCalendarControllerTest extends TestCase
     /** @var list<object> */
     private array $persisted = [];
 
+    /** @var list<object> */
+    private array $removed = [];
+
+    // Whether a "Publish" holds the post SocialPublisher::delete() is asked for
+    private bool $deleteHeld = false;
+
     // The networks SocialPublisher::retryFailed() was asked for, and what it answers - null while another "Publish" holds the post
     /** @var list<?string> */
     private array $retried = [];
@@ -254,6 +260,14 @@ class SocialCalendarControllerTest extends TestCase
             $this->retried[] = $network;
 
             return $this->retryReport;
+        });
+        $publisher->method('delete')->willReturnCallback(function (SocialPost $post): bool {
+            if ($this->deleteHeld) {
+                return false;
+            }
+            $this->removed[] = $post;
+
+            return true;
         });
         $publisher->method('addTargets')->willReturnCallback(function (SocialPost $post, array $networks): void {
             $this->added = $networks;
@@ -848,6 +862,28 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->networks(['linkedin'])->getStatusCode());
         $this->assertSame(['bluesky'], $this->post->getNetworks());
         $this->assertSame(0, $this->flushes);
+    }
+
+    // A draft is deleted; a forged request, a post being sent or one gone out deletes nothing
+    public function testADraftIsDeletedFromItsPanel(): void
+    {
+        $request = Request::create('/', 'POST', ['post' => '42']);
+        $request->headers->set('X-CSRF-Token', 'forged');
+        $this->assertSame(Response::HTTP_FORBIDDEN, $this->createController($request)->delete($request)->getStatusCode());
+        $this->assertSame([], $this->removed);
+
+        $request->headers->set('X-CSRF-Token', 'valid');
+        $this->assertSame(Response::HTTP_NO_CONTENT, $this->createController($request)->delete($request)->getStatusCode());
+        $this->assertSame([$this->post], $this->removed);
+
+        $this->removed = [];
+        $this->deleteHeld = true;
+        $this->assertSame(Response::HTTP_CONFLICT, $this->createController($request)->delete($request)->getStatusCode());
+        $this->assertSame([], $this->removed);
+
+        $this->post->getTargets()->first()->markPublished('id');
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->createController($request)->delete($request)->getStatusCode());
+        $this->assertSame([], $this->removed);
     }
 
     // The copy is saved, answered by the calendar's address on its day; a forged request copies nothing

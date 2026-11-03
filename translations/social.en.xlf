@@ -128,7 +128,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once or opens it to read its posts side by side, steps to its previous or next post with the arrows, reorders or removes its medias, enlarges them or plays its videos with a click, adds some from the site or by dropping files on it, changes its content, sends it again at once on a network that refused it, or duplicates it to the next day.</target>
+                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once or opens it to read its posts side by side, steps to its previous or next post with the arrows, reorders or removes its medias, enlarges them or plays its videos with a click, adds some from the site or by dropping files on it, changes its content, sends it again at once on a network that refused it, duplicates it to the next day or deletes it.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -1577,6 +1577,14 @@
             <trans-unit id="7W.yGmo">
                 <source>label.social_calendar_day</source>
                 <target>Day</target>
+            </trans-unit>
+            <trans-unit id="sUdZ_OX">
+                <source>label.social_calendar_delete</source>
+                <target>Delete</target>
+            </trans-unit>
+            <trans-unit id="hYDcRDD">
+                <source>label.social_calendar_delete_confirm</source>
+                <target>Delete this post? It will not go out.</target>
             </trans-unit>
             <trans-unit id="l0Dqa_D">
                 <source>label.social_calendar_drag_hint</source>

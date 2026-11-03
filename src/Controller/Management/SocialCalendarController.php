@@ -62,6 +62,8 @@ class SocialCalendarController extends AbstractController
 
     private const string DUPLICATE_ROUTE = 'management_social_calendar_duplicate';
 
+    private const string DELETE_ROUTE = 'management_social_calendar_delete';
+
     private const string RETRY_ROUTE = 'management_social_calendar_retry';
 
     private const string FEED_TOKEN_ROUTE = 'management_social_calendar_feed_token';
@@ -172,6 +174,7 @@ class SocialCalendarController extends AbstractController
             'texts_url' => $this->generateUrl(self::TEXTS_ROUTE, ['view' => $view]),
             'networks_url' => $this->generateUrl(self::NETWORKS_ROUTE, ['view' => $view]),
             'duplicate_url' => $this->generateUrl(self::DUPLICATE_ROUTE, ['view' => $view]),
+            'delete_url' => $this->generateUrl(self::DELETE_ROUTE),
             'retry_url' => $this->generateUrl(self::RETRY_ROUTE, ['view' => $view]),
             // The post whose panel opens with the page, a copy just made
             'open_id' => $request->query->getInt('post'),
@@ -262,6 +265,7 @@ class SocialCalendarController extends AbstractController
             'texts_url' => $this->generateUrl(self::TEXTS_ROUTE, ['view' => self::SERIES]),
             'retry_url' => $this->generateUrl(self::RETRY_ROUTE, ['view' => self::SERIES]),
             'duplicate_url' => $this->generateUrl(self::DUPLICATE_ROUTE, ['view' => self::SERIES]),
+            'delete_url' => $this->generateUrl(self::DELETE_ROUTE),
             // A copy just made or the draft to approve next, its panel opening with the page
             'open_id' => $request->query->getInt('post'),
             'token' => self::CSRF_TOKEN,
@@ -425,6 +429,22 @@ class SocialCalendarController extends AbstractController
         }
 
         return new Response($this->generateUrl(self::ROUTE, ['view' => $this->view($request), 'date' => $copy->getPlannedAt()->format('Y-m-d'), 'post' => $copy->getId()]));
+    }
+
+    // A post not out anywhere deleted, which cancels it - one gone out kept, as the record of what was sent, and one being sent refused with the reason
+    #[AdminRoute(path: '/social-calendar/delete', name: 'social_calendar_delete', options: ['methods' => ['POST']])]
+    public function delete(Request $request): Response
+    {
+        $post = $this->postedPost($request, true);
+        if ($post instanceof Response) {
+            return $post;
+        }
+
+        if (!$this->publisher->delete($post, true)) {
+            return new Response($this->translator->trans('flash.social_post_publishing', [], 'social'), Response::HTTP_CONFLICT);
+        }
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
     // The network a post was refused on sent again at once, the others left as they are - the panel answered with the target's new status, or its new refusal

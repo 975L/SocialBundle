@@ -3,6 +3,16 @@
         "date": "2026-11-03",
         "description": [
             {
+                "en": "A post can be deleted from the calendar's panel and from its own page, as long as it has neither gone out nor is being sent.",
+                "fr": "Une publication se supprime depuis le panneau du calendrier et depuis sa page, tant qu'elle n'est ni partie ni en cours d'envoi.",
+                "es": "Una publicación se puede eliminar desde el panel del calendario y desde su página, mientras no se haya enviado ni se esté enviando."
+            },
+            {
+                "en": "An imported post can carry a different text for each network, instead of one post per text.",
+                "fr": "Une publication importée peut porter un texte différent par réseau, au lieu d'une publication par texte.",
+                "es": "Una publicación importada puede llevar un texto distinto por red, en lugar de una publicación por texto."
+            },
+            {
                 "en": "The \"Instagram without a Page\" tile no longer clutters the \"Connections\" screen of the sites that do not use it.",
                 "fr": "La tuile « Instagram sans Page » n'encombre plus l'écran « Connexions » des sites qui ne s'en servent pas.",
                 "es": "El recuadro «Instagram sin página» ya no ocupa sitio en la pantalla «Conexiones» de los sitios que no lo usan."

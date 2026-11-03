@@ -128,7 +128,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série ou l'ouvre pour en relire les posts côte à côte, passe à son post précédent ou suivant par les flèches, réordonne ou retire ses médias, les agrandit ou lit ses vidéos d'un clic, en ajoute depuis le site ou en y déposant des fichiers, change son contenu, renvoie sur-le-champ un réseau qui l'a refusée, ou la duplique au lendemain.</target>
+                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série ou l'ouvre pour en relire les posts côte à côte, passe à son post précédent ou suivant par les flèches, réordonne ou retire ses médias, les agrandit ou lit ses vidéos d'un clic, en ajoute depuis le site ou en y déposant des fichiers, change son contenu, renvoie sur-le-champ un réseau qui l'a refusée, la duplique au lendemain ou la supprime.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -1577,6 +1577,14 @@
             <trans-unit id="7W.yGmo">
                 <source>label.social_calendar_day</source>
                 <target>Jour</target>
+            </trans-unit>
+            <trans-unit id="sUdZ_OX">
+                <source>label.social_calendar_delete</source>
+                <target>Supprimer</target>
+            </trans-unit>
+            <trans-unit id="hYDcRDD">
+                <source>label.social_calendar_delete_confirm</source>
+                <target>Supprimer cette publication ? Elle ne partira pas.</target>
             </trans-unit>
             <trans-unit id="l0Dqa_D">
                 <source>label.social_calendar_drag_hint</source>

@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.29.2
+
+Delete a post from its panel or page, a text per network in imports
+
+- A drafts file's `texts` gives a network its own text (03/11/2026)
+- The calendar's panel and the post's page delete a post not gone out (03/11/2026)
+- Added `SocialPublisher::delete()`: deleting a post is refused while it is being sent (03/11/2026)
+- A post deleted from its page goes back to the calendar or series it was opened from (03/11/2026)
+
 ## v2.29.1
 
 Instagram without a Page: tile shown once its keys are set

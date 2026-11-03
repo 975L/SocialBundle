@@ -149,11 +149,37 @@ class SocialPostCrudController extends AbstractCrudController
             return parent::getRedirectResponseAfterSave($context, $action);
         }
 
+        return $this->backTo($post, $from);
+    }
+
+    // The series' page or the calendar's day a post's screen was opened from
+    private function backTo(SocialPost $post, string $from): RedirectResponse
+    {
         if (SocialCalendarController::SERIES === $from && null !== $post->getSeries()) {
             return $this->redirectToRoute(SocialCalendarController::SERIES_ROUTE, ['id' => $post->getSeries()->getId()]);
         }
 
         return $this->redirectToRoute(SocialCalendarController::ROUTE, ['date' => $post->getPlannedAt()->format('Y-m-d'), 'view' => $from]);
+    }
+
+    // A post deleted from its own screen goes back to where that screen was opened from, the list otherwise
+    #[\Override]
+    public function delete(AdminContext $context): KeyValueStore | Response
+    {
+        $post = $context->getEntity()->getInstance();
+        $response = parent::delete($context);
+        $from = $this->from($context->getRequest());
+
+        return $post instanceof SocialPost && null !== $from ? $this->backTo($post, $from) : $response;
+    }
+
+    // Deleting is refused while a "Publish" is sending the post, what goes out then would leave no record
+    #[\Override]
+    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if ($entityInstance instanceof SocialPost && !$this->socialPublisher->delete($entityInstance)) {
+            $this->addFlash('warning', t('flash.social_post_publishing', [], 'social'));
+        }
     }
 
     #[\Override]
@@ -231,6 +257,9 @@ class SocialPostCrudController extends AbstractCrudController
             ->add(Crud::PAGE_EDIT, $pickMedia)
             ->add(Crud::PAGE_EDIT, $changeContent)
             ->add(Crud::PAGE_EDIT, $prolongSeries)
+            // Deleting cancels a post from its own page too, one gone out staying as the record of what was sent
+            ->add(Crud::PAGE_EDIT, Action::DELETE)
+            ->update(Crud::PAGE_EDIT, Action::DELETE, static fn (Action $action): Action => $action->displayIf(static fn (SocialPost $post): bool => !$post->hasGoneOut()))
             ->disable(Action::DETAIL)
             // From the list only: on the post's page, a link would send the text as saved, not as just corrected
             ->add(Crud::PAGE_INDEX, $approve)

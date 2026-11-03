@@ -12,7 +12,7 @@ import { addSortGesture } from "@c975l/ui-bundle/pointer-sort.js";
 // The publications calendar (see management/social_calendar.html.twig): a card dragged onto a quarter of an hour of the week is planned at that moment, onto a day of the month at its own time that day, its approval untouched; a coming moment double-clicked writes a new post there. The gesture is UiBundle's (pointer-sort.js), this controller owning only where a card lands, saved on the spot then the page reloaded, the server computing where every other post falls
 export default class extends Controller {
     static targets = ["item", "zone", "panel", "planAt", "group", "media", "thumbnail", "badges", "drop", "zoom", "pick", "pickAll"];
-    static values = { url: String, token: String, panelUrl: String, mediasUrl: String, uploadUrl: String, textsUrl: String, networksUrl: String, duplicateUrl: String, retryUrl: String, openId: Number, newUrl: String, failedLabel: String, openFailedLabel: String, textsFailedLabel: String, retryFailedLabel: String };
+    static values = { url: String, token: String, panelUrl: String, mediasUrl: String, uploadUrl: String, textsUrl: String, networksUrl: String, duplicateUrl: String, deleteUrl: String, retryUrl: String, openId: Number, newUrl: String, failedLabel: String, openFailedLabel: String, textsFailedLabel: String, retryFailedLabel: String };
 
     // A copy just made, or the next draft after an approval from a series' panel, opens its panel with the page - said when it is gone meanwhile - its id then taken off the address so a reload does not open it again
     connect() {
@@ -332,6 +332,15 @@ export default class extends Controller {
             .then((response) => (response.ok ? response.text() : Promise.reject(new Error(String(response.status)))))
             .then((url) => window.location.assign(url))
             .catch(() => this.saved(false));
+    }
+
+    // The post deleted once confirmed, the page reloaded without it
+    remove(event) {
+        const button = event.currentTarget;
+        if (!window.confirm(button.dataset.confirm)) return;
+
+        button.disabled = true;
+        this.send(this.deleteUrlValue, new URLSearchParams({ post: button.dataset.postId }));
     }
 
     // A refused network sent again at once from its text, the button held while it goes - texts corrected in the panel saved first, so the correction is what goes out - the panel answered with its new status, a refusal saying the server's reason

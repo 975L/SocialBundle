@@ -53,6 +53,10 @@
     {% endif %}
     {# Written again the day after, a draft whose panel opens at once - offered on a post gone out as well #}
     <twig:ea:Button type="button" size="sm" icon="fa fa-clone" data-action="social-calendar#duplicate" data-post-id="{{ post.id }}">{{ 'label.social_calendar_duplicate'|trans({}, 'social') }}</twig:ea:Button>
+    {# Deleting cancels it, a post gone out staying as the record of what was sent #}
+    {% if editable %}
+        <twig:ea:Button type="button" variant="danger" size="sm" icon="fa fa-trash" data-action="social-calendar#remove" data-post-id="{{ post.id }}" data-confirm="{{ 'label.social_calendar_delete_confirm'|trans({}, 'social') }}">{{ 'label.social_calendar_delete'|trans({}, 'social') }}</twig:ea:Button>
+    {% endif %}
 </div>
 
 {# The connected networks it goes to, ticked or unticked until it goes out anywhere, then as they stand #}

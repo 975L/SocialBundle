@@ -71,6 +71,7 @@ class SocialCalendarTemplateTest extends TestCase
             'texts_url' => '/texts',
             'networks_url' => '/networks',
             'duplicate_url' => '/duplicate',
+            'delete_url' => '/delete',
             'retry_url' => '/retry',
             'open_id' => 0,
             'new_url' => '/new',
@@ -400,6 +401,13 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringNotContainsString('label.social_calendar_save_networks', $frozen);
     }
 
+    // A post is offered to be deleted until it goes out, kept then as the record of what was sent
+    public function testThePanelOffersToDeleteAPostNotGoneOut(): void
+    {
+        $this->assertStringContainsString('data-action="social-calendar#remove" data-post-id="7"', $this->panel('draft'));
+        $this->assertStringNotContainsString('social-calendar#remove', $this->panel('published', editable: false));
+    }
+
     // Any post is offered to be duplicated, one gone out as well, and its card's badges and state come with the panel
     public function testThePanelOffersTheDuplicateAndTheCardsBadges(): void
     {
@@ -474,6 +482,7 @@ class SocialCalendarTemplateTest extends TestCase
             'texts_url' => '/texts',
             'retry_url' => '/retry',
             'duplicate_url' => '/duplicate',
+            'delete_url' => '/delete',
             'open_id' => 0,
             'token' => 'social_calendar',
             'prolong_url' => '/prolong',

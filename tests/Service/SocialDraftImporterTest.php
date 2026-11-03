@@ -54,6 +54,7 @@ class SocialDraftImporterTest extends TestCase
     {
         $publisher = $this->createStub(SocialPublisher::class);
         $publisher->method('getConnectedNetworkNames')->willReturn(['bluesky', 'linkedin']);
+        $publisher->method('getMaxLength')->willReturnCallback(static fn (string $network): int => 'bluesky' === $network ? 300 : 3000);
         $publisher->method('supportsComment')->willReturnCallback(static fn (string $network): bool => 'linkedin' === $network);
         $publisher->method('supportsReshare')->willReturnCallback(static fn (string $network): bool => 'linkedin' === $network);
         $publisher->method('supportsRepost')->willReturnCallback(static fn (string $network): bool => 'bluesky' === $network);
@@ -176,6 +177,80 @@ class SocialDraftImporterTest extends TestCase
         $post = $importer->import('T', $read['drafts'])['created'][0];
 
         $this->assertSame(hash('sha256', (string) json_encode(['at' => $at, 'networks' => ['bluesky'], 'text' => 'Text', 'comment' => null, 'reshare' => null, 'story' => false, 'url' => null, 'media' => null, 'key' => 'k', 'source' => null])), $post->getImportHash());
+    }
+
+    // A network's own text goes on its target, the others cut from the post's
+    public function testANetworkTakesItsOwnText(): void
+    {
+        $importer = $this->importer();
+        $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 12:00';
+        $read = $importer->read(['title' => 'T', 'posts' => [['at' => $at, 'networks' => ['bluesky', 'linkedin'], 'text' => 'Long text', 'texts' => ['bluesky' => ' Short text ']]]], $this->dir);
+        $this->assertSame([], $read['errors']);
+
+        $texts = [];
+        foreach ($importer->import('T', $read['drafts'])['created'][0]->getTargets() as $target) {
+            $texts[$target->getNetwork()] = $target->getText();
+        }
+
+        $this->assertSame('Short text', $texts['bluesky']);
+        $this->assertNotSame('Short text', $texts['linkedin']);
+    }
+
+    // A network the draft does not go to, a text empty or too long: told before anything is written
+    public function testAWrongOwnTextIsRefused(): void
+    {
+        $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 12:00';
+        $errors = $this->importer()->read(['title' => 'T', 'posts' => [
+            ['at' => $at, 'networks' => ['linkedin'], 'text' => 'A', 'texts' => ['bluesky' => 'B']],
+            ['at' => $at, 'networks' => ['bluesky'], 'text' => 'A', 'texts' => ['bluesky' => ' ']],
+            ['at' => $at, 'networks' => ['bluesky'], 'text' => 'A', 'texts' => ['bluesky' => str_repeat('b', 301)]],
+        ]], $this->dir)['errors'];
+
+        $this->assertStringContainsString('not among its "networks"', $errors[0]);
+        $this->assertStringContainsString('is empty', $errors[1]);
+        $this->assertStringContainsString('longer than its 300', $errors[2]);
+    }
+
+    // A changed own text updates the post, the same one leaving it as it is
+    public function testAnOwnTextIsPartOfTheHash(): void
+    {
+        $importer = $this->importer();
+        $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 12:00';
+        $draft = ['key' => 'a', 'at' => $at, 'networks' => ['bluesky'], 'text' => 'A', 'texts' => ['bluesky' => 'B']];
+        $post = $importer->import('T', $importer->read(['title' => 'T', 'posts' => [$draft]], $this->dir)['drafts'])['created'][0];
+
+        $again = $this->importer($this->importedSeries(), $post);
+        $this->assertSame(1, $again->import('T', $again->read(['title' => 'T', 'posts' => [$draft]], $this->dir)['drafts'])['unchanged']);
+
+        $draft['texts']['bluesky'] = 'C';
+        $this->assertCount(1, $again->import('T', $again->read(['title' => 'T', 'posts' => [$draft]], $this->dir)['drafts'])['updated']);
+        $this->assertSame('C', $post->getTargets()->first()->getText());
+    }
+
+    // Own texts in another order are the same ones, an unchanged file keeping its posts approved
+    public function testTheOrderOfOwnTextsLeavesThePostUnchanged(): void
+    {
+        $importer = $this->importer();
+        $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 12:00';
+        $draft = ['key' => 'a', 'at' => $at, 'networks' => ['bluesky', 'linkedin'], 'text' => 'A', 'texts' => ['bluesky' => 'B', 'linkedin' => 'C']];
+        $post = $importer->import('T', $importer->read(['title' => 'T', 'posts' => [$draft]], $this->dir)['drafts'])['created'][0];
+
+        $draft['texts'] = ['linkedin' => 'C', 'bluesky' => 'B'];
+        $again = $this->importer($this->importedSeries(), $post);
+        $this->assertSame(1, $again->import('T', $again->read(['title' => 'T', 'posts' => [$draft]], $this->dir)['drafts'])['unchanged']);
+    }
+
+    // "texts" written as anything but an object of texts is told too, never dropped in silence
+    public function testOwnTextsNotWrittenAsAnObjectAreRefused(): void
+    {
+        $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 12:00';
+        $errors = $this->importer()->read(['title' => 'T', 'posts' => [
+            ['at' => $at, 'networks' => ['bluesky'], 'text' => 'A', 'texts' => 'B'],
+            ['at' => $at, 'networks' => ['bluesky'], 'text' => 'A', 'texts' => ['bluesky' => ['B']]],
+        ]], $this->dir)['errors'];
+
+        $this->assertStringContainsString('not among its "networks"', $errors[0]);
+        $this->assertStringContainsString('is empty', $errors[1]);
     }
 
     // A repost is a draft like any other, its account kept on the target able to send it

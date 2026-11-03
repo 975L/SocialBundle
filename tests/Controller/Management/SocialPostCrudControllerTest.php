@@ -30,6 +30,7 @@ use c975L\SocialBundle\Tests\Controller\ControllerTestTrait;
 use c975L\UiBundle\Contract\BrowsableSocialContentSourceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Persistence\ManagerRegistry;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -37,18 +38,22 @@ use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Context\CrudContext;
 use EasyCorp\Bundle\EasyAdminBundle\Context\RequestContext;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\BatchActionDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\CrudDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Translation\TranslatableMessage;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
@@ -60,6 +65,8 @@ class SocialPostCrudControllerTest extends TestCase
     private array $rendered = [];
 
     private string $view = '';
+
+    private FlashBagInterface $flashes;
 
     private function controller(?EntityManagerInterface $entityManager = null, ?SocialPublisher $socialPublisher = null, ?SocialSeriesGenerator $seriesGenerator = null, ?SocialSeriesRepository $seriesRepository = null): SocialPostCrudController
     {
@@ -150,6 +157,73 @@ class SocialPostCrudControllerTest extends TestCase
             $this->assertFalse($action->getLabel(), $name);
             $this->assertArrayHasKey('title', $action->getHtmlAttributes(), $name);
         }
+    }
+
+    // A post's page offers to delete it until it goes out, kept then as the record of what was sent
+    public function testThePostsPageOffersToDeleteAPostNotGoneOut(): void
+    {
+        $delete = $this->configureActions()->getAsDto(Crud::PAGE_EDIT)->getAction(Crud::PAGE_EDIT, Action::DELETE);
+        $post = $this->post();
+        $this->assertTrue($delete->isDisplayed(new EntityDto(SocialPost::class, new ClassMetadata(SocialPost::class), null, $post)));
+
+        new SocialPostTarget($post, 'linkedin', 'Text')->markPublished('ext-1');
+        $this->assertFalse($delete->isDisplayed(new EntityDto(SocialPost::class, new ClassMetadata(SocialPost::class), null, $post)));
+    }
+
+    // EasyAdmin's delete run on the given post, its token valid and SocialPublisher::delete() answering $deleted
+    private function deletePost(SocialPost $post, string $query, bool $deleted): Response
+    {
+        $request = Request::create('/' . $query, 'POST', ['token' => 'valid']);
+        $request->setSession(new Session(new MockArraySessionStorage()));
+        $publisher = $this->createStub(SocialPublisher::class);
+        $publisher->method('delete')->willReturn($deleted);
+        $csrf = $this->createStub(CsrfTokenManagerInterface::class);
+        $csrf->method('isTokenValid')->willReturn(true);
+        $router = $this->createStub(UrlGeneratorInterface::class);
+        $router->method('generate')->willReturnCallback(static fn (string $route, array $parameters): string => '/' . $route . '?' . http_build_query($parameters));
+        $adminUrlGenerator = $this->createStub(AdminUrlGeneratorInterface::class);
+        $adminUrlGenerator->method('setController')->willReturnSelf();
+        $adminUrlGenerator->method('setAction')->willReturnSelf();
+        $adminUrlGenerator->method('unset')->willReturnSelf();
+        $adminUrlGenerator->method('generateUrl')->willReturn('/list');
+        $doctrine = $this->createStub(ManagerRegistry::class);
+        $doctrine->method('getManagerForClass')->willReturn($this->createStub(EntityManagerInterface::class));
+        $controller = $this->controller(socialPublisher: $publisher);
+        $controller->setContainer($this->serviceContainer([
+            'request_stack' => new RequestStack([$request]),
+            'security.csrf.token_manager' => $csrf,
+            'router' => $router,
+            'event_dispatcher' => new EventDispatcher(),
+            'doctrine' => $doctrine,
+            AdminUrlGeneratorInterface::class => $adminUrlGenerator,
+        ]));
+        $crud = new CrudDto();
+        $crud->setControllerFqcn(SocialPostCrudController::class);
+        $context = AdminContext::forTesting(RequestContext::forTesting($request), CrudContext::forTesting(crudDto: $crud, entityDto: new EntityDto(SocialPost::class, new ClassMetadata(SocialPost::class), null, $post)));
+        $this->flashes = $request->getSession()->getFlashBag();
+
+        return $controller->delete($context);
+    }
+
+    // A post deleted from its screen goes back to where it was opened from, the list otherwise
+    public function testAPostDeletedGoesBackToWhereItWasOpenedFrom(): void
+    {
+        $series = $this->series();
+        new \ReflectionProperty(SocialSeries::class, 'id')->setValue($series, 3);
+        $post = $this->post();
+        $date = $post->getPlannedAt()->format('Y-m-d');
+
+        $this->assertSame('/list', $this->deletePost($post, '', true)->getTargetUrl());
+        $this->assertSame('/' . SocialCalendarController::ROUTE . '?date=' . $date . '&view=' . SocialCalendarController::VIEWS[0], $this->deletePost($post, '?' . SocialCalendarController::FROM . '=' . SocialCalendarController::VIEWS[0], true)->getTargetUrl());
+        $this->assertSame('/' . SocialCalendarController::SERIES_ROUTE . '?id=3', $this->deletePost($this->post()->setSeries($series), '?' . SocialCalendarController::FROM . '=' . SocialCalendarController::SERIES, true)->getTargetUrl());
+    }
+
+    // A post being sent is not deleted, the screen saying why
+    public function testAPostBeingSentIsNotDeletedFromItsScreen(): void
+    {
+        $this->deletePost($this->post(), '', false);
+
+        $this->assertSame(['flash.social_post_publishing'], array_map(static fn (TranslatableMessage $message): string => $message->getMessage(), $this->flashes->get('warning')));
     }
 
     // The libraries' medias are added to a saved post, from its page
