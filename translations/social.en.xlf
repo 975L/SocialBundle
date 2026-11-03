@@ -184,7 +184,7 @@
             </trans-unit>
             <trans-unit id="2ldAs97">
                 <source>description.guided_step_social_instagram_credentials</source>
-                <target>Search for "social-instagram-app-id" and "social-instagram-app-secret" in the list, and paste in the Instagram app ID and secret. The secret only shows with the "Show sensitive data" button. The token and the account fill themselves in the next step.</target>
+                <target>Search for "social-instagram-app-id" and "social-instagram-app-secret" in the list, and paste in the Instagram app ID and secret. The secret only shows with the "Show sensitive data" button. The "Instagram without a Page" tile only appears in "Connections" once both keys are set. The token and the account fill themselves in the next step.</target>
             </trans-unit>
             <trans-unit id="sP4YKFK">
                 <source>description.guided_step_social_instagram_prerequisites</source>
@@ -1345,10 +1345,6 @@
             <trans-unit id="jhpef3t">
                 <source>label.info_instagram_connect</source>
                 <target>Links the site to an Instagram professional account with no Facebook Page, for an account Meta refuses to link to one. Once connected, it replaces the account linked to the Page. The token renews itself every night.</target>
-            </trans-unit>
-            <trans-unit id="UCTk971">
-                <source>label.info_instagram_not_configured</source>
-                <target>Fill in the Instagram app's ID and secret in the configuration first ("social-instagram-app-id" and "social-instagram-app-secret").</target>
             </trans-unit>
             <trans-unit id="0cTMFAS">
                 <source>label.info_linkedin_connect</source>

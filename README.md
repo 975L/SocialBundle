@@ -537,7 +537,7 @@ For an account Meta refuses to link to a Page ("Your account is restricted"): In
 3. Under **Set up Instagram business login**, add one redirect URL per site: `https://<your-site>/social/instagram/callback`.
 4. Under **App roles > Roles**, add the account as an **Instagram tester**, then accept the invitation on instagram.com, connected as that account: **Settings > Apps and websites > Tester invites**. The account has to be professional (Business or Creator).
 5. Copy the **Instagram app ID** and **Instagram app secret** of step 1, which are not the Meta app's, and set them on the site as `social-instagram-app-id` and `social-instagram-app-secret`.
-6. Click **"Connect"** on the **"Instagram without a Page"** tile of **"Connections"**, sign in with the account and allow access. `social-instagram-access-token`, `social-instagram-token-expires-at`, `social-instagram-user-id` and `social-instagram-username` are filled.
+6. The **"Instagram without a Page"** tile of **"Connections"** only shows once these two keys are set, or while an account is connected. Click **"Connect"** on it, sign in with the account and allow access. `social-instagram-access-token`, `social-instagram-token-expires-at`, `social-instagram-user-id` and `social-instagram-username` are filled.
 
 **The token renews itself.** It lasts 60 days and can only be renewed before that end: `c975l:social:instagram:refresh`, nightly, renews it from 30 days before (`SocialMaintenanceTaskProvider`), a refusal mailed to `email-to` the first night and 3 days before the end. Past it, the account connects again and the posts meanwhile go to the Page's account, if any. To go back to the Page's account, empty `social-instagram-access-token`.
 

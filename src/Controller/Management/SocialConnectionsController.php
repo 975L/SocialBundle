@@ -55,7 +55,7 @@ class SocialConnectionsController extends AbstractController
             'networks' => [
                 $this->bluesky($request->getHost()),
                 $this->meta(),
-                $this->instagram(),
+                ...($this->instagramLoginClient->isConfigured() || $this->instagramLoginClient->isConnected() ? [$this->instagram()] : []),
                 $this->linkedIn(),
                 $this->youtube(),
                 $this->pinterest(),
@@ -116,7 +116,7 @@ class SocialConnectionsController extends AbstractController
         ];
     }
 
-    // An Instagram account connected by itself, for one Meta refuses to link to a Page - its token renewing itself nightly, and taking over from the Page's account once there
+    // An Instagram account connected by itself, for one Meta refuses to link to a Page - its token renewing itself nightly, and taking over from the Page's account once there. A fallback most sites never need: its tile only shows once its keys are set, or while an account is connected, the posts still going to it
     /** @return array<string, mixed> */
     private function instagram(): array
     {
@@ -126,7 +126,7 @@ class SocialConnectionsController extends AbstractController
             'name' => 'instagram',
             'icon' => 'fab fa-instagram',
             'route' => 'social_instagram_oauth_connect',
-            'configured' => $this->instagramLoginClient->isConfigured(),
+            'configured' => true,
             'connected' => $this->instagramLoginClient->isConnected(),
             'accounts' => $this->accounts(['fab fa-instagram', null === $username ? null : '@' . $username, null === $username ? null : 'https://www.instagram.com/' . rawurlencode($username) . '/']),
         ];

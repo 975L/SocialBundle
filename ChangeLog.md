@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.29.1
+
+Instagram without a Page: tile shown once its keys are set
+
+- The "Instagram without a Page" tile only shows once its keys are set or an account is connected (03/11/2026)
+
 ## v2.29.0
 
 Bluesky reposts, comment alerts, Instagram without a Page

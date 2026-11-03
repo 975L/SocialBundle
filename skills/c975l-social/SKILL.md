@@ -206,7 +206,7 @@ Google's reviews endpoints need the Cloud project to be **allowlisted** (7-10 bu
 OAuth app **published in production**, or its refresh tokens expire every seven days.
 
 The connection is started from the Google tile of **"Connexions"** (`Controller\Management\SocialConnectionsController`,
-an `#[AdminRoute]` screen linked from the sidebar's "Social" submenu), which draws one tile per network, with the accounts it reaches linked to their network.
+an `#[AdminRoute]` screen linked from the sidebar's "Social" submenu), which draws one tile per network, with the accounts it reaches linked to their network - the "Instagram without a Page" tile only once `social-instagram-app-id` and `social-instagram-app-secret` are set, or while an account is connected.
 
 `Service\SameAsProvider` implements UiBundle's `SameAsProviderInterface`, so a `contact_details` block
 publishes the listing (`social-google-listing-url`, a `maps?cid=…` address) and the social links in its

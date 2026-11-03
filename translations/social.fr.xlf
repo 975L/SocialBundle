@@ -184,7 +184,7 @@
             </trans-unit>
             <trans-unit id="2ldAs97">
                 <source>description.guided_step_social_instagram_credentials</source>
-                <target>Cherchez « social-instagram-app-id » et « social-instagram-app-secret » dans la liste, et collez l'ID et la clé secrète de l'application Instagram. La clé secrète ne s'affiche qu'avec le bouton « Afficher les données sensibles ». Le jeton et le compte se rempliront à l'étape suivante.</target>
+                <target>Cherchez « social-instagram-app-id » et « social-instagram-app-secret » dans la liste, et collez l'ID et la clé secrète de l'application Instagram. La clé secrète ne s'affiche qu'avec le bouton « Afficher les données sensibles ». La tuile « Instagram sans Page » n'apparaît dans « Connexions » qu'une fois les deux clés renseignées. Le jeton et le compte se rempliront à l'étape suivante.</target>
             </trans-unit>
             <trans-unit id="sP4YKFK">
                 <source>description.guided_step_social_instagram_prerequisites</source>
@@ -1345,10 +1345,6 @@
             <trans-unit id="jhpef3t">
                 <source>label.info_instagram_connect</source>
                 <target>Relie le site à un compte Instagram professionnel sans Page Facebook, pour un compte que Meta refuse de lier à une Page. Une fois connecté, il remplace le compte lié à la Page. Le jeton se renouvelle chaque nuit.</target>
-            </trans-unit>
-            <trans-unit id="UCTk971">
-                <source>label.info_instagram_not_configured</source>
-                <target>Renseignez d'abord l'ID et la clé secrète de l'application Instagram dans la configuration (« social-instagram-app-id » et « social-instagram-app-secret »).</target>
             </trans-unit>
             <trans-unit id="0cTMFAS">
                 <source>label.info_linkedin_connect</source>

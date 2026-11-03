@@ -72,7 +72,7 @@ class SocialConnectionsControllerTest extends TestCase
         $tikTok->method('isConnected')->willReturn('' !== ($configs['social-tiktok-display-name'] ?? ''));
 
         $instagram = $this->createStub(InstagramLoginClient::class);
-        $instagram->method('isConfigured')->willReturn(true);
+        $instagram->method('isConfigured')->willReturn('' !== ($configs['social-instagram-app-id'] ?? ''));
         $instagram->method('isConnected')->willReturn('' !== ($configs['social-instagram-username'] ?? ''));
 
         $twig = $this->createStub(Environment::class);
@@ -105,8 +105,8 @@ class SocialConnectionsControllerTest extends TestCase
     {
         $networks = $this->networks($this->bluesky());
 
-        $this->assertSame(['bluesky', 'meta', 'instagram', 'linkedin', 'youtube', 'pinterest', 'tiktok', 'google'], array_keys($networks));
-        $this->assertSame(['social_bluesky_oauth_connect', 'social_meta_oauth_connect', 'social_instagram_oauth_connect', 'social_linkedin_oauth_connect', 'social_youtube_oauth_connect', 'social_pinterest_oauth_connect', 'social_tiktok_oauth_connect', 'social_google_oauth_connect'], array_column($networks, 'route'));
+        $this->assertSame(['bluesky', 'meta', 'linkedin', 'youtube', 'pinterest', 'tiktok', 'google'], array_keys($networks));
+        $this->assertSame(['social_bluesky_oauth_connect', 'social_meta_oauth_connect', 'social_linkedin_oauth_connect', 'social_youtube_oauth_connect', 'social_pinterest_oauth_connect', 'social_tiktok_oauth_connect', 'social_google_oauth_connect'], array_column($networks, 'route'));
         $this->assertSame([['icon' => 'fab fa-bluesky', 'name' => 'me.bsky.social', 'url' => 'https://bsky.app/profile/me.bsky.social']], $networks['bluesky']['accounts']);
         $this->assertSame([['icon' => 'fab fa-facebook', 'name' => '123', 'url' => 'https://www.facebook.com/123']], $networks['meta']['accounts']);
         $this->assertTrue($networks['meta']['configured']);
@@ -200,13 +200,34 @@ class SocialConnectionsControllerTest extends TestCase
         $this->assertNull($this->networks($bluesky)['bluesky']['site_url']);
     }
 
+    // A fallback most sites never need: no tile before its keys are set, then one saying it is not connected yet
+    public function testTheInstagramTileOnlyShowsOnceItsKeysAreSet(): void
+    {
+        $this->assertArrayNotHasKey('instagram', $this->networks($this->bluesky()));
+
+        $networks = $this->networks($this->bluesky(), configs: ['social-instagram-app-id' => 'id']);
+
+        $this->assertSame(['bluesky', 'meta', 'instagram', 'linkedin', 'youtube', 'pinterest', 'tiktok', 'google'], array_keys($networks));
+        $this->assertTrue($networks['instagram']['configured']);
+        $this->assertFalse($networks['instagram']['connected']);
+        $this->assertSame('social_instagram_oauth_connect', $networks['instagram']['route']);
+    }
+
+    // Its keys emptied, an account still connected keeps its tile, the posts still going to it
+    public function testTheInstagramTileStaysWhileAnAccountIsConnectedWithoutItsKeys(): void
+    {
+        $networks = $this->networks($this->bluesky(), configs: ['social-instagram-username' => 'catalog']);
+
+        $this->assertTrue($networks['instagram']['connected']);
+        $this->assertSame([['icon' => 'fab fa-instagram', 'name' => '@catalog', 'url' => 'https://www.instagram.com/catalog/']], $networks['instagram']['accounts']);
+    }
+
     // Connected by itself, the account is named and linked, and the Meta tile stops saying Instagram is missing
     public function testTheInstagramTileNamesTheAccountAndSilencesTheMetaWarning(): void
     {
-        $this->assertFalse($this->networks($this->bluesky())['instagram']['connected']);
         $this->assertFalse($this->networks($this->bluesky())['meta']['instagram']);
 
-        $networks = $this->networks($this->bluesky(), configs: ['social-instagram-username' => 'catalog']);
+        $networks = $this->networks($this->bluesky(), configs: ['social-instagram-app-id' => 'id', 'social-instagram-username' => 'catalog']);
 
         $this->assertSame([['icon' => 'fab fa-instagram', 'name' => '@catalog', 'url' => 'https://www.instagram.com/catalog/']], $networks['instagram']['accounts']);
         $this->assertTrue($networks['meta']['instagram']);

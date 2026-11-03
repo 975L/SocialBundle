@@ -3,6 +3,11 @@
         "date": "2026-11-03",
         "description": [
             {
+                "en": "The \"Instagram without a Page\" tile no longer clutters the \"Connections\" screen of the sites that do not use it.",
+                "fr": "La tuile « Instagram sans Page » n'encombre plus l'écran « Connexions » des sites qui ne s'en servent pas.",
+                "es": "El recuadro «Instagram sin página» ya no ocupa sitio en la pantalla «Conexiones» de los sitios que no lo usan."
+            },
+            {
                 "en": "A draft can repost another Bluesky account's post, approved like any other post.",
                 "fr": "Un brouillon peut repartager le post d'un autre compte Bluesky, validé comme n'importe quel post.",
                 "es": "Un borrador puede volver a compartir la publicación de otra cuenta de Bluesky, validada como cualquier otra."

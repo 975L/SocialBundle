@@ -184,7 +184,7 @@
             </trans-unit>
             <trans-unit id="2ldAs97">
                 <source>description.guided_step_social_instagram_credentials</source>
-                <target>Busque «social-instagram-app-id» y «social-instagram-app-secret» en la lista, y pegue el ID y la clave secreta de la aplicación de Instagram. La clave secreta solo se muestra con el botón «Mostrar los datos sensibles». El token y la cuenta se rellenarán en el paso siguiente.</target>
+                <target>Busque «social-instagram-app-id» y «social-instagram-app-secret» en la lista, y pegue el ID y la clave secreta de la aplicación de Instagram. La clave secreta solo se muestra con el botón «Mostrar los datos sensibles». El recuadro «Instagram sin página» solo aparece en «Conexiones» una vez definidas las dos claves. El token y la cuenta se rellenarán en el paso siguiente.</target>
             </trans-unit>
             <trans-unit id="sP4YKFK">
                 <source>description.guided_step_social_instagram_prerequisites</source>
@@ -1345,10 +1345,6 @@
             <trans-unit id="jhpef3t">
                 <source>label.info_instagram_connect</source>
                 <target>Vincula el sitio con una cuenta profesional de Instagram sin página de Facebook, para una cuenta que Meta se niega a vincular a una página. Una vez conectada, sustituye a la cuenta vinculada a la página. El token se renueva cada noche.</target>
-            </trans-unit>
-            <trans-unit id="UCTk971">
-                <source>label.info_instagram_not_configured</source>
-                <target>Indique primero el ID y la clave secreta de la aplicación de Instagram en la configuración («social-instagram-app-id» y «social-instagram-app-secret»).</target>
             </trans-unit>
             <trans-unit id="0cTMFAS">
                 <source>label.info_linkedin_connect</source>
