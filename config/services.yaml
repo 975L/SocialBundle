@@ -34,6 +34,10 @@ services:
             $networks: !tagged_iterator social.network_publisher
             $projectDir: '%kernel.project_dir%'
 
+    c975L\SocialBundle\Service\SocialCommentChecker:
+        arguments:
+            $networks: !tagged_iterator social.network_publisher
+
     # A series' media is written under the site's public/ folder
     c975L\SocialBundle\Service\SocialSeriesGenerator:
         arguments:

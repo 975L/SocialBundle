@@ -27,6 +27,16 @@ use Symfony\Contracts\Translation\TranslatableInterface;
 // The container a connection controller is tested with - access granted, routes named after themselves, "valid" the only CSRF token - the seams of its OAuth callback and the flashes it left
 trait ControllerTestTrait
 {
+    // A request holding a session, what the flashes and the OAuth state are kept in
+    /** @param array<string, mixed> $query */
+    private function createRequest(array $query = []): Request
+    {
+        $request = new Request($query);
+        $request->setSession(new Session(new MockArraySessionStorage()));
+
+        return $request;
+    }
+
     private function createContainer(Request $request): ContainerInterface
     {
         $csrfTokenManager = $this->createStub(CsrfTokenManagerInterface::class);

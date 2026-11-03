@@ -12,13 +12,16 @@ namespace c975L\SocialBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteLocales;
+use c975L\SocialBundle\Contract\CommentCountPublisherInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
+use c975L\SocialBundle\Contract\RepostPublisherInterface;
+use c975L\SocialBundle\Model\CommentCount;
 use c975L\SocialBundle\Model\MediaRules;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\UiBundle\Model\SocialContent;
 
 // Posts on Bluesky through the AT Protocol, with the OAuth connection made on the "Connexions" screen (see BlueskyOAuthClient)
-class BlueskyPublisher implements NetworkPublisherInterface
+class BlueskyPublisher implements NetworkPublisherInterface, RepostPublisherInterface, CommentCountPublisherInterface
 {
     // What app.bsky.feed.post accepts, counted in graphemes - as many code points never exceed it
     private const int MAX_LENGTH = 300;
@@ -34,6 +37,7 @@ class BlueskyPublisher implements NetworkPublisherInterface
         private readonly BlueskyOAuthClient $oauthClient,
         private readonly ConfigServiceInterface $configService,
         private readonly SiteLocales $siteLocales,
+        private readonly BlueskyPublicReader $publicReader,
     ) {
     }
 
@@ -78,6 +82,36 @@ class BlueskyPublisher implements NetworkPublisherInterface
         ]]);
 
         return (string) $created['uri'];
+    }
+
+    public function canRepost(): bool
+    {
+        return $this->oauthClient->canRepost();
+    }
+
+    // The post found by its link, a post not out yet failing the target, which "Post again" tries once it is
+    public function repost(string $account, string $url): string
+    {
+        $subject = $this->publicReader->findPostWithLink($account, $url);
+        if (null === $subject) {
+            throw new \RuntimeException(sprintf('No post of %s carries %s yet.', $account, $url));
+        }
+
+        $created = $this->oauthClient->call('com.atproto.repo.createRecord', ['json' => [
+            'repo' => (string) $this->oauthClient->getDid(),
+            'collection' => 'app.bsky.feed.repost',
+            'record' => ['$type' => 'app.bsky.feed.repost', 'subject' => $subject, 'createdAt' => new \DateTimeImmutable()->format(\DATE_ATOM)],
+        ]]);
+
+        return (string) $created['uri'];
+    }
+
+    // The replies, its address written from at://<did>/app.bsky.feed.post/<key>
+    public function commentCount(string $externalId): CommentCount
+    {
+        $parts = explode('/', $externalId);
+
+        return new CommentCount($this->publicReader->replyCount($externalId), sprintf('https://bsky.app/profile/%s/post/%s', $parts[2] ?? '', $parts[4] ?? ''));
     }
 
     // The record as createRecord would receive it, the blobs Bluesky has not issued yet standing as their own path or url

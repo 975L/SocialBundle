@@ -16,7 +16,6 @@ use c975L\SocialBundle\Service\MetaGraphClient;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 class MetaOAuthControllerTest extends TestCase
 {
@@ -25,14 +24,6 @@ class MetaOAuthControllerTest extends TestCase
     private const array PAGE = ['pageId' => '55', 'name' => 'Papa Câlin', 'pageToken' => 'page-token', 'instagramId' => '77', 'instagram' => 'papacalin'];
 
     private const array OTHER_PAGE = ['pageId' => '11', 'name' => 'Other', 'pageToken' => 'other-token', 'instagramId' => null, 'instagram' => null];
-
-    private function createRequest(array $query = []): Request
-    {
-        $request = new Request($query);
-        $request->setSession(new Session(new MockArraySessionStorage()));
-
-        return $request;
-    }
 
     // Same seam as GoogleOAuthControllerTest: AbstractController resolves security, routing and the flash bag through its container
     private function createController(Request $request, ?MetaGraphClient $metaGraphClient = null): MetaOAuthController

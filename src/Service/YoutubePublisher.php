@@ -11,7 +11,9 @@
 namespace c975L\SocialBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\SocialBundle\Contract\CommentCountPublisherInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
+use c975L\SocialBundle\Model\CommentCount;
 use c975L\SocialBundle\Model\MediaRules;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\UiBundle\Model\SocialContent;
@@ -19,7 +21,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 // Uploads the post's video on the connected YouTube channel - a vertical one of three minutes at most becoming a Short on its own. The text's first line is the title, the rest the description; a post with no video of its own never goes out, the content's picture being no stand-in on a network of videos
-class YoutubePublisher implements NetworkPublisherInterface
+class YoutubePublisher implements NetworkPublisherInterface, CommentCountPublisherInterface
 {
     // What a video's description accepts, in bytes
     private const int MAX_LENGTH = 5000;
@@ -61,6 +63,11 @@ class YoutubePublisher implements NetworkPublisherInterface
             videoTypes: ['video/mp4', 'video/quicktime'],
             videoRequired: true,
         );
+    }
+
+    public function commentCount(string $externalId): CommentCount
+    {
+        return new CommentCount($this->youtubeClient->commentCount($externalId), 'https://youtu.be/' . $externalId);
     }
 
     // The video's id, its public address being youtu.be/ followed by it

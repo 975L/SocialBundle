@@ -11,6 +11,7 @@
 namespace c975L\SocialBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 // Everything that talks to Meta's Graph API: the connection of the site's Facebook Page (and the Instagram account linked to it), then the calls the two publishers make with the Page token it stores - one stubable seam, same shape as GoogleOAuthClient. The app is the site owner's own, created on developers.facebook.com and used by its admin alone: in development mode it needs neither App Review nor Business Verification
@@ -84,15 +85,33 @@ class MetaGraphClient
      */
     public function request(string $method, string $path, array $parameters): array
     {
-        $response = $this->httpClient->request($method, self::GRAPH . $path, [
-            'GET' === $method ? 'query' : 'body' => $parameters,
-            'timeout' => 30,
-        ]);
+        return $this->requestAt(self::GRAPH, $method, $path, $parameters);
+    }
 
-        // Meta explains a refusal in the body ("Invalid OAuth access token", "(#10) ... permission"), which is what the screen should show rather than a bare status code
-        $data = $response->toArray(false);
-        if (200 !== $response->getStatusCode()) {
-            throw new \RuntimeException(sprintf('Meta refused %s: %s', $path, $data['error']['message'] ?? $response->getStatusCode()));
+    // The same call on another of Meta's hosts, Instagram Login's (see InstagramLoginClient)
+    /**
+     * @param array<string, string> $parameters
+     *
+     * @return array<string, mixed>
+     */
+    public function requestAt(string $host, string $method, string $path, array $parameters): array
+    {
+        // A transport error names the whole address, a GET's token and secret with it, and its message ends in emails, logs and screens: the path alone is said
+        try {
+            $response = $this->httpClient->request($method, $host . $path, [
+                'GET' === $method ? 'query' : 'body' => $parameters,
+                'timeout' => 30,
+            ]);
+            $body = $response->getContent(false);
+            $status = $response->getStatusCode();
+        } catch (TransportExceptionInterface) {
+            throw new \RuntimeException(sprintf('Meta could not be reached for %s.', $path));
+        }
+
+        // Meta explains a refusal in the body ("Invalid OAuth access token", "(#10) ... permission"), which is what the screen should show rather than a bare status code - decoded rather than toArray(), so an HTML error page, whatever its status, ends as this refusal too
+        $data = json_decode($body, true);
+        if (200 !== $status || !\is_array($data)) {
+            throw new \RuntimeException(sprintf('Meta refused %s: %s', $path, $data['error']['message'] ?? $data['error_message'] ?? $status));
         }
 
         return $data;

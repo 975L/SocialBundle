@@ -17,19 +17,10 @@ use c975L\SocialBundle\Service\GoogleOAuthClient;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 class GoogleOAuthControllerTest extends TestCase
 {
     use ControllerTestTrait;
-
-    private function createRequest(array $query = []): Request
-    {
-        $request = new Request($query);
-        $request->setSession(new Session(new MockArraySessionStorage()));
-
-        return $request;
-    }
 
     // AbstractController resolves security, routing and the flash bag through its container, so a controller exercised outside the kernel has to be handed one
     private function createController(

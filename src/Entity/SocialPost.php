@@ -59,6 +59,11 @@ class SocialPost implements \Stringable
     /** @var list<string> */
     private array $addedNetworks = [];
 
+    // The accounts of the reposts unticked, by network: ticked again, the network goes back to reposting rather than sending the text written for the calendar
+    /** @var array<string, string>|null */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $droppedReposts = null;
+
     // The language it is written in ("fr", "en"), the content's when prepared from one - null for the site's default. Bluesky files the post under it
     #[ORM\Column(length: 8, nullable: true)]
     private ?string $locale = null;
@@ -370,12 +375,31 @@ class SocialPost implements \Stringable
         $networks ??= [];
         foreach ($this->targets->toArray() as $target) {
             if ($target->isPending() && !\in_array($target->getNetwork(), $networks, true)) {
+                $this->keepDroppedRepost($target);
                 $this->removeTarget($target);
             }
         }
         $this->addedNetworks = array_values(array_diff($networks, $this->getNetworks()));
 
         return $this;
+    }
+
+    private function keepDroppedRepost(SocialPostTarget $target): void
+    {
+        if (null !== $target->getRepost()) {
+            $this->droppedReposts = [...$this->droppedReposts ?? [], $target->getNetwork() => $target->getRepost()];
+        }
+    }
+
+    // Hands the account of the repost unticked on $network over once, to the target ticked in its place
+    public function takeDroppedRepost(string $network): ?string
+    {
+        $dropped = $this->droppedReposts ?? [];
+        $account = $dropped[$network] ?? null;
+        unset($dropped[$network]);
+        $this->droppedReposts = [] === $dropped ? null : $dropped;
+
+        return $account;
     }
 
     // Hands the networks ticked with no text yet over once, to whoever writes their texts

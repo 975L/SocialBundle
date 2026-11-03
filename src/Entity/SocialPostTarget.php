@@ -80,6 +80,10 @@ class SocialPostTarget implements \Stringable
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $options = null;
 
+    // The comments the last check saw on the post, null until it was read once (see SocialCommentChecker)
+    #[ORM\Column(nullable: true)]
+    private ?int $commentCount = null;
+
     public function __construct(
         #[ORM\ManyToOne(targetEntity: SocialPost::class, inversedBy: 'targets')]
         #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -274,6 +278,34 @@ class SocialPostTarget implements \Stringable
     public function setOptions(?array $options): self
     {
         $this->options = [] === $options ? null : $options;
+
+        return $this;
+    }
+
+    // The account whose post this target reposts rather than publishing its text, kept among its options (see RepostPublisherInterface)
+    public function getRepost(): ?string
+    {
+        $account = $this->options['repost'] ?? null;
+
+        return \is_string($account) ? $account : null;
+    }
+
+    public function setRepost(?string $account): self
+    {
+        $options = $this->getOptions();
+        unset($options['repost']);
+
+        return $this->setOptions(null === $account ? $options : ['repost' => $account] + $options);
+    }
+
+    public function getCommentCount(): ?int
+    {
+        return $this->commentCount;
+    }
+
+    public function setCommentCount(int $commentCount): self
+    {
+        $this->commentCount = $commentCount;
 
         return $this;
     }

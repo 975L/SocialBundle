@@ -11,14 +11,16 @@
 namespace c975L\SocialBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\SocialBundle\Contract\CommentCountPublisherInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\SocialBundle\Contract\StoryPublisherInterface;
+use c975L\SocialBundle\Model\CommentCount;
 use c975L\SocialBundle\Model\MediaRules;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\UiBundle\Model\SocialContent;
 
-// Posts on the Instagram professional account linked to the site's Facebook Page, with the Page's own token. Instagram takes nothing without a picture or a video: one picture as a JPEG within its range of ratios (see SocialImageExporter), one video as a reel, several as a carousel. A link in a caption is not clickable on Instagram: a template meant for it says so ("link in bio") rather than relying on the url
-class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInterface
+// Posts on the Instagram professional account connected by Instagram Login when there is one (see InstagramLoginClient), otherwise on the one linked to the site's Facebook Page, with the Page's own token. Instagram takes nothing without a picture or a video: one picture as a JPEG within its range of ratios (see SocialImageExporter), one video as a reel, several as a carousel. A link in a caption is not clickable on Instagram: a template meant for it says so ("link in bio") rather than relying on the url
+class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInterface, CommentCountPublisherInterface
 {
     // What a caption accepts
     private const int MAX_LENGTH = 2200;
@@ -33,6 +35,7 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
 
     public function __construct(
         private readonly MetaGraphClient $metaGraphClient,
+        private readonly InstagramLoginClient $instagramLoginClient,
         private readonly SocialImageExporter $imageExporter,
         private readonly ConfigServiceInterface $configService,
         private readonly int $statusDelay = 3,
@@ -46,7 +49,7 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
 
     public function isConfigured(): bool
     {
-        return '' !== $this->instagramId() && null !== $this->metaGraphClient->pageToken();
+        return '' !== $this->instagramId() && '' !== $this->token();
     }
 
     public function getMaxLength(): int
@@ -76,7 +79,7 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
     // The media's id: a carousel's children are created first, each video one waited for, then the container is created, waited for until Instagram has processed it, and published
     public function publish(string $text, SocialContent $content, array $medias = []): string
     {
-        $token = ['access_token' => (string) $this->metaGraphClient->pageToken()];
+        $token = ['access_token' => $this->token()];
         $request = $this->request($text, $content, $medias);
 
         // The carousel's children, their ids joined in "children"
@@ -99,7 +102,7 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
             'CAROUSEL' => 'carousel',
             default => 'image',
         });
-        $published = $this->metaGraphClient->request('POST', '/' . $this->instagramId() . '/media_publish', ['creation_id' => $containerId, ...$token]);
+        $published = $this->graph()->request('POST', '/' . $this->instagramId() . '/media_publish', ['creation_id' => $containerId, ...$token]);
 
         return (string) $published['id'];
     }
@@ -107,7 +110,7 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
     // The story's id: a STORIES container of the video, fetched from its url, or of the picture framed 9:16 (JPEG, 8 MB) - no caption nor link sticker through the API - waited for, then published
     public function story(SocialContent $content, ?PostMedia $video = null): string
     {
-        $token = ['access_token' => (string) $this->metaGraphClient->pageToken()];
+        $token = ['access_token' => $this->token()];
         if (null !== $video) {
             $containerId = $this->create(['media_type' => 'STORIES', 'video_url' => $video->url], $token);
             $this->wait($containerId, $token, 'video');
@@ -117,7 +120,15 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
             $this->wait($containerId, $token, 'story');
         }
 
-        return (string) $this->metaGraphClient->request('POST', '/' . $this->instagramId() . '/media_publish', ['creation_id' => $containerId, ...$token])['id'];
+        return (string) $this->graph()->request('POST', '/' . $this->instagramId() . '/media_publish', ['creation_id' => $containerId, ...$token])['id'];
+    }
+
+    // The count alone: reading the comments themselves would take instagram_manage_comments, a permission more to ask every site
+    public function commentCount(string $externalId): CommentCount
+    {
+        $media = $this->graph()->request('GET', '/' . $externalId, ['fields' => 'comments_count,permalink', 'access_token' => $this->token()]);
+
+        return new CommentCount((int) ($media['comments_count'] ?? 0), isset($media['permalink']) ? (string) $media['permalink'] : null);
     }
 
     // The source pictures in place of their JPEG copies, a preview writing nothing to disk
@@ -177,7 +188,7 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
      */
     private function create(array $parameters, array $token): string
     {
-        return (string) $this->metaGraphClient->request('POST', '/' . $this->instagramId() . '/media', [...$parameters, ...$token])['id'];
+        return (string) $this->graph()->request('POST', '/' . $this->instagramId() . '/media', [...$parameters, ...$token])['id'];
     }
 
     // Asks Instagram until it has processed the container, throwing when it failed or is still at it
@@ -186,7 +197,7 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
     {
         $attempts = 'video' === $what ? self::VIDEO_STATUS_ATTEMPTS : self::STATUS_ATTEMPTS;
         for ($attempt = 1; $attempt <= $attempts; ++$attempt) {
-            $status = (string) ($this->metaGraphClient->request('GET', '/' . $containerId, ['fields' => 'status_code', ...$token])['status_code'] ?? '');
+            $status = (string) ($this->graph()->request('GET', '/' . $containerId, ['fields' => 'status_code', ...$token])['status_code'] ?? '');
             if ('FINISHED' === $status) {
                 return;
             }
@@ -199,8 +210,18 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
         throw new \RuntimeException(sprintf('Instagram is still processing the %s: publish it again in a few minutes.', $what));
     }
 
+    private function graph(): MetaGraphClient | InstagramLoginClient
+    {
+        return $this->instagramLoginClient->isConnected() ? $this->instagramLoginClient : $this->metaGraphClient;
+    }
+
+    private function token(): string
+    {
+        return $this->instagramLoginClient->isConnected() ? $this->instagramLoginClient->accessToken() : (string) $this->metaGraphClient->pageToken();
+    }
+
     private function instagramId(): string
     {
-        return trim((string) $this->configService->get('social-meta-instagram-id'));
+        return $this->instagramLoginClient->isConnected() ? $this->instagramLoginClient->accountId() : trim((string) $this->configService->get('social-meta-instagram-id'));
     }
 }

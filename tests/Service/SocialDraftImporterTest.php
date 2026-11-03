@@ -56,6 +56,7 @@ class SocialDraftImporterTest extends TestCase
         $publisher->method('getConnectedNetworkNames')->willReturn(['bluesky', 'linkedin']);
         $publisher->method('supportsComment')->willReturnCallback(static fn (string $network): bool => 'linkedin' === $network);
         $publisher->method('supportsReshare')->willReturnCallback(static fn (string $network): bool => 'linkedin' === $network);
+        $publisher->method('supportsRepost')->willReturnCallback(static fn (string $network): bool => 'bluesky' === $network);
         $publisher->method('supportsStory')->willReturnCallback(static fn (string $network): bool => 'bluesky' === $network);
         $publisher->method('findContent')->willReturnCallback(static fn (string $type, string $id): ?SocialContent => 'book' === $type && \in_array($id, ['12', '13'], true) ? new SocialContent($id, 'Le Cerf-volant', 'https://example.org/histoire/cerf-volant', imageUrl: 'https://example.org/cover.jpg') : null);
         $publisher->method('isHeldOutside')->willReturnCallback(static fn (string $type, string $id, ?SocialSeries $own): bool => null === $own && \in_array($type . ':' . $id, $held, true));
@@ -163,6 +164,40 @@ class SocialDraftImporterTest extends TestCase
         }
 
         $this->assertSame(['bluesky' => [null, true], 'linkedin' => ['Shared', false]], $targets);
+    }
+
+    // A draft without a repost hashes as it did before reposting came to be: a file imported earlier stays unchanged, its posts approved
+    public function testADraftWithoutARepostKeepsTheHashOfFormerImports(): void
+    {
+        $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 12:00';
+        $importer = $this->importer();
+        $read = $importer->read(['title' => 'T', 'posts' => [['at' => $at, 'networks' => ['bluesky'], 'text' => 'Text', 'key' => 'k']]], $this->dir);
+
+        $post = $importer->import('T', $read['drafts'])['created'][0];
+
+        $this->assertSame(hash('sha256', (string) json_encode(['at' => $at, 'networks' => ['bluesky'], 'text' => 'Text', 'comment' => null, 'reshare' => null, 'story' => false, 'url' => null, 'media' => null, 'key' => 'k', 'source' => null])), $post->getImportHash());
+    }
+
+    // A repost is a draft like any other, its account kept on the target able to send it
+    public function testARepostIsKeptOnItsTarget(): void
+    {
+        $importer = $this->importer();
+        $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 12:00';
+        $read = $importer->read(['title' => 'T', 'posts' => [['at' => $at, 'networks' => ['bluesky'], 'text' => 'Repost of A', 'url' => 'https://example.org/a', 'repost' => 'other.bsky.social']]], $this->dir);
+        $this->assertSame([], $read['errors']);
+
+        $target = $importer->import('T', $read['drafts'])['created'][0]->getTargets()->first();
+
+        $this->assertSame('other.bsky.social', $target->getRepost());
+    }
+
+    // No link to find the post by, or a network unable to repost: told before anything is written
+    public function testARepostWithoutLinkOrOnAnotherNetworkIsRefused(): void
+    {
+        $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 12:00';
+        $read = $this->importer()->read(['title' => 'T', 'posts' => [['at' => $at, 'networks' => ['linkedin'], 'text' => 'Repost', 'repost' => 'other.bsky.social']]], $this->dir);
+
+        $this->assertSame(['Post 1: "repost" needs the "url" its post carries.', 'Post 1: linkedin cannot repost, connect it again if it should.'], $read['errors']);
     }
 
     // Two posts of a file never share a key, which would make one of them update the other

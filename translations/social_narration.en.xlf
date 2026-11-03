@@ -12,7 +12,7 @@
             </trans-unit>
             <trans-unit id="b7uR4Ny">
                 <source>narration.guided_step_social_bluesky_outdated</source>
-                <target>And if one day the "Bluesky" tile flags outdated permissions, or an email reminds you of it, simply connect again with "Reconnect".</target>
+                <target>And if one day the "Bluesky" tile flags outdated permissions, an email reminds you of it, or the site has to repost, that permission being asked only at a new connection, simply connect again with "Reconnect".</target>
             </trans-unit>
             <trans-unit id="ba1QolF">
                 <source>narration.guided_step_social_calendar_feed</source>
@@ -41,6 +41,14 @@
             <trans-unit id="Nu24WA4">
                 <source>narration.guided_step_social_calendar_texts</source>
                 <target>In the panel, correct each network's text, then click "Save the texts"; a text already published stays read only. "Full screen" opens the whole post, for its common text or its rephrasing.</target>
+            </trans-unit>
+            <trans-unit id="slx7.Dk">
+                <source>narration.guided_step_social_comments_days</source>
+                <target>Bluesky, Instagram and YouTube don't email you when someone comments. Search for "social-comments-alert-days" in the configuration and set how many days to watch a post.</target>
+            </trans-unit>
+            <trans-unit id="HdY9GHw">
+                <source>narration.guided_step_social_comments_email</source>
+                <target>The site then writes to you every three hours when there is something new: one email, with each post's address.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>
@@ -77,6 +85,18 @@
             <trans-unit id="v_voss_">
                 <source>narration.guided_step_social_google_sync</source>
                 <target>The rest happens without you: the reviews come in every night, the synchronization task being scheduled by the bundle itself. Only one optional key is left, "social-google-listing-url", the public address of the listing, carried into the site's structured data.</target>
+            </trans-unit>
+            <trans-unit id="thX8Ich">
+                <source>narration.guided_step_social_instagram_connect</source>
+                <target>Click Connect on the Instagram without a Page tile, then allow access with the account that posts.</target>
+            </trans-unit>
+            <trans-unit id="xYlV9oy">
+                <source>narration.guided_step_social_instagram_credentials</source>
+                <target>Paste the Instagram app's ID and secret into the two social-instagram keys of the configuration.</target>
+            </trans-unit>
+            <trans-unit id="Ot_OTRg">
+                <source>narration.guided_step_social_instagram_prerequisites</source>
+                <target>In the Meta app, set up Instagram login: its two permissions, the site's redirect address, then the account as an Instagram tester, who accepts the invitation in Instagram.</target>
             </trans-unit>
             <trans-unit id="xmLlJfS">
                 <source>narration.guided_step_social_linkedin_connect</source>

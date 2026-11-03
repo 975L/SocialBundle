@@ -16,21 +16,12 @@ use c975L\SocialBundle\Service\BlueskyOAuthClient;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 class BlueskyOAuthControllerTest extends TestCase
 {
     use ControllerTestTrait;
 
     private const array PENDING = ['state' => 'expected-state', 'verifier' => 'v', 'dpopKey' => 'k', 'issuer' => 'https://bsky.social', 'tokenEndpoint' => 'https://bsky.social/oauth/token'];
-
-    private function createRequest(array $query = []): Request
-    {
-        $request = new Request($query);
-        $request->setSession(new Session(new MockArraySessionStorage()));
-
-        return $request;
-    }
 
     // Same seam as MetaOAuthControllerTest: AbstractController resolves security, routing and the flash bag through its container
     private function createController(Request $request, ?BlueskyOAuthClient $oauthClient = null, string $handle = '', bool | \Throwable $siteHost = true): BlueskyOAuthController

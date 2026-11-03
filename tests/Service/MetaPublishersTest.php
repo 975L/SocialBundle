@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Tests\Service;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\SocialBundle\Service\FacebookPublisher;
+use c975L\SocialBundle\Service\InstagramLoginClient;
 use c975L\SocialBundle\Service\InstagramPublisher;
 use c975L\SocialBundle\Service\MetaGraphClient;
 use c975L\SocialBundle\Service\SocialImageExporter;
@@ -24,6 +25,17 @@ class MetaPublishersTest extends TestCase
     /** @var list<array{method: string, path: string, parameters: array<string, string>}> */
     private array $calls = [];
 
+    // Each call kept in $calls, the next of $answers given back
+    /** @param list<array<string, mixed>>|null $answers */
+    private function recordedAnswers(?array &$answers): \Closure
+    {
+        return function (string $method, string $path, array $parameters) use (&$answers): array {
+            $this->calls[] = ['method' => $method, 'path' => $path, 'parameters' => $parameters];
+
+            return array_shift($answers) ?? [];
+        };
+    }
+
     /**
      * @param list<array<string, mixed>> $answers
      */
@@ -31,13 +43,22 @@ class MetaPublishersTest extends TestCase
     {
         $graph = $this->createStub(MetaGraphClient::class);
         $graph->method('pageToken')->willReturn('page-token');
-        $graph->method('request')->willReturnCallback(function (string $method, string $path, array $parameters) use (&$answers): array {
-            $this->calls[] = ['method' => $method, 'path' => $path, 'parameters' => $parameters];
-
-            return array_shift($answers) ?? [];
-        });
+        $graph->method('request')->willReturnCallback($this->recordedAnswers($answers));
 
         return $graph;
+    }
+
+    // No account connected by Instagram Login, the Page's being the one used, unless its answers are given
+    /** @param list<array<string, mixed>>|null $answers */
+    private function login(?array $answers = null): InstagramLoginClient
+    {
+        $login = $this->createStub(InstagramLoginClient::class);
+        $login->method('isConnected')->willReturn(null !== $answers);
+        $login->method('accessToken')->willReturn('ig-token');
+        $login->method('accountId')->willReturn('88');
+        $login->method('request')->willReturnCallback($this->recordedAnswers($answers));
+
+        return $login;
     }
 
     private function exporter(?string $jpegUrl): SocialImageExporter
@@ -84,7 +105,7 @@ class MetaPublishersTest extends TestCase
 
     public function testInstagramMediaRules(): void
     {
-        $rules = new InstagramPublisher($this->graph([]), $this->exporter(null), $this->config(), 0)->getMediaRules();
+        $rules = new InstagramPublisher($this->graph([]), $this->login(), $this->exporter(null), $this->config(), 0)->getMediaRules();
 
         $this->assertSame(
             [10, true, true, true, ['image/jpeg'], 8000000, 0.8, 1.91, ['video/mp4', 'video/quicktime'], 300000000, 3.0, 900.0],
@@ -122,7 +143,7 @@ class MetaPublishersTest extends TestCase
     {
         $graph = $this->graph([['id' => 'c1'], ['status_code' => 'IN_PROGRESS'], ['status_code' => 'FINISHED'], ['id' => 'm1']]);
 
-        $id = new InstagramPublisher($graph, $this->exporter('https://example.org/medias/social/a.jpg'), $this->config(), 0)->publish('Texte', $this->content());
+        $id = new InstagramPublisher($graph, $this->login(), $this->exporter('https://example.org/medias/social/a.jpg'), $this->config(), 0)->publish('Texte', $this->content());
 
         $this->assertSame('m1', $id);
         $this->assertSame(['image_url' => 'https://example.org/medias/social/a.jpg', 'caption' => 'Texte', 'alt_text' => 'Le lac au matin', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
@@ -154,7 +175,7 @@ class MetaPublishersTest extends TestCase
     {
         $this->expectExceptionMessageIsOrContains('A story takes a picture');
 
-        new InstagramPublisher($this->graph([]), $this->exporter(null), $this->config(), 0)->story($this->content());
+        new InstagramPublisher($this->graph([]), $this->login(), $this->exporter(null), $this->config(), 0)->story($this->content());
     }
 
     // An Instagram story: a STORIES container of the vertical picture, no caption, waited for, then published
@@ -162,7 +183,7 @@ class MetaPublishersTest extends TestCase
     {
         $graph = $this->graph([['id' => 'c1'], ['status_code' => 'FINISHED'], ['id' => 's1']]);
 
-        $id = new InstagramPublisher($graph, $this->exporter('https://example.org/medias/social/a.jpg'), $this->config(), 0)->story($this->content());
+        $id = new InstagramPublisher($graph, $this->login(), $this->exporter('https://example.org/medias/social/a.jpg'), $this->config(), 0)->story($this->content());
 
         $this->assertSame('s1', $id);
         $this->assertSame(['media_type' => 'STORIES', 'image_url' => 'https://example.org/medias/social/a-story.jpg', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
@@ -175,7 +196,7 @@ class MetaPublishersTest extends TestCase
         $graph = $this->graph([['id' => 'c1'], ['status_code' => 'FINISHED'], ['id' => 's1']]);
         $video = new PostMedia('/var/medias/card.mp4', 'https://example.org/medias/card.mp4', 'video/mp4', width: 1080, height: 1920, duration: 7.0);
 
-        $id = new InstagramPublisher($graph, $this->exporter(null), $this->config(), 0)->story($this->content(), $video);
+        $id = new InstagramPublisher($graph, $this->login(), $this->exporter(null), $this->config(), 0)->story($this->content(), $video);
 
         $this->assertSame('s1', $id);
         $this->assertSame(['media_type' => 'STORIES', 'video_url' => 'https://example.org/medias/card.mp4', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
@@ -208,14 +229,14 @@ class MetaPublishersTest extends TestCase
     {
         $this->expectExceptionMessageIsOrContains('could not process the image (ERROR)');
 
-        new InstagramPublisher($this->graph([['id' => 'c1'], ['status_code' => 'ERROR']]), $this->exporter('https://example.org/a.jpg'), $this->config(), 0)->publish('Texte', $this->content());
+        new InstagramPublisher($this->graph([['id' => 'c1'], ['status_code' => 'ERROR']]), $this->login(), $this->exporter('https://example.org/a.jpg'), $this->config(), 0)->publish('Texte', $this->content());
     }
 
     public function testInstagramTakesNoPostWithoutAnImage(): void
     {
         $this->expectExceptionMessageIsOrContains('only takes posts with an image');
 
-        new InstagramPublisher($this->graph([]), $this->exporter(null), $this->config(), 0)->publish('Texte', $this->content());
+        new InstagramPublisher($this->graph([]), $this->login(), $this->exporter(null), $this->config(), 0)->publish('Texte', $this->content());
     }
 
     // The post's own picture replaces the content's image
@@ -291,7 +312,7 @@ class MetaPublishersTest extends TestCase
             ->with($this->callback(fn (SocialContent $content): bool => '/var/medias/p1.jpg' === $content->imagePath), 0.8, 1.91)
             ->willReturn('https://example.org/medias/social/p1.jpg');
 
-        new InstagramPublisher($this->graph([['id' => 'c1'], ['status_code' => 'FINISHED'], ['id' => 'm1']]), $exporter, $this->config(), 0)->publish('Texte', $this->content(), [$this->picture('p1')]);
+        new InstagramPublisher($this->graph([['id' => 'c1'], ['status_code' => 'FINISHED'], ['id' => 'm1']]), $this->login(), $exporter, $this->config(), 0)->publish('Texte', $this->content(), [$this->picture('p1')]);
 
         $this->assertSame(['image_url' => 'https://example.org/medias/social/p1.jpg', 'caption' => 'Texte', 'alt_text' => 'Alt p1', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
     }
@@ -302,7 +323,7 @@ class MetaPublishersTest extends TestCase
         $exporter = $this->createMock(SocialImageExporter::class);
         $exporter->expects($this->never())->method('jpegUrl');
 
-        $preview = new InstagramPublisher($this->graph([]), $exporter, $this->config(), 0)->preview('Texte', $this->content(), [$this->picture('p1')]);
+        $preview = new InstagramPublisher($this->graph([]), $this->login(), $exporter, $this->config(), 0)->preview('Texte', $this->content(), [$this->picture('p1')]);
 
         $this->assertSame('/var/medias/p1.jpg', $preview['parameters']['image_url']);
     }
@@ -312,7 +333,7 @@ class MetaPublishersTest extends TestCase
     {
         $graph = $this->graph([['id' => 'c1'], ['status_code' => 'IN_PROGRESS'], ['status_code' => 'FINISHED'], ['id' => 'm1']]);
 
-        $id = new InstagramPublisher($graph, $this->exporter(null), $this->config(), 0)->publish('Texte', $this->content(), [$this->video()]);
+        $id = new InstagramPublisher($graph, $this->login(), $this->exporter(null), $this->config(), 0)->publish('Texte', $this->content(), [$this->video()]);
 
         $this->assertSame('m1', $id);
         $this->assertSame(['media_type' => 'REELS', 'video_url' => 'https://example.org/medias/v.mp4', 'caption' => 'Texte', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
@@ -323,7 +344,7 @@ class MetaPublishersTest extends TestCase
     {
         $this->expectExceptionMessageIsOrContains('could not process the video (ERROR)');
 
-        new InstagramPublisher($this->graph([['id' => 'c1'], ['status_code' => 'ERROR']]), $this->exporter(null), $this->config(), 0)->publish('Texte', $this->content(), [$this->video()]);
+        new InstagramPublisher($this->graph([['id' => 'c1'], ['status_code' => 'ERROR']]), $this->login(), $this->exporter(null), $this->config(), 0)->publish('Texte', $this->content(), [$this->video()]);
     }
 
     // Several medias: each a child, a video child waited for, then the carousel waited for and published
@@ -331,7 +352,7 @@ class MetaPublishersTest extends TestCase
     {
         $graph = $this->graph([['id' => 'k1'], ['id' => 'k2'], ['status_code' => 'FINISHED'], ['id' => 'c1'], ['status_code' => 'FINISHED'], ['id' => 'm1']]);
 
-        $id = new InstagramPublisher($graph, $this->exporter('https://example.org/medias/social/p1.jpg'), $this->config(), 0)->publish('Texte', $this->content(), [$this->picture('p1'), $this->video()]);
+        $id = new InstagramPublisher($graph, $this->login(), $this->exporter('https://example.org/medias/social/p1.jpg'), $this->config(), 0)->publish('Texte', $this->content(), [$this->picture('p1'), $this->video()]);
 
         $this->assertSame('m1', $id);
         $this->assertSame(['/77/media', '/77/media', '/k2', '/77/media', '/c1', '/77/media_publish'], array_column($this->calls, 'path'));
@@ -339,5 +360,39 @@ class MetaPublishersTest extends TestCase
         $this->assertSame(['is_carousel_item' => 'true', 'media_type' => 'VIDEO', 'video_url' => 'https://example.org/medias/v.mp4', 'access_token' => 'page-token'], $this->calls[1]['parameters']);
         $this->assertSame(['media_type' => 'CAROUSEL', 'caption' => 'Texte', 'children' => 'k1,k2', 'access_token' => 'page-token'], $this->calls[3]['parameters']);
         $this->assertSame('c1', $this->calls[5]['parameters']['creation_id']);
+    }
+
+    // The count needs no permission beyond the ones a site already granted
+    public function testInstagramReadsTheMediasCommentCount(): void
+    {
+        $comments = new InstagramPublisher($this->graph([['comments_count' => 2, 'permalink' => 'https://www.instagram.com/p/x/']]), $this->login(), $this->exporter(null), $this->config(), 0)->commentCount('77');
+
+        $this->assertSame(2, $comments->count);
+        $this->assertSame('https://www.instagram.com/p/x/', $comments->url);
+        $this->assertSame('comments_count,permalink', $this->calls[0]['parameters']['fields']);
+    }
+
+    // An account connected by Instagram Login takes over from the Page's: its id, its token and its own host, without the Page's client being called
+    public function testAnAccountConnectedWithoutAPageIsTheOnePostedOn(): void
+    {
+        $graph = $this->createMock(MetaGraphClient::class);
+        $graph->expects($this->never())->method('request');
+
+        $id = new InstagramPublisher($graph, $this->login([['id' => 'c1'], ['status_code' => 'FINISHED'], ['id' => 'm1']]), $this->exporter('https://example.org/medias/social/a.jpg'), $this->config(), 0)->publish('Texte', $this->content());
+
+        $this->assertSame('m1', $id);
+        $this->assertSame(['/88/media', '/c1', '/88/media_publish'], array_column($this->calls, 'path'));
+        $this->assertSame(['ig-token', 'ig-token', 'ig-token'], array_map(static fn (array $call): string => $call['parameters']['access_token'], $this->calls));
+    }
+
+    // Neither a Page nor an account connected by Instagram Login: nothing goes out, one of the two being enough
+    public function testInstagramIsConfiguredByEitherConnection(): void
+    {
+        $noPage = $this->createStub(ConfigServiceInterface::class);
+        $noToken = $this->createStub(MetaGraphClient::class);
+
+        $this->assertFalse(new InstagramPublisher($noToken, $this->login(), $this->exporter(null), $noPage, 0)->isConfigured());
+        $this->assertTrue(new InstagramPublisher($noToken, $this->login([]), $this->exporter(null), $noPage, 0)->isConfigured());
+        $this->assertTrue(new InstagramPublisher($this->graph([]), $this->login(), $this->exporter(null), $this->config(), 0)->isConfigured());
     }
 }

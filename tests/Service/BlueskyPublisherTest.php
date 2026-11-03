@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\SocialBundle\Service\BlueskyOAuthClient;
+use c975L\SocialBundle\Service\BlueskyPublicReader;
 use c975L\SocialBundle\Service\BlueskyPublisher;
 use c975L\SocialBundle\Service\SocialImageExporter;
 use c975L\UiBundle\Model\SocialContent;
@@ -28,7 +29,7 @@ class BlueskyPublisherTest extends TestCase
     private array $requests = [];
 
     // The OAuth connection stubbed: every call recorded with its json body, Bluesky's refusal thrown the way BlueskyOAuthClient words it
-    private function createPublisher(bool $connected = true, bool $refused = false, string $remoteImage = '', ?string $label = null): BlueskyPublisher
+    private function createPublisher(bool $connected = true, bool $refused = false, string $remoteImage = '', ?string $label = null, ?BlueskyPublicReader $publicReader = null): BlueskyPublisher
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $slug): ?string => 'social-bluesky-label' === $slug ? $label : null);
@@ -53,7 +54,7 @@ class BlueskyPublisherTest extends TestCase
             return new MockResponse($remoteImage);
         });
 
-        return new BlueskyPublisher(new SocialImageExporter($httpClient, $this->createStub(SiteUrlResolver::class), sys_get_temp_dir(), $configService), $oauthClient, $configService, new SiteLocales(['fr', 'en'], 'fr'));
+        return new BlueskyPublisher(new SocialImageExporter($httpClient, $this->createStub(SiteUrlResolver::class), sys_get_temp_dir(), $configService), $oauthClient, $configService, new SiteLocales(['fr', 'en'], 'fr'), $publicReader ?? $this->createStub(BlueskyPublicReader::class));
     }
 
     /**
@@ -292,5 +293,39 @@ class BlueskyPublisherTest extends TestCase
 
         $this->createPublisher()->publish('Bonjour', new SocialContent('1', 'Titre', 'https://example.org'));
         $this->assertSame(['fr'], $this->postedRecord()['langs']);
+    }
+
+    // The post found by its link is reposted as it stands, in the connected repo
+    public function testARepostWritesARepostRecord(): void
+    {
+        $reader = $this->createStub(BlueskyPublicReader::class);
+        $reader->method('findPostWithLink')->willReturnCallback(static fn (string $account, string $url): ?array => 'other.bsky.social' === $account && 'https://example.org/a' === $url ? ['uri' => 'at://did:plc:other/app.bsky.feed.post/1', 'cid' => 'cid1'] : null);
+
+        $uri = $this->createPublisher(publicReader: $reader)->repost('other.bsky.social', 'https://example.org/a');
+        $body = json_decode(end($this->requests)['body'], true);
+
+        $this->assertSame('at://did:plc:abc/app.bsky.feed.post/3k', $uri);
+        $this->assertSame('app.bsky.feed.repost', $body['collection']);
+        $this->assertSame(['uri' => 'at://did:plc:other/app.bsky.feed.post/1', 'cid' => 'cid1'], $body['record']['subject']);
+    }
+
+    // A post not out yet fails the target rather than reposting another one
+    public function testARepostOfAPostNotOutYetThrows(): void
+    {
+        $this->expectExceptionMessage('No post of other.bsky.social carries https://example.org/a yet.');
+
+        $this->createPublisher()->repost('other.bsky.social', 'https://example.org/a');
+    }
+
+    // The replies come from the public reader, the address from the post's own id
+    public function testTheCommentCountIsThePostsReplies(): void
+    {
+        $reader = $this->createStub(BlueskyPublicReader::class);
+        $reader->method('replyCount')->willReturn(3);
+
+        $comments = $this->createPublisher(publicReader: $reader)->commentCount('at://did:plc:abc/app.bsky.feed.post/3k');
+
+        $this->assertSame(3, $comments->count);
+        $this->assertSame('https://bsky.app/profile/did:plc:abc/post/3k', $comments->url);
     }
 }

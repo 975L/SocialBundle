@@ -125,4 +125,16 @@ class YoutubePublisherTest extends TestCase
         $this->assertSame('Titre', $preview['resource']['snippet']['title']);
         $this->assertSame([], $this->uploads);
     }
+
+    // The count read by the client, the address written from the video's id
+    public function testTheCommentCountComesFromTheClient(): void
+    {
+        $client = $this->createStub(YoutubeClient::class);
+        $client->method('commentCount')->willReturn(5);
+
+        $comments = new YoutubePublisher($client, $this->createStub(ConfigServiceInterface::class))->commentCount('abc');
+
+        $this->assertSame(5, $comments->count);
+        $this->assertSame('https://youtu.be/abc', $comments->url);
+    }
 }

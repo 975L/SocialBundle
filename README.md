@@ -295,7 +295,7 @@ An agency running several client sites fills the same client id and secret on ea
 
 ### Routes
 
-This bundle's **only** routes — the Google connection's, the Meta one's (`/social/meta/connect`, `/social/meta/callback`) the LinkedIn one's (`/social/linkedin/connect`, `/social/linkedin/callback`), the YouTube one's (`/social/youtube/connect`, `/social/youtube/callback`), the Pinterest one's (`/social/pinterest/connect`, `/social/pinterest/callback`), the TikTok one's (`/social/tiktok/connect`, `/social/tiktok/callback`) and the calendar's iCal feed (`/social/calendar/{token}.ics`, see [Subscribing from a calendar app](#subscribing-from-a-calendar-app)) — and the reason a consuming app now has to import its controllers:
+This bundle's **only** routes — the Google connection's, the Meta one's (`/social/meta/connect`, `/social/meta/callback`) the LinkedIn one's (`/social/linkedin/connect`, `/social/linkedin/callback`), the YouTube one's (`/social/youtube/connect`, `/social/youtube/callback`), the Instagram one's (`/social/instagram/connect`, `/social/instagram/callback`), the Pinterest one's (`/social/pinterest/connect`, `/social/pinterest/callback`), the TikTok one's (`/social/tiktok/connect`, `/social/tiktok/callback`) and the calendar's iCal feed (`/social/calendar/{token}.ics`, see [Subscribing from a calendar app](#subscribing-from-a-calendar-app)) — and the reason a consuming app now has to import its controllers:
 
 ```yaml
 # config/routes.yaml
@@ -348,7 +348,7 @@ Implement `ReviewsSourceInterface` (`getName()`, `isConfigured()`, `fetch()` yie
 
 ## Publishing on the networks
 
-The site's own contents — a photograph, a story, a product — posted on its **Bluesky** account, its **Facebook** Page, the **Instagram** professional account linked to that Page, **LinkedIn**, its **YouTube** channel for the posts carrying a video, a **Pinterest** board for those carrying a picture, and a **TikTok** account for those carrying a video - ticked by hand once a video is added, neither a draft prepared from a content nor a new post starting on it. There is no switch: the publication is on as soon as one network is connected, and nothing is prepared before. The "Posts" and "Calendar" screens are always in the sidebar, saying so while no network is connected. Every post is planned at a moment, on one network at least, and prepared as a draft: nothing goes out before someone has read and approved it.
+The site's own contents — a photograph, a story, a product — posted on its **Bluesky** account, its **Facebook** Page, the **Instagram** professional account linked to that Page or connected by itself, **LinkedIn**, its **YouTube** channel for the posts carrying a video, a **Pinterest** board for those carrying a picture, and a **TikTok** account for those carrying a video - ticked by hand once a video is added, neither a draft prepared from a content nor a new post starting on it. There is no switch: the publication is on as soon as one network is connected, and nothing is prepared before. The "Posts" and "Calendar" screens are always in the sidebar, saying so while no network is connected. Every post is planned at a moment, on one network at least, and prepared as a draft: nothing goes out before someone has read and approved it.
 
 **This bundle publishes, the bundles owning the contents hand them over.** A bundle with something to post implements UiBundle's `SocialContentSourceInterface` (declared there so it needs no dependency on this bundle), auto-tagged by interface: `getNextContent()` picks among the contents not posted yet, `getContent()` reads one again, and `getRepeatAfterDays()` says when a posted one may come back. The sources take turns, the one that had a post least recently being asked first. A source whose contents fall into groups — a gallery's categories — implements `ScopedSocialContentSourceInterface` instead, so a batch of drafts may be drawn from some of those groups. A content that only suits one day — an anniversary — comes from a source implementing `DatedSocialContentSourceInterface`: `getContentForDate()` is asked for the post's planned date whenever one is known, in place of `getNextContent()` and of the groups. A date without content leaves the moment to the next source in turn, and with no source left the moment is passed over rather than ending the series, so a series may hold fewer drafts than moments, and generating one whose moments are all empty keeps nothing, as when the sources ran out; **"Prolong the series"** and `c975l:social:series:prolong` look on past a stretch without content, up to `--until` or a year ahead. With nothing to read but a date, such a source shows nothing in `c975l:social:contents` when its `getNextContent()` answers `null`. Sources without dates keep stopping at the first moment without content, what has run out having run out.
 
@@ -374,6 +374,7 @@ The **"Posts"** screen (`SocialPostCrudController`, `site-role-editor`) lists th
 php bin/console c975l:social:publish                 # what the schedule runs: the approved posts whose moment has come
 php bin/console c975l:social:publish --dry-run       # what each network would receive, sent nowhere
 php bin/console c975l:social:publish --url=https://example.org/page --at="2026-10-06 09:00"   # a draft of a page, planned then (the next quarter of an hour by default)
+php bin/console c975l:social:comments:check          # the new comments, by email (see below)
 php bin/console c975l:social:draft drafts.json --dry-run   # the drafts a JSON file describes, checked and listed, written nowhere
 php bin/console c975l:social:draft drafts.json             # made, as one series waiting for approval - again after a correction, the keyed posts updated
 php bin/console c975l:social:contents --json             # the contents still free in each source ("book:12"), what an imported draft's "source" names
@@ -383,6 +384,16 @@ php bin/console c975l:social:series:prolong 4 7 --until=2026-12-31         # the
 ```
 
 `--dry-run` shows every network, configured or not, so the texts can be read before any credential is plugged in. It still writes the JPEG copy Meta would download (see below), being the one the post will use.
+
+**Reposts.** A network implementing `RepostPublisherInterface` - Bluesky - shares another account's post as it stands. A post of a drafts file becomes one by naming that account, its `url` being the link the post carries and `text` what the calendar shows, never sent:
+
+```json
+{"key": "2026-11-12-a", "at": "2026-11-12 12:00", "networks": ["bluesky"], "text": "Repost: new story", "url": "https://example.org/story", "repost": "other.bsky.social"}
+```
+
+It waits for approval like any draft, the post's screen and the calendar's panel saying its text is never sent; unticked then ticked again, it still reposts (`SocialPost::takeDroppedRepost()`). Published, it looks for the latest post of the account carrying that exact link on Bluesky's public AppView, which takes no token between the two sites, and reposts it; a post not out yet fails the target, and **"Post again"** tries once it is. Reposting is a permission asked at the next consent only: a site that reposts connects Bluesky again, and the others stay connected as they are. A file naming a repost on a site not connected again is refused at the import.
+
+**New comments.** Bluesky, Instagram and YouTube send no email for each comment. **`social-comments-alert-days`** (0 by default, which reads nothing) sets how many days a post is watched: every three hours `c975l:social:comments:check` reads the count of comments on the networks implementing `CommentCountPublisherInterface` - Bluesky, Instagram and YouTube, with the permissions a site already granted - and sends "email-to" one email of the new ones, each with its post's address. A post gone out within the last four hours counts from nothing; what an older post holds at its first reading is no news, so that turning the alert on sends no burst. A post a network no longer shows is left for the next check, its count kept. LinkedIn and Facebook already tell of each comment, Meta refusing a Page post's count without `pages_read_user_content`, and TikTok and Pinterest offer no official way to read them. `--dry-run` shows the email and remembers nothing.
 
 ### Texts written by the site's AI
 
@@ -514,6 +525,23 @@ YouTube needs a **Google Cloud project** with an OAuth client, created once on a
 Adding a site later only takes its domain in **Branding** (step 5), its redirect URI in the client (step 7) and the same two keys on the site. `YoutubeHealthCheckProvider` adds a row to the health check page (kind `social-youtube`), an **error** carrying Google's reason once the channel's refresh token is refused.
 
 **The API audit.** Google may lock the videos an unaudited API project uploads as **private** - not seen on a project created in October 2026, whose uploads went out public. Should it happen, the publication logs a warning naming the video, the owner switches it to public by hand in YouTube Studio, and the project goes through YouTube's **API Services audit** (the form *YouTube API Services - Audit and Quota Extension*, a few weeks, asking for an end-to-end screencast of the upload). Otherwise the audit only raises the quota: the default one (10,000 units a day, an upload costing 1,600) allows about six videos a day.
+
+#### Instagram without a Page, step by step
+
+For an account Meta refuses to link to a Page ("Your account is restricted"): Instagram Login connects it by itself, on the same Meta app, kept in development mode. Once connected, the posts go to this account rather than the one linked to the Page; Facebook keeps going through the Page.
+
+> **Deprecated by Meta, and may be removed from this bundle.** Meta marks this setup as outdated, without announcing an end date. It is a fallback: whenever the account can be linked to a Page, use [Facebook Page and Instagram](#facebook-page-and-instagram-step-by-step), whose token does not expire.
+
+1. In the Meta app, open **Manage messaging & content on Instagram > API setup with Instagram login**. Meta recommends Unified login instead, which needs the app owned by a business portfolio.
+2. Under **Permissions and features**, add `instagram_business_basic` and `instagram_business_content_publish`.
+3. Under **Set up Instagram business login**, add one redirect URL per site: `https://<your-site>/social/instagram/callback`.
+4. Under **App roles > Roles**, add the account as an **Instagram tester**, then accept the invitation on instagram.com, connected as that account: **Settings > Apps and websites > Tester invites**. The account has to be professional (Business or Creator).
+5. Copy the **Instagram app ID** and **Instagram app secret** of step 1, which are not the Meta app's, and set them on the site as `social-instagram-app-id` and `social-instagram-app-secret`.
+6. Click **"Connect"** on the **"Instagram without a Page"** tile of **"Connections"**, sign in with the account and allow access. `social-instagram-access-token`, `social-instagram-token-expires-at`, `social-instagram-user-id` and `social-instagram-username` are filled.
+
+**The token renews itself.** It lasts 60 days and can only be renewed before that end: `c975l:social:instagram:refresh`, nightly, renews it from 30 days before (`SocialMaintenanceTaskProvider`), a refusal mailed to `email-to` the first night and 3 days before the end. Past it, the account connects again and the posts meanwhile go to the Page's account, if any. To go back to the Page's account, empty `social-instagram-access-token`.
+
+**What it takes.** The same as through the Page: `InstagramPublisher` makes the same calls on `graph.instagram.com`, with videos fetched from their address. A story and a carousel are documented by Meta but only a single picture has been tried.
 
 #### Pinterest board, step by step
 

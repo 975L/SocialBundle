@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Controller\Management;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Service\BlueskyOAuthClient;
 use c975L\SocialBundle\Service\GoogleOAuthClient;
+use c975L\SocialBundle\Service\InstagramLoginClient;
 use c975L\SocialBundle\Service\LinkedInClient;
 use c975L\SocialBundle\Service\MetaGraphClient;
 use c975L\SocialBundle\Service\PinterestClient;
@@ -41,6 +42,7 @@ class SocialConnectionsController extends AbstractController
         private readonly YoutubeClient $youtubeClient,
         private readonly PinterestClient $pinterestClient,
         private readonly TikTokClient $tikTokClient,
+        private readonly InstagramLoginClient $instagramLoginClient,
     ) {
     }
 
@@ -53,6 +55,7 @@ class SocialConnectionsController extends AbstractController
             'networks' => [
                 $this->bluesky($request->getHost()),
                 $this->meta(),
+                $this->instagram(),
                 $this->linkedIn(),
                 $this->youtube(),
                 $this->pinterest(),
@@ -109,7 +112,23 @@ class SocialConnectionsController extends AbstractController
                 ['fab fa-facebook', $pageName, null === $page ? null : 'https://www.facebook.com/' . $page],
                 ['fab fa-instagram', $instagramName, $instagramUrl],
             ),
-            'instagram' => null !== $instagram,
+            'instagram' => null !== $instagram || $this->instagramLoginClient->isConnected(),
+        ];
+    }
+
+    // An Instagram account connected by itself, for one Meta refuses to link to a Page - its token renewing itself nightly, and taking over from the Page's account once there
+    /** @return array<string, mixed> */
+    private function instagram(): array
+    {
+        $username = $this->value('social-instagram-username');
+
+        return [
+            'name' => 'instagram',
+            'icon' => 'fab fa-instagram',
+            'route' => 'social_instagram_oauth_connect',
+            'configured' => $this->instagramLoginClient->isConfigured(),
+            'connected' => $this->instagramLoginClient->isConnected(),
+            'accounts' => $this->accounts(['fab fa-instagram', null === $username ? null : '@' . $username, null === $username ? null : 'https://www.instagram.com/' . rawurlencode($username) . '/']),
         ];
     }
 

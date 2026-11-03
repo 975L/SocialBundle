@@ -37,6 +37,10 @@ class SocialMaintenanceTaskProvider implements MaintenanceTaskProviderInterface
             new MaintenanceTask('# #(2-5) * * *', 'c975l:social:tiktok:refresh'),
             // The LinkedIn token of a Page app renewed, nightly - a no-op until it is three weeks from its end, the refresh token living a year
             new MaintenanceTask('# #(2-5) * * *', 'c975l:social:linkedin:refresh'),
+            // The token of an Instagram connected with no Facebook Page renewed, nightly - a no-op until it is a month from its end, the token living 60 days
+            new MaintenanceTask('# #(2-5) * * *', 'c975l:social:instagram:refresh'),
+            // The new comments told by email, every three hours - the command reads the delay and does nothing at 0, so turning it on needs no new schedule
+            new MaintenanceTask('# */3 * * *', 'c975l:social:comments:check'),
         ];
     }
 }

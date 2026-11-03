@@ -94,6 +94,20 @@ class SocialPostTest extends TestCase
         $this->assertSame([], $post->takeAddedNetworks());
     }
 
+    // A repost unticked leaves its account behind, handed over once to the target ticked in its place
+    public function testARepostUntickedKeepsItsAccountForOneTarget(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'bluesky', 'Text')->setRepost('other.bsky.social');
+        new SocialPostTarget($post, 'linkedin', 'Text');
+
+        $post->setNetworks([]);
+
+        $this->assertNull($post->takeDroppedRepost('linkedin'));
+        $this->assertSame('other.bsky.social', $post->takeDroppedRepost('bluesky'));
+        $this->assertNull($post->takeDroppedRepost('bluesky'));
+    }
+
     // The language picked is kept trimmed, an empty one leaving the site's default
     public function testTheLanguageIsTrimmedAndEmptiedToNone(): void
     {

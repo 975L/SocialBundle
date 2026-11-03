@@ -23,8 +23,13 @@ class BlueskyOAuthClient
     // Where an account is asked for when no handle is known: Bluesky's own entryway, which lets the owner pick the account on its page
     public const string ENTRYWAY = 'https://bsky.social';
 
-    // Posting and uploading its images and videos, nothing else - the owner reads this list on the consent page. Asking for more here flags every existing connection as to connect again (see needsReconnection())
-    public const string SCOPE = 'atproto repo:app.bsky.feed.post?action=create blob:image/* blob:video/*';
+    // Posting and uploading its images and videos, then reposting - the owner reads this list on the consent page
+    public const string SCOPE = self::BASE_SCOPE . ' ' . self::REPOST_SCOPE;
+
+    // What every site needs: asking for more here flags every existing connection as to connect again (see needsReconnection()), which reposting, asked of the next consent only, does not
+    private const string BASE_SCOPE = 'atproto repo:app.bsky.feed.post?action=create blob:image/* blob:video/*';
+
+    private const string REPOST_SCOPE = 'repo:app.bsky.feed.repost?action=create';
 
     public const string KEY_SLUG = 'social-bluesky-oauth-key';
 
@@ -62,24 +67,30 @@ class BlueskyOAuthClient
         return $this->session()['did'] ?? null;
     }
 
-    // Connected under another SCOPE than the current one - a session from before "scope" was kept counting as one: a refresh keeping the scope consented to, only a new consent brings the missing permissions
+    // Connected under less than BASE_SCOPE - a session from before "scope" was kept counting as one: a refresh keeping the scope consented to, only a new consent brings the missing permissions
     public function needsReconnection(): bool
     {
         $session = $this->session();
 
-        return null !== $session && self::SCOPE !== ($session['scope'] ?? null);
+        return null !== $session && !str_starts_with((string) ($session['scope'] ?? ''), self::BASE_SCOPE);
     }
 
-    // Whether "email-to" was already told the connection lacks the permissions of the current SCOPE
+    // Whether the connection was granted reposting, only a new consent bringing it to an older one
+    public function canRepost(): bool
+    {
+        return str_contains((string) ($this->session()['scope'] ?? ''), self::REPOST_SCOPE);
+    }
+
+    // Whether "email-to" was already told the connection lacks the permissions of BASE_SCOPE
     public function isReconnectionNotified(): bool
     {
-        return self::SCOPE === ($this->session()['notifiedScope'] ?? null);
+        return self::BASE_SCOPE === ($this->session()['notifiedScope'] ?? null);
     }
 
     // Kept in the session, nothing to keep once disconnected meanwhile
     public function markReconnectionNotified(): void
     {
-        $this->writeSession(static fn (array $session): array => [...$session, 'notifiedScope' => self::SCOPE]);
+        $this->writeSession(static fn (array $session): array => [...$session, 'notifiedScope' => self::BASE_SCOPE]);
     }
 
     // What the site serves as its client id: the url of this very document
@@ -200,7 +211,7 @@ class BlueskyOAuthClient
             'issuer' => $pending['issuer'],
             'tokenEndpoint' => $pending['tokenEndpoint'],
             'dpopKey' => $pending['dpopKey'],
-            // The permissions asked for at the consent rather than the server's answer, whose syntax varies from a server to another: what needsReconnection() compares to SCOPE
+            // The permissions asked for at the consent rather than the server's answer, whose syntax varies from a server to another: what needsReconnection() compares to BASE_SCOPE
             'scope' => self::SCOPE,
         ];
         $this->configValueWriter->write([

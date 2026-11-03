@@ -15,20 +15,10 @@ use c975L\SocialBundle\Service\ConfigValueWriter;
 use c975L\SocialBundle\Service\YoutubeClient;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 class YoutubeOAuthControllerTest extends TestCase
 {
     use ControllerTestTrait;
-
-    private function createRequest(array $query = []): Request
-    {
-        $request = new Request($query);
-        $request->setSession(new Session(new MockArraySessionStorage()));
-
-        return $request;
-    }
 
     // Same seam as GoogleOAuthControllerTest: AbstractController resolves security, routing and the flash bag through its container
     private function createController(Request $request, ?YoutubeClient $youtubeClient = null, ?ConfigValueWriter $configValueWriter = null): YoutubeOAuthController

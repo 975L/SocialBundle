@@ -238,8 +238,11 @@ class SocialPostRepository extends ServiceEntityRepository
             ->from(SocialPostTarget::class, 't')
             ->where('t.network = :network')
             ->andWhere('t.status = :published')
+            // A repost's text never went out, only the calendar showing it
+            ->andWhere('t.options IS NULL OR t.options NOT LIKE :repost')
             ->setParameter('network', $network)
             ->setParameter('published', SocialPostStatus::Published)
+            ->setParameter('repost', '%"repost"%')
             ->orderBy('t.publishedAt', \SortDirection::Descending)
             ->setMaxResults($limit)
             ->getQuery()

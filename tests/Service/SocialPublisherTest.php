@@ -16,6 +16,7 @@ use c975L\SocialBundle\Contract\FirstCommentPublisherInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\SocialBundle\Contract\PostOptionsPublisherInterface;
 use c975L\SocialBundle\Contract\ProfileResharePublisherInterface;
+use c975L\SocialBundle\Contract\RepostPublisherInterface;
 use c975L\SocialBundle\Contract\StoryPublisherInterface;
 use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
@@ -754,6 +755,20 @@ class SocialPublisherTest extends TestCase
         $this->assertSame('Written', $post->getTargets()->last()->getText());
     }
 
+    // Unticked then ticked again on another screen's save, a repost reposts still: the text written for the calendar never goes out
+    public function testARepostTickedAgainStaysARepost(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'bluesky', 'Repost: new story')->setRepost('other.bsky.social');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createNetwork('bluesky')]);
+
+        $post->setNetworks([]);
+        $post->setNetworks(['bluesky']);
+        $publisher->addTargets($post, $post->takeAddedNetworks());
+
+        $this->assertSame('other.bsky.social', $post->getTargets()->first()->getRepost());
+    }
+
     // A post written on its screen is planned at the moment given and ticked on every network connected but those of videos alone, its texts written from its own once saved
     public function testAWrittenPostIsTickedOnEveryNetworkConnected(): void
     {
@@ -1301,5 +1316,25 @@ class SocialPublisherTest extends TestCase
         $coming->setSeries($series);
         $this->assertFalse($this->createPublisher([], [], holders: [$coming])->isHeldOutside('book', '8', $series));
         $this->assertFalse($this->createPublisher([], [], holders: [$sent, $past])->isHeldOutside('book', '8', null));
+    }
+
+    // A target naming an account reposts its post rather than publishing its text
+    public function testARepostGoesOutInsteadOfTheText(): void
+    {
+        $post = new SocialPost(SocialPost::SOURCE_MANUAL, 'id', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'bluesky', 'Label')->setRepost('other.bsky.social');
+        $network = $this->createStubForIntersectionOfInterfaces([NetworkPublisherInterface::class, RepostPublisherInterface::class]);
+        $network->method('getName')->willReturn('bluesky');
+        $network->method('isConfigured')->willReturn(true);
+        $network->method('canRepost')->willReturn(true);
+        $network->method('repost')->willReturnCallback(static fn (string $account, string $url): string => $account . '|' . $url);
+        $network->method('publish')->willThrowException(new \LogicException('A repost publishes nothing.'));
+
+        $publisher = $this->createPublisher([], [$network]);
+        $report = $publisher->publish($post);
+
+        $this->assertSame(['status' => 'published', 'message' => 'other.bsky.social|https://example.org/42'], $report['bluesky']);
+        $this->assertTrue($publisher->supportsRepost('bluesky'));
+        $this->assertFalse($publisher->supportsRepost('linkedin'));
     }
 }

@@ -15,20 +15,10 @@ use c975L\SocialBundle\Service\ConfigValueWriter;
 use c975L\SocialBundle\Service\TikTokClient;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 class TikTokOAuthControllerTest extends TestCase
 {
     use ControllerTestTrait;
-
-    private function createRequest(array $query = []): Request
-    {
-        $request = new Request($query);
-        $request->setSession(new Session(new MockArraySessionStorage()));
-
-        return $request;
-    }
 
     // Same seam as PinterestOAuthControllerTest
     private function createController(Request $request, ?TikTokClient $tikTokClient = null, ?ConfigValueWriter $configValueWriter = null): TikTokOAuthController

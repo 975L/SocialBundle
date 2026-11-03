@@ -90,6 +90,23 @@ class YoutubeClientTest extends TestCase
         ])->connect('code', 'https://example.org/callback');
     }
 
+    // The comments of a video, none when YouTube says nothing of them - turned off, or the video gone
+    public function testTheCommentCountIsReadFromTheStatistics(): void
+    {
+        $access = new MockResponse('{"access_token": "access", "expires_in": 3600}');
+
+        $this->assertSame(7, $this->client([$access, new MockResponse('{"items": [{"statistics": {"commentCount": "7"}}]}')])->commentCount('abc'));
+        $this->assertSame(0, $this->client([new MockResponse('{"access_token": "access", "expires_in": 3600}'), new MockResponse('{"items": [{"statistics": {}}]}')])->commentCount('abc'));
+    }
+
+    // A video not shown says nothing of its comments, its count staying as it was
+    public function testAVideoNotShownThrows(): void
+    {
+        $this->expectException(\RuntimeException::class);
+
+        $this->client([new MockResponse('{"access_token": "access", "expires_in": 3600}'), new MockResponse('{"items": []}')])->commentCount('abc');
+    }
+
     // The video announced with its metadata, then its bytes put where YouTube said, answering its id and the privacy it actually got
     public function testAVideoIsUploadedInOneResumableSession(): void
     {

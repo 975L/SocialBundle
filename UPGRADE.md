@@ -1,5 +1,13 @@
 # Upgrade
 
+## To 2.29
+
+**Database:** migration for `social_post_target.comment_count` and `social_post.dropped_reposts`.
+
+**Config:** run `c975l:config:load-all` for `social-comments-alert-days` (0 by default: nothing is read) and the `social-instagram-*` keys.
+
+**Code:** `BlueskyPublisher`'s constructor takes `BlueskyPublicReader` as its fifth argument, `InstagramPublisher`'s takes `InstagramLoginClient` as its second, `SocialConnectionsController`'s as its last. To repost, connect Bluesky again on the site that reposts; the others stay connected.
+
 ## To 2.27
 
 **Code:** `TikTokClient`'s constructor takes `LockFactory` as its fourth argument, then the environment. Its tokens are only renewed in the `prod` environment.

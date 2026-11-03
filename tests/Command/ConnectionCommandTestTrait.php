@@ -42,6 +42,17 @@ trait ConnectionCommandTestTrait
         return new CommandTester(new $command($client, $mailer, $translator))->execute([]);
     }
 
+    // A renewal counted in $refreshed, refused with the given exception
+    private function countedRefresh(?\RuntimeException $refusal): \Closure
+    {
+        return function () use ($refusal): void {
+            ++$this->refreshed;
+            if (null !== $refusal) {
+                throw $refusal;
+            }
+        };
+    }
+
     // A connected client with its two ends, each renewal counted in $refreshed and refused with the given exception
     /**
      * @template T of object
@@ -57,12 +68,7 @@ trait ConnectionCommandTestTrait
         $client->method('refreshExpiresAt')->willReturn(new \DateTimeImmutable($refreshExpiresAt));
         $client->method('isConfigured')->willReturn(true);
         $client->method('isConnected')->willReturn($connected);
-        $client->method('refresh')->willReturnCallback(function () use ($refusal): void {
-            ++$this->refreshed;
-            if (null !== $refusal) {
-                throw $refusal;
-            }
-        });
+        $client->method('refresh')->willReturnCallback($this->countedRefresh($refusal));
 
         return $client;
     }

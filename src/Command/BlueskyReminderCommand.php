@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// A connection made before BlueskyOAuthClient::SCOPE asked for more keeps the permissions first granted, Bluesky then refusing what needs the new ones (a video upload): "email-to" is told once per SCOPE, the tile saying so until the account is connected again. Scheduled nightly (see SocialMaintenanceTaskProvider)
+// A connection made before BlueskyOAuthClient's BASE_SCOPE asked for more keeps the permissions first granted, Bluesky then refusing what needs the new ones (a video upload): "email-to" is told once per BASE_SCOPE, the tile saying so until the account is connected again. Scheduled nightly (see SocialMaintenanceTaskProvider)
 #[AsCommand(
     name: 'c975l:social:bluesky:reminder',
     description: 'Emails a reminder to connect Bluesky again when its permissions are out of date',

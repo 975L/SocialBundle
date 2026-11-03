@@ -12,7 +12,7 @@
             </trans-unit>
             <trans-unit id="b7uR4Ny">
                 <source>narration.guided_step_social_bluesky_outdated</source>
-                <target>Et si un jour la tuile « Bluesky » signale des autorisations périmées, ou qu'un e-mail vous le rappelle, recommencez simplement la connexion avec « Reconnecter ».</target>
+                <target>Et si un jour la tuile « Bluesky » signale des autorisations périmées, qu'un e-mail vous le rappelle, ou que le site doit repartager des posts, cette autorisation n'étant demandée qu'à une nouvelle connexion, recommencez simplement la connexion avec « Reconnecter ».</target>
             </trans-unit>
             <trans-unit id="ba1QolF">
                 <source>narration.guided_step_social_calendar_feed</source>
@@ -41,6 +41,14 @@
             <trans-unit id="Nu24WA4">
                 <source>narration.guided_step_social_calendar_texts</source>
                 <target>Dans le panneau, corrigez le texte de chaque réseau puis cliquez sur « Enregistrer les textes » ; un texte déjà publié reste en lecture seule. « Écran complet » ouvre la publication entière, pour son texte commun ou sa reformulation.</target>
+            </trans-unit>
+            <trans-unit id="slx7.Dk">
+                <source>narration.guided_step_social_comments_days</source>
+                <target>Bluesky, Instagram et YouTube ne préviennent pas par e-mail quand quelqu'un commente. Cherchez « social-comments-alert-days » dans la configuration et indiquez combien de jours surveiller un post.</target>
+            </trans-unit>
+            <trans-unit id="HdY9GHw">
+                <source>narration.guided_step_social_comments_email</source>
+                <target>Ensuite, le site vous écrit toutes les trois heures s'il y a du nouveau : un seul e-mail, avec l'adresse de chaque post.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>
@@ -77,6 +85,18 @@
             <trans-unit id="v_voss_">
                 <source>narration.guided_step_social_google_sync</source>
                 <target>Le reste se fait sans vous : les avis arrivent chaque nuit, la tâche de synchronisation étant planifiée par le bundle. Il ne reste qu'une clé facultative, « social-google-listing-url », l'adresse publique de la fiche, reprise dans les données structurées du site.</target>
+            </trans-unit>
+            <trans-unit id="thX8Ich">
+                <source>narration.guided_step_social_instagram_connect</source>
+                <target>Cliquez sur Connecter dans la tuile Instagram sans Page, puis autorisez l'accès avec le compte qui publie.</target>
+            </trans-unit>
+            <trans-unit id="xYlV9oy">
+                <source>narration.guided_step_social_instagram_credentials</source>
+                <target>Collez l'ID et la clé secrète de l'application Instagram dans les deux clés social-instagram de la configuration.</target>
+            </trans-unit>
+            <trans-unit id="Ot_OTRg">
+                <source>narration.guided_step_social_instagram_prerequisites</source>
+                <target>Dans l'application Meta, réglez la connexion Instagram : ses deux autorisations, l'adresse de redirection du site, puis le compte comme testeur Instagram, qui accepte l'invitation dans Instagram.</target>
             </trans-unit>
             <trans-unit id="xmLlJfS">
                 <source>narration.guided_step_social_linkedin_connect</source>

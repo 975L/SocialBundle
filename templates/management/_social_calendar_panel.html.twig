@@ -144,6 +144,9 @@
             {% else %}
                 <div class="social-calendar-panel-body">{{ target.text }}</div>
             {% endif %}
+            {% if target.repost %}
+                <p class="small text-muted mb-1">{{ 'label.social_post_repost_help'|trans({'%account%': target.repost}, 'social') }}</p>
+            {% endif %}
             {# A network that refused the post, its first comment, its reshare or its story: why, then sent again at once on it alone #}
             {% if target.status.value == 'failed' or target.followUpPending %}
                 {% if target.status.value == 'failed' %}

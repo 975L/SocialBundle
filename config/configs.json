@@ -178,6 +178,17 @@
         "description": "description.social_series_ending_days"
     },
     {
+        "label": "label.social_comments_alert_days",
+        "slug": "social-comments-alert-days",
+        "sensitive": false,
+        "restricted": false,
+        "value": "0",
+        "kind": "int",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_comments_alert_days"
+    },
+    {
         "label": "label.social_calendar_hour_start",
         "slug": "social-calendar-hour-start",
         "sensitive": false,
@@ -417,6 +428,74 @@
         "group": "social",
         "severity": null,
         "description": "description.social_linkedin_refresh_token_expires_at"
+    },
+    {
+        "label": "label.social_instagram_app_id",
+        "slug": "social-instagram-app-id",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_instagram_app_id"
+    },
+    {
+        "label": "label.social_instagram_app_secret",
+        "slug": "social-instagram-app-secret",
+        "sensitive": true,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_instagram_app_secret"
+    },
+    {
+        "label": "label.social_instagram_access_token",
+        "slug": "social-instagram-access-token",
+        "feature": true,
+        "sensitive": true,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_instagram_access_token"
+    },
+    {
+        "label": "label.social_instagram_token_expires_at",
+        "slug": "social-instagram-token-expires-at",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_instagram_token_expires_at"
+    },
+    {
+        "label": "label.social_instagram_user_id",
+        "slug": "social-instagram-user-id",
+        "feature": true,
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_instagram_user_id"
+    },
+    {
+        "label": "label.social_instagram_username",
+        "slug": "social-instagram-username",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "social",
+        "severity": null,
+        "description": "description.social_instagram_username"
     },
     {
         "label": "label.social_pinterest_client_id",

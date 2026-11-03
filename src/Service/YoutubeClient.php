@@ -123,6 +123,16 @@ class YoutubeClient
         return ['id' => (string) $video['id'], 'privacyStatus' => (string) ($video['status']['privacyStatus'] ?? '')];
     }
 
+    // The comments of a video, none when they are turned off, what youtube.readonly gives for one unit of quota
+    public function commentCount(string $videoId): int
+    {
+        $videos = $this->request('GET', 'https://www.googleapis.com/youtube/v3/videos?part=statistics&id=' . rawurlencode($videoId), $this->getAccessToken());
+
+        $video = $videos['items'][0] ?? throw new \RuntimeException(sprintf('YouTube does not show the video %s.', $videoId));
+
+        return (int) ($video['statistics']['commentCount'] ?? 0);
+    }
+
     /** @return array<string, mixed> */
     private function request(string $method, string $url, string $accessToken): array
     {

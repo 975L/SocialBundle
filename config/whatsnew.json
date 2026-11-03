@@ -3,6 +3,21 @@
         "date": "2026-11-03",
         "description": [
             {
+                "en": "A draft can repost another Bluesky account's post, approved like any other post.",
+                "fr": "Un brouillon peut repartager le post d'un autre compte Bluesky, validé comme n'importe quel post.",
+                "es": "Un borrador puede volver a compartir la publicación de otra cuenta de Bluesky, validada como cualquier otra."
+            },
+            {
+                "en": "An email tells you of new comments on Bluesky, Instagram and YouTube, once its delay is set in the configuration.",
+                "fr": "Un e-mail vous signale les nouveaux commentaires sur Bluesky, Instagram et YouTube, une fois son délai réglé dans la configuration.",
+                "es": "Un correo le avisa de los comentarios nuevos en Bluesky, Instagram y YouTube, una vez ajustado su plazo en la configuración."
+            },
+            {
+                "en": "An Instagram account that Meta refuses to link to a Facebook Page can now be connected by itself, from the \"Instagram without a Page\" tile.",
+                "fr": "Un compte Instagram que Meta refuse de lier à une Page Facebook peut désormais être connecté seul, depuis la tuile « Instagram sans Page ».",
+                "es": "Una cuenta de Instagram que Meta se niega a vincular a una página de Facebook ya puede conectarse sola, desde el recuadro «Instagram sin página»."
+            },
+            {
                 "en": "A logo that is not square keeps its proportions in the social links.",
                 "fr": "Un logo qui n'est pas carré garde ses proportions dans les réseaux sociaux.",
                 "es": "Un logotipo que no es cuadrado conserva sus proporciones en las redes sociales."

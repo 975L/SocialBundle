@@ -1,5 +1,34 @@
 # Changelog
 
+## v2.29.0
+
+Bluesky reposts, comment alerts, Instagram without a Page
+
+- Added `RepostPublisherInterface`: a drafts file's `repost` shares another account's post on Bluesky (03/11/2026)
+- Added `BlueskyPublicReader`, reading public posts with no token (03/11/2026)
+- Bluesky asks to repost at the next consent, older connections staying valid (03/11/2026)
+- Added `CommentCountPublisherInterface` on Bluesky, Instagram and YouTube (03/11/2026)
+- Added `c975l:social:comments:check` and `social-comments-alert-days`: new comments by email [Needs db update] (03/11/2026)
+- `BlueskyPublisher`'s constructor takes `BlueskyPublicReader` as its fifth argument (03/11/2026)
+- Guided project: being told of new comments (03/11/2026)
+- A post just out counts its first comments as new (03/11/2026)
+- A repost's screen and panel say its text is never sent (03/11/2026)
+- A repost unticked then ticked again stays a repost [Needs db update] (03/11/2026)
+- A repost looks only for the account's own post (03/11/2026)
+- `findPublishedTexts()` leaves reposts out (03/11/2026)
+- An unchanged drafts file keeps its posts approved (03/11/2026)
+- Bluesky reconnection reminders follow the base scope (03/11/2026)
+- Added `InstagramLoginClient`, `InstagramOAuthController` and the "Instagram without a Page" tile [Needs db update] (03/11/2026)
+- Added `c975l:social:instagram:refresh` and `InstagramHealthCheckProvider` (03/11/2026)
+- `InstagramPublisher`'s constructor takes `InstagramLoginClient` as its second argument (03/11/2026)
+- `SocialConnectionsController`'s constructor takes `InstagramLoginClient` as its last argument (03/11/2026)
+- Added `MetaGraphClient::requestAt()` (03/11/2026)
+- An HTML page from Meta ends as a refusal, whatever its status (03/11/2026)
+- A transport error on Meta's calls no longer shows the token (03/11/2026)
+- `InstagramHealthCheckProvider` says nothing once the token is emptied (03/11/2026)
+- `c975l:social:draft`'s help names `repost` (03/11/2026)
+- Guided project: connecting Instagram without a Page (03/11/2026)
+
 ## v2.28.1
 
 Custom logos keep their proportions, CI on PHP 8.5 and 8.6

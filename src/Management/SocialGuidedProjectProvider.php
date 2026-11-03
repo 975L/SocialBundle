@@ -50,6 +50,8 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->pinterestConnectProject(),
             $this->tikTokConnectProject(),
             $this->socialCalendarProject(),
+            $this->instagramConnectProject(),
+            $this->commentsAlertProject(),
         ];
     }
 
@@ -419,7 +421,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'narration' => 'narration.guided_step_social_bluesky_handle',
                 ],
                 [
-                    // No url nor highlight: the same connection step again, once the tile or the reminder email flags outdated permissions
+                    // No url nor highlight: the same connection step again, once the tile or the reminder email flags outdated permissions, or for a site to repost
                     'label' => 'label.guided_step_social_bluesky_outdated',
                     'description' => 'description.guided_step_social_bluesky_outdated',
                     'narration' => 'narration.guided_step_social_bluesky_outdated',
@@ -537,6 +539,40 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
         ];
     }
 
+    // Pinterest's parcours for an Instagram account connected by itself, with no Facebook Page and no board
+    private function instagramConnectProject(): array
+    {
+        return [
+            'slug' => 'social-instagram-connect',
+            'label' => 'label.guided_project_social_instagram_connect',
+            'description' => 'description.guided_project_social_instagram_connect',
+            'translation_domain' => 'social',
+            'order' => 4140,
+            // The two keys are restricted configs, with the same three roles as Google's (see googleConnectProject())
+            'role' => $this->restrictedConfigRoles(),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_social_instagram_prerequisites',
+                    'description' => 'description.guided_step_social_instagram_prerequisites',
+                    'narration' => 'narration.guided_step_social_instagram_prerequisites',
+                    'url' => $this->indexUrl(ConfigCrudController::class),
+                ],
+                [
+                    'label' => 'label.guided_step_social_instagram_credentials',
+                    'description' => 'description.guided_step_social_instagram_credentials',
+                    'narration' => 'narration.guided_step_social_instagram_credentials',
+                ],
+                $this->connectionsStep(),
+                [
+                    'label' => 'label.guided_step_social_instagram_connect',
+                    'description' => 'description.guided_step_social_instagram_connect',
+                    'narration' => 'narration.guided_step_social_instagram_connect',
+                    'highlight' => 'a[href*="/social/instagram/connect"]',
+                ],
+            ],
+        ];
+    }
+
     // Pinterest's parcours for TikTok, with a last step of its own: TikTok asks its choices post by post, on the post's screen
     private function tikTokConnectProject(): array
     {
@@ -632,6 +668,33 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'description' => 'description.guided_step_social_calendar_feed',
                     'narration' => 'narration.guided_step_social_calendar_feed',
                     'highlight' => '.social-calendar-feed',
+                ],
+            ],
+        ];
+    }
+
+    // Being told of the comments the networks send no email for: the setting is on the configs screen, hence the role of that screen and not of the calendar
+    private function commentsAlertProject(): array
+    {
+        return [
+            'slug' => 'social-comments-alert',
+            'label' => 'label.guided_project_social_comments_alert',
+            'description' => 'description.guided_project_social_comments_alert',
+            'translation_domain' => 'social',
+            'order' => 4150,
+            'role' => $this->configService->get('site-role-admin'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_social_comments_days',
+                    'description' => 'description.guided_step_social_comments_days',
+                    'narration' => 'narration.guided_step_social_comments_days',
+                    'url' => $this->indexUrl(ConfigCrudController::class),
+                ],
+                [
+                    // No highlight: an email, nothing on this screen
+                    'label' => 'label.guided_step_social_comments_email',
+                    'description' => 'description.guided_step_social_comments_email',
+                    'narration' => 'narration.guided_step_social_comments_email',
                 ],
             ],
         ];

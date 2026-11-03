@@ -38,6 +38,10 @@
                 <source>description.social_calendar_shared_feeds</source>
                 <target>Les autres sites publiant sur les mêmes comptes, en JSON : {"Nom": "adresse de son flux iCal"}. Leurs posts s'affichent en grisé dans le calendrier et s'ajoutent au flux de ce site.</target>
             </trans-unit>
+            <trans-unit id="7bNFF92">
+                <source>description.social_comments_alert_days</source>
+                <target>Nombre de jours pendant lesquels les commentaires d'un post sont surveillés, toutes les trois heures, sur Bluesky, Instagram et YouTube : un e-mail à « email-to » dit les nouveaux. 0 ne surveille rien.</target>
+            </trans-unit>
             <trans-unit id="qi3JaGX">
                 <source>description.social_enable_share_buttons</source>
                 <target>Affiche automatiquement les boutons de partage sur chaque page (réglages dans "Boutons de partage").</target>
@@ -69,6 +73,30 @@
             <trans-unit id="00x9orl">
                 <source>description.social_image_format</source>
                 <target>framed : l'image telle quelle, encadrée seulement là où un réseau l'exige. square : un même carré 1080 x 1080 sur tous les réseaux, l'image centrée sur la couleur de fond du site.</target>
+            </trans-unit>
+            <trans-unit id="70DFApE">
+                <source>description.social_instagram_access_token</source>
+                <target>Rempli par la connexion de la tuile « Instagram sans Page » de « Connexions », renouvelé chaque nuit par c975l:social:instagram:refresh. Valable 60 jours. Une fois rempli, les posts vont sur ce compte plutôt que sur celui lié à la Page.</target>
+            </trans-unit>
+            <trans-unit id="bjTI92W">
+                <source>description.social_instagram_app_id</source>
+                <target>ID d'application Instagram affiché sous « Configuration de l'API avec la connexion Instagram » dans l'application Meta, avec l'URI de redirection /social/instagram/callback du site. Seulement pour un compte sans Page Facebook.</target>
+            </trans-unit>
+            <trans-unit id="y1sdAol">
+                <source>description.social_instagram_app_secret</source>
+                <target>Clé secrète Instagram du même écran.</target>
+            </trans-unit>
+            <trans-unit id="8nRvkBE">
+                <source>description.social_instagram_token_expires_at</source>
+                <target>Rempli par la connexion : la date après laquelle il faut reconnecter Instagram si le renouvellement de nuit n'a pas tourné.</target>
+            </trans-unit>
+            <trans-unit id="pdfpkOP">
+                <source>description.social_instagram_user_id</source>
+                <target>Rempli par la connexion : l'ID du compte Instagram connecté.</target>
+            </trans-unit>
+            <trans-unit id="3LzvpF6">
+                <source>description.social_instagram_username</source>
+                <target>Rempli par la connexion : le nom du compte Instagram connecté.</target>
             </trans-unit>
             <trans-unit id="BANWhG0">
                 <source>description.social_linkedin_access_token</source>
@@ -270,6 +298,10 @@
                 <source>label.social_calendar_shared_feeds</source>
                 <target>Calendrier : sites partagés</target>
             </trans-unit>
+            <trans-unit id="sV2pRlV">
+                <source>label.social_comments_alert_days</source>
+                <target>Nouveaux commentaires : surveiller (jours)</target>
+            </trans-unit>
             <trans-unit id="Dfr17Uy">
                 <source>label.social_enable_share_buttons</source>
                 <target>Activer les boutons de partage</target>
@@ -301,6 +333,30 @@
             <trans-unit id="NHvPdOc">
                 <source>label.social_image_format</source>
                 <target>Format du visuel</target>
+            </trans-unit>
+            <trans-unit id="9WLZmkD">
+                <source>label.social_instagram_access_token</source>
+                <target>Jeton d'accès Instagram</target>
+            </trans-unit>
+            <trans-unit id="nPZEN4z">
+                <source>label.social_instagram_app_id</source>
+                <target>ID de l'application Instagram</target>
+            </trans-unit>
+            <trans-unit id="76eSgtv">
+                <source>label.social_instagram_app_secret</source>
+                <target>Clé secrète de l'application Instagram</target>
+            </trans-unit>
+            <trans-unit id="yvfcO5e">
+                <source>label.social_instagram_token_expires_at</source>
+                <target>Expiration du jeton Instagram</target>
+            </trans-unit>
+            <trans-unit id="sj.ahHT">
+                <source>label.social_instagram_user_id</source>
+                <target>ID du compte Instagram</target>
+            </trans-unit>
+            <trans-unit id="5A9eXZQ">
+                <source>label.social_instagram_username</source>
+                <target>Compte Instagram</target>
             </trans-unit>
             <trans-unit id="MIY6APF">
                 <source>label.social_linkedin_access_token</source>

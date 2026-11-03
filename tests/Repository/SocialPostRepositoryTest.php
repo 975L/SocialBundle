@@ -197,6 +197,19 @@ class SocialPostRepositoryTest extends TestCase
         $this->assertSame([], $this->repository->findPublishedTexts('bluesky', 3));
     }
 
+    // A repost's text never went out: the AI is not shown it
+    public function testARepostIsNoPublishedText(): void
+    {
+        $this->post('1', static fn (SocialPostTarget $target) => $target->markPublished('id'));
+        $this->post('2', static function (SocialPostTarget $target): void {
+            $target->setText('Repost: new story');
+            $target->setRepost('other.bsky.social');
+            $target->markPublished('id');
+        });
+
+        $this->assertSame(['Text'], $this->repository->findPublishedTexts('facebook', 3));
+    }
+
     // The series' coming drafts are counted: a post approved, refused or gone by left out, as is another series'
     public function testTheSeriesComingDraftsAreCounted(): void
     {

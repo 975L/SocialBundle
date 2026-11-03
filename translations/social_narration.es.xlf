@@ -12,7 +12,7 @@
             </trans-unit>
             <trans-unit id="b7uR4Ny">
                 <source>narration.guided_step_social_bluesky_outdated</source>
-                <target>Y si un día la ficha «Bluesky» indica permisos caducados, o un correo se lo recuerda, simplemente vuelva a conectar con «Reconectar».</target>
+                <target>Y si un día la ficha «Bluesky» indica permisos caducados, un correo se lo recuerda, o el sitio debe volver a compartir publicaciones, ya que ese permiso solo se pide en una nueva conexión, simplemente vuelva a conectar con «Reconectar».</target>
             </trans-unit>
             <trans-unit id="ba1QolF">
                 <source>narration.guided_step_social_calendar_feed</source>
@@ -41,6 +41,14 @@
             <trans-unit id="Nu24WA4">
                 <source>narration.guided_step_social_calendar_texts</source>
                 <target>En el panel, corrija el texto de cada red y haga clic en «Guardar los textos»; un texto ya publicado queda de solo lectura. «Pantalla completa» abre la publicación entera, para su texto común o su reformulación.</target>
+            </trans-unit>
+            <trans-unit id="slx7.Dk">
+                <source>narration.guided_step_social_comments_days</source>
+                <target>Bluesky, Instagram y YouTube no avisan por correo cuando alguien comenta. Busque «social-comments-alert-days» en la configuración e indique cuántos días vigilar una publicación.</target>
+            </trans-unit>
+            <trans-unit id="HdY9GHw">
+                <source>narration.guided_step_social_comments_email</source>
+                <target>Después, el sitio le escribe cada tres horas si hay novedades: un solo correo, con la dirección de cada publicación.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>
@@ -77,6 +85,18 @@
             <trans-unit id="v_voss_">
                 <source>narration.guided_step_social_google_sync</source>
                 <target>El resto se hace sin usted: las opiniones llegan cada noche, ya que el propio bundle programa la tarea de sincronización. Solo queda una clave opcional, «social-google-listing-url», la dirección pública de la ficha, recogida en los datos estructurados del sitio.</target>
+            </trans-unit>
+            <trans-unit id="thX8Ich">
+                <source>narration.guided_step_social_instagram_connect</source>
+                <target>Haga clic en Conectar en el recuadro Instagram sin página y autorice el acceso con la cuenta que publica.</target>
+            </trans-unit>
+            <trans-unit id="xYlV9oy">
+                <source>narration.guided_step_social_instagram_credentials</source>
+                <target>Pegue el ID y la clave secreta de la aplicación de Instagram en las dos claves social-instagram de la configuración.</target>
+            </trans-unit>
+            <trans-unit id="Ot_OTRg">
+                <source>narration.guided_step_social_instagram_prerequisites</source>
+                <target>En la aplicación de Meta, ajuste el inicio de sesión de Instagram: sus dos permisos, la dirección de redirección del sitio y la cuenta como probador de Instagram, que acepta la invitación en Instagram.</target>
             </trans-unit>
             <trans-unit id="xmLlJfS">
                 <source>narration.guided_step_social_linkedin_connect</source>

@@ -193,7 +193,7 @@ class BlueskyOAuthClientTest extends TestCase
         $this->assertFalse($this->createClient()->needsReconnection());
     }
 
-    // A session granted fewer permissions than SCOPE, or from before the scope was kept, has to be connected again - told once, the mark kept beside the tokens
+    // A session granted fewer permissions than the base scope, or from before the scope was kept, has to be connected again - told once, the mark kept beside the tokens
     public function testASessionWithAnOlderScopeNeedsReconnection(): void
     {
         $session = [...$this->pending(), 'did' => 'did:plc:abc', 'pds' => 'https://pds.example', 'accessToken' => 'a', 'refreshToken' => 'r', 'expiresAt' => time() + 1800];
@@ -208,6 +208,28 @@ class BlueskyOAuthClientTest extends TestCase
         $client->markReconnectionNotified();
         $this->assertTrue($client->isReconnectionNotified());
         $this->assertSame('r', json_decode((string) $this->config[BlueskyOAuthClient::SESSION_SLUG], true)['refreshToken']);
+    }
+
+    // Told before reposting came to be, under the same base scope: not told again
+    public function testAReminderAlreadySentStaysValidOnceRepostingIsAsked(): void
+    {
+        $session = [...$this->pending(), 'did' => 'did:plc:abc', 'pds' => 'https://pds.example', 'accessToken' => 'a', 'refreshToken' => 'r', 'expiresAt' => time() + 1800];
+        $this->config[BlueskyOAuthClient::SESSION_SLUG] = (string) json_encode([...$session, 'notifiedScope' => 'atproto repo:app.bsky.feed.post?action=create blob:image/* blob:video/*']);
+
+        $this->assertTrue($this->createClient()->isReconnectionNotified());
+    }
+
+    // A session from before reposting stays connected, only unable to repost until a new consent
+    public function testASessionWithoutRepostStaysConnected(): void
+    {
+        $session = [...$this->pending(), 'did' => 'did:plc:abc', 'pds' => 'https://pds.example', 'accessToken' => 'a', 'refreshToken' => 'r', 'expiresAt' => time() + 1800];
+        $this->config[BlueskyOAuthClient::SESSION_SLUG] = (string) json_encode([...$session, 'scope' => 'atproto repo:app.bsky.feed.post?action=create blob:image/* blob:video/*']);
+        $client = $this->createClient();
+        $this->assertFalse($client->needsReconnection());
+        $this->assertFalse($client->canRepost());
+
+        $this->config[BlueskyOAuthClient::SESSION_SLUG] = (string) json_encode([...$session, 'scope' => BlueskyOAuthClient::SCOPE]);
+        $this->assertTrue($this->createClient()->canRepost());
     }
 
     // Disconnected between the check and the mark: nothing left to mark, nor to remind of

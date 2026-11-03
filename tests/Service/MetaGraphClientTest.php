@@ -86,6 +86,25 @@ class MetaGraphClientTest extends TestCase
         $this->client([new MockResponse('{"error":{"message":"Invalid OAuth access token"}}', ['http_code' => 400])])->request('GET', '/me', []);
     }
 
+    // A page that is no answer, even with a 200, never reads as an answer without an id
+    public function testAnHtmlPageIsARefusalWhateverItsStatus(): void
+    {
+        $this->expectExceptionMessage('Meta refused /me');
+
+        $this->client([new MockResponse('<html></html>')])->request('GET', '/me', []);
+    }
+
+    // What a transport error says of the address, its token with it, stays out of the message
+    public function testATransportErrorNamesThePathAlone(): void
+    {
+        try {
+            $this->client([new MockResponse('', ['error' => 'Timeout for "https://example.org/me?access_token=secret".'])])->request('GET', '/me', ['access_token' => 'secret']);
+            $this->fail('The transport error should throw.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('Meta could not be reached for /me.', $exception->getMessage());
+        }
+    }
+
     public function testThePageTokenIsNullBeforeTheConnection(): void
     {
         $this->assertNull($this->client()->pageToken());

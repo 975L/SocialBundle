@@ -15,6 +15,7 @@ use c975L\SocialBundle\Controller\Management\SocialConnectionsController;
 use c975L\SocialBundle\Controller\Management\SocialPinterestBoardController;
 use c975L\SocialBundle\Service\BlueskyOAuthClient;
 use c975L\SocialBundle\Service\GoogleOAuthClient;
+use c975L\SocialBundle\Service\InstagramLoginClient;
 use c975L\SocialBundle\Service\LinkedInClient;
 use c975L\SocialBundle\Service\MetaGraphClient;
 use c975L\SocialBundle\Service\PinterestClient;
@@ -70,6 +71,10 @@ class SocialConnectionsControllerTest extends TestCase
         $tikTok->method('isConfigured')->willReturn(true);
         $tikTok->method('isConnected')->willReturn('' !== ($configs['social-tiktok-display-name'] ?? ''));
 
+        $instagram = $this->createStub(InstagramLoginClient::class);
+        $instagram->method('isConfigured')->willReturn(true);
+        $instagram->method('isConnected')->willReturn('' !== ($configs['social-instagram-username'] ?? ''));
+
         $twig = $this->createStub(Environment::class);
         $twig->method('render')->willReturnCallback(function (string $view, array $parameters): string {
             $this->rendered = $parameters;
@@ -77,7 +82,7 @@ class SocialConnectionsControllerTest extends TestCase
             return '';
         });
 
-        $controller = new SocialConnectionsController($configService, $bluesky, $meta, $google, $linkedIn, $youtube, $pinterest, $tikTok);
+        $controller = new SocialConnectionsController($configService, $bluesky, $meta, $google, $linkedIn, $youtube, $pinterest, $tikTok, $instagram);
         $controller->setContainer($this->serviceContainer(['twig' => $twig]));
         $controller->index(Request::create('https://' . $host . '/management/social-connections'));
 
@@ -100,8 +105,8 @@ class SocialConnectionsControllerTest extends TestCase
     {
         $networks = $this->networks($this->bluesky());
 
-        $this->assertSame(['bluesky', 'meta', 'linkedin', 'youtube', 'pinterest', 'tiktok', 'google'], array_keys($networks));
-        $this->assertSame(['social_bluesky_oauth_connect', 'social_meta_oauth_connect', 'social_linkedin_oauth_connect', 'social_youtube_oauth_connect', 'social_pinterest_oauth_connect', 'social_tiktok_oauth_connect', 'social_google_oauth_connect'], array_column($networks, 'route'));
+        $this->assertSame(['bluesky', 'meta', 'instagram', 'linkedin', 'youtube', 'pinterest', 'tiktok', 'google'], array_keys($networks));
+        $this->assertSame(['social_bluesky_oauth_connect', 'social_meta_oauth_connect', 'social_instagram_oauth_connect', 'social_linkedin_oauth_connect', 'social_youtube_oauth_connect', 'social_pinterest_oauth_connect', 'social_tiktok_oauth_connect', 'social_google_oauth_connect'], array_column($networks, 'route'));
         $this->assertSame([['icon' => 'fab fa-bluesky', 'name' => 'me.bsky.social', 'url' => 'https://bsky.app/profile/me.bsky.social']], $networks['bluesky']['accounts']);
         $this->assertSame([['icon' => 'fab fa-facebook', 'name' => '123', 'url' => 'https://www.facebook.com/123']], $networks['meta']['accounts']);
         $this->assertTrue($networks['meta']['configured']);
@@ -193,5 +198,17 @@ class SocialConnectionsControllerTest extends TestCase
         $bluesky->method('isSiteHost')->willThrowException(new \RuntimeException('"site-url" is not set.'));
 
         $this->assertNull($this->networks($bluesky)['bluesky']['site_url']);
+    }
+
+    // Connected by itself, the account is named and linked, and the Meta tile stops saying Instagram is missing
+    public function testTheInstagramTileNamesTheAccountAndSilencesTheMetaWarning(): void
+    {
+        $this->assertFalse($this->networks($this->bluesky())['instagram']['connected']);
+        $this->assertFalse($this->networks($this->bluesky())['meta']['instagram']);
+
+        $networks = $this->networks($this->bluesky(), configs: ['social-instagram-username' => 'catalog']);
+
+        $this->assertSame([['icon' => 'fab fa-instagram', 'name' => '@catalog', 'url' => 'https://www.instagram.com/catalog/']], $networks['instagram']['accounts']);
+        $this->assertTrue($networks['meta']['instagram']);
     }
 }

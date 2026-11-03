@@ -20,6 +20,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatableMessage;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function Symfony\Component\Translation\t;
@@ -43,14 +44,10 @@ class SocialPostTargetType extends AbstractType
             }
 
             $maxLength = $this->socialPublisher->getMaxLength($target->getNetwork());
-            $help = null === $maxLength ? null : t('label.social_post_text_help', ['%max%' => $maxLength], 'social');
-            if (SocialPostStatus::Failed === $target->getStatus()) {
-                $help = t('label.social_post_failed_help', ['%error%' => (string) $target->getError()], 'social');
-            }
 
             $event->getForm()->add('text', TextareaType::class, [
                 'label' => ucfirst($target->getNetwork()) . ' - ' . $target->getStatus()->trans($this->translator),
-                'help' => $help,
+                'help' => $this->textHelp($target, $maxLength),
                 // A published text is what the network shows: changing it here would change nothing there
                 'disabled' => SocialPostStatus::Published === $target->getStatus(),
                 // Opt-in marker read by the block form theme, which is what puts Donovan under a plain textarea
@@ -99,6 +96,17 @@ class SocialPostTargetType extends AbstractType
                 ]);
             }
         });
+    }
+
+    // What is said under the text: why the network refused it, that a repost never sends it, else the network's limit
+    private function textHelp(SocialPostTarget $target, ?int $maxLength): ?TranslatableMessage
+    {
+        return match (true) {
+            SocialPostStatus::Failed === $target->getStatus() => t('label.social_post_failed_help', ['%error%' => (string) $target->getError()], 'social'),
+            null !== $target->getRepost() => t('label.social_post_repost_help', ['%account%' => $target->getRepost()], 'social'),
+            null !== $maxLength => t('label.social_post_text_help', ['%max%' => $maxLength], 'social'),
+            default => null,
+        };
     }
 
     public function configureOptions(OptionsResolver $resolver): void

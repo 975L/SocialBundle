@@ -42,6 +42,10 @@
                 <source>description.guided_project_social_calendar</source>
                 <target>Voir chaque publication à sa date et à son heure, et la déplacer d'un glisser-déposer.</target>
             </trans-unit>
+            <trans-unit id="iWPxVLo">
+                <source>description.guided_project_social_comments_alert</source>
+                <target>Recevoir un e-mail quand vos publications ont de nouveaux commentaires, là où les réseaux n'en envoient pas.</target>
+            </trans-unit>
             <trans-unit id="Z4mtym8">
                 <source>description.guided_project_social_google_connect</source>
                 <target>La partie agence : l'accès chez Google, les deux clés, et le consentement. À faire une fois, puis le jour où le jeton est révoqué.</target>
@@ -49,6 +53,10 @@
             <trans-unit id="VNxe2Mo">
                 <source>description.guided_project_social_google_reviews</source>
                 <target>Lire ce que Google a rapporté, y répondre, masquer un avis, et poser le bloc des avis sur une page.</target>
+            </trans-unit>
+            <trans-unit id="yD3qstr">
+                <source>description.guided_project_social_instagram_connect</source>
+                <target>La partie agence, pour un compte que Meta refuse de lier à une Page : le réglage Instagram de l'application Meta, ses deux clés et le consentement. À faire une fois : l'accès se renouvelle ensuite chaque nuit.</target>
             </trans-unit>
             <trans-unit id="1Qxr9lg">
                 <source>description.guided_project_social_linkedin_connect</source>
@@ -96,7 +104,7 @@
             </trans-unit>
             <trans-unit id="pX_uYzK">
                 <source>description.guided_step_social_bluesky_outdated</source>
-                <target>Si la tuile "Bluesky" signale des autorisations périmées (un e-mail le rappelle aussi), recommencer l'étape de connexion avec "Reconnecter".</target>
+                <target>Si la tuile "Bluesky" signale des autorisations périmées (un e-mail le rappelle aussi), ou si le site doit repartager des posts, cette autorisation n'étant demandée qu'à une nouvelle connexion, recommencer l'étape de connexion avec "Reconnecter".</target>
             </trans-unit>
             <trans-unit id="6i891bK">
                 <source>description.guided_step_social_calendar_feed</source>
@@ -125,6 +133,14 @@
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
                 <target>Le panneau montre le texte de chaque réseau : corrigez-le sur place puis « Enregistrer les textes », un texte déjà publié restant en lecture seule. « Écran complet » ouvre la publication entière, pour son texte commun ou sa reformulation.</target>
+            </trans-unit>
+            <trans-unit id="uqOW6UK">
+                <source>description.guided_step_social_comments_days</source>
+                <target>Dans la configuration, chercher « social-comments-alert-days » et y mettre le nombre de jours pendant lesquels un post est surveillé. À 0, rien n'est surveillé.</target>
+            </trans-unit>
+            <trans-unit id="LxI8f0T">
+                <source>description.guided_step_social_comments_email</source>
+                <target>Toutes les trois heures, le site lit le nombre de commentaires sur Bluesky, Instagram et YouTube et écrit à « email-to » un seul e-mail, avec l'adresse de chaque post. LinkedIn et Facebook préviennent déjà d'eux-mêmes.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
@@ -161,6 +177,18 @@
             <trans-unit id="r_RYin.">
                 <source>description.guided_step_social_google_sync</source>
                 <target>Les avis arrivent d'eux-mêmes chaque nuit, la tâche « c975l:social:reviews:sync » étant planifiée par le bundle. Reste une clé facultative, « social-google-listing-url » : l'adresse publique de la fiche, reprise dans les données structurées du site.</target>
+            </trans-unit>
+            <trans-unit id="QOWDZgK">
+                <source>description.guided_step_social_instagram_connect</source>
+                <target>Cliquez sur « Connecter » dans la tuile « Instagram sans Page », puis identifiez-vous avec le compte qui publie et autorisez l'accès. Le site enregistre lui-même le jeton et le compte, et y publie désormais.</target>
+            </trans-unit>
+            <trans-unit id="2ldAs97">
+                <source>description.guided_step_social_instagram_credentials</source>
+                <target>Cherchez « social-instagram-app-id » et « social-instagram-app-secret » dans la liste, et collez l'ID et la clé secrète de l'application Instagram. La clé secrète ne s'affiche qu'avec le bouton « Afficher les données sensibles ». Le jeton et le compte se rempliront à l'étape suivante.</target>
+            </trans-unit>
+            <trans-unit id="sP4YKFK">
+                <source>description.guided_step_social_instagram_prerequisites</source>
+                <target>Cette partie se passe sur developers.facebook.com, dans l'application Meta, sous « Configuration de l'API avec la connexion Instagram » : ajoutez les autorisations instagram_business_basic et instagram_business_content_publish, déclarez comme URI de redirection l'adresse du site suivie de « /social/instagram/callback », puis invitez le compte comme testeur Instagram et acceptez l'invitation dans les réglages « Applications et sites Web » d'Instagram. Revenez ici avec l'ID et la clé secrète de l'application Instagram.</target>
             </trans-unit>
             <trans-unit id="2BLT8wV">
                 <source>description.guided_step_social_linkedin_connect</source>
@@ -362,6 +390,22 @@
                 <source>email.social_bluesky_reminder_subject</source>
                 <target>Reconnectez Bluesky</target>
             </trans-unit>
+            <trans-unit id="08Si0qd">
+                <source>email.social_comments_body</source>
+                <target>De nouveaux commentaires attendent une réponse. Le lien de chacun ouvre sa publication :</target>
+            </trans-unit>
+            <trans-unit id="9p8rLGp">
+                <source>email.social_comments_subject</source>
+                <target>%count% nouveau(x) commentaire(s) sur vos publications</target>
+            </trans-unit>
+            <trans-unit id="jdGTNCS">
+                <source>email.social_instagram_refresh_failed_body</source>
+                <target>Instagram a refusé de renouveler l'accès du site (%error%). Plus rien n'y partira une fois le jeton arrivé à son terme, tant que le compte n'est pas reconnecté depuis « Connexions » :</target>
+            </trans-unit>
+            <trans-unit id="2Eb1h7d">
+                <source>email.social_instagram_refresh_failed_subject</source>
+                <target>Reconnectez Instagram</target>
+            </trans-unit>
             <trans-unit id="fcDzyeM">
                 <source>email.social_linkedin_reminder_body</source>
                 <target>L'accès du site à LinkedIn se termine le %date%. Passé cette date, plus rien n'y part. Dans la tuile LinkedIn de « Connexions », cliquez sur « Connecter un profil » ou sur « Connecter une Page », selon le compte sur lequel le site publie :</target>
@@ -429,6 +473,18 @@
             <trans-unit id="4_w_WZC">
                 <source>flash.bluesky_wrong_host</source>
                 <target>Bluesky ne peut être connecté que depuis %url%, l'adresse par laquelle il connaît le site.</target>
+            </trans-unit>
+            <trans-unit id="AUZjEja">
+                <source>flash.instagram_connected</source>
+                <target>Instagram est connecté avec le compte %name%.</target>
+            </trans-unit>
+            <trans-unit id="8TQgf3S">
+                <source>flash.instagram_not_configured</source>
+                <target>Renseignez d'abord l'ID et la clé secrète de votre application Instagram dans la configuration.</target>
+            </trans-unit>
+            <trans-unit id="Pcga9Dd">
+                <source>flash.instagram_refused</source>
+                <target>La connexion à Instagram a été refusée ou interrompue.</target>
             </trans-unit>
             <trans-unit id="ZAt717E">
                 <source>flash.linkedin_connected</source>
@@ -870,6 +926,10 @@
                 <source>label.guided_project_social_calendar</source>
                 <target>Planifier vos publications sur le calendrier</target>
             </trans-unit>
+            <trans-unit id="lSKhzC_">
+                <source>label.guided_project_social_comments_alert</source>
+                <target>Être prévenu des commentaires</target>
+            </trans-unit>
             <trans-unit id="viNLaDg">
                 <source>label.guided_project_social_google_connect</source>
                 <target>Connecter la fiche Google de l'établissement</target>
@@ -877,6 +937,10 @@
             <trans-unit id="9gMwOTb">
                 <source>label.guided_project_social_google_reviews</source>
                 <target>Consulter et afficher les avis Google</target>
+            </trans-unit>
+            <trans-unit id="VIajr34">
+                <source>label.guided_project_social_instagram_connect</source>
+                <target>Connecter Instagram sans Page</target>
             </trans-unit>
             <trans-unit id="M.lArB1">
                 <source>label.guided_project_social_linkedin_connect</source>
@@ -954,6 +1018,14 @@
                 <source>label.guided_step_social_calendar_texts</source>
                 <target>Corriger les textes</target>
             </trans-unit>
+            <trans-unit id="cDFiImd">
+                <source>label.guided_step_social_comments_days</source>
+                <target>Régler la durée de surveillance</target>
+            </trans-unit>
+            <trans-unit id="VxEP_J1">
+                <source>label.guided_step_social_comments_email</source>
+                <target>Lire l'e-mail</target>
+            </trans-unit>
             <trans-unit id="tVdTpfQ">
                 <source>label.guided_step_social_connections_open</source>
                 <target>Ouvrir les connexions</target>
@@ -989,6 +1061,18 @@
             <trans-unit id="oqWYK8u">
                 <source>label.guided_step_social_google_sync</source>
                 <target>Laisser la synchronisation faire le reste</target>
+            </trans-unit>
+            <trans-unit id="m2ayELo">
+                <source>label.guided_step_social_instagram_connect</source>
+                <target>Autoriser le compte</target>
+            </trans-unit>
+            <trans-unit id=".CR3q_I">
+                <source>label.guided_step_social_instagram_credentials</source>
+                <target>Saisir les deux clés</target>
+            </trans-unit>
+            <trans-unit id="Ja1bSVB">
+                <source>label.guided_step_social_instagram_prerequisites</source>
+                <target>Régler Instagram dans l'application Meta</target>
             </trans-unit>
             <trans-unit id="Qr2OOFV">
                 <source>label.guided_step_social_linkedin_connect</source>
@@ -1258,6 +1342,14 @@
                 <source>label.info_google_not_configured</source>
                 <target>Renseignez d'abord l'identifiant et le secret du client OAuth Google dans la configuration (« social-google-oauth-client-id » et « social-google-oauth-client-secret »).</target>
             </trans-unit>
+            <trans-unit id="jhpef3t">
+                <source>label.info_instagram_connect</source>
+                <target>Relie le site à un compte Instagram professionnel sans Page Facebook, pour un compte que Meta refuse de lier à une Page. Une fois connecté, il remplace le compte lié à la Page. Le jeton se renouvelle chaque nuit.</target>
+            </trans-unit>
+            <trans-unit id="UCTk971">
+                <source>label.info_instagram_not_configured</source>
+                <target>Renseignez d'abord l'ID et la clé secrète de l'application Instagram dans la configuration (« social-instagram-app-id » et « social-instagram-app-secret »).</target>
+            </trans-unit>
             <trans-unit id="0cTMFAS">
                 <source>label.info_linkedin_connect</source>
                 <target>Relie le site à votre profil LinkedIn personnel, ou à une Page que vous administrez avec une app dédiée. Sur une Page, l'accès se renouvelle tout seul pendant un an ; sur un profil, il dure 60 jours : reconnectez-vous avant son expiration.</target>
@@ -1389,6 +1481,10 @@
             <trans-unit id="D77Jgwt">
                 <source>label.network_google</source>
                 <target>Fiche Google</target>
+            </trans-unit>
+            <trans-unit id="CUspUFH">
+                <source>label.network_instagram</source>
+                <target>Instagram sans Page</target>
             </trans-unit>
             <trans-unit id="aMSshQf">
                 <source>label.network_linkedin</source>
@@ -1881,6 +1977,10 @@
             <trans-unit id="0b4w2zz">
                 <source>label.social_post_publish</source>
                 <target>Publier</target>
+            </trans-unit>
+            <trans-unit id="dW0chIk">
+                <source>label.social_post_repost_help</source>
+                <target>Repartage le post de %account% portant le lien de ce post : ce texte n'est jamais envoyé.</target>
             </trans-unit>
             <trans-unit id="pvdNhMC">
                 <source>label.social_post_reshare</source>

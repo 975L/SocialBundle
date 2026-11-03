@@ -43,7 +43,8 @@ class SocialPostDuplicator
                 new SocialPostTarget($copy, $network, $target->getText())
                     ->setComment($target->getComment())
                     ->setReshare($this->socialPublisher->supportsReshare($network) ? $target->getReshare() : null)
-                    ->setStory($this->socialPublisher->supportsStory($network) && $target->isStory());
+                    ->setStory($this->socialPublisher->supportsStory($network) && $target->isStory())
+                    ->setRepost($this->socialPublisher->supportsRepost($network) ? $target->getRepost() : null);
             }
         }
 

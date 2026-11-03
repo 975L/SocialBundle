@@ -15,6 +15,7 @@ use c975L\SocialBundle\Contract\FirstCommentPublisherInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\SocialBundle\Contract\PostOptionsPublisherInterface;
 use c975L\SocialBundle\Contract\ProfileResharePublisherInterface;
+use c975L\SocialBundle\Contract\RepostPublisherInterface;
 use c975L\SocialBundle\Contract\StoryPublisherInterface;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
@@ -426,7 +427,7 @@ class SocialPublisher
         return true;
     }
 
-    // Writes a text for each network ticked on a post that had none, the way prepare() does - approved along with the rest of the post when it was; a post written on its screen gets its own text, cut to each network. A network not connected gets no text: it could not send it
+    // Writes a text for each network ticked on a post that had none, the way prepare() does - approved along with the rest of the post when it was; a post written on its screen gets its own text, cut to each network. A network not connected gets no text: it could not send it. A repost unticked comes back a repost
     /** @param list<string> $networks */
     public function addTargets(SocialPost $post, array $networks): void
     {
@@ -440,6 +441,7 @@ class SocialPublisher
         foreach ($targets as $name => $network) {
             $text = $post->hasOwnText() ? $this->textBuilder->cut((string) $post->getText(), $network->getMaxLength()) : ($written[$name] ?? $this->textBuilder->build($content, $network->getMaxLength()));
             $target = new SocialPostTarget($post, $name, $text);
+            $target->setRepost($post->takeDroppedRepost($name));
             // A network asking choices of its own waits for them to be made, approved from the post's screen
             if ($post->isApproved() && !$network instanceof PostOptionsPublisherInterface) {
                 $target->approve();
@@ -623,7 +625,7 @@ class SocialPublisher
         }
 
         try {
-            $target->markPublished($this->optioned($network, $target)->publish($target->getText(), $this->sentContent($network, $target, $content), $this->mediasOf($target->getPost())));
+            $target->markPublished($this->deliver($network, $target, $content));
         } catch (\Throwable $exception) {
             // One network refusing never keeps the others from posting - the refusal is kept on the target, where "Publish" tries it again
             $this->logger->error('Social publication failed on {network}: {message}', ['network' => $target->getNetwork(), 'message' => $exception->getMessage()]);
@@ -633,6 +635,16 @@ class SocialPublisher
         }
 
         $this->sendFollowUps($network, $target, $content);
+    }
+
+    // A repost when the target names an account, its post otherwise - the network's id for it either way
+    private function deliver(NetworkPublisherInterface $network, SocialPostTarget $target, SocialContent $content): string
+    {
+        if ($network instanceof RepostPublisherInterface && null !== $target->getRepost()) {
+            return $network->repost($target->getRepost(), (string) $target->getPost()->getUrl());
+        }
+
+        return $this->optioned($network, $target)->publish($target->getText(), $this->sentContent($network, $target, $content), $this->mediasOf($target->getPost()));
     }
 
     // What follows a post gone out, each refusal kept on the target without touching the post: its first comment, its reshare on the member's profile, then its story
@@ -754,6 +766,9 @@ class SocialPublisher
         if (null === $network || null === $content) {
             return ['status' => self::DRY_RUN, 'message' => $target->getStatus()->value, 'payload' => ['error' => 'Nothing to send it with.']];
         }
+        if (null !== $target->getRepost()) {
+            return ['status' => self::DRY_RUN, 'message' => $this->mode($network), 'payload' => ['repost' => $target->getRepost(), 'url' => $target->getPost()->getUrl()]];
+        }
 
         $preview = $this->preview($this->optioned($network, $target), $target->getText(), $this->sentContent($network, $target, $content), $this->mediasOf($target->getPost()));
         if ($network instanceof FirstCommentPublisherInterface && null !== $target->getComment()) {
@@ -802,6 +817,14 @@ class SocialPublisher
     private function optioned(NetworkPublisherInterface $network, SocialPostTarget $target): NetworkPublisherInterface
     {
         return $network instanceof PostOptionsPublisherInterface ? $network->withOptions($target->getOptions()) : $network;
+    }
+
+    // Whether a network can repost another account's post with the connection it holds
+    public function supportsRepost(string $network): bool
+    {
+        $publisher = $this->allNetworks()[$network] ?? null;
+
+        return $publisher instanceof RepostPublisherInterface && $publisher->canRepost();
     }
 
     // Whether a network posts as a Page it can share again on the member's profile, which the post's screen then offers
