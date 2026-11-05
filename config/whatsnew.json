@@ -3,6 +3,11 @@
         "date": "2026-11-05",
         "description": [
             {
+                "en": "You are now reminded by email each morning of a post due within 24 hours still in draft, with a link to approve it.",
+                "fr": "Une publication prévue dans les 24 heures et encore en brouillon est désormais signalée par e-mail chaque matin, avec un lien pour la valider.",
+                "es": "Una publicación prevista en las próximas 24 horas y aún en borrador se avisa ahora por correo cada mañana, con un enlace para validarla."
+            },
+            {
                 "en": "A story's title cut for its length now ends with three dots, whatever the theme's font.",
                 "fr": "Le titre d'une story coupé pour sa longueur se termine désormais par trois points, quelle que soit la police du thème.",
                 "es": "El título de una historia cortado por su longitud termina ahora con tres puntos, sea cual sea la fuente del tema."

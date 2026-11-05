@@ -260,7 +260,7 @@
             </trans-unit>
             <trans-unit id="2_2asy8">
                 <source>description.guided_step_social_posts_approve</source>
-                <target>Ce bouton en forme de calendrier coché valide la publication : elle partira d'elle-même à sa date prévue, au lieu d'être envoyée tout de suite. Cochez plusieurs brouillons pour les valider ensemble avec « Valider la sélection ».</target>
+                <target>Ce bouton en forme de calendrier coché valide la publication : elle partira d'elle-même à sa date prévue, au lieu d'être envoyée tout de suite. Cochez plusieurs brouillons pour les valider ensemble avec « Valider la sélection ». Un brouillon prévu sous 24 heures vous est rappelé par e-mail chaque matin.</target>
             </trans-unit>
             <trans-unit id="cJ_J6x4">
                 <source>description.guided_step_social_posts_change_content</source>
@@ -397,6 +397,14 @@
             <trans-unit id="9p8rLGp">
                 <source>email.social_comments_subject</source>
                 <target>%count% nouveau(x) commentaire(s) sur vos publications</target>
+            </trans-unit>
+            <trans-unit id="h2bpfmG">
+                <source>email.social_drafts_reminder_body</source>
+                <target>Ces publications sont prévues dans les prochaines 24 heures mais attendent encore votre validation : un brouillon ne part jamais. Le lien de chacune ouvre son panneau dans le calendrier :</target>
+            </trans-unit>
+            <trans-unit id="V15sv54">
+                <source>email.social_drafts_reminder_subject</source>
+                <target>%count% publication(s) en brouillon à valider sous 24 heures</target>
             </trans-unit>
             <trans-unit id="jdGTNCS">
                 <source>email.social_instagram_refresh_failed_body</source>

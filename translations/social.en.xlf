@@ -260,7 +260,7 @@
             </trans-unit>
             <trans-unit id="2_2asy8">
                 <source>description.guided_step_social_posts_approve</source>
-                <target>This checked-calendar button approves the post: it goes out on its own at its planned date, instead of being sent at once. Tick several drafts to approve them together with "Approve the selection".</target>
+                <target>This checked-calendar button approves the post: it goes out on its own at its planned date, instead of being sent at once. Tick several drafts to approve them together with "Approve the selection". You are reminded by email each morning of a draft due within 24 hours.</target>
             </trans-unit>
             <trans-unit id="cJ_J6x4">
                 <source>description.guided_step_social_posts_change_content</source>
@@ -397,6 +397,14 @@
             <trans-unit id="9p8rLGp">
                 <source>email.social_comments_subject</source>
                 <target>%count% new comment(s) on your posts</target>
+            </trans-unit>
+            <trans-unit id="h2bpfmG">
+                <source>email.social_drafts_reminder_body</source>
+                <target>These posts are planned within the next 24 hours but still wait for your approval: a draft never goes out. Each link opens its panel on the calendar:</target>
+            </trans-unit>
+            <trans-unit id="V15sv54">
+                <source>email.social_drafts_reminder_subject</source>
+                <target>%count% post(s) in draft to approve within 24 hours</target>
             </trans-unit>
             <trans-unit id="jdGTNCS">
                 <source>email.social_instagram_refresh_failed_body</source>

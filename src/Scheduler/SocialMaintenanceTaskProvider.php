@@ -41,6 +41,8 @@ class SocialMaintenanceTaskProvider implements MaintenanceTaskProviderInterface
             new MaintenanceTask('# #(2-5) * * *', 'c975l:social:instagram:refresh'),
             // The new comments told by email, every three hours - the command reads the delay and does nothing at 0, so turning it on needs no new schedule
             new MaintenanceTask('# */3 * * *', 'c975l:social:comments:check'),
+            // The posts due within a day still in draft told by email, each morning, while there is time to read them
+            new MaintenanceTask('# 7 * * *', 'c975l:social:drafts:reminder'),
         ];
     }
 }

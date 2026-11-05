@@ -21,8 +21,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // A draft never goes out, and nothing says so when its moment passes: the posts planned within a day still waiting on a network's approval are said on the dashboard, the calendar opening on the first of them
 class SocialDraftAlertProvider implements AlertProviderInterface
 {
-    // How far ahead a draft is worth saying
-    private const string NOTICE = '+24 hours';
+    // How far ahead a draft is worth saying, on the dashboard as by email (see DraftsReminderCommand) - a calendar day, so that one morning's window ends where the next one's starts across a clock change
+    public const string NOTICE = '+1 day';
 
     public function __construct(
         private readonly SocialPostRepository $postRepository,

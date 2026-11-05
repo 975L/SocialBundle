@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.31.0
+
+Email each morning for posts due in draft
+
+- Added `c975l:social:drafts:reminder`: the posts due within 24 hours in draft emailed each morning (05/11/2026)
+- Changed the drafts alert's window to a calendar day, its hour kept across a clock change (05/11/2026)
+
 ## v2.30.1
 
 Instagram: reels with a real cover, pictures framed for the grid
