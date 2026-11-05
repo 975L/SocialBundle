@@ -224,7 +224,7 @@
             </trans-unit>
             <trans-unit id="wkywWSr">
                 <source>narration.guided_step_social_posts_story</source>
-                <target>On Facebook and Instagram, tick “Also as a story” for the post's picture to go out as a story too, for 24 hours, with no text nor link. A post without a picture makes none.</target>
+                <target>On Facebook and Instagram, tick “Also as a story” for the post's picture to go out as a story too, for 24 hours, with its title and the site's name, without a link. A post without a picture, or with only the site's default one, makes none.</target>
             </trans-unit>
             <trans-unit id="1n62VPw">
                 <source>narration.guided_step_social_series_approve_picked</source>

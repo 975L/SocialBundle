@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-11-05",
+        "description": [
+            {
+                "en": "A story now shows the post's title and the site's name around its picture, in the theme's fonts and colours.",
+                "fr": "Une story affiche désormais le titre de la publication et le nom du site autour de son image, dans les polices et les couleurs du thème.",
+                "es": "Una historia muestra ahora el título de la publicación y el nombre del sitio alrededor de su imagen, con las fuentes y los colores del tema."
+            },
+            {
+                "en": "A post that only has the site's default image no longer goes out as a story.",
+                "fr": "Une publication qui n'a que l'image par défaut du site ne part plus en story.",
+                "es": "Una publicación que solo tiene la imagen por defecto del sitio ya no sale como historia."
+            }
+        ]
+    },
+    {
         "date": "2026-11-03",
         "description": [
             {

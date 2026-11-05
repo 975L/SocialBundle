@@ -18,6 +18,7 @@ use c975L\SocialBundle\Service\BlueskyOAuthClient;
 use c975L\SocialBundle\Service\BlueskyPublicReader;
 use c975L\SocialBundle\Service\BlueskyPublisher;
 use c975L\SocialBundle\Service\SocialImageExporter;
+use c975L\SocialBundle\Service\SocialStoryComposer;
 use c975L\UiBundle\Model\SocialContent;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -54,7 +55,7 @@ class BlueskyPublisherTest extends TestCase
             return new MockResponse($remoteImage);
         });
 
-        return new BlueskyPublisher(new SocialImageExporter($httpClient, $this->createStub(SiteUrlResolver::class), sys_get_temp_dir(), $configService), $oauthClient, $configService, new SiteLocales(['fr', 'en'], 'fr'), $publicReader ?? $this->createStub(BlueskyPublicReader::class));
+        return new BlueskyPublisher(new SocialImageExporter($httpClient, $this->createStub(SiteUrlResolver::class), sys_get_temp_dir(), $configService, $this->createStub(SocialStoryComposer::class)), $oauthClient, $configService, new SiteLocales(['fr', 'en'], 'fr'), $publicReader ?? $this->createStub(BlueskyPublicReader::class));
     }
 
     /**

@@ -74,6 +74,11 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # The theme's fonts a story is drawn with are kept under the site's var/ folder
+    c975L\SocialBundle\Service\SocialFontProvider:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     social.block.social_links:
         class: stdClass
         tags:

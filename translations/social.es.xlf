@@ -688,7 +688,7 @@
             </trans-unit>
             <trans-unit id="UvEM6_l">
                 <source>help.social_post_story</source>
-                <target>Justo después de la publicación, sale también como historia, visible 24 h, sin texto ni enlace a la publicación, que la API no permite: su vídeo si tiene uno (vertical, 60 s como máximo), si no su primera imagen o la del contenido, encuadrada en 9:16 (1080 × 1920) sobre el fondo del sitio.</target>
+                <target>Justo después de la publicación, sale también como historia, visible 24 h, sin enlace a la publicación, que la API no permite: su vídeo si tiene uno (vertical, 60 s como máximo), si no su primera imagen o la del contenido, en 9:16 (1080 × 1920) sobre el fondo del sitio, con su título y el nombre del sitio en las fuentes del tema. La imagen por defecto del sitio no sale como historia, y una imagen que ya llena la pantalla lleva estos textos en una banda.</target>
             </trans-unit>
             <trans-unit id="BPzQBuz">
                 <source>help.social_post_text</source>

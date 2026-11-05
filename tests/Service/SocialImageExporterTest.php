@@ -12,7 +12,9 @@ namespace c975L\SocialBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
+use c975L\SocialBundle\Service\SocialFontProvider;
 use c975L\SocialBundle\Service\SocialImageExporter;
+use c975L\SocialBundle\Service\SocialStoryComposer;
 use c975L\UiBundle\Model\SocialContent;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
@@ -49,7 +51,10 @@ class SocialImageExporterTest extends TestCase
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $key): ?string => ['social-image-format' => $format, 'theme-color-background' => $background][$key] ?? null);
 
-        return new SocialImageExporter(new MockHttpClient(), $siteUrlResolver, $this->projectDir, $configService);
+        $fontProvider = $this->createStub(SocialFontProvider::class);
+        $fontProvider->method('path')->willReturn(__DIR__ . '/../Fixtures/story-font.ttf');
+
+        return new SocialImageExporter(new MockHttpClient(), $siteUrlResolver, $this->projectDir, $configService, new SocialStoryComposer($fontProvider, $configService));
     }
 
     /**
@@ -95,6 +100,17 @@ class SocialImageExporterTest extends TestCase
 
         $this->assertSame([1080, 1920], \array_slice($this->exported((string) $this->exporter()->storyUrl($content)), 0, 2));
         $this->assertSame([1080, 1920], \array_slice($this->exported((string) $this->exporter(format: 'square')->storyUrl($content)), 0, 2));
+    }
+
+    // A post's new title writes a new story of the same picture, the same title finding the file already there
+    public function testAStoryIsWrittenOncePerTitle(): void
+    {
+        $image = $this->webp(2000, 900);
+        $exporter = $this->exporter();
+        $first = $exporter->storyUrl(new SocialContent('1', 'Title', 'https://example.org', imagePath: $image));
+
+        $this->assertSame($first, $exporter->storyUrl(new SocialContent('2', 'Title', 'https://example.org', imagePath: $image)));
+        $this->assertNotSame($first, $exporter->storyUrl(new SocialContent('1', 'Another', 'https://example.org', imagePath: $image)));
     }
 
     public function testAContentWithoutImageOrSiteUrlHasNoJpeg(): void

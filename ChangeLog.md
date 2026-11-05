@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.30.0
+
+Stories carry the post's title and the site's name
+
+- Added `SocialStoryComposer`: a story's picture carries the post's title and the site's name (05/11/2026)
+- Added `SocialFontProvider`: the theme's TTF from Google Fonts, kept under `var/social-fonts` (05/11/2026)
+- Added `ThemeColor`: `rgb()` theme colours read beside hex ones (05/11/2026)
+- The site's default `og-image` unticks a story (05/11/2026)
+- A picture filling the screen takes its texts in a band (05/11/2026)
+
 ## v2.29.2
 
 Delete a post from its panel or page, a text per network in imports

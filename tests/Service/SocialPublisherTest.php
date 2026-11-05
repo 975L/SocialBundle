@@ -36,6 +36,7 @@ use c975L\UiBundle\Contract\ScopedSocialContentSourceInterface;
 use c975L\UiBundle\Contract\SocialContentSourceInterface;
 use c975L\UiBundle\Model\SocialContent;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -1162,6 +1163,55 @@ class SocialPublisherTest extends TestCase
         $this->assertFalse($target->isStory());
         $this->assertFalse($target->isFollowUpPending());
         $this->assertSame('A story takes a picture, and this post has none.', $target->getStoryError());
+    }
+
+    // A source falling back on the site's default image, read from disk or from its address
+    private function createDefaultImageSource(?string $imagePath, ?string $imageUrl): SocialContentSourceInterface
+    {
+        $source = $this->createStub(SocialContentSourceInterface::class);
+        $source->method('getSourceType')->willReturn('gallery_media');
+        $source->method('getContent')->willReturn(new SocialContent('42', 'Title', 'https://example.org/42', imagePath: $imagePath, imageUrl: $imageUrl));
+
+        return $source;
+    }
+
+    // The site's default image says nothing of the post: the box is unticked with no refusal to report, the post going out
+    #[DataProvider('defaultImages')]
+    public function testADefaultImageUnticksTheStorySilently(?string $imagePath, ?string $imageUrl): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        $target = new SocialPostTarget($post, 'instagram', 'Text')->setStory(true);
+        $publisher = $this->createPublisher([$this->createDefaultImageSource($imagePath, $imageUrl)], [$this->createStoryNetwork()]);
+
+        $report = $publisher->publish($post);
+
+        $this->assertSame(['post'], $this->published);
+        $this->assertFalse($target->isStory());
+        $this->assertNull($target->getStoryError());
+        $this->assertArrayNotHasKey('story_error', $report['instagram']);
+    }
+
+    /** @return iterable<string, array{0: ?string, 1: ?string}> */
+    public static function defaultImages(): iterable
+    {
+        yield 'from disk' => ['/var/www/public/og-image.webp', 'https://example.org/og-image.webp'];
+        yield 'from its address' => [null, 'https://example.org/og-image.webp?v=2'];
+    }
+
+    // A video goes out as a story whatever the content's image, and a page's own picture named after it is no default
+    public function testADefaultImageLeavesAVideoStoryAndAnOwnPictureAlone(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        $post->addMedia(SocialMedia::reference($post, '/medias/card.mp4', 'video/mp4', 1080, 1920));
+        new SocialPostTarget($post, 'instagram', 'Text')->setStory(true);
+        $this->createPublisher([$this->createDefaultImageSource(null, 'https://example.org/og-image.webp')], [$this->createStoryNetwork()])->publish($post);
+        $this->assertSame('story:video:card.mp4', $this->published[1]);
+
+        $this->published = [];
+        $own = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($own, 'instagram', 'Text')->setStory(true);
+        $this->createPublisher([$this->createDefaultImageSource(null, 'https://example.org/medias/og-image-item-1.webp')], [$this->createStoryNetwork()])->publish($own);
+        $this->assertCount(2, $this->published);
     }
 
     // The first comment goes right after the post, which leaves its link out so that it goes out as a picture rather than a link card

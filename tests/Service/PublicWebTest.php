@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Service\SiteUrlResolver;
 use c975L\SocialBundle\Service\PublicWeb;
 use c975L\SocialBundle\Service\SocialImageExporter;
 use c975L\SocialBundle\Service\SocialPageReader;
+use c975L\SocialBundle\Service\SocialStoryComposer;
 use c975L\UiBundle\Model\SocialContent;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -48,7 +49,7 @@ class PublicWebTest extends TestCase
     #[DataProvider('forbiddenAddresses')]
     public function testTheImageExporterRefusesIt(string $url): void
     {
-        $exporter = new SocialImageExporter($this->unreachedClient(), $this->createStub(SiteUrlResolver::class), sys_get_temp_dir(), $this->createStub(ConfigServiceInterface::class));
+        $exporter = new SocialImageExporter($this->unreachedClient(), $this->createStub(SiteUrlResolver::class), sys_get_temp_dir(), $this->createStub(ConfigServiceInterface::class), $this->createStub(SocialStoryComposer::class));
 
         $this->expectException(\RuntimeException::class);
 

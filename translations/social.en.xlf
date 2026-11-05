@@ -688,7 +688,7 @@
             </trans-unit>
             <trans-unit id="UvEM6_l">
                 <source>help.social_post_story</source>
-                <target>Right after the post, it goes out as a story too, seen for 24 hours, with no text nor link to the post, which the API does not allow: its video when it has one (vertical, 60 s at most), else its first picture or the content's, framed 9:16 (1080 × 1920) on the site's background.</target>
+                <target>Right after the post, it goes out as a story too, seen for 24 hours, with no link to the post, which the API does not allow: its video when it has one (vertical, 60 s at most), else its first picture or the content's, 9:16 (1080 × 1920) on the site's background, with its title and the site's name in the theme's fonts. The site's default image does not go out as a story, and a picture already filling the screen carries these texts in a band.</target>
             </trans-unit>
             <trans-unit id="BPzQBuz">
                 <source>help.social_post_text</source>

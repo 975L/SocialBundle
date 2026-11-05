@@ -29,15 +29,12 @@ class SocialImageExporter
     // The side of the one square every network gets, "social-image-format" set to "square"
     private const int SQUARE = 1080;
 
-    // A story's picture as Meta recommends it, 9:16 at 1080 x 1920, whatever the site's format
-    private const float STORY_RATIO = 9 / 16;
-    private const int STORY_WIDTH = 1080;
-
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly SiteUrlResolver $siteUrlResolver,
         private readonly string $projectDir,
         private readonly ConfigServiceInterface $configService,
+        private readonly SocialStoryComposer $storyComposer,
     ) {
     }
 
@@ -74,14 +71,21 @@ class SocialImageExporter
         return $square ? $this->writeJpeg($content, 1.0, 1.0, self::SQUARE) : $this->writeJpeg($content, $minRatio, $maxRatio, null);
     }
 
-    // The public url of the content's image framed as a story, 9:16 at 1080 x 1920 with bands rather than cropped - null as jpegUrl() is
+    // The public url of the content's image as a story, drawn with its title and the site's name (see SocialStoryComposer) - null as jpegUrl() is
     public function storyUrl(SocialContent $content): ?string
     {
-        return $this->writeJpeg($content, self::STORY_RATIO, self::STORY_RATIO, self::STORY_WIDTH);
+        return $this->write($content, 'story' . $this->storyComposer->signature($content->title) . implode(',', $this->bandColor()), fn (string $bytes): string => $this->encoded($this->storyComposer->compose($bytes, $content->title, $this->bandColor())));
     }
 
     // Writes the JPEG copy once per image, range and width, answering its public url
     private function writeJpeg(SocialContent $content, float $minRatio, float $maxRatio, ?int $width): ?string
+    {
+        return $this->write($content, $minRatio . $maxRatio . $width . implode(',', $this->bandColor()), fn (string $bytes): string => $this->toJpeg($bytes, $minRatio, $maxRatio, $width));
+    }
+
+    // Writes a JPEG once per image and $variant, answering its public url
+    /** @param callable(string): string $jpeg */
+    private function write(SocialContent $content, string $variant, callable $jpeg): ?string
     {
         $siteUrl = $this->siteUrlResolver->siteUrl();
         $bytes = null === $siteUrl ? null : $this->read($content);
@@ -89,13 +93,13 @@ class SocialImageExporter
             return null;
         }
 
-        $name = self::DIRECTORY . '/' . sha1($bytes . $minRatio . $maxRatio . $width . implode(',', $this->bandColor())) . '.jpg';
+        $name = self::DIRECTORY . '/' . sha1($bytes . $variant) . '.jpg';
         $path = $this->projectDir . '/public/' . $name;
         if (!is_file($path)) {
             if (!is_dir(\dirname($path))) {
                 mkdir(\dirname($path), 0o775, true);
             }
-            file_put_contents($path, $this->toJpeg($bytes, $minRatio, $maxRatio, $width));
+            file_put_contents($path, $jpeg($bytes));
         }
 
         return $siteUrl . '/' . $name;
@@ -106,16 +110,11 @@ class SocialImageExporter
         return 'square' === $this->configService->get('social-image-format');
     }
 
-    // The site's own background ("theme-color-background", a #rrggbb or #rgb), white when its theme sets none or another notation
+    // The site's own background ("theme-color-background"), white when its theme sets none or another notation
     /** @return array{0: int, 1: int, 2: int} */
     private function bandColor(): array
     {
-        $color = ltrim(trim((string) $this->configService->get('theme-color-background')), '#');
-        if (1 === preg_match('/^[0-9a-f]{3}$/i', $color)) {
-            $color = $color[0] . $color[0] . $color[1] . $color[1] . $color[2] . $color[2];
-        }
-
-        return 1 === preg_match('/^[0-9a-f]{6}$/i', $color) ? [(int) hexdec(substr($color, 0, 2)), (int) hexdec(substr($color, 2, 2)), (int) hexdec(substr($color, 4, 2))] : self::BAND_COLOR;
+        return ThemeColor::parse($this->configService->get('theme-color-background')) ?? self::BAND_COLOR;
     }
 
     // Draws the picture centred on a canvas stretched to the nearest accepted ratio, on the site's background, then scaled down to MAX_WIDTH - or, $size given, to that width
@@ -148,6 +147,12 @@ class SocialImageExporter
             $height,
         );
 
+        return $this->encoded($canvas);
+    }
+
+    // A drawn picture as JPEG bytes
+    private function encoded(\GdImage $canvas): string
+    {
         ob_start();
         imagejpeg($canvas, null, 90);
 

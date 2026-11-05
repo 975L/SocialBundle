@@ -688,7 +688,7 @@
             </trans-unit>
             <trans-unit id="UvEM6_l">
                 <source>help.social_post_story</source>
-                <target>Juste après la publication, elle part aussi en story, visible 24 h, sans texte ni lien vers la publication, que l'API ne permet pas : sa vidéo si elle en a une (verticale, 60 s au plus), sinon sa première image ou celle du contenu, cadrée en 9:16 (1080 × 1920) sur le fond du site.</target>
+                <target>Juste après la publication, elle part aussi en story, visible 24 h, sans lien vers la publication, que l'API ne permet pas : sa vidéo si elle en a une (verticale, 60 s au plus), sinon sa première image ou celle du contenu, en 9:16 (1080 × 1920) sur le fond du site, avec son titre et le nom du site dans les polices du thème. L'image par défaut du site ne part pas en story, et une image qui remplit déjà l'écran porte ces textes dans un bandeau.</target>
             </trans-unit>
             <trans-unit id="BPzQBuz">
                 <source>help.social_post_text</source>

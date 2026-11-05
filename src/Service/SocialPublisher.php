@@ -752,12 +752,27 @@ class SocialPublisher
             return;
         }
 
+        // The site's default image says nothing of the post: no story rather than its logo, unticked without a refusal to report
+        if (null === $video && $this->isDefaultImage($storyContent)) {
+            $target->setStory(false);
+
+            return;
+        }
+
         try {
             $target->markStoried($network->story($storyContent, $video));
         } catch (\Throwable $exception) {
             $this->logger->error('Social story failed on {network}: {message}', ['network' => $target->getNetwork(), 'message' => $exception->getMessage()]);
             $target->markStoryFailed($exception->getMessage());
         }
+    }
+
+    // Whether a content's image is the site's default one, the fixed "og-image" at the root of public/ a content without a picture of its own falls back to
+    private function isDefaultImage(SocialContent $content): bool
+    {
+        $file = $content->imagePath ?? (string) parse_url((string) $content->imageUrl, \PHP_URL_PATH);
+
+        return 'og-image' === pathinfo($file, \PATHINFO_FILENAME);
     }
 
     // The post's first own video, the one a story shows before any picture

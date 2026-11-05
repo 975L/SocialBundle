@@ -107,7 +107,7 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
         return (string) $published['id'];
     }
 
-    // The story's id: a STORIES container of the video, fetched from its url, or of the picture framed 9:16 (JPEG, 8 MB) - no caption nor link sticker through the API - waited for, then published
+    // The story's id: a STORIES container of the video, fetched from its url, or of the picture drawn as a story 9:16 (JPEG, 8 MB) - no caption nor link sticker through the API - waited for, then published
     public function story(SocialContent $content, ?PostMedia $video = null): string
     {
         $token = ['access_token' => $this->token()];

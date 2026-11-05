@@ -92,7 +92,7 @@ class FacebookPublisher implements NetworkPublisherInterface, StoryPublisherInte
         return $this->request($text, $content, $medias);
     }
 
-    // The story's id (developers.facebook.com/docs/page-stories-api): the video sent in the reel's phases to the Page's video stories, or the picture framed 9:16 uploaded unpublished - a photo already used by a published post being refused - then made a Page story
+    // The story's id (developers.facebook.com/docs/page-stories-api): the video sent in the reel's phases to the Page's video stories, or the picture drawn as a story 9:16 uploaded unpublished - a photo already used by a published post being refused - then made a Page story
     public function story(SocialContent $content, ?PostMedia $video = null): string
     {
         if (null !== $video) {

@@ -224,7 +224,7 @@
             </trans-unit>
             <trans-unit id="wkywWSr">
                 <source>narration.guided_step_social_posts_story</source>
-                <target>En Facebook e Instagram, marque «También como historia» para que la imagen de la publicación salga también como historia durante 24 horas, sin texto ni enlace. Una publicación sin imagen no la genera.</target>
+                <target>En Facebook e Instagram, marque «También como historia» para que la imagen de la publicación salga también como historia durante 24 horas, con su título y el nombre del sitio, sin enlace. Una publicación sin imagen, o solo con la imagen por defecto del sitio, no la genera.</target>
             </trans-unit>
             <trans-unit id="1n62VPw">
                 <source>narration.guided_step_social_series_approve_picked</source>

@@ -224,7 +224,7 @@
             </trans-unit>
             <trans-unit id="wkywWSr">
                 <source>narration.guided_step_social_posts_story</source>
-                <target>Sur Facebook et Instagram, cochez « Aussi en story » pour que l'image de la publication parte aussi en story pendant 24 heures, sans texte ni lien. Une publication sans image n'en fait pas.</target>
+                <target>Sur Facebook et Instagram, cochez « Aussi en story » pour que l'image de la publication parte aussi en story pendant 24 heures, avec son titre et le nom du site, sans lien. Une publication sans image, ou avec la seule image par défaut du site, n'en fait pas.</target>
             </trans-unit>
             <trans-unit id="1n62VPw">
                 <source>narration.guided_step_social_series_approve_picked</source>
