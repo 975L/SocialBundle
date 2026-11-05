@@ -59,12 +59,15 @@ class SocialStoryComposer
         $canvas = imagecreatetruecolor(self::WIDTH, self::HEIGHT);
         imagefill($canvas, 0, 0, (int) imagecolorallocate($canvas, ...$background));
 
-        if ('' === trim($title)) {
+        // Three dots rather than the ellipsis a title cut by SocialPost ends with, a glyph some fonts draw blank
+        $title = str_replace('…', '...', trim($title));
+
+        if ('' === $title) {
             $this->drawPicture($canvas, $source, 0, self::HEIGHT);
         } elseif (imagesx($source) / imagesy($source) < self::FULL_SCREEN_RATIO) {
-            $this->drawWithBand($canvas, $source, trim($title), $background);
+            $this->drawWithBand($canvas, $source, $title, $background);
         } else {
-            $this->drawWithTexts($canvas, $source, trim($title), $background);
+            $this->drawWithTexts($canvas, $source, $title, $background);
         }
 
         return $canvas;

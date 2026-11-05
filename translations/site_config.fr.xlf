@@ -72,7 +72,7 @@
             </trans-unit>
             <trans-unit id="00x9orl">
                 <source>description.social_image_format</source>
-                <target>framed : l'image telle quelle, encadrée seulement là où un réseau l'exige. square : un même carré 1080 x 1080 sur tous les réseaux, l'image centrée sur la couleur de fond du site.</target>
+                <target>framed : l'image telle quelle, encadrée seulement pour le réseau qui en a besoin (Instagram). square : un même carré 1080 x 1080 sur tous les réseaux, l'image centrée sur la couleur de fond du site.</target>
             </trans-unit>
             <trans-unit id="70DFApE">
                 <source>description.social_instagram_access_token</source>

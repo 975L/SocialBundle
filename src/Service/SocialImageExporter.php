@@ -62,7 +62,7 @@ class SocialImageExporter
         return 200 === $response->getStatusCode() ? $response->getContent() : null;
     }
 
-    // The public url of a JPEG copy whose width/height ratio lies between the two given, null when the content has no image or the site no "site-url" to serve it from. Written once per image and range, the next post of the same picture finding it there
+    // The public url of a JPEG copy whose width/height ratio lies between the two given (see toJpeg() for its rounding), null when the content has no image or the site no "site-url" to serve it from. Written once per image and range, the next post of the same picture finding it there
     public function jpegUrl(SocialContent $content, float $minRatio = 0.0, float $maxRatio = \PHP_FLOAT_MAX): ?string
     {
         // The square stands within every range a network accepts, Instagram's included
@@ -117,7 +117,7 @@ class SocialImageExporter
         return ThemeColor::parse($this->configService->get('theme-color-background')) ?? self::BAND_COLOR;
     }
 
-    // Draws the picture centred on a canvas stretched to the nearest accepted ratio, on the site's background, then scaled down to MAX_WIDTH - or, $size given, to that width
+    // Draws the picture centred on a canvas stretched to the nearest accepted ratio, on the site's background, then scaled down to MAX_WIDTH - or, $size given, to that width. The canvas is rounded towards the wider: the lowest ratio is held exactly, Instagram's being the one its pictures are framed to, the highest within a pixel
     private function toJpeg(string $bytes, float $minRatio, float $maxRatio, ?int $size = null): string
     {
         $source = imagecreatefromstring($bytes);
@@ -128,8 +128,8 @@ class SocialImageExporter
         $width = imagesx($source);
         $height = imagesy($source);
         $ratio = $width / $height;
-        $canvasWidth = $ratio < $minRatio ? (int) round($height * $minRatio) : $width;
-        $canvasHeight = $ratio > $maxRatio ? (int) round($width / $maxRatio) : $height;
+        $canvasWidth = $ratio < $minRatio ? (int) ceil($height * $minRatio) : $width;
+        $canvasHeight = $ratio > $maxRatio ? (int) floor($width / $maxRatio) : $height;
         $scale = null === $size ? min(1, self::MAX_WIDTH / $canvasWidth) : $size / $canvasWidth;
 
         $canvas = imagecreatetruecolor(max(1, (int) round($canvasWidth * $scale)), max(1, (int) round($canvasHeight * $scale)));

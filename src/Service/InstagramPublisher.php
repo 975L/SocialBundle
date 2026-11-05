@@ -19,7 +19,7 @@ use c975L\SocialBundle\Model\MediaRules;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\UiBundle\Model\SocialContent;
 
-// Posts on the Instagram professional account connected by Instagram Login when there is one (see InstagramLoginClient), otherwise on the one linked to the site's Facebook Page, with the Page's own token. Instagram takes nothing without a picture or a video: one picture as a JPEG within its range of ratios (see SocialImageExporter), one video as a reel, several as a carousel. A link in a caption is not clickable on Instagram: a template meant for it says so ("link in bio") rather than relying on the url
+// Posts on the Instagram professional account connected by Instagram Login when there is one (see InstagramLoginClient), otherwise on the one linked to the site's Facebook Page, with the Page's own token. Instagram takes nothing without a picture or a video: one picture as a JPEG framed to 4:5 so the grid cuts next to nothing off it (see SocialImageExporter), one video as a reel with its cover taken past any fade-in, several as a carousel. A link in a caption is not clickable on Instagram: a template meant for it says so ("link in bio") rather than relying on the url
 class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInterface, CommentCountPublisherInterface
 {
     // What a caption accepts
@@ -28,6 +28,12 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
     // The range of width/height ratios Instagram accepts, from 4:5 to 1.91:1
     private const float MIN_RATIO = 0.8;
     private const float MAX_RATIO = 1.91;
+
+    // The ratio a picture is framed to, the closest Instagram takes to the 3:4 its profile's grid crops every tile to: about 3% of each side goes there, more on a wider picture
+    private const float GRID_RATIO = self::MIN_RATIO;
+
+    // The moment of a reel its cover is taken from, within the 3 s a reel lasts at least: its first frame is often black, a fade-in starting there
+    private const int COVER_OFFSET = 2000;
 
     // Instagram fetches and processes each media before it can be published: asked again this many times, this many seconds apart - a video taking minutes where a picture takes seconds (a sleep counting for nothing in PHP's time limit)
     private const int STATUS_ATTEMPTS = 10;
@@ -147,7 +153,7 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
     {
         // No media of its own: the content's image
         if ([] === $medias) {
-            $imageUrl = ($preview ? $content->imagePath ?? $content->imageUrl : $this->imageExporter->jpegUrl($content, self::MIN_RATIO, self::MAX_RATIO))
+            $imageUrl = ($preview ? $content->imagePath ?? $content->imageUrl : $this->imageExporter->jpegUrl($content, self::GRID_RATIO, self::GRID_RATIO))
                 ?? throw new \RuntimeException('Instagram only takes posts with an image, and this content has none.');
 
             return ['parameters' => ['image_url' => $imageUrl, 'caption' => $text, 'alt_text' => mb_substr($content->imageAlt ?? $content->title, 0, 1000)]];
@@ -158,7 +164,7 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
             $media = $medias[0];
 
             return ['parameters' => $media->isVideo()
-                ? ['media_type' => 'REELS', 'video_url' => $media->url, 'caption' => $text]
+                ? ['media_type' => 'REELS', 'video_url' => $media->url, 'caption' => $text, 'thumb_offset' => (string) self::COVER_OFFSET]
                 : ['image_url' => $this->imageUrl($media, $content, $preview), 'caption' => $text, 'alt_text' => mb_substr($media->alt ?? $content->imageAlt ?? $content->title, 0, 1000)]];
         }
 
@@ -170,14 +176,14 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
         return ['parameters' => ['media_type' => 'CAROUSEL', 'caption' => $text], 'children' => $children];
     }
 
-    // The url of an uploaded picture framed within Instagram's ratios, as the content's own image is - its path for a preview
+    // The url of an uploaded picture framed for the grid, as the content's own image is - its path for a preview
     private function imageUrl(PostMedia $media, SocialContent $content, bool $preview): string
     {
         if ($preview) {
             return $media->path;
         }
 
-        return $this->imageExporter->jpegUrl(new SocialContent($content->sourceId, $content->title, $content->url, imagePath: $media->path), self::MIN_RATIO, self::MAX_RATIO)
+        return $this->imageExporter->jpegUrl(new SocialContent($content->sourceId, $content->title, $content->url, imagePath: $media->path), self::GRID_RATIO, self::GRID_RATIO)
             ?? throw new \RuntimeException('This picture could not be served to Instagram: is "site-url" set?');
     }
 

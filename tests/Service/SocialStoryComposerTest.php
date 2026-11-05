@@ -200,6 +200,21 @@ class SocialStoryComposerTest extends TestCase
         $this->assertNull($this->rowsOf($canvas, [0x1A, 0x1C, 0x22]));
     }
 
+    // A title cut by its post ends with three dots, the ellipsis being blank in some fonts
+    public function testAnEllipsisIsDrawnAsThreeDots(): void
+    {
+        $composer = $this->composer();
+        $picture = $this->picture(1600, 1103);
+
+        ob_start();
+        imagepng($composer->compose($picture, 'Item title…', self::BACKGROUND));
+        $withEllipsis = ob_get_clean();
+        ob_start();
+        imagepng($composer->compose($picture, 'Item title...', self::BACKGROUND));
+
+        $this->assertSame(ob_get_clean(), $withEllipsis);
+    }
+
     // A very long title stays within the picture's width and above it, cut rather than running on
     public function testAVeryLongTitleStaysAboveThePicture(): void
     {

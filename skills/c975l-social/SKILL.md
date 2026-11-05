@@ -408,6 +408,7 @@ Google connection still answers - the import being the one thing here that stops
   skips `X-SOCIAL-SHARED`, which keeps two sites listing each other from looping; a dashboard provider
   reads `getKnownErrors()`, never a feed.
 - **Do not hand Meta the site's WebP url.** Go through `SocialImageExporter::jpegUrl()`.
+- **Instagram's grid crops its tiles to 3:4.** `InstagramPublisher` frames its pictures to 4:5 and takes a reel's cover 2 s in (`thumb_offset`), which the API cannot change once published.
 - **Do not make `share_buttons_display` cacheable.** Its render carries the current page's url, so the
   first page's share links would be served on every other page holding that block.
   `social_links_display` is the opposite case and is cached, the singleton's own tag added on top of

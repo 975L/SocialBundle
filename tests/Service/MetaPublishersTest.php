@@ -304,12 +304,21 @@ class MetaPublishersTest extends TestCase
         }
     }
 
-    // The post's own picture is framed within Instagram's ratios, as the content's image is
+    // The content's image is framed to 4:5, so the grid cuts next to nothing off it
+    public function testInstagramFramesTheContentImageForTheGrid(): void
+    {
+        $exporter = $this->createMock(SocialImageExporter::class);
+        $exporter->expects($this->once())->method('jpegUrl')->with($this->isInstanceOf(SocialContent::class), 0.8, 0.8)->willReturn('https://example.org/medias/social/a.jpg');
+
+        new InstagramPublisher($this->graph([['id' => 'c1'], ['status_code' => 'FINISHED'], ['id' => 'm1']]), $this->login(), $exporter, $this->config(), 0)->publish('Texte', $this->content());
+    }
+
+    // The post's own picture is framed to 4:5, as the content's image is
     public function testInstagramFramesTheOwnPicture(): void
     {
         $exporter = $this->createMock(SocialImageExporter::class);
         $exporter->expects($this->once())->method('jpegUrl')
-            ->with($this->callback(fn (SocialContent $content): bool => '/var/medias/p1.jpg' === $content->imagePath), 0.8, 1.91)
+            ->with($this->callback(fn (SocialContent $content): bool => '/var/medias/p1.jpg' === $content->imagePath), 0.8, 0.8)
             ->willReturn('https://example.org/medias/social/p1.jpg');
 
         new InstagramPublisher($this->graph([['id' => 'c1'], ['status_code' => 'FINISHED'], ['id' => 'm1']]), $this->login(), $exporter, $this->config(), 0)->publish('Texte', $this->content(), [$this->picture('p1')]);
@@ -336,7 +345,7 @@ class MetaPublishersTest extends TestCase
         $id = new InstagramPublisher($graph, $this->login(), $this->exporter(null), $this->config(), 0)->publish('Texte', $this->content(), [$this->video()]);
 
         $this->assertSame('m1', $id);
-        $this->assertSame(['media_type' => 'REELS', 'video_url' => 'https://example.org/medias/v.mp4', 'caption' => 'Texte', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
+        $this->assertSame(['media_type' => 'REELS', 'video_url' => 'https://example.org/medias/v.mp4', 'caption' => 'Texte', 'thumb_offset' => '2000', 'access_token' => 'page-token'], $this->calls[0]['parameters']);
         $this->assertSame('c1', $this->calls[3]['parameters']['creation_id']);
     }
 

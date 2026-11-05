@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.30.1
+
+Instagram: reels with a real cover, pictures framed for the grid
+
+- A reel's cover is taken 2 s into the video (05/11/2026)
+- A picture goes to Instagram framed to 4:5 (05/11/2026)
+- A framed picture never falls under the lowest ratio asked (05/11/2026)
+- A story's title cut by its post ends with three dots (05/11/2026)
+
 ## v2.30.0
 
 Stories carry the post's title and the site's name

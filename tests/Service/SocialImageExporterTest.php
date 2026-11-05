@@ -93,6 +93,30 @@ class SocialImageExporterTest extends TestCase
         $this->assertEqualsWithDelta(0.8, $size[0] / $size[1], 0.01);
     }
 
+    // One ratio given: a square gains bands above and below, and loses nothing
+    public function testASquareIsFramedToASingleRatio(): void
+    {
+        $size = $this->exported((string) $this->exporter()->jpegUrl(new SocialContent('1', 'Title', 'https://example.org', imagePath: $this->webp(400, 400)), 0.8, 0.8));
+
+        $this->assertSame([400, 500], [$size[0], $size[1]]);
+    }
+
+    // A height that would round up stays below it, Instagram taking nothing under 4:5
+    public function testAFramedRatioNeverFallsUnderTheOneGiven(): void
+    {
+        $size = $this->exported((string) $this->exporter()->jpegUrl(new SocialContent('1', 'Title', 'https://example.org', imagePath: $this->webp(403, 403)), 0.8, 0.8));
+
+        $this->assertSame([403, 503], [$size[0], $size[1]]);
+    }
+
+    // A width that would round down stays above it, for the same reason
+    public function testAFramedPortraitNeverFallsUnderTheOneGiven(): void
+    {
+        $size = $this->exported((string) $this->exporter()->jpegUrl(new SocialContent('1', 'Title', 'https://example.org', imagePath: $this->webp(300, 501)), 0.8, 0.8));
+
+        $this->assertSame([401, 501], [$size[0], $size[1]]);
+    }
+
     // A story is 9:16 at 1080 x 1920 whatever the picture, a site's square included, the picture framed with bands
     public function testAStoryIsFramedVertically(): void
     {

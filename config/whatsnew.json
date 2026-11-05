@@ -3,6 +3,21 @@
         "date": "2026-11-05",
         "description": [
             {
+                "en": "A story's title cut for its length now ends with three dots, whatever the theme's font.",
+                "fr": "Le titre d'une story coupé pour sa longueur se termine désormais par trois points, quelle que soit la police du thème.",
+                "es": "El título de una historia cortado por su longitud termina ahora con tres puntos, sea cual sea la fuente del tema."
+            },
+            {
+                "en": "On Instagram, a reel's cover no longer comes out black: it is taken 2 seconds into the video.",
+                "fr": "Sur Instagram, la couverture d'un reel ne sort plus noire : elle est prise 2 secondes après le début de la vidéo.",
+                "es": "En Instagram, la portada de un reel ya no sale negra: se toma 2 segundos después del inicio del vídeo."
+            },
+            {
+                "en": "On Instagram, a picture now shows almost whole in the profile's grid, on bands in the site's background colour when it needs them.",
+                "fr": "Sur Instagram, une image s'affiche désormais presque entière dans la grille du profil, avec des bandes de la couleur de fond du site si besoin.",
+                "es": "En Instagram, una imagen se muestra ahora casi entera en la cuadrícula del perfil, con bandas del color de fondo del sitio si hace falta."
+            },
+            {
                 "en": "A story now shows the post's title and the site's name around its picture, in the theme's fonts and colours.",
                 "fr": "Une story affiche désormais le titre de la publication et le nom du site autour de son image, dans les polices et les couleurs du thème.",
                 "es": "Una historia muestra ahora el título de la publicación y el nombre del sitio alrededor de su imagen, con las fuentes y los colores del tema."

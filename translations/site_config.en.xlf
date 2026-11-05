@@ -72,7 +72,7 @@
             </trans-unit>
             <trans-unit id="00x9orl">
                 <source>description.social_image_format</source>
-                <target>framed: the picture as it is, framed only where a network requires it. square: one 1080 x 1080 square on every network, the picture centred on the site's background colour.</target>
+                <target>framed: the picture as it is, framed only for the network needing it (Instagram). square: one 1080 x 1080 square on every network, the picture centred on the site's background colour.</target>
             </trans-unit>
             <trans-unit id="70DFApE">
                 <source>description.social_instagram_access_token</source>
