@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.32.0
+
+Video pins on Pinterest, calendar out of EasyAdmin's prose
+
+- Added `PinterestClient::uploadVideo()`: a post's video is pinned on Pinterest, the content's picture as cover (05/11/2026)
+- The calendar and the series page stay out of EasyAdmin 5.9's prose, their pictures kept in their cards (05/11/2026)
+- A series card shows three lines of the post's text (05/11/2026)
+- A collection entry under the pointer is tinted with the theme's primary colour (05/11/2026)
+- Changed the buttons' colors to EasyAdmin 5.9's `color` prop, EasyAdmin required in ^5.9 (05/11/2026)
+
 ## v2.31.0
 
 Email each morning for posts due in draft

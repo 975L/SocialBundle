@@ -3,6 +3,11 @@
         "date": "2026-11-05",
         "description": [
             {
+                "en": "A post with a video can now go to Pinterest too: the video is pinned, with the content's picture as its cover.",
+                "fr": "Une publication avec une vidéo peut désormais aller aussi sur Pinterest : la vidéo est épinglée, avec l'image du contenu en couverture.",
+                "es": "Una publicación con un vídeo ahora también puede ir a Pinterest: el vídeo se fija, con la imagen del contenido como portada."
+            },
+            {
                 "en": "You are now reminded by email each morning of a post due within 24 hours still in draft, with a link to approve it.",
                 "fr": "Une publication prévue dans les 24 heures et encore en brouillon est désormais signalée par e-mail chaque matin, avec un lien pour la valider.",
                 "es": "Una publicación prevista en las próximas 24 horas y aún en borrador se avisa ahora por correo cada mañana, con un enlace para validarla."

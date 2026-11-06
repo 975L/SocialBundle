@@ -42,7 +42,7 @@
             <p class="text-muted">{{ 'label.social_content_none'|trans({}, 'social') }}</p>
         {% endfor %}
 
-        {% if contents is not empty %}<twig:ea:Button name="choose" variant="primary">{{ 'label.social_content_choose'|trans({}, 'social') }}</twig:ea:Button>{% endif %}
+        {% if contents is not empty %}<twig:ea:Button name="choose" color="primary">{{ 'label.social_content_choose'|trans({}, 'social') }}</twig:ea:Button>{% endif %}
         <twig:ea:Button htmlElement="a" href="{{ back_url }}" variant="link">{{ 'action.cancel'|trans({}, 'EasyAdminBundle') }}</twig:ea:Button>
     </form>
 {% endblock main %}

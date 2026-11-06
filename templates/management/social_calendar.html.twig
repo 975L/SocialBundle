@@ -37,7 +37,8 @@
 
 {% block main %}
 
-    <div data-controller="social-calendar"
+    {# Out of EasyAdmin's prose, which would space and size its pictures as an article's #}
+    <div data-ea-not-prose data-controller="social-calendar"
         data-action="keydown.esc@window->social-calendar#closePanel"
         {{ include('@c975LSocial/management/_social_calendar_values.html.twig') }}
         data-social-calendar-new-url-value="{{ new_url }}">
@@ -45,12 +46,12 @@
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
             <h1 class="mb-0">{{ 'label.social_calendar'|trans({}, 'social') }} - {{ title|capitalize }}</h1>
             <div class="d-flex flex-wrap gap-2">
-                <twig:ea:Button htmlElement="a" href="{{ new_url }}" variant="primary" icon="fa fa-plus" class="social-calendar-new">{{ 'label.social_calendar_new'|trans({}, 'social') }}</twig:ea:Button>
+                <twig:ea:Button htmlElement="a" href="{{ new_url }}" color="primary" icon="fa fa-plus" class="social-calendar-new">{{ 'label.social_calendar_new'|trans({}, 'social') }}</twig:ea:Button>
                 <twig:ea:Button htmlElement="a" href="{{ series_url }}" icon="fa fa-layer-group" class="social-calendar-series">{{ 'label.social_series_generate'|trans({}, 'social') }}</twig:ea:Button>
                 <div class="btn-group">
-                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: 'day', date: day_date}) }}" variant="{{ view == 'day' ? 'primary' : 'default' }}">{{ 'label.social_calendar_day'|trans({}, 'social') }}</twig:ea:Button>
-                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: 'week', date: date}) }}" variant="{{ view == 'week' ? 'primary' : 'default' }}">{{ 'label.social_calendar_week'|trans({}, 'social') }}</twig:ea:Button>
-                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: 'month', date: date}) }}" variant="{{ view == 'month' ? 'primary' : 'default' }}">{{ 'label.social_calendar_month'|trans({}, 'social') }}</twig:ea:Button>
+                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: 'day', date: day_date}) }}" color="{{ view == 'day' ? 'primary' : 'default' }}">{{ 'label.social_calendar_day'|trans({}, 'social') }}</twig:ea:Button>
+                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: 'week', date: date}) }}" color="{{ view == 'week' ? 'primary' : 'default' }}">{{ 'label.social_calendar_week'|trans({}, 'social') }}</twig:ea:Button>
+                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: 'month', date: date}) }}" color="{{ view == 'month' ? 'primary' : 'default' }}">{{ 'label.social_calendar_month'|trans({}, 'social') }}</twig:ea:Button>
                 </div>
                 <div class="btn-group">
                     <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar', {view: view, date: previous}) }}" icon="fa fa-chevron-left" aria-label="{{ 'label.social_calendar_previous'|trans({}, 'social') }}" />

@@ -41,12 +41,12 @@
     {% if state == 'approved' %}
         <twig:ea:Button type="button" size="sm" icon="fa fa-calendar-xmark" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="unapprove">{{ 'label.social_post_unapprove'|trans({}, 'social') }}</twig:ea:Button>
     {% elseif state != 'published' %}
-        <twig:ea:Button type="button" variant="success" size="sm" icon="fa fa-calendar-check" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve">{{ 'label.social_post_approve'|trans({}, 'social') }}</twig:ea:Button>
+        <twig:ea:Button type="button" color="success" size="sm" icon="fa fa-calendar-check" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve">{{ 'label.social_post_approve'|trans({}, 'social') }}</twig:ea:Button>
     {% endif %}
     {# Every coming draft of the post's series approved at once, each at its own moment - not offered when the post's own "Approve" would do the same #}
     {% set own_draft = state == 'draft' and post.planned_at > date() ? 1 : 0 %}
     {% if series_drafts > own_draft %}
-        <twig:ea:Button type="button" variant="success" size="sm" icon="fa fa-layer-group" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve-series">{{ 'label.social_calendar_approve_series'|trans({'%count%': series_drafts}, 'social') }}</twig:ea:Button>
+        <twig:ea:Button type="button" color="success" size="sm" icon="fa fa-layer-group" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve-series">{{ 'label.social_calendar_approve_series'|trans({'%count%': series_drafts}, 'social') }}</twig:ea:Button>
     {% endif %}
     {% if series_url %}
         <twig:ea:Button htmlElement="a" href="{{ series_url }}" size="sm" icon="fa fa-table-cells">{{ 'label.social_calendar_series_view'|trans({}, 'social') }}</twig:ea:Button>
@@ -55,7 +55,7 @@
     <twig:ea:Button type="button" size="sm" icon="fa fa-clone" data-action="social-calendar#duplicate" data-post-id="{{ post.id }}">{{ 'label.social_calendar_duplicate'|trans({}, 'social') }}</twig:ea:Button>
     {# Deleting cancels it, a post gone out staying as the record of what was sent #}
     {% if editable %}
-        <twig:ea:Button type="button" variant="danger" size="sm" icon="fa fa-trash" data-action="social-calendar#remove" data-post-id="{{ post.id }}" data-confirm="{{ 'label.social_calendar_delete_confirm'|trans({}, 'social') }}">{{ 'label.social_calendar_delete'|trans({}, 'social') }}</twig:ea:Button>
+        <twig:ea:Button type="button" color="danger" size="sm" icon="fa fa-trash" data-action="social-calendar#remove" data-post-id="{{ post.id }}" data-confirm="{{ 'label.social_calendar_delete_confirm'|trans({}, 'social') }}">{{ 'label.social_calendar_delete'|trans({}, 'social') }}</twig:ea:Button>
     {% endif %}
 </div>
 
@@ -105,7 +105,7 @@
                         <twig:c975LUi:Image:Zoom src="{{ media.publicPath }}" highres="{{ media.publicPath }}" alt="{{ media.alt }}" label="{{ 'label.social_calendar_media_zoom'|trans({}, 'social') }}" priority="false" />
                     {% endif %}
                     {% if editable %}
-                        <twig:ea:Button type="button" variant="danger" size="sm" icon="fa fa-trash" data-action="social-calendar#removeMedia" data-post-id="{{ post.id }}" data-media-id="{{ media.id }}" data-confirm="{{ 'label.social_calendar_media_remove_confirm'|trans({}, 'social') }}" title="{{ 'label.social_calendar_media_remove'|trans({}, 'social') }}" aria-label="{{ 'label.social_calendar_media_remove'|trans({}, 'social') }}" />
+                        <twig:ea:Button type="button" color="danger" size="sm" icon="fa fa-trash" data-action="social-calendar#removeMedia" data-post-id="{{ post.id }}" data-media-id="{{ media.id }}" data-confirm="{{ 'label.social_calendar_media_remove_confirm'|trans({}, 'social') }}" title="{{ 'label.social_calendar_media_remove'|trans({}, 'social') }}" aria-label="{{ 'label.social_calendar_media_remove'|trans({}, 'social') }}" />
                     {% endif %}
                 </li>
             {% endfor %}
@@ -165,7 +165,7 @@
                 {% if target.storyPending %}
                     <p class="small text-danger mb-1">{{ 'email.social_post_story_failed'|trans({'%error%': target.storyError}, 'social') }}</p>
                 {% endif %}
-                <twig:ea:Button type="button" variant="warning" size="sm" icon="fa fa-paper-plane" data-action="social-calendar#retry" data-post-id="{{ post.id }}" data-network="{{ target.network }}">{{ (target.status.value == 'failed' ? 'label.social_calendar_retry' : (target.commentPending ? 'label.social_calendar_retry_comment' : (target.resharePending ? 'label.social_calendar_retry_reshare' : 'label.social_calendar_retry_story')))|trans({'%network%': target.network|capitalize}, 'social') }}</twig:ea:Button>
+                <twig:ea:Button type="button" color="warning" size="sm" icon="fa fa-paper-plane" data-action="social-calendar#retry" data-post-id="{{ post.id }}" data-network="{{ target.network }}">{{ (target.status.value == 'failed' ? 'label.social_calendar_retry' : (target.commentPending ? 'label.social_calendar_retry_comment' : (target.resharePending ? 'label.social_calendar_retry_reshare' : 'label.social_calendar_retry_story')))|trans({'%network%': target.network|capitalize}, 'social') }}</twig:ea:Button>
             {% endif %}
         </div>
     {% endfor %}
@@ -173,6 +173,6 @@
         <p class="small text-success mb-0">{{ 'label.social_calendar_texts_saved'|trans({}, 'social') }}</p>
     {% endif %}
     {% if targets|filter(target => target.pending) is not empty %}
-        <twig:ea:Button type="submit" variant="primary" size="sm" icon="fa fa-floppy-disk">{{ 'label.social_calendar_save_texts'|trans({}, 'social') }}</twig:ea:Button>
+        <twig:ea:Button type="submit" color="primary" size="sm" icon="fa fa-floppy-disk">{{ 'label.social_calendar_save_texts'|trans({}, 'social') }}</twig:ea:Button>
     {% endif %}
 </form>

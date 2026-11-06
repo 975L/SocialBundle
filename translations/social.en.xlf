@@ -1376,7 +1376,7 @@
             </trans-unit>
             <trans-unit id="QGfKhEv">
                 <source>label.info_pinterest_connect</source>
-                <target>Links the site to a Pinterest business account: each post becomes a pin, with its picture and its link, on the board picked. The tokens renew themselves every night.</target>
+                <target>Links the site to a Pinterest business account: each post becomes a pin, with its picture or its video and its link, on the board picked. The tokens renew themselves every night.</target>
             </trans-unit>
             <trans-unit id="tu1qmPl">
                 <source>label.info_pinterest_not_configured</source>

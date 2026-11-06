@@ -1376,7 +1376,7 @@
             </trans-unit>
             <trans-unit id="QGfKhEv">
                 <source>label.info_pinterest_connect</source>
-                <target>Vincula el sitio a una cuenta profesional de Pinterest: cada publicación se convierte en un pin, con su imagen y su enlace, en el tablero elegido. Los tokens se renuevan solos cada noche.</target>
+                <target>Vincula el sitio a una cuenta profesional de Pinterest: cada publicación se convierte en un pin, con su imagen o su vídeo y su enlace, en el tablero elegido. Los tokens se renuevan solos cada noche.</target>
             </trans-unit>
             <trans-unit id="tu1qmPl">
                 <source>label.info_pinterest_not_configured</source>

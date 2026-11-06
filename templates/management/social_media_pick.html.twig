@@ -34,7 +34,7 @@
             {% endfor %}
         {% endfor %}
 
-        <twig:ea:Button name="add" variant="primary">{{ 'label.social_media_pick_submit'|trans({}, 'social') }}</twig:ea:Button>
+        <twig:ea:Button name="add" color="primary">{{ 'label.social_media_pick_submit'|trans({}, 'social') }}</twig:ea:Button>
         <twig:ea:Button htmlElement="a" href="{{ back_url }}" variant="link">{{ 'action.cancel'|trans({}, 'EasyAdminBundle') }}</twig:ea:Button>
     </form>
 {% endblock main %}

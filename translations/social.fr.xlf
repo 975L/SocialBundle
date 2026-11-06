@@ -1376,7 +1376,7 @@
             </trans-unit>
             <trans-unit id="QGfKhEv">
                 <source>label.info_pinterest_connect</source>
-                <target>Relie le site à un compte professionnel Pinterest : chaque post devient une épingle, avec son image et son lien, sur le tableau choisi. Les jetons se renouvellent seuls chaque nuit.</target>
+                <target>Relie le site à un compte professionnel Pinterest : chaque post devient une épingle, avec son image ou sa vidéo et son lien, sur le tableau choisi. Les jetons se renouvellent seuls chaque nuit.</target>
             </trans-unit>
             <trans-unit id="tu1qmPl">
                 <source>label.info_pinterest_not_configured</source>

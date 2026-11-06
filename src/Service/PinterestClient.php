@@ -39,10 +39,14 @@ class PinterestClient
 
     private const int REFRESH_LIFETIME = 5184000;
 
+    // Pinterest processes an uploaded video before a pin may carry it: asked again this many times, $statusDelay seconds apart - about five minutes
+    private const int VIDEO_STATUS_ATTEMPTS = 30;
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly ConfigServiceInterface $configService,
         private readonly ConfigValueWriter $configValueWriter,
+        private readonly int $statusDelay = 10,
     ) {
     }
 
@@ -165,6 +169,51 @@ class PinterestClient
         }
 
         return (string) $created['id'];
+    }
+
+    // Uploads a video for a pin and waits until Pinterest has processed it, answering its media id - from developers.pinterest.com, "Create boards and Pins": registered, sent to the storage named, then asked about
+    public function uploadVideo(string $path): string
+    {
+        $upload = $this->request('POST', '/v5/media', ['media_type' => 'video']);
+        if (!isset($upload['media_id'], $upload['upload_url'])) {
+            throw new \RuntimeException('Pinterest did not answer where to upload the video.');
+        }
+
+        $file = @fopen($path, 'r');
+        if (false === $file) {
+            throw new \RuntimeException('The video could not be read: ' . $path);
+        }
+        // The storage takes the parameters Pinterest gave, then the file last, with no token - the file closed once sent
+        $parameters = array_map(static fn (mixed $value): string => (string) $value, (array) ($upload['upload_parameters'] ?? []));
+        try {
+            $response = $this->httpClient->request('POST', (string) $upload['upload_url'], [
+                'body' => $parameters + ['file' => $file],
+                'timeout' => 300,
+            ]);
+            ApiRefusal::throwIf($response, 'Pinterest', 'the video upload');
+        } finally {
+            fclose($file);
+        }
+        $this->waitSucceeded((string) $upload['media_id']);
+
+        return (string) $upload['media_id'];
+    }
+
+    // Asks Pinterest until the video is processed, throwing when it failed or is still at it
+    private function waitSucceeded(string $mediaId): void
+    {
+        for ($attempt = 1; $attempt <= self::VIDEO_STATUS_ATTEMPTS; ++$attempt) {
+            $status = (string) ($this->request('GET', '/v5/media/' . rawurlencode($mediaId), null)['status'] ?? '');
+            if ('succeeded' === $status) {
+                return;
+            }
+            if ('failed' === $status) {
+                throw new \RuntimeException('Pinterest could not process the video.');
+            }
+            sleep($this->statusDelay);
+        }
+
+        throw new \RuntimeException('Pinterest is still processing the video: publish it again in a few minutes.');
     }
 
     // The configs a token exchange writes: both tokens and both ends, the refresh token's given as a timestamp or as a duration depending on the grant - and left as it was when a refresh hands none

@@ -236,6 +236,8 @@ class SocialCalendarController extends AbstractController
         $cards = array_map(fn (SocialPost $post): array => $this->card($post, self::SERIES) + [
             // The video played at its size, a picture of the post being UiBundle's lightbox
             'video_url' => $post->getVideoUrl(),
+            // The text read on the card, a few lines of it: the post's own, else its first network's, else its title
+            'excerpt' => $post->getText() ?? ($post->getTargets()->first() ?: null)?->getText() ?: $post->getTitle(),
             // Every network the post goes to, pending or not, the toggles ticking them
             'ticked' => $post->getNetworks(),
             'editable' => !$post->hasGoneOut(),

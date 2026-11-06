@@ -5,7 +5,8 @@
 
 {% block main %}
 
-    <div class="social-series-review" data-controller="social-calendar"
+    {# Out of EasyAdmin's prose, which would space and size its pictures as an article's #}
+    <div class="social-series-review" data-ea-not-prose data-controller="social-calendar"
         data-action="keydown.esc@window->social-calendar#closePanel"
         {{ include('@c975LSocial/management/_social_calendar_values.html.twig') }}>
 
@@ -25,7 +26,7 @@
         {% if others|length > 1 %}
             <nav class="social-series-review-others mb-3" aria-label="{{ 'label.social_series_review_others'|trans({}, 'social') }}">
                 {% for row in others %}
-                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar_series', {id: row.series.id}) }}" size="sm" variant="{{ row.series is same as(series) ? 'primary' : 'default' }}">{{ row.series.title }}</twig:ea:Button>
+                    <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar_series', {id: row.series.id}) }}" size="sm" color="{{ row.series is same as(series) ? 'primary' : 'default' }}">{{ row.series.title }}</twig:ea:Button>
                 {% endfor %}
             </nav>
         {% endif %}
@@ -56,7 +57,7 @@
                         <input type="checkbox" class="form-check-input" id="social-series-pick-all" checked data-social-calendar-target="pickAll" data-action="social-calendar#pickAll">
                         <label class="form-check-label" for="social-series-pick-all">{{ 'label.social_series_review_pick_all'|trans({}, 'social') }}</label>
                     </div>
-                    <twig:ea:Button type="button" variant="success" size="sm" icon="fa fa-check-double" data-action="social-calendar#approvePicked">{{ 'label.social_series_review_approve_picked'|trans({}, 'social') }}</twig:ea:Button>
+                    <twig:ea:Button type="button" color="success" size="sm" icon="fa fa-check-double" data-action="social-calendar#approvePicked">{{ 'label.social_series_review_approve_picked'|trans({}, 'social') }}</twig:ea:Button>
                 </div>
             {% endif %}
 
@@ -86,7 +87,7 @@
                                 <strong>{{ post.planned_at|date('d/m') }}</strong>
                                 <span class="text-muted">{{ post.planned_at|date('H:i') }}</span>
                             </div>
-                            <a href="{{ post.edit_url }}" class="social-series-review-title" data-action="social-calendar#open" data-panel-id="{{ post.id }}" title="{{ post.title }}">{{ post.title }}</a>
+                            <a href="{{ post.edit_url }}" class="social-series-review-title" data-action="social-calendar#open" data-panel-id="{{ post.id }}" title="{{ post.title }}">{{ post.excerpt }}</a>
 
                             {# Each connected network ticked or unticked by a click on its badge, saved at once #}
                             {% if offered_networks is not empty %}
@@ -103,9 +104,9 @@
 
                             <div class="social-series-review-actions">
                                 {% if post.state == 'approved' %}
-                                    <twig:ea:Button type="button" variant="success" size="sm" icon="fa fa-check" class="flex-grow-1" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="unapprove" title="{{ 'label.social_post_unapprove'|trans({}, 'social') }}">{{ 'label.social_series_review_approved_button'|trans({}, 'social') }}</twig:ea:Button>
+                                    <twig:ea:Button type="button" color="success" size="sm" icon="fa fa-check" class="flex-grow-1" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="unapprove" title="{{ 'label.social_post_unapprove'|trans({}, 'social') }}">{{ 'label.social_series_review_approved_button'|trans({}, 'social') }}</twig:ea:Button>
                                 {% elseif post.state != 'published' %}
-                                    <twig:ea:Button type="button" variant="primary" size="sm" class="flex-grow-1" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve">{{ 'label.social_post_approve'|trans({}, 'social') }}</twig:ea:Button>
+                                    <twig:ea:Button type="button" color="primary" size="sm" class="flex-grow-1" data-action="social-calendar#place" data-post-id="{{ post.id }}" data-to="approve">{{ 'label.social_post_approve'|trans({}, 'social') }}</twig:ea:Button>
                                 {% endif %}
                                 <twig:ea:Button htmlElement="a" href="{{ post.edit_url }}" size="sm" icon="fa fa-pen" title="{{ 'action.edit'|trans({}, 'EasyAdminBundle') }}" aria-label="{{ 'action.edit'|trans({}, 'EasyAdminBundle') }}" />
                             </div>

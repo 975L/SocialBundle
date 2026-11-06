@@ -34,7 +34,7 @@ class PinterestClientTest extends TestCase
             'social-pinterest-board-id' => '42',
         ];
 
-        return new PinterestClient($this->httpClient($responses), $this->configService($config), $this->configValueWriter());
+        return new PinterestClient($this->httpClient($responses), $this->configService($config), $this->configValueWriter(), 0);
     }
 
     // The consent asks what pinning needs, back to the route the app declares
@@ -200,5 +200,61 @@ class PinterestClientTest extends TestCase
         $this->assertFalse($this->client(config: ['social-pinterest-refresh-token-expires-at' => new \DateTimeImmutable('-1 day')->format(\DateTimeInterface::ATOM)])->isConnected());
         $this->assertFalse($this->client(config: ['social-pinterest-refresh-token' => ''])->isConnected());
         $this->assertFalse($this->client(config: ['social-pinterest-client-secret' => ''])->isConfigured());
+    }
+
+    // A video is registered, sent to the storage Pinterest names with its parameters and no token, then asked about until processed
+    public function testAVideoIsUploadedThenWaitedFor(): void
+    {
+        $path = tempnam(sys_get_temp_dir(), 'pin');
+        file_put_contents($path, 'video');
+        $client = $this->client([
+            new MockResponse('{"media_id": "555", "upload_url": "https://storage.example.org/", "upload_parameters": {"key": "item-1"}}', ['http_code' => 201]),
+            new MockResponse('', ['http_code' => 204]),
+            new MockResponse('{"status": "processing"}'),
+            new MockResponse('{"status": "succeeded"}'),
+        ]);
+
+        $this->assertSame('555', $client->uploadVideo($path));
+        $this->assertSame(['media_type' => 'video'], json_decode((string) $this->calls[0]['body'], true));
+        $this->assertSame('https://storage.example.org/', $this->calls[1]['url']);
+        $this->assertStringNotContainsString('pina-token', implode("\n", (array) $this->calls[1]['headers']));
+        $this->assertSame('https://api.pinterest.com/v5/media/555', $this->calls[3]['url']);
+        unlink($path);
+    }
+
+    // A video Pinterest could not process is a refusal
+    public function testAVideoPinterestCouldNotProcessIsRefused(): void
+    {
+        $path = tempnam(sys_get_temp_dir(), 'pin');
+        $client = $this->client([
+            new MockResponse('{"media_id": "555", "upload_url": "https://storage.example.org/"}', ['http_code' => 201]),
+            new MockResponse('', ['http_code' => 204]),
+            new MockResponse('{"status": "failed"}'),
+        ]);
+
+        try {
+            $this->expectExceptionMessage('Pinterest could not process the video.');
+            $client->uploadVideo($path);
+        } finally {
+            unlink($path);
+        }
+    }
+
+    // A video still processing after its 30 asks stops the pin, to be published again later
+    public function testAVideoStillProcessingStopsAfterItsAttempts(): void
+    {
+        $path = tempnam(sys_get_temp_dir(), 'pin');
+        $client = $this->client([
+            new MockResponse('{"media_id": "555", "upload_url": "https://storage.example.org/"}', ['http_code' => 201]),
+            new MockResponse('', ['http_code' => 204]),
+            ...array_fill(0, 40, new MockResponse('{"status": "processing"}')),
+        ]);
+
+        try {
+            $this->expectExceptionMessage('Pinterest is still processing the video');
+            $client->uploadVideo($path);
+        } finally {
+            unlink($path);
+        }
     }
 }

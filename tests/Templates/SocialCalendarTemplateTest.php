@@ -160,7 +160,7 @@ class SocialCalendarTemplateTest extends TestCase
 
         $this->assertStringContainsString('social-week social-week--day', $html);
         $this->assertStringContainsString('class="social-week-hour">06:00', $html);
-        $this->assertStringContainsString('btn-primary" role="button" href="/management_social_calendar?view=day&amp;date=2026-09-28"', $html);
+        $this->assertStringContainsString('btn-primary btn-solid" role="button" href="/management_social_calendar?view=day&amp;date=2026-09-28"', $html);
         $this->assertStringContainsString('view=day&amp;date=2026-10-04', $this->render('week'));
         $this->assertStringContainsString('view=day&amp;date=2026-10-04', $this->render('month'));
         $this->assertStringNotContainsString('social-week--day', $this->render('week'));
@@ -492,7 +492,7 @@ class SocialCalendarTemplateTest extends TestCase
     /** @return array<string, mixed> */
     private function seriesCard(int $id, string $state, ?string $videoUrl = null, bool $editable = true): array
     {
-        return ['id' => $id, 'title' => 'Feuilles ' . $id, 'image' => '/photo-' . $id . '.webp', 'video' => null !== $videoUrl, 'video_url' => $videoUrl, 'networks' => ['bluesky'], 'ticked' => ['bluesky'], 'planned_at' => new \DateTimeImmutable('2026-11-0' . $id . ' 09:00'), 'state' => $state, 'edit_url' => '/edit/' . $id, 'editable' => $editable];
+        return ['id' => $id, 'title' => 'Feuilles ' . $id, 'image' => '/photo-' . $id . '.webp', 'video' => null !== $videoUrl, 'video_url' => $videoUrl, 'excerpt' => 'Feuilles ' . $id . "\nUn texte", 'networks' => ['bluesky'], 'ticked' => ['bluesky'], 'planned_at' => new \DateTimeImmutable('2026-11-0' . $id . ' 09:00'), 'state' => $state, 'edit_url' => '/edit/' . $id, 'editable' => $editable];
     }
 
     public function testTheSeriesShowsEachPostWithItsApproval(): void
@@ -506,6 +506,8 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringContainsString('href="/prolong"', $html);
         $this->assertStringContainsString('label.info_social_series_review', $html);
         $this->assertSame(2, substr_count($html, 'class="social-series-review-card'));
+        $this->assertStringContainsString("title=\"Feuilles 1\">Feuilles 1\nUn texte</a>", $html);
+        $this->assertStringContainsString('data-ea-not-prose', $html);
     }
 
     // Each connected network a toggle, ticked when the post goes there, saved on a change

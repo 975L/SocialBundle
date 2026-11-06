@@ -547,7 +547,7 @@
 }
 .social-calendar-panel-drop:hover, .social-calendar-panel-drop:focus-within, .social-calendar-panel-drop.is-over {
   border-color: var(--bs-primary, #0d6efd);
-  background-color: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.08);
+  background-color: color-mix(in srgb, var(--bs-primary, #0d6efd) 8%, transparent);
 }
 .social-calendar-panel-drop.is-busy {
   opacity: 0.6;
@@ -716,10 +716,12 @@ img + .social-series-review-no-image {
 }
 
 .social-series-review-title {
-  display: block;
+  display: -webkit-box;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
 /* A network's badge as its toggle: unticked, dimmed and dashed */

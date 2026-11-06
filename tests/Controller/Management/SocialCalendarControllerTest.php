@@ -967,6 +967,7 @@ class SocialCalendarControllerTest extends TestCase
     {
         $other = $this->seriesPost('Other');
         $other->approve();
+        $other->setText("Own text\nSecond line");
 
         $this->series('3');
 
@@ -976,7 +977,22 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertSame(['bluesky'], $this->rendered['posts'][0]['ticked']);
         $this->assertNull($this->rendered['posts'][0]['video_url']);
         $this->assertTrue($this->rendered['posts'][0]['editable']);
+        $this->assertSame('Text', $this->rendered['posts'][0]['excerpt']);
+        $this->assertSame("Own text\nSecond line", $this->rendered['posts'][1]['excerpt']);
         $this->assertSame(['bluesky', 'linkedin'], $this->rendered['offered_networks']);
+    }
+
+    // A post with no text of its own and an empty one on its network shows its title on the card
+    public function testTheSeriesCardFallsBackOnTheTitle(): void
+    {
+        $other = $this->seriesPost('Other');
+        foreach ($other->getTargets() as $target) {
+            $target->setText('');
+        }
+
+        $this->series('3');
+
+        $this->assertSame('Other', $this->rendered['posts'][1]['excerpt']);
     }
 
     // A series that does not exist is not found

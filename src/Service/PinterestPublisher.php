@@ -15,7 +15,7 @@ use c975L\SocialBundle\Model\MediaRules;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\UiBundle\Model\SocialContent;
 
-// Pins the post on the board picked (see PinterestClient): one picture - the post's own, the content's otherwise - its title the text's first line, its description the lines after, and the content's address as the pin's link, which is what a pin is for. Served to Pinterest as a JPEG copy, the format it fetches every time; no video yet, Pinterest taking one through an upload of its own
+// Pins the post on the board picked (see PinterestClient): its video, uploaded, with the content's picture as cover (the site's default one failing that), or one picture - the post's own, the content's otherwise - its title the text's first line, its description the lines after, and the content's address as the pin's link, which is what a pin is for. Pictures are served to Pinterest as a JPEG copy, the format it fetches every time
 class PinterestPublisher implements NetworkPublisherInterface
 {
     // What a pin's description accepts
@@ -30,6 +30,7 @@ class PinterestPublisher implements NetworkPublisherInterface
     public function __construct(
         private readonly PinterestClient $pinterestClient,
         private readonly SocialImageExporter $imageExporter,
+        private readonly string $projectDir,
     ) {
     }
 
@@ -49,27 +50,60 @@ class PinterestPublisher implements NetworkPublisherInterface
         return self::MAX_LENGTH;
     }
 
-    // From developers.pinterest.com/docs/api/v5/pins-create: one picture per pin, JPEG or PNG; a pin without one does not exist
+    // From developers.pinterest.com/docs/api/v5/pins-create and its help on video Pins: one picture, JPEG or PNG, or one video of 4 s to 15 min under 2 GB - a pin without either does not exist
     public function getMediaRules(): MediaRules
     {
         return new MediaRules(
             maxImages: 1,
-            video: false,
+            video: true,
             required: true,
             imageTypes: ['image/jpeg', 'image/png'],
+            videoTypes: ['video/mp4', 'video/quicktime'],
+            maxVideoBytes: 2 * 1024 * 1024 * 1024,
+            minDuration: 4.0,
+            maxDuration: 900.0,
         );
     }
 
     // The pin's id, its public address being pinterest.com/pin/ followed by it
     public function publish(string $text, SocialContent $content, array $medias = []): string
     {
+        $video = $this->video($medias);
+        if (null !== $video) {
+            // The cover checked before the upload, which may take minutes
+            $pin = $this->pin($text, $this->covered($content), []);
+            $pin['media_source'] = (array) $pin['media_source'] + ['media_id' => $this->pinterestClient->uploadVideo($video->path)];
+
+            return $this->pinterestClient->createPin($pin);
+        }
+
         return $this->pinterestClient->createPin($this->pin($text, $this->pictured($content, $medias)));
     }
 
-    // The source picture in place of its JPEG copy, a preview writing nothing to disk
+    // The source picture in place of its JPEG copy and the video's address in place of its upload, a preview writing and sending nothing
     public function preview(string $text, SocialContent $content, array $medias = []): array
     {
-        return $this->pin($text, $this->pictured($content, $medias), true);
+        $video = $this->video($medias);
+
+        return null === $video ? $this->pin($text, $this->pictured($content, $medias), null, true) : $this->pin($text, $this->covered($content), ['url' => $video->url], true);
+    }
+
+    // The post's first video, null for a pin of a picture
+    /** @param list<PostMedia> $medias */
+    private function video(array $medias): ?PostMedia
+    {
+        return array_find($medias, static fn (PostMedia $media): bool => $media->isVideo());
+    }
+
+    // The content with the cover of a video: its own picture, the site's default "og-image" when it has none
+    private function covered(SocialContent $content): SocialContent
+    {
+        if (null !== $content->imagePath || null !== $content->imageUrl) {
+            return $content;
+        }
+        $default = glob($this->projectDir . '/public/og-image.*') ?: [];
+
+        return [] === $default ? $content : new SocialContent($content->sourceId, $content->title, $content->url, imagePath: $default[0]);
     }
 
     // The content with the picture to pin: the post's own first, with its alternative text, the content's otherwise
@@ -81,9 +115,13 @@ class PinterestPublisher implements NetworkPublisherInterface
         return null === $media ? $content : new SocialContent($content->sourceId, $content->title, $content->url, imagePath: $media->path, imageAlt: $media->alt ?? $content->imageAlt);
     }
 
-    // The body of POST /v5/pins, the picture served as a JPEG: the title is the text's first line, the content's title when the text is empty, the description the lines after - the whole text for a single line too long a title, none otherwise
-    /** @return array<string, mixed> */
-    private function pin(string $text, SocialContent $content, bool $preview = false): array
+    // The body of POST /v5/pins, the picture served as a JPEG, as the pin or as its video's cover: the title is the text's first line, the content's title when the text is empty, the description the lines after - the whole text for a single line too long a title, none otherwise
+    /**
+     * @param array<string, string>|null $video
+     *
+     * @return array<string, mixed>
+     */
+    private function pin(string $text, SocialContent $content, ?array $video = null, bool $preview = false): array
     {
         $source = $content->imagePath ?? $content->imageUrl
             ?? throw new \RuntimeException('Pinterest only takes pins with an image, and this content has none.');
@@ -97,7 +135,7 @@ class PinterestPublisher implements NetworkPublisherInterface
             'description' => null === $description ? null : mb_substr($description, 0, self::MAX_LENGTH),
             'link' => '' === $content->url ? null : $content->url,
             'alt_text' => null === $content->imageAlt || '' === $content->imageAlt ? null : mb_substr($content->imageAlt, 0, self::MAX_ALT),
-            'media_source' => ['source_type' => 'image_url', 'url' => $imageUrl],
+            'media_source' => null === $video ? ['source_type' => 'image_url', 'url' => $imageUrl] : ['source_type' => 'video_id', 'cover_image_url' => $imageUrl] + $video,
         ], static fn (mixed $value): bool => null !== $value);
     }
 }

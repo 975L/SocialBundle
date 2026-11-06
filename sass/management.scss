@@ -443,7 +443,7 @@ $quarter: 1.25rem;
     &:focus-within,
     &.is-over {
         border-color: var(--bs-primary, #0d6efd);
-        background-color: rgba(var(--bs-primary-rgb, 13, 110, 253), .08);
+        background-color: color-mix(in srgb, var(--bs-primary, #0d6efd) 8%, transparent);
     }
 
     &.is-busy {
@@ -629,11 +629,14 @@ $quarter: 1.25rem;
     font-size: .8rem;
 }
 
+// The post's text on three lines, its line breaks read as spaces
 .social-series-review-title {
-    display: block;
+    display: -webkit-box;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
 }
 
 /* A network's badge as its toggle: unticked, dimmed and dashed */

@@ -22,7 +22,7 @@ class PinterestPublisherTest extends TestCase
     /** @var list<SocialContent> */
     private array $exported = [];
 
-    private function publisher(?string $jpegUrl = 'https://example.org/medias/social/pin.jpg', ?PinterestClient $client = null): PinterestPublisher
+    private function publisher(?string $jpegUrl = 'https://example.org/medias/social/pin.jpg', ?PinterestClient $client = null, string $projectDir = '/nonexistent'): PinterestPublisher
     {
         $exporter = $this->createStub(SocialImageExporter::class);
         $exporter->method('jpegUrl')->willReturnCallback(function (SocialContent $content) use ($jpegUrl): ?string {
@@ -31,7 +31,7 @@ class PinterestPublisherTest extends TestCase
             return $jpegUrl;
         });
 
-        return new PinterestPublisher($client ?? $this->createStub(PinterestClient::class), $exporter);
+        return new PinterestPublisher($client ?? $this->createStub(PinterestClient::class), $exporter, $projectDir);
     }
 
     private function content(): SocialContent
@@ -83,7 +83,7 @@ class PinterestPublisherTest extends TestCase
         $this->publisher(null)->publish('Titre', new SocialContent('1', 'Titre', 'https://example.org'));
     }
 
-    // Publishing hands the pin to the client and answers its id - one picture, JPEG or PNG, required
+    // Publishing hands the pin to the client and answers its id - one picture or one video, required
     public function testPublishingAnswersThePinsId(): void
     {
         $client = $this->createMock(PinterestClient::class);
@@ -91,7 +91,7 @@ class PinterestPublisherTest extends TestCase
         $publisher = $this->publisher(client: $client);
 
         $this->assertSame('987', $publisher->publish('Titre', $this->content()));
-        $this->assertSame(['pinterest', 800, 1, false, true], [$publisher->getName(), $publisher->getMaxLength(), $publisher->getMediaRules()->maxImages, $publisher->getMediaRules()->video, $publisher->getMediaRules()->required]);
+        $this->assertSame(['pinterest', 800, 1, true, true], [$publisher->getName(), $publisher->getMaxLength(), $publisher->getMediaRules()->maxImages, $publisher->getMediaRules()->video, $publisher->getMediaRules()->required]);
     }
 
     // Connected and a board picked, nothing less
@@ -102,5 +102,45 @@ class PinterestPublisherTest extends TestCase
         $client->method('hasBoard')->willReturn(false);
 
         $this->assertFalse($this->publisher(client: $client)->isConfigured());
+    }
+
+    private function video(): PostMedia
+    {
+        return new PostMedia('/tmp/item-1.mp4', 'https://example.org/medias/social/item-1.mp4', 'video/mp4', duration: 12.0);
+    }
+
+    // A video is uploaded and pinned by its media id, the content's picture as its cover
+    public function testAVideoIsUploadedWithTheContentsPictureAsCover(): void
+    {
+        $client = $this->createMock(PinterestClient::class);
+        $client->expects($this->once())->method('uploadVideo')->with('/tmp/item-1.mp4')->willReturn('555');
+        $client->expects($this->once())->method('createPin')->with($this->callback(static fn (array $pin): bool => ['source_type' => 'video_id', 'cover_image_url' => 'https://example.org/medias/social/pin.jpg', 'media_id' => '555'] === $pin['media_source']))->willReturn('987');
+
+        $this->assertSame('987', $this->publisher(client: $client)->publish('Titre', $this->content(), [$this->video()]));
+    }
+
+    // A video with no cover at all is refused before it is uploaded
+    public function testAVideoWithoutCoverIsNotUploaded(): void
+    {
+        $client = $this->createMock(PinterestClient::class);
+        $client->expects($this->never())->method('uploadVideo');
+
+        $this->expectExceptionMessage('Pinterest only takes pins with an image');
+        $this->publisher(client: $client)->publish('Titre', new SocialContent('1', 'Titre', 'https://example.org'), [$this->video()]);
+    }
+
+    // A video whose content has no picture takes the site's default one as cover, shown in a preview with the video's address and nothing uploaded
+    public function testAVideoWithoutPictureTakesTheDefaultCover(): void
+    {
+        $projectDir = sys_get_temp_dir() . '/pinterest-' . uniqid();
+        mkdir($projectDir . '/public', 0o777, true);
+        touch($projectDir . '/public/og-image.webp');
+
+        $pin = $this->publisher(projectDir: $projectDir)->preview('Titre', new SocialContent('1', 'Titre', 'https://example.org'), [$this->video()]);
+
+        $this->assertSame(['source_type' => 'video_id', 'cover_image_url' => $projectDir . '/public/og-image.webp', 'url' => 'https://example.org/medias/social/item-1.mp4'], $pin['media_source']);
+        unlink($projectDir . '/public/og-image.webp');
+        rmdir($projectDir . '/public');
+        rmdir($projectDir);
     }
 }

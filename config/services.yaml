@@ -69,6 +69,11 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # A video pin without a picture of its own takes the site's default one, under its public/ folder, as cover
+    c975L\SocialBundle\Service\PinterestPublisher:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # The JPEG copies Meta downloads are written under the site's public/ folder
     c975L\SocialBundle\Service\SocialImageExporter:
         arguments:
