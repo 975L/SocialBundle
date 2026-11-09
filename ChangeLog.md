@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.33.1
+
+Instagram: a media not available yet is published again
+
+- An Instagram post or story Meta says is not available yet past processing is published again (09/11/2026)
+
 ## v2.33.0
 
 The site's default image goes out with the post's title

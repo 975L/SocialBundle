@@ -190,6 +190,45 @@ class MetaPublishersTest extends TestCase
         $this->assertSame('/77/media_publish', $this->calls[2]['path']);
     }
 
+    // A story Meta says is not available yet past FINISHED is published again rather than refused
+    public function testInstagramPublishesAgainAMediaNotAvailableYet(): void
+    {
+        $answers = [['id' => 'c1'], ['status_code' => 'FINISHED'], null, ['id' => 's1']];
+        $graph = $this->createStub(MetaGraphClient::class);
+        $graph->method('pageToken')->willReturn('page-token');
+        $graph->method('request')->willReturnCallback(function (string $method, string $path, array $parameters) use (&$answers): array {
+            $this->calls[] = ['method' => $method, 'path' => $path, 'parameters' => $parameters];
+
+            return array_shift($answers) ?? throw new \RuntimeException('Meta refused ' . $path . ': Media ID is not available');
+        });
+
+        $id = new InstagramPublisher($graph, $this->login(), $this->exporter('https://example.org/medias/social/a.jpg'), $this->config(), 0)->story($this->content());
+
+        $this->assertSame('s1', $id);
+        $this->assertSame(['/77/media', '/c1', '/77/media_publish', '/77/media_publish'], array_column($this->calls, 'path'));
+    }
+
+    // Any other refusal of the publication is not asked again
+    public function testInstagramDoesNotPublishAgainAfterAnotherRefusal(): void
+    {
+        $answers = [['id' => 'c1'], ['status_code' => 'FINISHED']];
+        $graph = $this->createStub(MetaGraphClient::class);
+        $graph->method('pageToken')->willReturn('page-token');
+        $graph->method('request')->willReturnCallback(function (string $method, string $path) use (&$answers): array {
+            $this->calls[] = ['method' => $method, 'path' => $path, 'parameters' => []];
+
+            return array_shift($answers) ?? throw new \RuntimeException('Meta refused ' . $path . ': (#10) permission');
+        });
+
+        $this->expectExceptionMessage('(#10) permission');
+
+        try {
+            new InstagramPublisher($graph, $this->login(), $this->exporter('https://example.org/medias/social/a.jpg'), $this->config(), 0)->story($this->content());
+        } finally {
+            $this->assertCount(3, $this->calls);
+        }
+    }
+
     // A post's video goes as an Instagram story through its url, waited for as a video, then published
     public function testInstagramPublishesAVideoStory(): void
     {

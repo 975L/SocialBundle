@@ -39,6 +39,9 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
     private const int STATUS_ATTEMPTS = 10;
     private const int VIDEO_STATUS_ATTEMPTS = 100;
 
+    // What Meta answers a container published too soon after FINISHED (error 9007, subcode 2207027)
+    private const string MEDIA_NOT_AVAILABLE = 'Media ID is not available';
+
     public function __construct(
         private readonly MetaGraphClient $metaGraphClient,
         private readonly InstagramLoginClient $instagramLoginClient,
@@ -108,9 +111,8 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
             'CAROUSEL' => 'carousel',
             default => 'image',
         });
-        $published = $this->graph()->request('POST', '/' . $this->instagramId() . '/media_publish', ['creation_id' => $containerId, ...$token]);
 
-        return (string) $published['id'];
+        return $this->publishContainer($containerId, $token);
     }
 
     // The story's id: a STORIES container of the video, fetched from its url, or of the picture drawn as a story 9:16 (JPEG, 8 MB) - no caption nor link sticker through the API - waited for, then published
@@ -126,7 +128,7 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
             $this->wait($containerId, $token, 'story');
         }
 
-        return (string) $this->graph()->request('POST', '/' . $this->instagramId() . '/media_publish', ['creation_id' => $containerId, ...$token])['id'];
+        return $this->publishContainer($containerId, $token);
     }
 
     // The count alone: reading the comments themselves would take instagram_manage_comments, a permission more to ask every site
@@ -214,6 +216,22 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
         }
 
         throw new \RuntimeException(sprintf('Instagram is still processing the %s: publish it again in a few minutes.', $what));
+    }
+
+    // Publishes a processed container, asked again while Meta answers that its media is not available yet, as it may for a few seconds past FINISHED
+    /** @param array<string, string> $token */
+    private function publishContainer(string $containerId, array $token): string
+    {
+        for ($attempt = 1;; ++$attempt) {
+            try {
+                return (string) $this->graph()->request('POST', '/' . $this->instagramId() . '/media_publish', ['creation_id' => $containerId, ...$token])['id'];
+            } catch (\RuntimeException $e) {
+                if ($attempt >= self::STATUS_ATTEMPTS || !str_contains($e->getMessage(), self::MEDIA_NOT_AVAILABLE)) {
+                    throw $e;
+                }
+                sleep($this->statusDelay);
+            }
+        }
     }
 
     private function graph(): MetaGraphClient | InstagramLoginClient
