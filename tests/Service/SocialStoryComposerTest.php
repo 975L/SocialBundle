@@ -136,6 +136,33 @@ class SocialStoryComposerTest extends TestCase
         $this->assertNotNull($this->rowsOf($canvas, [0x1A, 0x1C, 0x22]));
     }
 
+    // A post's picture is 4:5, its texts and picture within the margins rather than the story's safe zone
+    public function testAPostIsFourFifthsWithinItsMargins(): void
+    {
+        $canvas = $this->composer()->composePost($this->picture(1600, 1103), 'Item title', self::BACKGROUND);
+
+        $this->assertSame([1080, 1350], [imagesx($canvas), imagesy($canvas)]);
+        [$pictureTop, $pictureBottom] = $this->rowsOf($canvas, self::PICTURE) ?? [0, 0];
+        [$textTop] = $this->rowsOf($canvas, self::PRIMARY) ?? [0];
+        $this->assertGreaterThanOrEqual(65, $textTop);
+        $this->assertLessThan($pictureTop, $textTop);
+        $this->assertLessThanOrEqual(1285, $pictureBottom);
+        $this->assertNotNull($this->rowsOf($canvas, [0x1A, 0x1C, 0x22]));
+    }
+
+    // A square post takes the height given, a picture as tall as the canvas filling it under a band
+    public function testASquarePostTakesItsHeight(): void
+    {
+        $canvas = $this->composer()->composePost($this->picture(1000, 1000), 'Item title', self::BACKGROUND, 1080);
+
+        $this->assertSame([1080, 1080], [imagesx($canvas), imagesy($canvas)]);
+        [$pictureTop, $pictureBottom] = $this->rowsOf($canvas, self::PICTURE) ?? [0, 0];
+        $this->assertLessThan(15, $pictureTop);
+        $this->assertGreaterThan(1065, $pictureBottom);
+        [$textTop] = $this->rowsOf($canvas, self::PRIMARY) ?? [0];
+        $this->assertGreaterThanOrEqual(65, $textTop);
+    }
+
     // A filling picture needs its title as any other: no font refuses the story
     public function testAPictureFillingTheScreenNeedsItsFontToo(): void
     {

@@ -44,7 +44,7 @@ class SocialImageExporterTest extends TestCase
         return $path;
     }
 
-    private function exporter(?string $siteUrl = 'https://example.org', string $format = 'framed', ?string $background = null): SocialImageExporter
+    private function exporter(?string $siteUrl = 'https://example.org', string $format = 'framed', ?string $background = null, ?string $font = __DIR__ . '/../Fixtures/story-font.ttf'): SocialImageExporter
     {
         $siteUrlResolver = $this->createStub(SiteUrlResolver::class);
         $siteUrlResolver->method('siteUrl')->willReturn($siteUrl);
@@ -52,7 +52,7 @@ class SocialImageExporterTest extends TestCase
         $configService->method('get')->willReturnCallback(static fn (string $key): ?string => ['social-image-format' => $format, 'theme-color-background' => $background][$key] ?? null);
 
         $fontProvider = $this->createStub(SocialFontProvider::class);
-        $fontProvider->method('path')->willReturn(__DIR__ . '/../Fixtures/story-font.ttf');
+        $fontProvider->method('path')->willReturn($font);
 
         return new SocialImageExporter(new MockHttpClient(), $siteUrlResolver, $this->projectDir, $configService, new SocialStoryComposer($fontProvider, $configService));
     }
@@ -135,6 +135,29 @@ class SocialImageExporterTest extends TestCase
 
         $this->assertSame($first, $exporter->storyUrl(new SocialContent('2', 'Title', 'https://example.org', imagePath: $image)));
         $this->assertNotSame($first, $exporter->storyUrl(new SocialContent('1', 'Another', 'https://example.org', imagePath: $image)));
+    }
+
+    // The site's default image says nothing of the post: it goes out 4:5 with the title, or square on a site choosing it
+    public function testTheDefaultImageCarriesTheTitle(): void
+    {
+        $image = $this->projectDir . '/public/og-image.webp';
+        imagewebp(imagecreatetruecolor(1200, 630), $image);
+        $content = new SocialContent('1', 'Title', 'https://example.org', imagePath: $image);
+
+        $this->assertSame([1080, 1350], \array_slice($this->exported((string) $this->exporter()->jpegUrl($content, 0.8, 0.8)), 0, 2));
+        $this->assertSame([1080, 1080], \array_slice($this->exported((string) $this->exporter(format: 'square')->jpegUrl($content, 0.8, 0.8)), 0, 2));
+        $this->assertSame([1200, 1500], \array_slice($this->exported((string) $this->exporter()->jpegUrl(new SocialContent('1', ' ', 'https://example.org', imagePath: $image), 0.8, 0.8)), 0, 2));
+    }
+
+    // A title font Google Fonts does not have leaves the default image framed as any other, the post going out all the same
+    public function testTheDefaultImageWithoutFontIsFramedPlainly(): void
+    {
+        $image = $this->projectDir . '/public/og-image.webp';
+        imagewebp(imagecreatetruecolor(1200, 630), $image);
+
+        $url = $this->exporter(font: null)->jpegUrl(new SocialContent('1', 'Title', 'https://example.org', imagePath: $image), 0.8, 0.8);
+
+        $this->assertSame([1200, 1500], \array_slice($this->exported((string) $url), 0, 2));
     }
 
     public function testAContentWithoutImageOrSiteUrlHasNoJpeg(): void

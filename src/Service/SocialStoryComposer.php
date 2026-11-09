@@ -12,9 +12,12 @@ namespace c975L\SocialBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 
-// A story's picture, 9:16 at 1080 x 1920 as Meta recommends it. The API taking no text on a story, the post's title and the site's name are drawn in the picture, in the theme's fonts and colours and clear of what Instagram lays over the top and bottom of the screen: around the picture, or in a band across one already filling the screen
+// A story's picture, 9:16 at 1080 x 1920 as Meta recommends it, or a post's one drawn from the site's default image, 4:5 at 1080 x 1350 or the site's square. The API taking no text on a story, the post's title and the site's name are drawn in the picture, in the theme's fonts and colours and clear of what Instagram lays over the top and bottom of the screen: around the picture, or in a band across one already filling the canvas
 class SocialStoryComposer
 {
+    // A post's height, 4:5 being the lowest ratio Instagram takes
+    public const int POST_HEIGHT = 1350;
+
     private const int WIDTH = 1080;
     private const int HEIGHT = 1920;
     private const int SAFE_TOP = 250;
@@ -23,8 +26,8 @@ class SocialStoryComposer
     private const int GAP = 43;
     private const int TEXT_WIDTH = self::WIDTH - 2 * self::MARGIN;
 
-    // Narrower than this, a picture fills the screen: its texts go in a band across it
-    private const float FULL_SCREEN_RATIO = 0.6;
+    // How much wider than the canvas a picture may be and still fill it, its texts then going in a band across it: 0.6 on a story
+    private const float FULL_SCREEN_SLACK = 0.6 * self::HEIGHT / self::WIDTH;
 
     // The title's sizes in points, the first holding it in three lines within the margins being kept
     private const array TITLE_SIZES = [89, 75, 63, 54];
@@ -51,49 +54,63 @@ class SocialStoryComposer
     /** @param array{0: int, 1: int, 2: int} $background */
     public function compose(string $bytes, string $title, array $background): \GdImage
     {
+        return $this->draw($bytes, $title, $background, self::HEIGHT, self::SAFE_TOP, self::SAFE_BOTTOM);
+    }
+
+    // A post's picture $height high, 4:5 by default, with the title and the site's name within the margins, nothing of a feed laid over it
+    /** @param array{0: int, 1: int, 2: int} $background */
+    public function composePost(string $bytes, string $title, array $background, int $height = self::POST_HEIGHT): \GdImage
+    {
+        return $this->draw($bytes, $title, $background, $height, self::MARGIN, $height - self::MARGIN);
+    }
+
+    // The picture on a canvas $height high, its texts kept between $safeTop and $safeBottom
+    /** @param array{0: int, 1: int, 2: int} $background */
+    private function draw(string $bytes, string $title, array $background, int $height, int $safeTop, int $safeBottom): \GdImage
+    {
         $source = imagecreatefromstring($bytes);
         if (false === $source) {
             throw new \RuntimeException('The image of this post could not be read.');
         }
 
-        $canvas = imagecreatetruecolor(self::WIDTH, self::HEIGHT);
+        $canvas = imagecreatetruecolor(self::WIDTH, $height);
         imagefill($canvas, 0, 0, (int) imagecolorallocate($canvas, ...$background));
 
         // Three dots rather than the ellipsis a title cut by SocialPost ends with, a glyph some fonts draw blank
         $title = str_replace('…', '...', trim($title));
 
         if ('' === $title) {
-            $this->drawPicture($canvas, $source, 0, self::HEIGHT);
-        } elseif (imagesx($source) / imagesy($source) < self::FULL_SCREEN_RATIO) {
-            $this->drawWithBand($canvas, $source, $title, $background);
+            $this->drawPicture($canvas, $source, 0, $height);
+        } elseif (imagesx($source) / imagesy($source) < self::WIDTH / $height * self::FULL_SCREEN_SLACK) {
+            $this->drawWithBand($canvas, $source, $title, $background, $safeTop);
         } else {
-            $this->drawWithTexts($canvas, $source, $title, $background);
+            $this->drawWithTexts($canvas, $source, $title, $background, $safeTop, $safeBottom);
         }
 
         return $canvas;
     }
 
-    // The picture over the whole screen, the title and the site's name in a band of the site's background across the top of the safe zone
+    // The picture over the whole canvas, the title and the site's name in a band of the site's background across the top of the safe zone
     /** @param array{0: int, 1: int, 2: int} $background */
-    private function drawWithBand(\GdImage $canvas, \GdImage $source, string $title, array $background): void
+    private function drawWithBand(\GdImage $canvas, \GdImage $source, string $title, array $background, int $safeTop): void
     {
-        $this->drawPicture($canvas, $source, 0, self::HEIGHT);
+        $this->drawPicture($canvas, $source, 0, imagesy($canvas));
 
         $titleFont = $this->titleFont();
         $name = trim((string) $this->configService->get('site-name'));
         [$size, $lines] = $this->fitTitle($title, $titleFont);
         $titleHeight = \count($lines) * $this->lineHeight($size);
         $nameHeight = '' === $name ? 0 : $this->lineHeight(self::NAME_SIZE);
-        $bandBottom = self::SAFE_TOP + 2 * self::GAP + $titleHeight + $nameHeight;
+        $bandBottom = $safeTop + 2 * self::GAP + $titleHeight + $nameHeight;
 
-        imagefilledrectangle($canvas, 0, self::SAFE_TOP, self::WIDTH, $bandBottom, (int) imagecolorallocate($canvas, ...$background));
-        $this->drawTitle($canvas, $background, $lines, $size, self::SAFE_TOP + self::GAP, $titleFont);
-        $this->drawName($canvas, $background, $name, self::SAFE_TOP + self::GAP + $titleHeight, $titleFont);
+        imagefilledrectangle($canvas, 0, $safeTop, self::WIDTH, $bandBottom, (int) imagecolorallocate($canvas, ...$background));
+        $this->drawTitle($canvas, $background, $lines, $size, $safeTop + self::GAP, $titleFont);
+        $this->drawName($canvas, $background, $name, $safeTop + self::GAP + $titleHeight, $titleFont);
     }
 
     // The title, the picture and the site's name stacked in the middle of the safe zone, the picture taking the height the texts leave it
     /** @param array{0: int, 1: int, 2: int} $background */
-    private function drawWithTexts(\GdImage $canvas, \GdImage $source, string $title, array $background): void
+    private function drawWithTexts(\GdImage $canvas, \GdImage $source, string $title, array $background, int $safeTop, int $safeBottom): void
     {
         $titleFont = $this->titleFont();
         $name = trim((string) $this->configService->get('site-name'));
@@ -101,10 +118,10 @@ class SocialStoryComposer
 
         $titleHeight = \count($lines) * $this->lineHeight($size);
         $nameHeight = '' === $name ? 0 : self::GAP + $this->lineHeight(self::NAME_SIZE);
-        $safeHeight = self::SAFE_BOTTOM - self::SAFE_TOP;
+        $safeHeight = $safeBottom - $safeTop;
         $pictureRoom = $safeHeight - $titleHeight - self::GAP - $nameHeight;
         $pictureHeight = min($pictureRoom, (int) round(imagesy($source) * self::WIDTH / imagesx($source)));
-        $top = self::SAFE_TOP + (int) (($safeHeight - $titleHeight - self::GAP - $pictureHeight - $nameHeight) / 2);
+        $top = $safeTop + (int) (($safeHeight - $titleHeight - self::GAP - $pictureHeight - $nameHeight) / 2);
 
         $this->drawTitle($canvas, $background, $lines, $size, $top, $titleFont);
 

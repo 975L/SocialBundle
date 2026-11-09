@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.33.0
+
+The site's default image goes out with the post's title
+
+- The site's default `og-image` goes to Facebook, Instagram and Pinterest with the post's title and the site's name (09/11/2026)
+- Added `SocialStoryComposer::composePost()`: a post's picture 4:5 or square with its title (09/11/2026)
+- Added `SocialImageExporter::isDefaultImage()`, shared with the stories (09/11/2026)
+
 ## v2.32.0
 
 Video pins on Pinterest, calendar out of EasyAdmin's prose

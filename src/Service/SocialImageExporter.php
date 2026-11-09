@@ -15,7 +15,7 @@ use c975L\ConfigBundle\Service\SiteUrlResolver;
 use c975L\UiBundle\Model\SocialContent;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-// The image of a content as the networks take it. Bluesky wants its bytes, Meta a public url it downloads itself - and Meta refuses WebP, the format the site's own images are stored in, Instagram even taking JPEG alone and within a range of ratios. So Meta gets a JPEG copy written under public/medias/social, framed rather than cropped: a panorama loses nothing of the picture, it gains bands in the site's background colour. A site choosing "square" in "social-image-format" gets one 1080 x 1080 square on every network instead
+// The image of a content as the networks take it. Bluesky wants its bytes, Meta a public url it downloads itself - and Meta refuses WebP, the format the site's own images are stored in, Instagram even taking JPEG alone and within a range of ratios. So Meta gets a JPEG copy written under public/medias/social, framed rather than cropped: a panorama loses nothing of the picture, it gains bands in the site's background colour. The site's default image is no picture of the post: it gets the post's title and the site's name drawn beside it (see SocialStoryComposer). A site choosing "square" in "social-image-format" gets one 1080 x 1080 square on every network instead
 class SocialImageExporter
 {
     public const string DIRECTORY = 'medias/social';
@@ -65,6 +65,14 @@ class SocialImageExporter
     // The public url of a JPEG copy whose width/height ratio lies between the two given (see toJpeg() for its rounding), null when the content has no image or the site no "site-url" to serve it from. Written once per image and range, the next post of the same picture finding it there
     public function jpegUrl(SocialContent $content, float $minRatio = 0.0, float $maxRatio = \PHP_FLOAT_MAX): ?string
     {
+        // The site's default image says nothing of the post: it goes out with the post's title and the site's name, framed as plainly when the title has no font to be drawn with
+        if (self::isDefaultImage($content) && '' !== trim($content->title)) {
+            try {
+                return $this->titledUrl($content);
+            } catch (\RuntimeException) {
+            }
+        }
+
         // The square stands within every range a network accepts, Instagram's included
         $square = $this->isSquare();
 
@@ -75,6 +83,22 @@ class SocialImageExporter
     public function storyUrl(SocialContent $content): ?string
     {
         return $this->write($content, 'story' . $this->storyComposer->signature($content->title) . implode(',', $this->bandColor()), fn (string $bytes): string => $this->encoded($this->storyComposer->compose($bytes, $content->title, $this->bandColor())));
+    }
+
+    // Whether a content's image is the site's default one, the fixed "og-image" at the root of public/ a content without a picture of its own falls back to
+    public static function isDefaultImage(SocialContent $content): bool
+    {
+        $file = $content->imagePath ?? (string) parse_url((string) $content->imageUrl, \PHP_URL_PATH);
+
+        return 'og-image' === pathinfo($file, \PATHINFO_FILENAME);
+    }
+
+    // The default image drawn 4:5 with the post's title and the site's name, square on a site choosing it
+    private function titledUrl(SocialContent $content): ?string
+    {
+        $height = $this->isSquare() ? self::SQUARE : SocialStoryComposer::POST_HEIGHT;
+
+        return $this->write($content, 'post' . $height . $this->storyComposer->signature($content->title) . implode(',', $this->bandColor()), fn (string $bytes): string => $this->encoded($this->storyComposer->composePost($bytes, $content->title, $this->bandColor(), $height)));
     }
 
     // Writes the JPEG copy once per image, range and width, answering its public url
