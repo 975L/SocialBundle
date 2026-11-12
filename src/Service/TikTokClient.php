@@ -11,7 +11,6 @@
 namespace c975L\SocialBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\Service\ResetInterface;
@@ -48,8 +47,7 @@ class TikTokClient implements ResetInterface
         private readonly ConfigServiceInterface $configService,
         private readonly ConfigValueWriter $configValueWriter,
         private readonly LockFactory $lockFactory,
-        #[Autowire(param: 'kernel.environment')]
-        private readonly string $environment = 'prod',
+        private readonly ProductionGuard $productionGuard = new ProductionGuard(),
     ) {
     }
 
@@ -114,7 +112,7 @@ class TikTokClient implements ResetInterface
     // Whether this environment may spend the refresh token: a database imported locally holds production's, the vault key being the same, and refreshing it there would end production's connection
     public function renewsHere(): bool
     {
-        return 'prod' === $this->environment;
+        return $this->productionGuard->isProduction();
     }
 
     // Trades the refresh token for new ones and stores them at once, the old one dying with the exchange: under a lock, the config read again behind it for the token another process just stored, $onlyIfOver leaving alone an access token it just renewed

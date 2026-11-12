@@ -52,6 +52,10 @@ class MediaPurgeCommand extends Command
         $medias = 0;
         foreach ($this->postRepository->findPublishedWithMediasBefore($before) as $post) {
             foreach ($post->getMedias()->toArray() as $media) {
+                // A reference (a gallery's photo) frees no disk and, removed, would be offered again as never taken
+                if ($media->isReference()) {
+                    continue;
+                }
                 $post->removeMedia($media);
                 ++$medias;
             }

@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Service;
 
+use c975L\SocialBundle\Model\PostComment;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
@@ -20,8 +21,8 @@ class YoutubeClient
 
     public const string UPLOAD = 'https://www.googleapis.com/upload/youtube/v3/videos';
 
-    // Uploading, and reading which channel consented - what the tile links to
-    public const string SCOPES = 'https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.readonly';
+    // Uploading, reading which channel consented - what the tile links to - and reading the comments the alert quotes, which youtube.readonly does not open
+    public const string SCOPES = 'https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.force-ssl';
 
     // Where the channel's refresh token is stored
     public const string REFRESH_TOKEN = 'social-youtube-oauth-refresh-token';
@@ -131,6 +132,23 @@ class YoutubeClient
         $video = $videos['items'][0] ?? throw new \RuntimeException(sprintf('YouTube does not show the video %s.', $videoId));
 
         return (int) ($video['statistics']['commentCount'] ?? 0);
+    }
+
+    // The $limit newest comments of a video, their replies left out, newest first as YouTube gives them - youtube.force-ssl being required, a channel connected before refused
+    /** @return list<PostComment> */
+    public function latestComments(string $videoId, int $limit): array
+    {
+        $threads = $this->request('GET', self::API . '/commentThreads?' . http_build_query(['part' => 'snippet', 'videoId' => $videoId, 'order' => 'time', 'textFormat' => 'plainText', 'maxResults' => max(1, min(100, $limit))]), $this->getAccessToken());
+
+        $comments = [];
+        foreach ($threads['items'] ?? [] as $thread) {
+            $snippet = $thread['snippet']['topLevelComment']['snippet'] ?? null;
+            if (\is_array($snippet) && isset($snippet['textDisplay'])) {
+                $comments[] = new PostComment((string) ($snippet['authorDisplayName'] ?? ''), (string) $snippet['textDisplay'], PostComment::date($snippet['publishedAt'] ?? null));
+            }
+        }
+
+        return PostComment::newest($comments, $limit);
     }
 
     /** @return array<string, mixed> */

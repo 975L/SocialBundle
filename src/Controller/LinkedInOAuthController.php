@@ -86,7 +86,7 @@ class LinkedInOAuthController extends AbstractController
         try {
             $connection = $this->linkedInClient->connect($code, $this->redirectUri(), $page);
         } catch (\Throwable $exception) {
-            $this->addFlash('danger', $exception->getMessage());
+            $this->addFlash('danger', htmlspecialchars($exception->getMessage()));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
@@ -106,7 +106,7 @@ class LinkedInOAuthController extends AbstractController
         } catch (\RuntimeException) {
         }
 
-        $this->addFlash('success', t('flash.linkedin_connected', ['%name%' => $connection['name'], '%date%' => $connection['expiresAt']->format('d/m/Y')], 'social'));
+        $this->addFlash('success', t('flash.linkedin_connected', ['%name%' => htmlspecialchars($connection['name']), '%date%' => $connection['expiresAt']->format('d/m/Y')], 'social'));
 
         return $this->redirectToRoute(SocialConnectionsController::ROUTE);
     }
@@ -116,14 +116,14 @@ class LinkedInOAuthController extends AbstractController
     private function page(Request $request, array $connection): RedirectResponse
     {
         if ([] === $connection['organizations']) {
-            $this->addFlash('danger', t('flash.linkedin_no_page', ['%name%' => $connection['name']], 'social'));
+            $this->addFlash('danger', t('flash.linkedin_no_page', ['%name%' => htmlspecialchars($connection['name'])], 'social'));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
         if (1 === \count($connection['organizations'])) {
             $this->configValueWriter->write(LinkedInClient::connectionValues($connection, $connection['organizations'][0]));
-            $this->addFlash('success', t('flash.linkedin_page_connected', ['%name%' => $connection['organizations'][0]['name'], '%date%' => LinkedInClient::connectedUntil($connection)], 'social'));
+            $this->addFlash('success', t('flash.linkedin_page_connected', ['%name%' => htmlspecialchars($connection['organizations'][0]['name']), '%date%' => LinkedInClient::connectedUntil($connection)], 'social'));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }

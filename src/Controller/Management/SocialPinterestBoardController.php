@@ -49,7 +49,7 @@ class SocialPinterestBoardController extends AbstractController
         try {
             $boards = $this->pinterestClient->boards();
         } catch (\RuntimeException $exception) {
-            $this->addFlash('danger', $exception->getMessage());
+            $this->addFlash('danger', htmlspecialchars($exception->getMessage()));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
@@ -90,7 +90,7 @@ class SocialPinterestBoardController extends AbstractController
     private function store(array $board): RedirectResponse
     {
         $this->configValueWriter->write(['social-pinterest-board-id' => $board['id'], 'social-pinterest-board-name' => $board['name']]);
-        $this->addFlash('success', t('flash.pinterest_board_picked', ['%name%' => $board['name']], 'social'));
+        $this->addFlash('success', t('flash.pinterest_board_picked', ['%name%' => htmlspecialchars($board['name'])], 'social'));
 
         return $this->redirectToRoute(SocialConnectionsController::ROUTE);
     }

@@ -67,7 +67,9 @@ class MetaGraphClientTest extends TestCase
             ['pageId' => '55', 'name' => 'Papa Câlin', 'pageToken' => 'page-token', 'instagramId' => '77', 'instagram' => 'papacalin'],
             ['pageId' => '11', 'name' => 'Other', 'pageToken' => 'other-token', 'instagramId' => null, 'instagram' => null],
         ], $pages);
-        $this->assertStringContainsString('fb_exchange_token=short', $this->urls[1]);
+        $this->assertStringNotContainsString('secret', $this->urls[0] . $this->urls[1]);
+        $this->assertStringNotContainsString('long', $this->urls[2]);
+        $this->assertContains('authorization: bearer long', $this->headers);
         $this->assertStringContainsString('instagram_business_account', urldecode($this->urls[2]));
         $this->assertStringContainsString('limit=100', $this->urls[2]);
     }

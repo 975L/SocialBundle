@@ -57,7 +57,7 @@ trait OAuthStateTrait
         try {
             return $connect($code);
         } catch (\Throwable $exception) {
-            $this->addFlash('danger', $exception->getMessage());
+            $this->addFlash('danger', htmlspecialchars($exception->getMessage()));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }

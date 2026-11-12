@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Command;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Repository\SocialPostRepository;
+use c975L\SocialBundle\Service\ProductionGuard;
 use c975L\SocialBundle\Service\SocialAdminMailer;
 use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPublisher;
@@ -37,6 +38,7 @@ class PublishCommand extends Command
         private readonly SocialPostRepository $postRepository,
         private readonly SocialAdminMailer $mailer,
         private readonly TranslatorInterface $translator,
+        private readonly ProductionGuard $productionGuard,
     ) {
         parent::__construct();
     }
@@ -46,7 +48,8 @@ class PublishCommand extends Command
         $this
             ->addOption('url', null, InputOption::VALUE_REQUIRED, 'Prepare a draft of this page, read from its Open Graph tags')
             ->addOption('at', null, InputOption::VALUE_REQUIRED, 'The moment the draft of "--url" is planned at, the next quarter of an hour by default')
-            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Print what each network would receive, without sending anything - the template\'s text, the AI never being called');
+            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Print what each network would receive, without sending anything - the template\'s text, the AI never being called')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Send the planned posts outside production too, for a deliberate test');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -55,6 +58,13 @@ class PublishCommand extends Command
         $url = $input->getOption('url');
         $at = $input->getOption('at');
         $dryRun = (bool) $input->getOption('dry-run');
+
+        // A copy of production's database in another environment would post on production's accounts: its cron sends nothing unless forced
+        if (!\is_string($url) && !$dryRun && !$input->getOption('force') && !$this->productionGuard->isProduction()) {
+            $io->note('Planned posts are only sent in production: "--force" sends them from here.');
+
+            return Command::SUCCESS;
+        }
 
         try {
             $report = \is_string($url)

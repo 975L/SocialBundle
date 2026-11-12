@@ -25,8 +25,8 @@ class InstagramLoginClient
 
     public const string GRAPH = self::HOST . '/' . MetaGraphClient::VERSION;
 
-    // Reading the account, which the renewal also asks for, and publishing
-    public const string SCOPES = 'instagram_business_basic,instagram_business_content_publish';
+    // Reading the account, which the renewal also asks for, publishing, and reading the comments the alert quotes
+    public const string SCOPES = 'instagram_business_basic,instagram_business_content_publish,instagram_business_manage_comments';
 
     // A token this close to its end is renewed by the nightly command, Instagram refusing one less than a day old
     public const string REFRESH_BEFORE = '+30 days';
@@ -107,7 +107,7 @@ class InstagramLoginClient
         ]);
         // The documentation shows it wrapped in "data", some answers giving it bare
         $short = \is_array($short['data'][0] ?? null) ? $short['data'][0] : $short;
-        $values = $this->token($this->metaGraphClient->requestAt(self::HOST, 'GET', '/access_token', [
+        $values = $this->token($this->metaGraphClient->requestAt(self::HOST, 'POST', '/access_token', [
             'grant_type' => 'ig_exchange_token',
             'client_secret' => $this->config('social-instagram-app-secret'),
             'access_token' => (string) ($short['access_token'] ?? ''),

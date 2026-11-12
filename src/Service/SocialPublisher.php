@@ -183,6 +183,8 @@ class SocialPublisher
                 } elseif ($target->isFollowUpPending()) {
                     $this->sendFollowUps($networks[$target->getNetwork()] ?? null, $target, $content);
                 }
+                // Saved after each network, so a process killed later never sends again what already went out
+                $this->entityManager->flush();
                 $report[$target->getNetwork()] = $this->report($target);
             }
             $this->entityManager->flush();
@@ -232,6 +234,7 @@ class SocialPublisher
                 // A post gone out whose comment, reshare or story a network refused: those alone are sent again
                 if (!$dryRun && SocialPostStatus::Failed === $status && $target->isFollowUpPending()) {
                     $this->sendFollowUps($network, $target, $content);
+                    $this->entityManager->flush();
                     $report[$target->getNetwork()] = $this->report($target);
                     continue;
                 }
@@ -244,7 +247,9 @@ class SocialPublisher
                     continue;
                 }
 
+                // Saved after each network, so a process killed later never sends again what already went out
                 $this->send($network, $target, $content);
+                $this->entityManager->flush();
                 $report[$target->getNetwork()] = $this->report($target);
             }
 
@@ -704,7 +709,8 @@ class SocialPublisher
             return;
         }
 
-        if (!$network instanceof FirstCommentPublisherInterface || null === $target->getExternalId() || null === $target->getComment()) {
+        // A post accepted without its id (LinkedIn's missing urn) has nothing to comment on
+        if (!$network instanceof FirstCommentPublisherInterface || '' === (string) $target->getExternalId() || null === $target->getComment()) {
             return;
         }
 
@@ -721,6 +727,11 @@ class SocialPublisher
     {
         if (!$network instanceof ProfileResharePublisherInterface || !$network->canReshare()) {
             $target->markReshareFailed('The network no longer posts as a Page.');
+
+            return;
+        }
+        if ('' === (string) $target->getExternalId()) {
+            $target->markReshareFailed('The network did not answer the id of the post, which cannot be reshared.');
 
             return;
         }

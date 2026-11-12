@@ -44,7 +44,7 @@ class PinterestRefreshCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        if (!$this->pinterestClient->isConfigured() || !$this->pinterestClient->isConnected() || !$this->pinterestClient->needsRefresh()) {
+        if (!$this->pinterestClient->isConfigured() || !$this->pinterestClient->isConnected() || !$this->pinterestClient->needsRefresh() || !$this->pinterestClient->renewsHere()) {
             $io->success('No Pinterest refresh due.');
 
             return Command::SUCCESS;

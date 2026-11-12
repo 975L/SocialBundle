@@ -16,6 +16,7 @@ use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\SocialBundle\Contract\StoryPublisherInterface;
 use c975L\SocialBundle\Model\CommentCount;
 use c975L\SocialBundle\Model\MediaRules;
+use c975L\SocialBundle\Model\PostComment;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\UiBundle\Model\SocialContent;
 
@@ -38,6 +39,9 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
     // Instagram fetches and processes each media before it can be published: asked again this many times, this many seconds apart - a video taking minutes where a picture takes seconds (a sleep counting for nothing in PHP's time limit)
     private const int STATUS_ATTEMPTS = 10;
     private const int VIDEO_STATUS_ATTEMPTS = 100;
+
+    // How many comments are read to find the newest, the most Meta gives in one page
+    private const int COMMENTS_PAGE = 50;
 
     // What Meta answers a container published too soon after FINISHED (error 9007, subcode 2207027)
     private const string MEDIA_NOT_AVAILABLE = 'Media ID is not available';
@@ -137,6 +141,19 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
         $media = $this->graph()->request('GET', '/' . $externalId, ['fields' => 'comments_count,permalink', 'access_token' => $this->token()]);
 
         return new CommentCount((int) ($media['comments_count'] ?? 0), isset($media['permalink']) ? (string) $media['permalink'] : null);
+    }
+
+    // The comments on the media, its replies left out - what instagram_business_manage_comments (instagram_manage_comments on a Page) opens, a connection made before refused. Meta's order not being documented, a page as long as it gives is sorted here
+    public function latestComments(string $externalId, int $limit): array
+    {
+        $comments = [];
+        foreach ($this->graph()->request('GET', '/' . $externalId . '/comments', ['fields' => 'username,text,timestamp', 'limit' => (string) self::COMMENTS_PAGE, 'access_token' => $this->token()])['data'] ?? [] as $comment) {
+            if (isset($comment['text'])) {
+                $comments[] = new PostComment((string) ($comment['username'] ?? ''), (string) $comment['text'], PostComment::date($comment['timestamp'] ?? null));
+            }
+        }
+
+        return PostComment::newest($comments, $limit);
     }
 
     // The source pictures in place of their JPEG copies, a preview writing nothing to disk

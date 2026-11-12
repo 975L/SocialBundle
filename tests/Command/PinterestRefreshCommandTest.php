@@ -19,10 +19,11 @@ class PinterestRefreshCommandTest extends TestCase
 {
     use ConnectionCommandTestTrait;
 
-    private function refresh(bool $needsRefresh = true, bool $connected = true, ?\RuntimeException $refusal = null, string $expiresAt = '+6 days 12 hours', string $refreshExpiresAt = '+36 days'): int
+    private function refresh(bool $needsRefresh = true, bool $connected = true, ?\RuntimeException $refusal = null, string $expiresAt = '+6 days 12 hours', string $refreshExpiresAt = '+36 days', bool $renewsHere = true): int
     {
         $client = $this->refreshingClient(PinterestClient::class, $connected, $refusal, $expiresAt, $refreshExpiresAt);
         $client->method('needsRefresh')->willReturn($needsRefresh);
+        $client->method('renewsHere')->willReturn($renewsHere);
 
         return $this->runCommand(PinterestRefreshCommand::class, $client);
     }
@@ -41,6 +42,14 @@ class PinterestRefreshCommandTest extends TestCase
     {
         $this->refresh(false);
         $this->refresh(connected: false);
+
+        $this->assertSame(0, $this->refreshed);
+    }
+
+    // Outside production the single-use refresh token is never spent: production's connection would end with it
+    public function testNothingIsRenewedOutsideProduction(): void
+    {
+        $this->assertSame(Command::SUCCESS, $this->refresh(renewsHere: false));
 
         $this->assertSame(0, $this->refreshed);
     }

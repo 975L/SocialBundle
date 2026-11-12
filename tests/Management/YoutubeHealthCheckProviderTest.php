@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class YoutubeHealthCheckProviderTest extends TestCase
 {
     /** @return list<array<string, mixed>> */
-    private function checks(bool $configured = true, bool $connected = true, ?string $tokenError = null): array
+    private function checks(bool $configured = true, bool $connected = true, ?string $tokenError = null, int $errorCode = 400): array
     {
         $client = $this->createStub(YoutubeClient::class);
         $client->method('isConfigured')->willReturn($configured);
@@ -28,17 +28,23 @@ class YoutubeHealthCheckProviderTest extends TestCase
         if (null === $tokenError) {
             $client->method('getAccessToken')->willReturn('access');
         } else {
-            $client->method('getAccessToken')->willThrowException(new \RuntimeException($tokenError));
+            $client->method('getAccessToken')->willThrowException(new \RuntimeException($tokenError, $errorCode));
         }
 
         return new YoutubeHealthCheckProvider($client, $this->createStub(UrlGeneratorInterface::class))->runChecks();
     }
 
     // No Google application, or no channel: a site not posting on YouTube is not broken there
-    public function testNothingIsReportedWithoutAConnection(): void
+    public function testASkippedRowIsReportedWithoutAConnection(): void
     {
-        $this->assertSame([], $this->checks(configured: false));
-        $this->assertSame([], $this->checks(connected: false));
+        $this->assertSame(HealthCheckResult::STATUS_SKIPPED, $this->checks(configured: false)[0]['status']);
+        $this->assertSame(HealthCheckResult::STATUS_SKIPPED, $this->checks(connected: false)[0]['status']);
+    }
+
+    // Google failing on its side is a warning: the stored connection is not what is broken
+    public function testAnOutageOfGooglesIsAWarning(): void
+    {
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $this->checks(tokenError: 'Service Unavailable', errorCode: 503)[0]['status']);
     }
 
     public function testARefusedTokenIsAnErrorCarryingGooglesReason(): void

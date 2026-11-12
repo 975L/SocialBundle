@@ -30,7 +30,7 @@ class TikTokPublisherTest extends TestCase
     private const array CREATOR = ['nickname' => 'Mystic', 'privacy_options' => ['FOLLOWER_OF_CREATOR', 'SELF_ONLY'], 'comment_disabled' => false, 'duet_disabled' => true, 'stitch_disabled' => true, 'max_duration' => 180];
 
     // TikTok answering the statuses given in turn, no wait between them
-    /** @param list<array{status: string, reason: ?string}> $statuses */
+    /** @param list<array{status: string, reason: ?string}|\RuntimeException> $statuses */
     private function publisher(array $statuses = [['status' => 'PUBLISH_COMPLETE', 'reason' => null]], ?\RuntimeException $refusal = null, bool $connected = true): TikTokPublisher
     {
         $client = $this->createStub(TikTokClient::class);
@@ -46,7 +46,9 @@ class TikTokPublisherTest extends TestCase
             return 'v_pub_1';
         });
         $client->method('status')->willReturnCallback(static function () use (&$statuses): array {
-            return array_shift($statuses) ?? ['status' => 'PROCESSING_DOWNLOAD', 'reason' => null];
+            $status = array_shift($statuses) ?? ['status' => 'PROCESSING_DOWNLOAD', 'reason' => null];
+
+            return $status instanceof \RuntimeException ? throw $status : $status;
         });
 
         return new TikTokPublisher($client, new NullLogger(), 0);
@@ -159,6 +161,12 @@ class TikTokPublisherTest extends TestCase
     public function testALongProcessingIsLeftToTikTok(): void
     {
         $this->assertSame('v_pub_1', $this->publisher([])->withOptions(self::CHOICES)->publish('Le Cap Nord', $this->content(), $this->video()));
+    }
+
+    // A status TikTok cannot answer once the post was accepted keeps it published, so it is never sent twice
+    public function testAStatusErrorAfterAcceptanceKeepsThePost(): void
+    {
+        $this->assertSame('v_pub_1', $this->publisher([new \RuntimeException('TikTok could not be reached.')])->withOptions(self::CHOICES)->publish('Le Cap Nord', $this->content(), $this->video()));
     }
 
     // A post with no video throws rather than falling back on the content's picture

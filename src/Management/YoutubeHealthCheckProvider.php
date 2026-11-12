@@ -12,12 +12,15 @@ namespace c975L\SocialBundle\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Management\HealthCheckProviderInterface;
+use c975L\SocialBundle\Service\GoogleOAuthClient;
 use c975L\SocialBundle\Service\YoutubeClient;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 // Whether the YouTube channel's refresh token still works, revoked by a password change or ended after seven days while the Google Cloud project is in testing, every planned video then failing. Run from c975l:health-check:run only, as it goes to Google's token endpoint
 class YoutubeHealthCheckProvider implements HealthCheckProviderInterface
 {
+    use SkippedRowTrait;
+
     public const string KIND = 'social-youtube';
 
     public function __construct(
@@ -35,7 +38,7 @@ class YoutubeHealthCheckProvider implements HealthCheckProviderInterface
     public function runChecks(): array
     {
         if (!$this->youtubeClient->isConfigured() || !$this->youtubeClient->isConnected()) {
-            return [];
+            return $this->skipped('youtube', 'YouTube', 'No YouTube channel is connected.');
         }
 
         $row = [
@@ -49,6 +52,11 @@ class YoutubeHealthCheckProvider implements HealthCheckProviderInterface
         try {
             $this->youtubeClient->getAccessToken();
         } catch (\Throwable $exception) {
+            // An outage of Google's is no broken connection: a warning, the next run telling
+            if (GoogleOAuthClient::isOutage($exception)) {
+                return [[...$row, 'status' => HealthCheckResult::STATUS_WARNING, 'summary' => 'Google does not answer, the YouTube connection is checked again on the next run: ' . $exception->getMessage()]];
+            }
+
             return [[...$row, 'status' => HealthCheckResult::STATUS_ERROR, 'summary' => 'Google refuses the stored YouTube connection, so no video goes out until the channel is connected again: ' . $exception->getMessage()]];
         }
 

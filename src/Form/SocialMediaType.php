@@ -19,6 +19,7 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Vich\UploaderBundle\Form\Type\VichFileType;
 
@@ -42,6 +43,8 @@ class SocialMediaType extends AbstractType
             ->add('alt', TextType::class, [
                 'label' => t('label.social_media_alt', [], 'social'),
                 'required' => false,
+                'attr' => ['maxlength' => 255],
+                'constraints' => [new Length(max: 255)],
             ])
             ->add('position', IntegerType::class, [
                 'label' => t('label.social_media_position', [], 'social'),

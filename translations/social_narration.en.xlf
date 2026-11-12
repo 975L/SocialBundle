@@ -48,7 +48,7 @@
             </trans-unit>
             <trans-unit id="HdY9GHw">
                 <source>narration.guided_step_social_comments_email</source>
-                <target>The site then writes to you every three hours when there is something new: one email, with each post's address.</target>
+                <target>The site then writes to you every three hours when there is something new: one email, quoting each new comment with its post's address.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>

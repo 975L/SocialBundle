@@ -25,7 +25,7 @@ class SocialPostWriterTest extends TestCase
     /** @var array<string, mixed>|null */
     private ?array $sent = null;
 
-    private function writer(string $answer, bool $configured = true): SocialPostWriter
+    private function writer(string $answer, bool $configured = true, string $finishReason = 'stop'): SocialPostWriter
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $key): ?string => match ($key) {
@@ -40,10 +40,10 @@ class SocialPostWriterTest extends TestCase
         $postRepository = $this->createStub(SocialPostRepository::class);
         $postRepository->method('findPublishedTexts')->willReturnCallback(static fn (string $network): array => 'bluesky' === $network ? ["Last night's story 🌙\nhttps://example.org/moon"] : []);
 
-        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use ($answer): MockResponse {
+        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use ($answer, $finishReason): MockResponse {
             $this->sent = json_decode((string) $options['body'], true);
 
-            return new MockResponse((string) json_encode(['choices' => [['message' => ['content' => $answer]]]]));
+            return new MockResponse((string) json_encode(['choices' => [['message' => ['content' => $answer], 'finish_reason' => $finishReason]]]));
         });
 
         return new SocialPostWriter($httpClient, $configService, new NullLogger(), $this->createStub(AiUsageTracker::class), $postRepository);
@@ -96,5 +96,25 @@ class SocialPostWriterTest extends TestCase
         $this->assertSame(['Lundi au lac', 'Mardi en montagne'], $texts);
         $this->assertStringContainsString('Une photo par jour', (string) ($this->sent['messages'][1]['content'] ?? ''));
         $this->assertSame([], $this->writer('[]', false)->variants('Une photo par jour', 2, 300));
+    }
+
+    // The ceiling grows with what is asked, so a series of long posts is never cut half-way through its JSON
+    public function testTheCeilingFitsWhatIsAsked(): void
+    {
+        $this->writer('[]')->variants('Une photo par jour', 5, 300);
+        $this->assertSame(2048 + 2 * 5 * 300, $this->sent['max_tokens'] ?? null);
+
+        $this->writer('[]')->variants('Une photo par jour', 30, 300);
+        $this->assertSame(8192, $this->sent['max_tokens'] ?? null);
+
+        $this->writer('{}')->write($this->content(), ['bluesky' => 300, 'facebook' => 2000]);
+        $this->assertSame(2048 + 2 * 2300, $this->sent['max_tokens'] ?? null);
+    }
+
+    // An answer the ceiling cut is worth nothing: dropped whole, the template writing instead
+    public function testATruncatedAnswerIsDropped(): void
+    {
+        $this->assertSame([], $this->writer('{"bluesky": "Short."}', finishReason: 'length')->write($this->content(), ['bluesky' => 300]));
+        $this->assertSame([], $this->writer('["Lundi au lac"]', finishReason: 'length')->variants('Une photo par jour', 1, 300));
     }
 }

@@ -123,7 +123,10 @@ class SocialImageExporter
             if (!is_dir(\dirname($path))) {
                 mkdir(\dirname($path), 0o775, true);
             }
-            file_put_contents($path, $jpeg($bytes));
+            // Written aside then renamed, so Meta and Pinterest never download a file cut short
+            $temporary = $path . '.' . bin2hex(random_bytes(4)) . '.tmp';
+            file_put_contents($temporary, $jpeg($bytes));
+            rename($temporary, $path);
         }
 
         return $siteUrl . '/' . $name;

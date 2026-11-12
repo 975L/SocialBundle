@@ -173,13 +173,15 @@ class SocialPostCrudController extends AbstractCrudController
         return $post instanceof SocialPost && null !== $from ? $this->backTo($post, $from) : $response;
     }
 
-    // Deleting is refused while a "Publish" is sending the post, what goes out then would leave no record
+    // Deleting is refused for a post gone out, kept as the record of what was sent - the list and the batch reaching here too - and while a "Publish" is sending it, what goes out then would leave no record
     #[\Override]
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        if ($entityInstance instanceof SocialPost && !$this->socialPublisher->delete($entityInstance)) {
-            $this->addFlash('warning', t('flash.social_post_publishing', [], 'social'));
+        if (!$entityInstance instanceof SocialPost || $this->socialPublisher->delete($entityInstance, true)) {
+            return;
         }
+
+        $this->addFlash('warning', t($entityInstance->hasGoneOut() ? 'flash.social_post_gone_out' : 'flash.social_post_publishing', [], 'social'));
     }
 
     #[\Override]
@@ -260,6 +262,7 @@ class SocialPostCrudController extends AbstractCrudController
             // Deleting cancels a post from its own page too, one gone out staying as the record of what was sent
             ->add(Crud::PAGE_EDIT, Action::DELETE)
             ->update(Crud::PAGE_EDIT, Action::DELETE, static fn (Action $action): Action => $action->displayIf(static fn (SocialPost $post): bool => !$post->hasGoneOut()))
+            ->update(Crud::PAGE_INDEX, Action::DELETE, static fn (Action $action): Action => $action->displayIf(static fn (SocialPost $post): bool => !$post->hasGoneOut()))
             ->disable(Action::DETAIL)
             // From the list only: on the post's page, a link would send the text as saved, not as just corrected
             ->add(Crud::PAGE_INDEX, $approve)
@@ -426,7 +429,7 @@ class SocialPostCrudController extends AbstractCrudController
     {
         foreach ($problems as $network => $messages) {
             foreach ($messages as $message) {
-                $this->addFlash($type, ucfirst($network) . ' : ' . $message->trans($this->translator));
+                $this->addFlash($type, htmlspecialchars(ucfirst($network) . ' : ' . $message->trans($this->translator)));
             }
         }
     }
@@ -719,7 +722,7 @@ class SocialPostCrudController extends AbstractCrudController
                 return $this->redirect($this->indexUrl());
             } catch (\Throwable $exception) {
                 // The page did not answer, or said nothing: the editor stays on the form, the address still in it
-                $this->addFlash('danger', $exception->getMessage());
+                $this->addFlash('danger', htmlspecialchars($exception->getMessage()));
             }
         }
 
@@ -740,7 +743,7 @@ class SocialPostCrudController extends AbstractCrudController
 
             $approve ? $post->approve() : $post->unapprove();
             $this->entityManager->flush();
-            $this->addFlash('success', t($approve ? 'flash.social_post_approved' : 'flash.social_post_unapproved', ['%title%' => $post->getTitle()], 'social'));
+            $this->addFlash('success', t($approve ? 'flash.social_post_approved' : 'flash.social_post_unapproved', ['%title%' => htmlspecialchars($post->getTitle())], 'social'));
         }
 
         return $this->redirect($this->indexUrl());
@@ -757,7 +760,7 @@ class SocialPostCrudController extends AbstractCrudController
         }
 
         foreach ($report as $network => $result) {
-            $parameters = ['%network%' => ucfirst($network), '%error%' => (string) $result['message']];
+            $parameters = ['%network%' => ucfirst($network), '%error%' => htmlspecialchars((string) $result['message'])];
             match ($result['status']) {
                 SocialPostStatus::Published->value => $this->addFlash('success', t('flash.social_post_published', $parameters, 'social')),
                 SocialPostStatus::Draft->value => $this->addFlash('info', t('flash.social_post_draft', $parameters, 'social')),
@@ -766,13 +769,13 @@ class SocialPostCrudController extends AbstractCrudController
 
             // A post out whose first comment, reshare or story was refused, said right after the network it went to
             if (isset($result['comment_error'])) {
-                $this->addFlash('warning', t('email.social_post_comment_failed', ['%error%' => (string) $result['comment_error']], 'social'));
+                $this->addFlash('warning', t('email.social_post_comment_failed', ['%error%' => htmlspecialchars((string) $result['comment_error'])], 'social'));
             }
             if (isset($result['reshare_error'])) {
-                $this->addFlash('warning', t('email.social_post_reshare_failed', ['%error%' => (string) $result['reshare_error']], 'social'));
+                $this->addFlash('warning', t('email.social_post_reshare_failed', ['%error%' => htmlspecialchars((string) $result['reshare_error'])], 'social'));
             }
             if (isset($result['story_error'])) {
-                $this->addFlash('warning', t('email.social_post_story_failed', ['%error%' => (string) $result['story_error']], 'social'));
+                $this->addFlash('warning', t('email.social_post_story_failed', ['%error%' => htmlspecialchars((string) $result['story_error'])], 'social'));
             }
         }
     }

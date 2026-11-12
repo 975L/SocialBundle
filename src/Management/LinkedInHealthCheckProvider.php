@@ -18,6 +18,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 // The LinkedIn token ends on its own after 60 days, on a profile app always, on a Page app when its renewal stopped or its refresh token nears its end: the posts then fail one after the other. Said a fortnight ahead, while reconnecting is one click, and again once it is too late. Read from the config only, no call to LinkedIn
 class LinkedInHealthCheckProvider implements HealthCheckProviderInterface
 {
+    use SkippedRowTrait;
+
     public const string KIND = 'social-linkedin';
 
     // How long before the end the owner is told to connect again
@@ -39,7 +41,7 @@ class LinkedInHealthCheckProvider implements HealthCheckProviderInterface
     {
         $expiresAt = $this->linkedInClient->expiresAt();
         if (!$this->linkedInClient->isConfigured() || null === $expiresAt) {
-            return [];
+            return $this->skipped('linkedin', 'LinkedIn', 'LinkedIn is not connected.');
         }
 
         $row = [

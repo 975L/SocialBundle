@@ -226,6 +226,16 @@ class SocialPostCrudControllerTest extends TestCase
         $this->assertSame(['flash.social_post_publishing'], array_map(static fn (TranslatableMessage $message): string => $message->getMessage(), $this->flashes->get('warning')));
     }
 
+    // A post gone out stays as the record of what was sent, deleted from the list or by batch alike
+    public function testAPostGoneOutIsNotDeleted(): void
+    {
+        $post = $this->post();
+        new SocialPostTarget($post, 'bluesky', 'Text')->markPublished('at://item-1');
+        $this->deletePost($post, '', false);
+
+        $this->assertSame(['flash.social_post_gone_out'], array_map(static fn (TranslatableMessage $message): string => $message->getMessage(), $this->flashes->get('warning')));
+    }
+
     // The libraries' medias are added to a saved post, from its page
     public function testPickingMediasIsOfferedOnThePostsPage(): void
     {
@@ -357,6 +367,18 @@ class SocialPostCrudControllerTest extends TestCase
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('/admin/' . Action::EDIT, $response->getTargetUrl());
+    }
+
+    // A network's refusal is third-party text, escaped before EasyAdmin prints the flash raw
+    public function testARefusalIsEscapedInItsFlash(): void
+    {
+        $publisher = $this->createStub(SocialPublisher::class);
+        $publisher->method('retryFailed')->willReturn(['bluesky' => ['status' => SocialPostStatus::Failed->value, 'message' => '<script>alert(1)</script>']]);
+
+        $request = Request::create('/', 'POST', ['retry' => '1', 'token' => 'valid']);
+        $this->call($this->controller(socialPublisher: $publisher), 'retryPost', $this->post(), $request);
+
+        $this->assertSame('&lt;script&gt;alert(1)&lt;/script&gt;', $request->getSession()->getFlashBag()->get('danger')[0]->getParameters()['%error%']);
     }
 
     // A confirmation sent without its token, from another site, sends nothing again

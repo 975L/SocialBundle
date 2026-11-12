@@ -18,6 +18,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 // The token of an Instagram connected with no Facebook Page renews itself nightly (see InstagramRefreshCommand), a month before its end: past its end the account has to connect again, closer than the window's last days the renewal stopped working. Read from the config only, no call to Instagram
 class InstagramHealthCheckProvider implements HealthCheckProviderInterface
 {
+    use SkippedRowTrait;
+
     public const string KIND = 'social-instagram';
 
     // Fewer days left than this, the nightly renewal has had three weeks to run and did not
@@ -39,7 +41,7 @@ class InstagramHealthCheckProvider implements HealthCheckProviderInterface
     {
         $expiresAt = $this->instagramLoginClient->expiresAt();
         if (!$this->instagramLoginClient->isConfigured() || null === $expiresAt || '' === $this->instagramLoginClient->accessToken()) {
-            return [];
+            return $this->skipped('instagram', 'Instagram', 'Instagram Login is not connected: the posts go to the account of the Page, if any.');
         }
 
         $row = [

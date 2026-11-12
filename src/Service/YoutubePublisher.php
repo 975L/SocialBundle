@@ -70,6 +70,11 @@ class YoutubePublisher implements NetworkPublisherInterface, CommentCountPublish
         return new CommentCount($this->youtubeClient->commentCount($externalId), 'https://youtu.be/' . $externalId);
     }
 
+    public function latestComments(string $externalId, int $limit): array
+    {
+        return $this->youtubeClient->latestComments($externalId, $limit);
+    }
+
     // The video's id, its public address being youtu.be/ followed by it
     public function publish(string $text, SocialContent $content, array $medias = []): string
     {

@@ -30,7 +30,7 @@ class SocialSeriesGeneratorTest extends TestCase
     private int $aiCalls = 0;
 
     // A publisher writing each post's texts from its own, Bluesky, LinkedIn and Instagram connected - Instagram taking stories
-    private function generator(array $variants = [], ?\DateTimeImmutable $lastPlannedAt = null): SocialSeriesGenerator
+    private function generator(array $variants = [], ?\DateTimeImmutable $lastPlannedAt = null, ?\DateTimeImmutable $firstPlannedAt = null): SocialSeriesGenerator
     {
         $publisher = $this->createStub(SocialPublisher::class);
         $publisher->method('createManual')->willReturnCallback(static function (\DateTimeImmutable $at): SocialPost {
@@ -66,6 +66,7 @@ class SocialSeriesGeneratorTest extends TestCase
 
         $seriesRepository = $this->createStub(SocialSeriesRepository::class);
         $seriesRepository->method('findLastPlannedAt')->willReturn($lastPlannedAt);
+        $seriesRepository->method('findFirstPlannedAt')->willReturn($firstPlannedAt);
 
         return new SocialSeriesGenerator($publisher, $writer, new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $seriesRepository, sys_get_temp_dir());
     }
@@ -109,6 +110,17 @@ class SocialSeriesGeneratorTest extends TestCase
     private function series(int $count, string $mode, array $networks, string $text = '', array $sources = [], string $frequency = 'days', int $interval = 1, array $weekdays = []): SocialSeries
     {
         return new SocialSeries('Series', $count, $frequency, $interval, $weekdays, $mode, $text, $sources, $networks);
+    }
+
+    // A monthly series prolonged keeps the day of its first post, never drifting after a short month
+    public function testAMonthlyProlongationKeepsTheDayOfTheFirstPost(): void
+    {
+        $generator = $this->generator(firstPlannedAt: new \DateTimeImmutable('2027-01-31 09:00'));
+
+        $this->assertEquals(
+            [new \DateTimeImmutable('2027-03-31 09:00'), new \DateTimeImmutable('2027-04-30 09:00'), new \DateTimeImmutable('2027-05-31 09:00')],
+            $generator->prolongMoments($this->series(3, SocialSeriesGenerator::MODE_AI, ['bluesky'], frequency: 'month'), new \DateTimeImmutable('2027-02-28 09:00')),
+        );
     }
 
     // Every N days or every month from the start, a month keeping its day

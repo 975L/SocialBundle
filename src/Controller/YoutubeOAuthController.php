@@ -68,7 +68,7 @@ class YoutubeOAuthController extends AbstractController
             'social-youtube-channel-title' => $connection['channelTitle'],
         ]);
 
-        $this->addFlash('success', t('flash.youtube_connected', ['%name%' => $connection['channelTitle']], 'social'));
+        $this->addFlash('success', t('flash.youtube_connected', ['%name%' => htmlspecialchars($connection['channelTitle'])], 'social'));
 
         return $this->redirectToRoute(SocialConnectionsController::ROUTE);
     }

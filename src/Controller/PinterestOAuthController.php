@@ -66,7 +66,7 @@ class PinterestOAuthController extends AbstractController
         // Another account's board would not take this one's pins: the board is picked again, the same account's kept
         $sameAccount = $values['social-pinterest-username'] === trim((string) $this->configService->get('social-pinterest-username'));
         $this->configValueWriter->write($values + ($sameAccount ? [] : ['social-pinterest-board-id' => null, 'social-pinterest-board-name' => null]));
-        $this->addFlash('success', t('flash.pinterest_connected', ['%name%' => $values['social-pinterest-username']], 'social'));
+        $this->addFlash('success', t('flash.pinterest_connected', ['%name%' => htmlspecialchars($values['social-pinterest-username'])], 'social'));
 
         return $this->redirectToRoute(SocialPinterestBoardController::ROUTE);
     }

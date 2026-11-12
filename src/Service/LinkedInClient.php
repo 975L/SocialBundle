@@ -379,17 +379,11 @@ class LinkedInClient
         throw new \RuntimeException('LinkedIn is still processing the video: publish it again in a few minutes.');
     }
 
-    // Creates a post, answering its urn, which LinkedIn hands back in a header rather than in the body
+    // Creates a post, answering its urn, which LinkedIn hands back in a header rather than in the body - '' when missing, the post accepted being published all the same, as for a reshare
     /** @param array<string, mixed> $post */
     public function createPost(array $post): string
     {
-        $response = $this->send('POST', '/rest/posts', $post, (string) $this->accessToken());
-        $urn = $response->getHeaders(false)['x-restli-id'][0] ?? null;
-        if (null === $urn) {
-            throw new \RuntimeException('LinkedIn did not answer the id of the post.');
-        }
-
-        return $urn;
+        return $this->send('POST', '/rest/posts', $post, (string) $this->accessToken())->getHeaders(false)['x-restli-id'][0] ?? '';
     }
 
     // Shares the post again as the member who connected the Page, on their own profile, $commentary above it - answering the reshare's urn. Asked again while LinkedIn does not find the post yet, the same as a comment

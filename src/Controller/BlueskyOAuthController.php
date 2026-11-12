@@ -63,7 +63,7 @@ class BlueskyOAuthController extends AbstractController
 
             $authorization = $this->oauthClient->startAuthorization('' === $handle ? null : $handle, bin2hex(random_bytes(16)));
         } catch (\Throwable $exception) {
-            $this->addFlash('danger', $exception->getMessage());
+            $this->addFlash('danger', htmlspecialchars($exception->getMessage()));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
@@ -90,7 +90,7 @@ class BlueskyOAuthController extends AbstractController
         try {
             $this->oauthClient->finishAuthorization($pending, $code, $request->query->getString('iss'));
         } catch (\Throwable $exception) {
-            $this->addFlash('danger', $exception->getMessage());
+            $this->addFlash('danger', htmlspecialchars($exception->getMessage()));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }

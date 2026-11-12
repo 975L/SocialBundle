@@ -146,7 +146,9 @@ class SocialSeriesType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
+        // A form of fresh data, never an entity edited: its defaults are its starting values
         $resolver->setDefaults([
+            'data_class' => null,
             'networks' => [],
             'sources' => [],
             'start' => null,

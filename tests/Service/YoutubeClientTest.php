@@ -59,8 +59,8 @@ class YoutubeClientTest extends TestCase
         $this->assertFalse($this->client(config: ['social-youtube-oauth-refresh-token' => ''])->isConnected());
     }
 
-    // Offline access and a forced consent, so a reconnection gets a refresh token again - with both scopes in one consent
-    public function testTheAuthorizationAsksForOfflineAccessToBothScopes(): void
+    // Offline access and a forced consent, so a reconnection gets a refresh token again - with every scope in one consent
+    public function testTheAuthorizationAsksForOfflineAccessToItsScopes(): void
     {
         parse_str((string) parse_url($this->client()->getAuthorizationUrl('https://example.org/social/youtube/callback', 'state'), \PHP_URL_QUERY), $query);
 
@@ -97,6 +97,17 @@ class YoutubeClientTest extends TestCase
 
         $this->assertSame(7, $this->client([$access, new MockResponse('{"items": [{"statistics": {"commentCount": "7"}}]}')])->commentCount('abc'));
         $this->assertSame(0, $this->client([new MockResponse('{"access_token": "access", "expires_in": 3600}'), new MockResponse('{"items": [{"statistics": {}}]}')])->commentCount('abc'));
+    }
+
+    // The top-level comments as YouTube orders them, newest first, asked no further than needed
+    public function testTheLatestCommentsAreRead(): void
+    {
+        $threads = new MockResponse('{"items": [{"snippet": {"topLevelComment": {"snippet": {"authorDisplayName": "Ann", "textDisplay": "Nice", "publishedAt": "2026-11-02T10:00:00Z"}}}}, {"snippet": {}}]}');
+        $comments = $this->client([new MockResponse('{"access_token": "access", "expires_in": 3600}'), $threads])->latestComments('abc', 2);
+
+        $this->assertSame([['Ann', 'Nice']], array_map(static fn ($comment): array => [$comment->author, $comment->text], $comments));
+        $this->assertStringContainsString('maxResults=2', $threads->getRequestUrl());
+        $this->assertStringContainsString('order=time', $threads->getRequestUrl());
     }
 
     // A video not shown says nothing of its comments, its count staying as it was

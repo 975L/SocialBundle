@@ -322,13 +322,11 @@ class MetaPublishersTest extends TestCase
         $this->assertSame(['upload_phase' => 'finish', 'video_id' => 'r1', 'video_state' => 'PUBLISHED', 'description' => 'Texte', 'access_token' => 'page-token'], $this->calls[1]['parameters']);
     }
 
-    // A finish answered without success is no published reel
-    public function testFacebookSaysWhenTheReelWasNotPublished(): void
+    // A finish Meta accepted without success yet is a reel still processing: published, never sent twice
+    public function testFacebookKeepsAReelStillProcessing(): void
     {
-        $this->expectExceptionMessageIsOrContains('Meta did not publish the reel');
-
         $reel = new PostMedia('/var/medias/r.mp4', 'https://example.org/medias/r.mp4', 'video/mp4', width: 1080, height: 1920, duration: 25.0);
-        new FacebookPublisher($this->graph([['video_id' => 'r1', 'upload_url' => 'https://rupload.example/r1'], ['success' => false]]), $this->exporter(null), $this->config())->publish('Texte', $this->content(), [$reel]);
+        $this->assertSame('r1', new FacebookPublisher($this->graph([['video_id' => 'r1', 'upload_url' => 'https://rupload.example/r1'], ['success' => false]]), $this->exporter(null), $this->config())->publish('Texte', $this->content(), [$reel]));
     }
 
     // A landscape video, a long one, or one never measured stays a plain Page video
@@ -418,6 +416,20 @@ class MetaPublishersTest extends TestCase
         $this->assertSame(2, $comments->count);
         $this->assertSame('https://www.instagram.com/p/x/', $comments->url);
         $this->assertSame('comments_count,permalink', $this->calls[0]['parameters']['fields']);
+    }
+
+    // Only the newest are kept, whatever order Meta answers in
+    public function testInstagramReadsTheNewestComments(): void
+    {
+        $comments = new InstagramPublisher($this->graph([['data' => [
+            ['username' => 'ann', 'text' => 'Old', 'timestamp' => '2026-11-01T10:00:00+0000'],
+            ['username' => 'bob', 'text' => 'New', 'timestamp' => '2026-11-02T10:00:00+0000'],
+            ['username' => 'cid', 'text' => 'Older', 'timestamp' => '2026-10-01T10:00:00+0000'],
+        ]]]), $this->login(), $this->exporter(null), $this->config(), 0)->latestComments('77', 2);
+
+        $this->assertSame([['bob', 'New'], ['ann', 'Old']], array_map(static fn ($comment): array => [$comment->author, $comment->text], $comments));
+        $this->assertSame('/77/comments', $this->calls[0]['path']);
+        $this->assertSame('username,text,timestamp', $this->calls[0]['parameters']['fields']);
     }
 
     // An account connected by Instagram Login takes over from the Page's: its id, its token and its own host, without the Page's client being called

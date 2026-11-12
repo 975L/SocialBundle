@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Service;
 
+use c975L\SocialBundle\Model\PostComment;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 // What Bluesky shows anyone, read on its public AppView with no token: no permission to ask, no connection to renew
@@ -51,6 +52,24 @@ class BlueskyPublicReader
         $post = $this->get('app.bsky.feed.getPosts', ['uris' => $uri])['posts'][0] ?? throw new \RuntimeException(sprintf('Bluesky does not show the post %s.', $uri));
 
         return (int) ($post['replyCount'] ?? 0);
+    }
+
+    // The $limit newest direct replies of the post $uri, a reply deleted or blocked left out
+    /** @return list<PostComment> */
+    public function latestReplies(string $uri, int $limit): array
+    {
+        $replies = [];
+        foreach ($this->get('app.bsky.feed.getPostThread', ['uri' => $uri, 'depth' => 1, 'parentHeight' => 0])['thread']['replies'] ?? [] as $reply) {
+            $post = $reply['post'] ?? null;
+            if (!\is_array($post) || !isset($post['record']['text'])) {
+                continue;
+            }
+
+            $author = $post['author'] ?? [];
+            $replies[] = new PostComment((string) ($author['displayName'] ?? '') ?: (string) ($author['handle'] ?? ''), (string) $post['record']['text'], PostComment::date($post['record']['createdAt'] ?? null));
+        }
+
+        return PostComment::newest($replies, $limit);
     }
 
     // One public method called, any refusal thrown

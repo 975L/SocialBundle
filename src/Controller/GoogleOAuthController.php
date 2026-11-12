@@ -21,6 +21,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+use function Symfony\Component\Translation\t;
+
 // The two routes of the Google connection - the bundle's first, everything else it does being blocks, Twig functions and dashboard entries
 class GoogleOAuthController extends AbstractController
 {
@@ -40,7 +42,7 @@ class GoogleOAuthController extends AbstractController
         $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
 
         if (!$this->googleOAuthClient->isConfigured()) {
-            $this->addFlash('danger', 'review.google_not_configured');
+            $this->addFlash('danger', t('review.google_not_configured', [], 'social'));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
@@ -62,13 +64,13 @@ class GoogleOAuthController extends AbstractController
         $code = $request->query->get('code');
 
         if (!is_string($expected) || $expected !== $request->query->get('state')) {
-            $this->addFlash('danger', 'review.google_state_mismatch');
+            $this->addFlash('danger', t('review.google_state_mismatch', [], 'social'));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
         if (!is_string($code) || '' === $code) {
-            $this->addFlash('danger', 'review.google_authorization_refused');
+            $this->addFlash('danger', t('review.google_authorization_refused', [], 'social'));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
@@ -77,10 +79,14 @@ class GoogleOAuthController extends AbstractController
         try {
             $refreshToken = $this->googleOAuthClient->exchangeCode($code, $this->redirectUri())['refreshToken'];
         } catch (\Throwable $exception) {
-            $this->addFlash('danger', $exception->getMessage());
+            $this->addFlash('danger', htmlspecialchars($exception->getMessage()));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
+
+        // The working connection, put back as it was if this one fails half-way
+        $slugs = ['social-google-oauth-refresh-token', 'social-google-business-account-id', 'social-google-business-location-id'];
+        $previous = array_combine($slugs, array_map($this->configService->get(...), $slugs));
 
         try {
             // Written before the listing is resolved: resolving it needs an access token, which is minted from this very refresh token
@@ -92,19 +98,15 @@ class GoogleOAuthController extends AbstractController
                 'social-google-business-location-id' => $listing['locationId'],
             ]);
         } catch (\Throwable $exception) {
-            // Back to "not connected" rather than a fresh token left paired with the previous account's listing, which would answer 403 on every later synchronization without saying why
-            $this->configValueWriter->write([
-                'social-google-oauth-refresh-token' => null,
-                'social-google-business-account-id' => null,
-                'social-google-business-location-id' => null,
-            ]);
+            // Back to the connection that worked, never a fresh token left paired with the previous account's listing, which would answer 403 on every later synchronization without saying why
+            $this->configValueWriter->write($previous);
 
-            $this->addFlash('danger', $exception->getMessage());
+            $this->addFlash('danger', htmlspecialchars($exception->getMessage()));
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
 
-        $this->addFlash('success', 'review.google_connected');
+        $this->addFlash('success', t('review.google_connected', [], 'social'));
 
         return $this->redirectToRoute(SocialConnectionsController::ROUTE);
     }

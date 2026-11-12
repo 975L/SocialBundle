@@ -31,11 +31,11 @@ class TikTokHealthCheckProviderTest extends TestCase
         return $checks[0]['status'] ?? null;
     }
 
-    // No app, or never connected: a site not posting there is not broken there
-    public function testNothingIsReportedWithoutAConnection(): void
+    // No app, or never connected: a site not posting there is not broken there, said skipped so a past error never stays
+    public function testASkippedRowIsReportedWithoutAConnection(): void
     {
-        $this->assertNull($this->checkStatus('+300 days', configured: false));
-        $this->assertNull($this->checkStatus(null));
+        $this->assertSame(HealthCheckResult::STATUS_SKIPPED, $this->checkStatus('+300 days', configured: false));
+        $this->assertSame(HealthCheckResult::STATUS_SKIPPED, $this->checkStatus(null));
     }
 
     // A token lasting 2 hours over until the next night is the day's ordinary state, a night's run a little late included

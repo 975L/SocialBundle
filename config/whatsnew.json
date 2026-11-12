@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-11-12",
+        "description": [
+            {
+                "en": "The email of new comments now quotes each one with its author, so you see whether it needs an answer without opening the post. On Instagram and YouTube, connect the network again once in \"Connections\" for the text to be read.",
+                "fr": "L'e-mail des nouveaux commentaires cite désormais chacun avec son auteur, pour voir s'il appelle une réponse sans ouvrir la publication. Sur Instagram et YouTube, reconnectez une fois le réseau dans « Connexions » pour que le texte soit lu.",
+                "es": "El correo de los comentarios nuevos cita ahora cada uno con su autor, para ver si requiere respuesta sin abrir la publicación. En Instagram y YouTube, vuelva a conectar una vez la red en «Conexiones» para que se lea el texto."
+            },
+            {
+                "en": "A post that has gone out can no longer be deleted from the list or by a batch either: it stays as the record of what was sent.",
+                "fr": "Une publication déjà partie ne peut plus être supprimée depuis la liste ni par lot : elle reste comme trace de ce qui a été envoyé.",
+                "es": "Una publicación ya enviada tampoco puede eliminarse desde la lista ni por lotes: queda como registro de lo que se envió."
+            }
+        ]
+    },
+    {
         "date": "2026-11-09",
         "description": [
             {

@@ -21,6 +21,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 // Run from c975l:health-check:run only - it goes to Google's token endpoint, and no dashboard page may block on that
 class GoogleReviewsHealthCheckProvider implements HealthCheckProviderInterface
 {
+    use SkippedRowTrait;
+
     // Named here rather than restated wherever a row of this kind is picked out
     public const string KIND = 'social-google-reviews';
 
@@ -44,7 +46,7 @@ class GoogleReviewsHealthCheckProvider implements HealthCheckProviderInterface
             !$this->configService->getBool($this->configService->get('ui-enable-reviews'))
             || !$this->googleOAuthClient->isConfigured()
         ) {
-            return [];
+            return $this->skipped(GoogleBusinessProfileSource::NAME, 'Google Business Profile', 'The reviews are off or no Google application is declared: nothing is imported.');
         }
 
         return [$this->check()];
@@ -75,6 +77,11 @@ class GoogleReviewsHealthCheckProvider implements HealthCheckProviderInterface
         try {
             $this->googleOAuthClient->getAccessToken();
         } catch (\Throwable $exception) {
+            // An outage of Google's is no broken connection: a warning, the next run telling
+            if (GoogleOAuthClient::isOutage($exception)) {
+                return [...$row, 'status' => HealthCheckResult::STATUS_WARNING, 'summary' => 'Google does not answer, the connection is checked again on the next run: ' . $exception->getMessage()];
+            }
+
             return [
                 ...$row,
                 'status' => HealthCheckResult::STATUS_ERROR,

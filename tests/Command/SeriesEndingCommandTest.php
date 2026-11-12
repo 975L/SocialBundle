@@ -92,12 +92,21 @@ class SeriesEndingCommandTest extends TestCase
         $this->assertCount(2, $this->sent);
     }
 
-    // A series ending later, or a delay of 0, announces nothing
+    // A series ending later, one finished long ago, or a delay of 0, announces nothing
     public function testNothingIsAnnouncedOutsideTheDelay(): void
     {
         $this->tester([['series' => $this->series(), 'lastPlannedAt' => new \DateTimeImmutable('+10 days')]])->execute([]);
+        $this->tester([['series' => $this->series(), 'lastPlannedAt' => new \DateTimeImmutable('-1 year')]])->execute([]);
         $this->tester([['series' => $this->series(), 'lastPlannedAt' => new \DateTimeImmutable('+1 day')]], '0')->execute([]);
 
         $this->assertSame([], $this->sent);
+    }
+
+    // An end missed while the cron was down is still announced, within the same delay
+    public function testAnEndJustMissedIsStillAnnounced(): void
+    {
+        $this->tester([['series' => $this->series(), 'lastPlannedAt' => new \DateTimeImmutable('-2 days')]])->execute([]);
+
+        $this->assertCount(1, $this->sent);
     }
 }

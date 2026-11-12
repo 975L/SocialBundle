@@ -22,15 +22,15 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class GoogleReviewsHealthCheckProviderTest extends TestCase
 {
     // Nothing to watch over: UiBundle's switch is off, so no imported review is displayed anywhere
-    public function testNothingIsReportedWhileTheReviewsAreOff(): void
+    public function testASkippedRowIsReportedWhileTheReviewsAreOff(): void
     {
-        $this->assertSame([], $this->provider(reviewsEnabled: false)->runChecks());
+        $this->assertSame(HealthCheckResult::STATUS_SKIPPED, $this->provider(reviewsEnabled: false)->runChecks()[0]['status']);
     }
 
     // A site collecting only what its own visitors write never declared a Google application, and is not a site whose import is broken
-    public function testNothingIsReportedWithoutAGoogleApplication(): void
+    public function testASkippedRowIsReportedWithoutAGoogleApplication(): void
     {
-        $this->assertSame([], $this->provider(configured: false)->runChecks());
+        $this->assertSame(HealthCheckResult::STATUS_SKIPPED, $this->provider(configured: false)->runChecks()[0]['status']);
     }
 
     public function testStoredKeysNeverConnectedAreReportedAsAWarning(): void
@@ -70,12 +70,19 @@ class GoogleReviewsHealthCheckProviderTest extends TestCase
         $this->assertSame(GoogleBusinessProfileSource::NAME, $checks[0]['details']['source']);
     }
 
+    // Google failing on its side is a warning, never the red "Google refuses the connection" sending the admin on a false trail
+    public function testAnOutageOfGooglesIsAWarning(): void
+    {
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $this->provider(accessTokenError: 'Service Unavailable', errorCode: 503)->runChecks()[0]['status']);
+    }
+
     private function provider(
         bool $reviewsEnabled = true,
         bool $configured = true,
         bool $connected = true,
         ?string $accessTokenError = null,
         bool $listingSelected = true,
+        int $errorCode = 400,
     ): GoogleReviewsHealthCheckProvider {
         $googleOAuthClient = $this->createStub(GoogleOAuthClient::class);
         $googleOAuthClient->method('isConfigured')->willReturn($configured);
@@ -84,7 +91,7 @@ class GoogleReviewsHealthCheckProviderTest extends TestCase
         if (null === $accessTokenError) {
             $googleOAuthClient->method('getAccessToken')->willReturn('access-token');
         } else {
-            $googleOAuthClient->method('getAccessToken')->willThrowException(new \RuntimeException($accessTokenError));
+            $googleOAuthClient->method('getAccessToken')->willThrowException(new \RuntimeException($accessTokenError, $errorCode));
         }
 
         $source = $this->createStub(GoogleBusinessProfileSource::class);

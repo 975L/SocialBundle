@@ -119,11 +119,7 @@ class FacebookPublisher implements NetworkPublisherInterface, StoryPublisherInte
         $videoId = $this->uploadVideo($path, $reel['file'], $token, 'reel');
         $finished = $this->metaGraphClient->request('POST', $path, ['upload_phase' => 'finish', 'video_id' => $videoId, 'video_state' => 'PUBLISHED', 'description' => $reel['description'], 'access_token' => $token]);
 
-        // A 200 may still say the reel did not go out (being processed, blocked on rights): left in error, so publishing tries it again
-        if (true !== ($finished['success'] ?? null)) {
-            throw new \RuntimeException('Meta did not publish the reel.');
-        }
-
+        // Accepted is published: a reel Meta still processes goes out on its own, sending it again would post it twice
         return (string) ($finished['post_id'] ?? $videoId);
     }
 

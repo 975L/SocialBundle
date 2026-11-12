@@ -203,6 +203,34 @@ class ReviewSynchronizerTest extends TestCase
         $synchronizer->synchronize();
     }
 
+    // A review seen twice means the order moved during the run: one absent from it may only have slid onto a page already read, so nothing is removed
+    public function testSynchronizeRemovesNothingWhenTheOrderMoved(): void
+    {
+        $repository = $this->createMock(ReviewRepository::class);
+        $repository->method('findOneFromSource')->willReturn(null);
+        $repository->expects($this->never())->method('findMissing');
+
+        new ReviewSynchronizer(
+            [$this->createSource('google', true, $this->createData('a'), $this->createData('b'), $this->createData('a'))],
+            $repository,
+            $this->createStub(EntityManagerInterface::class)
+        )->synchronize();
+    }
+
+    // A name or an avatar address longer than their columns never breaks the source's flush: the name is cut, the address dropped
+    public function testSynchronizeBoundsTheAuthorFields(): void
+    {
+        $repository = $this->createStub(ReviewRepository::class);
+        $review = new Review();
+        $repository->method('findOneFromSource')->willReturn($review);
+        $data = new ReviewData(externalId: 'a', authorName: str_repeat('é', 300), rating: 5, publishedAt: new \DateTimeImmutable('2026-08-01'), authorAvatarUrl: 'https://example.org/' . str_repeat('a', 600));
+
+        new ReviewSynchronizer([$this->createSource('google', true, $data)], $repository, $this->createStub(EntityManagerInterface::class))->synchronize();
+
+        $this->assertSame(255, mb_strlen((string) $review->getAuthorName()));
+        $this->assertNull($review->getAuthorAvatarUrl());
+    }
+
     // A fetch answering empty on a revoked token or an exhausted quota must not wipe every review the site displays
     public function testSynchronizeRemovesNothingWhenTheSourceReturnsNoReview(): void
     {

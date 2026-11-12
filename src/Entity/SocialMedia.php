@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 // A picture or a video a post goes out with, in the order given: uploaded here (one JPEG for a picture, hashed and downscaled, see SocialMediaUploadListener), or a file of the site's own taken as it is (a gallery's, by its path) - nothing copied then
@@ -39,6 +40,7 @@ class SocialMedia implements \Stringable
 
     // The path under public/ - an upload's, or the site's own file it was picked from
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $filename = null;
 
     // Whether the file is the site's own rather than uploaded here: never deleted with the media nor purged
@@ -49,6 +51,7 @@ class SocialMedia implements \Stringable
     private ?int $size = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100)]
     private ?string $mimeType = null;
 
     #[ORM\Column(nullable: true)]
@@ -63,13 +66,16 @@ class SocialMedia implements \Stringable
 
     // What a network reading it aloud says of it
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $alt = null;
 
     // The content of the site it was picked from (a gallery's photograph), held by the post as long as the media is - null for an upload
     #[ORM\Column(length: 64, nullable: true)]
+    #[Assert\Length(max: 64)]
     private ?string $sourceType = null;
 
     #[ORM\Column(length: 64, nullable: true)]
+    #[Assert\Length(max: 64)]
     private ?string $sourceId = null;
 
     #[ORM\Column(options: ['default' => 0])]
@@ -235,7 +241,7 @@ class SocialMedia implements \Stringable
 
     public function setAlt(?string $alt): self
     {
-        $this->alt = null === $alt || '' === trim($alt) ? null : trim($alt);
+        $this->alt = null === $alt || '' === trim($alt) ? null : mb_substr(trim($alt), 0, 255);
 
         return $this;
     }

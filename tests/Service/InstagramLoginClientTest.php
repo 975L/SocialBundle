@@ -61,11 +61,12 @@ class InstagramLoginClientTest extends TestCase
         $this->assertSame('https://api.instagram.com/oauth/access_token', $this->calls[0]['url']);
         $this->assertStringContainsString('grant_type=authorization_code', (string) $this->calls[0]['body']);
         $this->assertStringContainsString('client_secret=secret', (string) $this->calls[0]['body']);
-        $this->assertStringStartsWith('https://graph.instagram.com/access_token?', $this->calls[1]['url']);
-        $this->assertStringContainsString('grant_type=ig_exchange_token', $this->calls[1]['url']);
-        $this->assertStringContainsString('access_token=short', $this->calls[1]['url']);
+        $this->assertSame(['POST', 'https://graph.instagram.com/access_token'], [$this->calls[1]['method'], $this->calls[1]['url']]);
+        $this->assertStringContainsString('grant_type=ig_exchange_token', (string) $this->calls[1]['body']);
+        $this->assertContains('Authorization: Bearer short', $this->calls[1]['headers']);
         $this->assertStringStartsWith(InstagramLoginClient::GRAPH . '/me?', $this->calls[2]['url']);
-        $this->assertStringContainsString('access_token=long', $this->calls[2]['url']);
+        $this->assertStringNotContainsString('access_token', $this->calls[2]['url']);
+        $this->assertContains('Authorization: Bearer long', $this->calls[2]['headers']);
     }
 
     // The short token answered bare rather than wrapped in "data"
@@ -77,7 +78,7 @@ class InstagramLoginClientTest extends TestCase
             new MockResponse('{"user_id": "77", "username": "catalog"}'),
         ])->connect('code', 'https://example.org/callback');
 
-        $this->assertStringContainsString('access_token=short', $this->calls[1]['url']);
+        $this->assertContains('Authorization: Bearer short', $this->calls[1]['headers']);
     }
 
     // A refusal says Instagram's own reason, its message standing at a place of its own on the token host
@@ -112,6 +113,8 @@ class InstagramLoginClientTest extends TestCase
 
         $this->assertStringStartsWith('https://graph.instagram.com/refresh_access_token?', $this->calls[0]['url']);
         $this->assertStringContainsString('grant_type=ig_refresh_token', $this->calls[0]['url']);
+        $this->assertStringNotContainsString('ig-token', $this->calls[0]['url']);
+        $this->assertContains('Authorization: Bearer ig-token', $this->calls[0]['headers']);
         $this->assertSame('renewed', $this->written[0]['social-instagram-access-token']);
         $this->assertEqualsWithDelta(new \DateTimeImmutable('+60 days')->getTimestamp(), new \DateTimeImmutable((string) $this->written[0]['social-instagram-token-expires-at'])->getTimestamp(), 5);
     }

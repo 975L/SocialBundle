@@ -43,6 +43,7 @@ class SocialPost implements \Stringable
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(max: 255)]
     private string $title;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
@@ -66,6 +67,7 @@ class SocialPost implements \Stringable
 
     // The language it is written in ("fr", "en"), the content's when prepared from one - null for the site's default. Bluesky files the post under it
     #[ORM\Column(length: 8, nullable: true)]
+    #[Assert\Length(max: 8)]
     private ?string $locale = null;
 
     // The series it was generated in, prolonged from its last post - none for a post prepared on its own, or once its series is deleted
@@ -75,10 +77,12 @@ class SocialPost implements \Stringable
 
     // The key a JSON import gave the post, unique in its series: importing the file again updates the post rather than making it twice (see SocialDraftImporter)
     #[ORM\Column(length: 190, nullable: true)]
+    #[Assert\Length(max: 190)]
     private ?string $importKey = null;
 
     // What that import wrote, hashed: a post imported again unchanged is left as it is, approval included
     #[ORM\Column(length: 64, nullable: true)]
+    #[Assert\Length(max: 64)]
     private ?string $importHash = null;
 
     /** @var Collection<int, SocialMedia> */
@@ -93,16 +97,20 @@ class SocialPost implements \Stringable
 
     public function __construct(
         #[ORM\Column(length: 64)]
+        #[Assert\Length(max: 64)]
         private string $sourceType,
         // The source's own id, or the sha1 of the url for a post prepared from one - an url does not fit an indexed column
         #[ORM\Column(length: 64)]
+        #[Assert\Length(max: 64)]
         private string $sourceId,
         string $title,
         // What goes out to the networks, so absolute - no top-level domain demanded, a source's own address on a local site having none, on a screen where that field cannot be retouched
         #[ORM\Column(length: 2048)]
         #[Assert\Url(protocols: ['http', 'https'], requireTld: false)]
+        #[Assert\Length(max: 2048)]
         private string $url,
         #[ORM\Column(length: 2048, nullable: true)]
+        #[Assert\Length(max: 2048)]
         private ?string $imageUrl,
         // The moment the post goes out once approved, to the quarter of an hour (the planned run) - every post has one, a draft holding its place on the calendar
         #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]

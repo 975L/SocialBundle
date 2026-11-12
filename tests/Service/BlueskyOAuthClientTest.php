@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Service\SiteUrlResolver;
 use c975L\SocialBundle\Service\BlueskyOAuthClient;
 use c975L\SocialBundle\Service\ConfigValueWriter;
 use c975L\SocialBundle\Service\Es256Signer;
+use c975L\SocialBundle\Service\ProductionGuard;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -43,7 +44,7 @@ class BlueskyOAuthClientTest extends TestCase
     // The nonce the account's server asks for, which it changes as time goes
     private string $pdsNonce = 'n-pds';
 
-    private function createClient(): BlueskyOAuthClient
+    private function createClient(string $environment = 'prod'): BlueskyOAuthClient
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(fn (string $slug): ?string => $this->config[$slug] ?? null);
@@ -60,7 +61,7 @@ class BlueskyOAuthClientTest extends TestCase
         $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $urlGenerator->method('generate')->willReturnCallback(static fn (string $route): string => '/' . $route);
 
-        return new BlueskyOAuthClient(new MockHttpClient($this->respond(...)), $configService, $writer, new SiteUrlResolver($configService), $urlGenerator, new Es256Signer(), new LockFactory(new InMemoryStore()));
+        return new BlueskyOAuthClient(new MockHttpClient($this->respond(...)), $configService, $writer, new SiteUrlResolver($configService), $urlGenerator, new Es256Signer(), new LockFactory(new InMemoryStore()), new ProductionGuard($environment));
     }
 
     /** @param array<string, mixed> $options */
@@ -273,6 +274,20 @@ class BlueskyOAuthClientTest extends TestCase
         $this->assertSame('DPoP ' . $session['accessToken'], $call['headers']['authorization']);
         $this->assertSame(Es256Signer::base64Url(hash('sha256', $session['accessToken'], true)), $this->dpopClaims($call['headers']['dpop'])['ath']);
         $this->assertSame('n-pds', $this->dpopClaims($call['headers']['dpop'])['nonce']);
+    }
+
+    // Outside production the single-use refresh token is never spent: production's connection would end with it
+    public function testNoRefreshOutsideProduction(): void
+    {
+        $this->config[BlueskyOAuthClient::SESSION_SLUG] = (string) json_encode([...$this->pending(), 'did' => 'did:plc:abc', 'pds' => 'https://pds.example', 'accessToken' => 'old', 'refreshToken' => 'refresh-old', 'expiresAt' => time() - 10]);
+
+        $this->expectExceptionMessage('The Bluesky tokens are only renewed in production.');
+
+        try {
+            $this->createClient('dev')->call('com.atproto.repo.createRecord', ['json' => ['repo' => 'did:plc:abc']]);
+        } finally {
+            $this->assertSame([], $this->requests);
+        }
     }
 
     // A pair another process already refreshed is taken as is: the spent refresh token is never replayed

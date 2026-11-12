@@ -47,6 +47,7 @@ class PinterestClient
         private readonly ConfigServiceInterface $configService,
         private readonly ConfigValueWriter $configValueWriter,
         private readonly int $statusDelay = 10,
+        private readonly ProductionGuard $productionGuard = new ProductionGuard(),
     ) {
     }
 
@@ -113,9 +114,20 @@ class PinterestClient
         return $values + ['social-pinterest-username' => (string) $account['username']];
     }
 
+    // Whether this environment may spend the single-use refresh token, the same guard as TikTok's
+    public function renewsHere(): bool
+    {
+        return $this->productionGuard->isProduction();
+    }
+
     // Trades the refresh token for new ones and stores them at once, the old refresh token being spent by the exchange
     public function refresh(): void
     {
+        // The refresh token is single-use: spent outside production, it would end production's connection
+        if (!$this->renewsHere()) {
+            throw new \RuntimeException('The Pinterest tokens are only renewed in production.');
+        }
+
         $refreshToken = $this->config('social-pinterest-refresh-token');
         if ('' === $refreshToken) {
             throw new \RuntimeException('No Pinterest account is connected.');

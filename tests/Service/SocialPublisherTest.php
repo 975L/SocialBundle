@@ -58,6 +58,9 @@ class SocialPublisherTest extends TestCase
     private array $asked = [];
 
     /** @var list<string> */
+    // The flushes the entity manager was asked
+    private int $flushes = 0;
+
     private array $published = [];
 
     private ?LockFactory $lockFactory = null;
@@ -208,6 +211,9 @@ class SocialPublisherTest extends TestCase
         });
         $entityManager->method('remove')->willReturnCallback(function (object $entity): void {
             $this->removed[] = $entity;
+        });
+        $entityManager->method('flush')->willReturnCallback(function (): void {
+            ++$this->flushes;
         });
 
         return new SocialPublisher(
@@ -643,6 +649,17 @@ class SocialPublisherTest extends TestCase
         $this->assertSame('already', $report['other']['message']);
     }
 
+    // Each network saved as soon as it was sent: a process killed on the next one never sends the first again
+    public function testEachNetworkIsSavedOnceSent(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'bluesky', 'Text');
+        new SocialPostTarget($post, 'other', 'Text');
+        $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createNetwork('bluesky'), $this->createNetwork('other')])->publish($post);
+
+        $this->assertSame(3, $this->flushes);
+    }
+
     // One network refusing leaves a failed target, the others still posting
     public function testARefusingNetworkLeavesAFailedTargetAndTheOthersPost(): void
     {
@@ -1017,14 +1034,14 @@ class SocialPublisherTest extends TestCase
     }
 
     // A network posting as a Page and sharing it again on the member's profile: what it was sent and reshared recorded in $this->published, a refused reshare thrown while $reshareFailures lasts
-    private function createResharingNetwork(int $reshareFailures = 0, bool $page = true): NetworkPublisherInterface
+    private function createResharingNetwork(int $reshareFailures = 0, bool $page = true, string $postId = 'urn:li:share:1'): NetworkPublisherInterface
     {
         $network = $this->createFollowingNetwork(ProfileResharePublisherInterface::class, 'linkedin', 3000, 20);
         $network->method('canReshare')->willReturn($page);
-        $network->method('publish')->willReturnCallback(function (string $text, SocialContent $content): string {
+        $network->method('publish')->willReturnCallback(function (string $text, SocialContent $content) use ($postId): string {
             $this->published[] = 'post:' . $content->url;
 
-            return 'urn:li:share:1';
+            return $postId;
         });
         $network->method('reshare')->willReturnCallback(function (string $postId, string $text) use (&$reshareFailures): string {
             if ($reshareFailures-- > 0) {
@@ -1067,6 +1084,20 @@ class SocialPublisherTest extends TestCase
 
         $this->assertSame(['post:https://example.org/42', 'reshare:urn:li:share:1:Our new post'], $this->published);
         $this->assertSame(['status' => 'published', 'message' => 'urn:li:share:1'], $report['linkedin'] ?? null);
+    }
+
+    // A post accepted without its id stays published, never sent again, its reshare said impossible rather than sent on no post
+    public function testAPostAcceptedWithoutItsIdIsNotResharedNorSentAgain(): void
+    {
+        $post = new SocialPost('gallery_media', '42', 'Title', 'https://example.org/42', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'linkedin', 'Text')->setReshare('Our new post');
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', null)], [$this->createResharingNetwork(postId: '')]);
+
+        $report = $publisher->publish($post);
+
+        $this->assertSame('published', $report['linkedin']['status']);
+        $this->assertStringContainsString('cannot be reshared', (string) ($report['linkedin']['reshare_error'] ?? ''));
+        $this->assertSame(['post:https://example.org/42'], $this->published);
     }
 
     // A network back on a profile reshares nothing, the reshare said refused with its reason

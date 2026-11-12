@@ -83,12 +83,12 @@ class SocialSeriesGenerator
         return $moments;
     }
 
-    // $months after $start on its day and at its time, the last day of a month too short for it
-    private function monthsAfter(\DateTimeImmutable $start, int $months): \DateTimeImmutable
+    // $months after $start at its time, on $day (the day of $start by default), the last day of a month too short for it
+    private function monthsAfter(\DateTimeImmutable $start, int $months, ?int $day = null): \DateTimeImmutable
     {
         $month = $start->modify('first day of this month')->modify(sprintf('+%d months', $months));
 
-        return $month->setDate((int) $month->format('Y'), (int) $month->format('n'), min((int) $start->format('j'), (int) $month->format('t')));
+        return $month->setDate((int) $month->format('Y'), (int) $month->format('n'), min($day ?? (int) $start->format('j'), (int) $month->format('t')));
     }
 
     // The series saved and its drafts made from $start - a media given stored once, for every draft and every prolongation to reference
@@ -150,8 +150,15 @@ class SocialSeriesGenerator
             return [];
         }
 
+        // A monthly series keeps the day of its first post: after 28 February, 31 March again for a series of the 31st
+        if ('month' === $series->getFrequency()) {
+            $day = (int) ($this->seriesRepository->findFirstPlannedAt($series) ?? $last)->format('j');
+            $moments = array_map(fn (int $months): \DateTimeImmutable => $this->monthsAfter($last, $months, $day), range(1, max(1, $series->getCount())));
+
+            return null === $until ? $moments : array_values(array_filter($moments, static fn (\DateTimeImmutable $moment): bool => $moment <= $until));
+        }
+
         $start = match ($series->getFrequency()) {
-            'month' => $last->modify('+1 month'),
             'weekdays' => $last->modify('+1 day'),
             default => $last->modify(sprintf('+%d days', max(1, $series->getInterval()))),
         };

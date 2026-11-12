@@ -114,6 +114,12 @@ class BlueskyPublisher implements NetworkPublisherInterface, RepostPublisherInte
         return new CommentCount($this->publicReader->replyCount($externalId), sprintf('https://bsky.app/profile/%s/post/%s', $parts[2] ?? '', $parts[4] ?? ''));
     }
 
+    // Read as the count is, with no token
+    public function latestComments(string $externalId, int $limit): array
+    {
+        return $this->publicReader->latestReplies($externalId, $limit);
+    }
+
     // The record as createRecord would receive it, the blobs Bluesky has not issued yet standing as their own path or url
     public function preview(string $text, SocialContent $content, array $medias = []): array
     {

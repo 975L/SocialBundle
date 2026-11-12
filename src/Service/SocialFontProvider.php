@@ -41,7 +41,10 @@ class SocialFontProvider
         if (!is_dir(\dirname($path))) {
             mkdir(\dirname($path), 0o775, true);
         }
-        file_put_contents($path, $this->httpClient->request('GET', $url, ['timeout' => 30])->getContent());
+        // Written aside then renamed, so another request never reads a font cut short
+        $temporary = $path . '.' . bin2hex(random_bytes(4)) . '.tmp';
+        file_put_contents($temporary, $this->httpClient->request('GET', $url, ['timeout' => 30])->getContent());
+        rename($temporary, $path);
 
         return $path;
     }

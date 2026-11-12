@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Entity;
 use c975L\SocialBundle\Repository\SocialSeriesRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // A series of drafts as it was asked for (see SocialSeriesGenerator): its pace, its texts and its contents, kept so it is prolonged with the same settings and its end announced by email before it comes
 #[ORM\Entity(repositoryClass: SocialSeriesRepository::class)]
@@ -47,10 +48,12 @@ class SocialSeries implements \Stringable
      */
     public function __construct(
         #[ORM\Column(length: 255)]
+        #[Assert\Length(max: 255)]
         private string $title,
         #[ORM\Column]
         private int $count,
         #[ORM\Column(length: 16)]
+        #[Assert\Length(max: 16)]
         private string $frequency,
         // Named apart: INTERVAL is a reserved word in MySQL and MariaDB
         #[ORM\Column(name: 'pace_interval')]
@@ -58,6 +61,7 @@ class SocialSeries implements \Stringable
         #[ORM\Column(type: Types::JSON)]
         private array $weekdays,
         #[ORM\Column(length: 16)]
+        #[Assert\Length(max: 16)]
         private string $mode,
         #[ORM\Column(type: Types::TEXT)]
         private string $text,

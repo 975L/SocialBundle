@@ -27,6 +27,11 @@ class SocialPostWriter extends AbstractAiProviderClient
     // How many texts already posted on a network it is shown, enough for a tone without paying for a history
     private const int EXAMPLES = 3;
 
+    // The answer's ceiling: room for a reasoning model's thinking, then two tokens per character asked (accents, emojis and JSON escapes), never above UiBundle's widest (AiRephraseClient's), which every model takes - a ceiling is no cost, the tokens used being billed
+    private const int CEILING_BASE = 2048;
+
+    private const int CEILING_MAX = 8192;
+
     // What each network's audience expects - facts about the networks, not about a site. A network of a site's own gets its length alone
     private const array RULES = [
         'bluesky' => 'A short post. The link written out in the text. Zero to two hashtags.',
@@ -70,7 +75,7 @@ class SocialPostWriter extends AbstractAiProviderClient
             return [];
         }
 
-        $answer = $this->send($this->prompt($content, $maxLengths, $variables), 'You write the social network posts of a website. You follow the site\'s guidelines and each network\'s rules, and answer with a JSON object only.');
+        $answer = $this->send($this->prompt($content, $maxLengths, $variables), 'You write the social network posts of a website. You follow the site\'s guidelines and each network\'s rules, and answer with a JSON object only.', $this->ceiling(array_sum($maxLengths)));
 
         return null === $answer ? [] : $this->texts($answer, $maxLengths);
     }
@@ -87,7 +92,7 @@ class SocialPostWriter extends AbstractAiProviderClient
         $prompt = ('' === $guidelines ? '' : "The site's guidelines:\n" . $guidelines . "\n\n")
             . "What the posts are about:\n" . trim($instruction) . "\n\n"
             . sprintf('Write %d different posts on it, each standing on its own, %d characters at most each, in the language of the instruction. Invent nothing the instruction does not say. Answer with this JSON array of strings only: ["the first post", ...]', $count, $maxLength);
-        $answer = $this->send($prompt, 'You write the social network posts of a website. You follow the site\'s guidelines, and answer with a JSON array only.');
+        $answer = $this->send($prompt, 'You write the social network posts of a website. You follow the site\'s guidelines, and answer with a JSON array only.', $this->ceiling($count * $maxLength));
 
         $texts = [];
         foreach (null === $answer ? [] : $this->strings($answer) as $text) {
@@ -97,6 +102,12 @@ class SocialPostWriter extends AbstractAiProviderClient
         }
 
         return $texts;
+    }
+
+    // The tokens an answer of $characters may take, so a long JSON is never cut by the ceiling - a cut answer being dropped whole (see AbstractAiProviderClient::send())
+    private function ceiling(int $characters): int
+    {
+        return min(self::CEILING_MAX, self::CEILING_BASE + 2 * $characters);
     }
 
     // The non-empty strings of the array found in the answer, whatever a model puts around it

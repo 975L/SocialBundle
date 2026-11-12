@@ -11,6 +11,7 @@
 namespace c975L\SocialBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\SocialBundle\Service\ProductionGuard;
 use c975L\SocialBundle\Service\TikTokClient;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -186,7 +187,7 @@ class TikTokClientTest extends TestCase
     // Outside production nothing is spent, a database imported locally holding production's refresh token
     public function testTheTokensAreOnlyRenewedInProduction(): void
     {
-        $client = new TikTokClient($this->httpClient([]), $this->configService(['social-tiktok-refresh-token' => 'rft.token']), $this->configValueWriter(), new LockFactory(new InMemoryStore()), 'dev');
+        $client = new TikTokClient($this->httpClient([]), $this->configService(['social-tiktok-refresh-token' => 'rft.token']), $this->configValueWriter(), new LockFactory(new InMemoryStore()), new ProductionGuard('dev'));
 
         $this->assertFalse($client->renewsHere());
         try {

@@ -135,6 +135,7 @@ class SocialImageExporterTest extends TestCase
 
         $this->assertSame($first, $exporter->storyUrl(new SocialContent('2', 'Title', 'https://example.org', imagePath: $image)));
         $this->assertNotSame($first, $exporter->storyUrl(new SocialContent('1', 'Another', 'https://example.org', imagePath: $image)));
+        $this->assertSame([], glob($this->projectDir . '/public/' . SocialImageExporter::DIRECTORY . '/*.tmp'));
     }
 
     // The site's default image says nothing of the post: it goes out 4:5 with the title, or square on a site choosing it

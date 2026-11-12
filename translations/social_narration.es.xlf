@@ -48,7 +48,7 @@
             </trans-unit>
             <trans-unit id="HdY9GHw">
                 <source>narration.guided_step_social_comments_email</source>
-                <target>Después, el sitio le escribe cada tres horas si hay novedades: un solo correo, con la dirección de cada publicación.</target>
+                <target>Después, el sitio le escribe cada tres horas si hay novedades: un solo correo, que cita cada comentario nuevo con la dirección de su publicación.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>

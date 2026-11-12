@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Service;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 // The OAuth half of the Google connections, kept apart from GoogleBusinessProfileSource so what talks to Google's token endpoint is one stubable seam - same shape as ConfigBundle's own AiCrawlerListClient. The Business Profile is its default; YoutubeClient passes its own scopes and refresh token slug, a Google token only covering the scopes granted in its consent
@@ -128,10 +129,16 @@ class GoogleOAuthClient
         $token = json_decode($response->getContent(false), true);
 
         if ($response->getStatusCode() >= 400 || !is_array($token)) {
-            throw new \RuntimeException(sprintf('Google refused the token request (%d): %s', $response->getStatusCode(), is_array($token) ? ($token['error_description'] ?? $token['error'] ?? '') : $response->getContent(false)));
+            throw new \RuntimeException(sprintf('Google refused the token request (%d): %s', $response->getStatusCode(), is_array($token) ? ($token['error_description'] ?? $token['error'] ?? '') : $response->getContent(false)), $response->getStatusCode());
         }
 
         return $token;
+    }
+
+    // Whether a failed token request is Google's outage (a 5xx, no answer at all) rather than a refusal of the stored connection, which only connecting again mends
+    public static function isOutage(\Throwable $exception): bool
+    {
+        return $exception instanceof TransportExceptionInterface || $exception->getCode() >= 500;
     }
 
     private function clientId(): ?string

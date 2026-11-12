@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Entity;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // One network's version of a post: its own text, cut to what that network accepts and editable until it goes out, and what became of it there
 #[ORM\Entity]
@@ -33,6 +34,7 @@ class SocialPostTarget implements \Stringable
 
     // What the network calls the post (Bluesky's "at://" uri), kept to find it again there
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $externalId = null;
 
     // The network's own words for its refusal, shown on the screen where the post is published again
@@ -45,6 +47,7 @@ class SocialPostTarget implements \Stringable
 
     // What the network calls the comment once it is there - never sent twice
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $commentId = null;
 
     // The network's refusal of the comment, the post itself staying published: only the comment is sent again
@@ -57,6 +60,7 @@ class SocialPostTarget implements \Stringable
 
     // What the network calls the reshare once it is there - never sent twice
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $reshareId = null;
 
     // The network's refusal of the reshare, the post itself staying published: only the reshare is sent again
@@ -69,6 +73,7 @@ class SocialPostTarget implements \Stringable
 
     // What the network calls the story once it is there - never sent twice
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $storyId = null;
 
     // The network's refusal of the story, the post itself staying published: only the story is sent again
@@ -89,6 +94,7 @@ class SocialPostTarget implements \Stringable
         #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
         private SocialPost $post,
         #[ORM\Column(length: 32)]
+        #[Assert\Length(max: 32)]
         private string $network,
         #[ORM\Column(type: Types::TEXT)]
         private string $text,

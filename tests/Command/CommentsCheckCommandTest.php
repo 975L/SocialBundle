@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Command\CommentsCheckCommand;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
+use c975L\SocialBundle\Model\PostComment;
 use c975L\SocialBundle\Service\SocialAdminMailer;
 use c975L\SocialBundle\Service\SocialCommentChecker;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,7 +32,7 @@ class CommentsCheckCommandTest extends TestCase
         return new SocialPostTarget(new SocialPost(SocialPost::SOURCE_MANUAL, 'id', 'Title', 'https://example.org/a', null, new \DateTimeImmutable()), 'bluesky', 'Text');
     }
 
-    /** @param list<array{target: SocialPostTarget, count: int, added: int, url: ?string}> $read */
+    /** @param list<array{target: SocialPostTarget, count: int, added: int, url: ?string, comments: ?list<PostComment>}> $read */
     private function tester(array $read, int $days = 30, ?string $mailError = null): CommandTester
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
@@ -64,7 +65,7 @@ class CommentsCheckCommandTest extends TestCase
     public function testNewCommentsAreEmailedThenRemembered(): void
     {
         $target = $this->target();
-        $this->tester([['target' => $target, 'count' => 3, 'added' => 2, 'url' => 'https://example.org/post']])->execute([]);
+        $this->tester([['target' => $target, 'count' => 3, 'added' => 2, 'url' => 'https://example.org/post', 'comments' => []]])->execute([]);
 
         $this->assertCount(1, $this->sent);
         $this->assertStringContainsString("- Title (Bluesky) : +2\n  https://example.org/post", $this->sent[0]);
@@ -75,7 +76,7 @@ class CommentsCheckCommandTest extends TestCase
     public function testAFailedEmailRemembersNothing(): void
     {
         $target = $this->target();
-        $this->tester([['target' => $target, 'count' => 3, 'added' => 2, 'url' => null]], mailError: 'down')->execute([]);
+        $this->tester([['target' => $target, 'count' => 3, 'added' => 2, 'url' => null, 'comments' => []]], mailError: 'down')->execute([]);
 
         $this->assertNull($target->getCommentCount());
     }
@@ -84,7 +85,7 @@ class CommentsCheckCommandTest extends TestCase
     public function testAFirstReadingSendsNothing(): void
     {
         $target = $this->target();
-        $this->tester([['target' => $target, 'count' => 4, 'added' => 0, 'url' => null]])->execute([]);
+        $this->tester([['target' => $target, 'count' => 4, 'added' => 0, 'url' => null, 'comments' => []]])->execute([]);
 
         $this->assertSame([], $this->sent);
         $this->assertSame(4, $target->getCommentCount());
@@ -93,7 +94,7 @@ class CommentsCheckCommandTest extends TestCase
     // A dry run reading nothing new says so, rather than ending in silence
     public function testADryRunWithNothingNewSaysSo(): void
     {
-        $tester = $this->tester([['target' => $this->target(), 'count' => 4, 'added' => 0, 'url' => null]]);
+        $tester = $this->tester([['target' => $this->target(), 'count' => 4, 'added' => 0, 'url' => null, 'comments' => []]]);
         $tester->execute(['--dry-run' => true]);
 
         $this->assertStringContainsString('No new comment.', $tester->getDisplay());
@@ -102,9 +103,58 @@ class CommentsCheckCommandTest extends TestCase
     public function testADryRunSendsAndRemembersNothing(): void
     {
         $target = $this->target();
-        $this->tester([['target' => $target, 'count' => 3, 'added' => 1, 'url' => null]])->execute(['--dry-run' => true]);
+        $this->tester([['target' => $target, 'count' => 3, 'added' => 1, 'url' => null, 'comments' => []]])->execute(['--dry-run' => true]);
 
         $this->assertSame([], $this->sent);
         $this->assertNull($target->getCommentCount());
+    }
+
+    // Each new comment on one line under its post, its spaces folded, cut when long, its author after it
+    public function testTheCommentsAreQuotedUnderTheirPost(): void
+    {
+        $long = new PostComment('', str_repeat('a', 300));
+        $this->tester([['target' => $this->target(), 'count' => 2, 'added' => 2, 'url' => 'https://example.org/post', 'comments' => [new PostComment('Ann', "Nice\n\n  story"), $long]]])->execute([]);
+
+        $this->assertStringContainsString("- Title (Bluesky) : +2\n  email.social_comments_quote - Ann\n  email.social_comments_quote\n  https://example.org/post", $this->sent[0]);
+    }
+
+    // The text the translator receives, folded and cut
+    public function testAQuoteIsFoldedAndCut(): void
+    {
+        $quotes = [];
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(static function (string $id, array $parameters) use (&$quotes): string {
+            if (isset($parameters['%text%'])) {
+                $quotes[] = $parameters['%text%'];
+            }
+
+            return $id;
+        });
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturn('30');
+        $checker = $this->createStub(SocialCommentChecker::class);
+        $checker->method('read')->willReturn([['target' => $this->target(), 'count' => 2, 'added' => 2, 'url' => null, 'comments' => [new PostComment('Ann', "Nice\n\n  story"), new PostComment('', str_repeat('a', 300))]]]);
+        new CommandTester(new CommentsCheckCommand($checker, $configService, $this->createStub(SocialAdminMailer::class), $this->createStub(EntityManagerInterface::class), $translator))->execute([]);
+
+        $this->assertSame('Nice story', $quotes[0]);
+        $this->assertSame(280, mb_strlen($quotes[1]));
+        $this->assertStringEndsWith('…', $quotes[1]);
+    }
+
+    // A text refused says where to connect the network again, the post's address kept
+    public function testARefusedTextSaysToConnectAgain(): void
+    {
+        $this->tester([['target' => $this->target(), 'count' => 2, 'added' => 1, 'url' => 'https://example.org/post', 'comments' => null]])->execute([]);
+
+        $this->assertStringContainsString("+1\n  email.social_comments_unread\n  https://example.org/calendar\n  https://example.org/post", $this->sent[0]);
+    }
+
+    // A comment's markup is shown, not read as the console's tags
+    public function testAQuoteIsEscapedOnTheConsole(): void
+    {
+        $tester = $this->tester([['target' => $this->target(), 'count' => 1, 'added' => 1, 'url' => null, 'comments' => [new PostComment('<error>x</error>', 'Hi')]]]);
+        $tester->execute(['--dry-run' => true]);
+
+        $this->assertStringContainsString('<error>x</error>', $tester->getDisplay());
     }
 }

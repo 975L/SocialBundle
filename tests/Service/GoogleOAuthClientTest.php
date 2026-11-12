@@ -108,6 +108,18 @@ class GoogleOAuthClientTest extends TestCase
         $this->createClient($httpClient)->exchangeCode('auth-code', 'https://example.org/callback');
     }
 
+    // The refusal carries its status, telling Google's outage from a revoked connection
+    public function testARefusalCarriesItsStatusToTellAnOutage(): void
+    {
+        try {
+            $this->createClient(new MockHttpClient([new MockResponse('<html></html>', ['http_code' => 503])]))->exchangeCode('auth-code', 'https://example.org/callback');
+            $this->fail('A 503 should throw.');
+        } catch (\RuntimeException $exception) {
+            $this->assertTrue(GoogleOAuthClient::isOutage($exception));
+        }
+        $this->assertFalse(GoogleOAuthClient::isOutage(new \RuntimeException('invalid_grant', 400)));
+    }
+
     public function testGetAccessTokenMintsOneFromTheStoredRefreshToken(): void
     {
         $httpClient = new MockHttpClient([new MockResponse('{"access_token":"minted"}')]);

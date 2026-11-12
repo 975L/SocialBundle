@@ -31,18 +31,18 @@ class InstagramHealthCheckProviderTest extends TestCase
         return $checks[0]['status'] ?? null;
     }
 
-    // No app, or never connected: a site whose Instagram goes through its Page is not broken here
-    public function testNothingIsReportedWithoutAConnection(): void
+    // No app, or never connected: a site whose Instagram goes through its Page is not broken here, said skipped so a past error never stays
+    public function testASkippedRowIsReportedWithoutAConnection(): void
     {
-        $this->assertNull($this->checkStatus('+50 days', false));
-        $this->assertNull($this->checkStatus(null));
+        $this->assertSame(HealthCheckResult::STATUS_SKIPPED, $this->checkStatus('+50 days', false));
+        $this->assertSame(HealthCheckResult::STATUS_SKIPPED, $this->checkStatus(null));
     }
 
     // Its token emptied to go back to the Page, the date left behind says nothing any more
-    public function testNothingIsReportedOnceTheTokenIsEmptied(): void
+    public function testASkippedRowIsReportedOnceTheTokenIsEmptied(): void
     {
-        $this->assertNull($this->checkStatus('+50 days', accessToken: ''));
-        $this->assertNull($this->checkStatus('-1 day', accessToken: ''));
+        $this->assertSame(HealthCheckResult::STATUS_SKIPPED, $this->checkStatus('+50 days', accessToken: ''));
+        $this->assertSame(HealthCheckResult::STATUS_SKIPPED, $this->checkStatus('-1 day', accessToken: ''));
     }
 
     public function testARenewedConnectionIsFine(): void

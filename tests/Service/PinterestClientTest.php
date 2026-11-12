@@ -11,6 +11,7 @@
 namespace c975L\SocialBundle\Tests\Service;
 
 use c975L\SocialBundle\Service\PinterestClient;
+use c975L\SocialBundle\Service\ProductionGuard;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
@@ -22,7 +23,7 @@ class PinterestClientTest extends TestCase
      * @param list<MockResponse>    $responses
      * @param array<string, string> $config
      */
-    private function client(array $responses = [], array $config = []): PinterestClient
+    private function client(array $responses = [], array $config = [], string $environment = 'prod'): PinterestClient
     {
         $config += [
             'social-pinterest-client-id' => 'id',
@@ -34,7 +35,7 @@ class PinterestClientTest extends TestCase
             'social-pinterest-board-id' => '42',
         ];
 
-        return new PinterestClient($this->httpClient($responses), $this->configService($config), $this->configValueWriter(), 0);
+        return new PinterestClient($this->httpClient($responses), $this->configService($config), $this->configValueWriter(), 0, new ProductionGuard($environment));
     }
 
     // The consent asks what pinning needs, back to the route the app declares
@@ -82,6 +83,18 @@ class PinterestClientTest extends TestCase
         $this->assertStringContainsString('continuous_refresh=true', (string) $this->calls[0]['body']);
         $this->assertSame(['pina-new', 'pinr-new'], [$this->written[0]['social-pinterest-access-token'], $this->written[0]['social-pinterest-refresh-token']]);
         $this->assertSame($end, new \DateTimeImmutable((string) $this->written[0]['social-pinterest-refresh-token-expires-at'])->getTimestamp());
+    }
+
+    // Outside production the single-use refresh token is never spent: production's connection would end with it
+    public function testNoRefreshOutsideProduction(): void
+    {
+        $this->expectExceptionMessage('The Pinterest tokens are only renewed in production.');
+
+        try {
+            $this->client(environment: 'dev')->refresh();
+        } finally {
+            $this->assertSame([], $this->calls);
+        }
     }
 
     // A refresh that hands no new refresh token keeps the one in place, the access token renewed all the same

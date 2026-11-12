@@ -235,6 +235,12 @@ class LinkedInClientTest extends TestCase
         $this->assertContains('LinkedIn-Version: ' . LinkedInClient::VERSION, $this->calls[0]['headers']);
     }
 
+    // A post LinkedIn accepted without its urn is published all the same, never marked failed and sent twice
+    public function testAPostAcceptedWithoutItsUrnIsPublished(): void
+    {
+        $this->assertSame('', $this->client([new MockResponse('', ['http_code' => 201])])->createPost(['commentary' => 'x']));
+    }
+
     // An expired token is no connection: the posts would only fail one after the other
     public function testAnExpiredTokenIsNoConnection(): void
     {

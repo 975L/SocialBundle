@@ -80,6 +80,20 @@ class MediaPurgeCommandTest extends TestCase
         $this->assertStringContainsString('1 media(s) and 1 copy(ies) deleted.', $tester->getDisplay());
     }
 
+    // A reference (a gallery's photo) stays with its post: it frees no disk, and removed it would be offered again
+    public function testAReferenceIsKept(): void
+    {
+        $post = $this->post();
+        $post->addMedia(SocialMedia::reference($post, 'medias/gallery/item-1.jpg', 'image/jpeg'));
+
+        $tester = $this->tester('90', $post);
+        $tester->execute([]);
+
+        $this->assertCount(1, $post->getMedias());
+        $this->assertTrue($post->getMedias()->first()->isReference());
+        $this->assertStringContainsString('1 media(s) and 0 copy(ies) deleted.', $tester->getDisplay());
+    }
+
     // A retention of 0 keeps everything
     public function testARetentionOfZeroKeepsEverything(): void
     {

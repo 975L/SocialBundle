@@ -58,9 +58,10 @@ class SeriesEndingCommand extends Command
             return Command::SUCCESS;
         }
 
-        // The series ending within the delay, not announced yet for that end
+        // The series ending within the delay, not announced yet for that end - one ended up to the same delay ago still said, so an end missed while the cron was down is not lost, never one finished long ago
         $limit = new \DateTimeImmutable(sprintf('+%d days', $days));
-        $ending = array_filter($this->seriesRepository->findWithLastPlannedAt(), static fn (array $row): bool => $row['lastPlannedAt'] <= $limit && $row['lastPlannedAt'] != $row['series']->getNotifiedFor());
+        $since = new \DateTimeImmutable(sprintf('-%d days', $days));
+        $ending = array_filter($this->seriesRepository->findWithLastPlannedAt(), static fn (array $row): bool => $row['lastPlannedAt'] <= $limit && $row['lastPlannedAt'] >= $since && $row['lastPlannedAt'] != $row['series']->getNotifiedFor());
         if ([] === $ending) {
             $io->success('No series coming to its end.');
 

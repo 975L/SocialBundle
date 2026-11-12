@@ -45,4 +45,10 @@ class SocialMediaTest extends TestCase
         $this->assertSame('', (string) new SocialMedia());
         $this->assertSame('a.mp4', (string) new SocialMedia()->setFilename('medias/social/posts/a.mp4'));
     }
+
+    // A text alternative longer than its column is cut, never failing the save
+    public function testAnAltIsCutToItsColumn(): void
+    {
+        $this->assertSame(255, mb_strlen((string) new SocialMedia()->setAlt(str_repeat('é', 300))->getAlt()));
+    }
 }

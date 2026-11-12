@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Tests\Command;
 use c975L\SocialBundle\Command\PublishCommand;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Repository\SocialPostRepository;
+use c975L\SocialBundle\Service\ProductionGuard;
 use c975L\SocialBundle\Service\SocialAdminMailer;
 use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPublisher;
@@ -32,7 +33,7 @@ class PublishCommandTest extends TestCase
     /**
      * @param array<string, array<string, mixed>> $report
      */
-    private function createTester(array $report, ?\Throwable $failure = null): CommandTester
+    private function createTester(array $report, ?\Throwable $failure = null, string $environment = 'prod'): CommandTester
     {
         $socialPublisher = $this->createStub(SocialPublisher::class);
         $socialPublisher->method('publishPlanned')->willReturnCallback(function (bool $dryRun) use ($report): array {
@@ -62,7 +63,18 @@ class PublishCommandTest extends TestCase
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
 
-        return new CommandTester(new PublishCommand($socialPublisher, new SocialPlanner(), $repository, $mailer, $translator));
+        return new CommandTester(new PublishCommand($socialPublisher, new SocialPlanner(), $repository, $mailer, $translator, new ProductionGuard($environment)));
+    }
+
+    // Outside production a planned run sends nothing, a copy of production's database posting on its accounts otherwise - "--force" for a deliberate test
+    public function testPlannedPostsAreOnlySentInProductionUnlessForced(): void
+    {
+        $tester = $this->createTester([], environment: 'dev');
+        $this->assertSame(Command::SUCCESS, $tester->execute([]));
+        $this->assertSame([], $this->called);
+
+        $tester->execute(['--force' => true]);
+        $this->assertSame(['method' => 'publishPlanned', 'dryRun' => false], $this->called);
     }
 
     // Most quarter-hourly runs have nothing due, which a cron must not read as a failure

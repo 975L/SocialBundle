@@ -61,10 +61,12 @@ class ReviewSynchronizer
         $name = $source->getName();
         $count = 0;
         $seen = [];
+        $drifted = false;
 
         foreach ($source->fetch() as $data) {
             // Google paginates on the mutable updateTime, so the same review can come back on two pages of one run - persisting it twice would break the whole flush on its unique source/externalId. The first pass is the freshest, hence the skip
             if (isset($seen[$data->externalId])) {
+                $drifted = true;
                 continue;
             }
 
@@ -79,8 +81,8 @@ class ReviewSynchronizer
             ++$count;
         }
 
-        // Only when the run brought something back: a fetch answering empty on a revoked token or an exhausted quota would otherwise wipe every review the site displays
-        if ([] !== $seen) {
+        // Only when the run brought something back, in a stable order: a fetch answering empty on a revoked token would wipe every review, and a review seen twice means another one moved onto a page already read, absent here without being gone
+        if ([] !== $seen && !$drifted) {
             foreach ($this->reviewRepository->findMissing($name, array_keys($seen)) as $removed) {
                 $this->entityManager->remove($removed);
             }
@@ -94,8 +96,8 @@ class ReviewSynchronizer
     {
         $review
             ->setExternalId($data->externalId)
-            ->setAuthorName($data->authorName)
-            ->setAuthorAvatarUrl($data->authorAvatarUrl)
+            ->setAuthorName(mb_substr($data->authorName, 0, 255))
+            ->setAuthorAvatarUrl(null !== $data->authorAvatarUrl && \strlen($data->authorAvatarUrl) <= 512 ? $data->authorAvatarUrl : null)
             ->setRating($data->rating)
             ->setComment($data->comment)
             ->setPublishedAt($data->publishedAt)

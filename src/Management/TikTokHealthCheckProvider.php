@@ -18,6 +18,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 // The TikTok tokens renew themselves nightly (see TikTokRefreshCommand): an access token over for more than a day and a half says the refresh stopped working, a refresh token past its end that the account has to connect again. Read from the config only, no call to TikTok
 class TikTokHealthCheckProvider implements HealthCheckProviderInterface
 {
+    use SkippedRowTrait;
+
     public const string KIND = 'social-tiktok';
 
     public function __construct(
@@ -36,7 +38,7 @@ class TikTokHealthCheckProvider implements HealthCheckProviderInterface
     {
         $refreshExpiresAt = $this->tikTokClient->refreshExpiresAt();
         if (!$this->tikTokClient->isConfigured() || null === $refreshExpiresAt) {
-            return [];
+            return $this->skipped('tiktok', 'TikTok', 'TikTok is not connected.');
         }
 
         $expiresAt = $this->tikTokClient->expiresAt();

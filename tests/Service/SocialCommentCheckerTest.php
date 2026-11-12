@@ -15,6 +15,7 @@ use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Model\CommentCount;
+use c975L\SocialBundle\Model\PostComment;
 use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Service\SocialCommentChecker;
 use PHPUnit\Framework\TestCase;
@@ -39,7 +40,9 @@ class SocialCommentCheckerTest extends TestCase
         return new SocialPost(SocialPost::SOURCE_MANUAL, 'id', 'Title', 'https://example.org/a', null, new \DateTimeImmutable('-1 day'));
     }
 
-    private function checker(SocialPost $post, ?\Throwable $failure = null, int $count = 3): SocialCommentChecker
+    // $texts the comments the network quotes, a Throwable when it refuses them
+    /** @param list<PostComment>|\Throwable $texts */
+    private function checker(SocialPost $post, ?\Throwable $failure = null, int $count = 3, array | \Throwable $texts = [], ?int &$limit = null): SocialCommentChecker
     {
         $network = $this->createStubForIntersectionOfInterfaces([NetworkPublisherInterface::class, CommentCountPublisherInterface::class]);
         $network->method('getName')->willReturn('bluesky');
@@ -48,6 +51,16 @@ class SocialCommentCheckerTest extends TestCase
             $network->method('commentCount')->willReturn(new CommentCount($count, 'https://example.org/post'));
         } else {
             $network->method('commentCount')->willThrowException($failure);
+        }
+
+        if ($texts instanceof \Throwable) {
+            $network->method('latestComments')->willThrowException($texts);
+        } else {
+            $network->method('latestComments')->willReturnCallback(static function (string $id, int $asked) use ($texts, &$limit): array {
+                $limit = $asked;
+
+                return $texts;
+            });
         }
 
         $repository = $this->createStub(SocialPostRepository::class);
@@ -111,5 +124,42 @@ class SocialCommentCheckerTest extends TestCase
         $this->target($post);
 
         $this->assertSame([], $this->checker($post, new \RuntimeException('Down'))->read(30));
+    }
+
+    // The text of the new ones only, no more than QUOTED asked
+    public function testTheNewCommentsAreQuoted(): void
+    {
+        $post = $this->post();
+        $this->target($post, seen: 0);
+        $text = new PostComment('Ann', 'Nice');
+
+        $read = $this->checker($post, count: 9, texts: [$text], limit: $limit)->read(30);
+
+        $this->assertSame([$text], $read[0]['comments']);
+        $this->assertSame(SocialCommentChecker::QUOTED, $limit);
+    }
+
+    // Nothing new, nothing asked
+    public function testNoTextIsAskedWithoutNews(): void
+    {
+        $post = $this->post();
+        $this->target($post, seen: 3);
+
+        $read = $this->checker($post, texts: [new PostComment('Ann', 'Nice')], limit: $limit)->read(30);
+
+        $this->assertSame([], $read[0]['comments']);
+        $this->assertNull($limit);
+    }
+
+    // A text refused keeps the count, the email telling of the comments all the same
+    public function testARefusedTextKeepsTheCount(): void
+    {
+        $post = $this->post();
+        $this->target($post, seen: 1);
+
+        $read = $this->checker($post, texts: new \RuntimeException('Missing permission'))->read(30);
+
+        $this->assertSame(2, $read[0]['added']);
+        $this->assertNull($read[0]['comments']);
     }
 }

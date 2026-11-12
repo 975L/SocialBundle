@@ -120,7 +120,7 @@ class SocialLinkedInPageController extends AbstractController
     {
         $this->configValueWriter->write(LinkedInClient::connectionValues($connection, $organization));
 
-        $this->addFlash('success', t('flash.linkedin_page_connected', ['%name%' => $organization['name'], '%date%' => LinkedInClient::connectedUntil($connection)], 'social'));
+        $this->addFlash('success', t('flash.linkedin_page_connected', ['%name%' => htmlspecialchars($organization['name']), '%date%' => LinkedInClient::connectedUntil($connection)], 'social'));
 
         return $this->redirectToRoute(SocialConnectionsController::ROUTE);
     }

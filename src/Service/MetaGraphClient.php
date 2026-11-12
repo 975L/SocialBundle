@@ -63,8 +63,8 @@ class MetaGraphClient
     public function connect(string $code, string $redirectUri): array
     {
         $credentials = ['client_id' => $this->config('social-meta-app-id'), 'client_secret' => $this->config('social-meta-app-secret')];
-        $short = $this->request('GET', '/oauth/access_token', [...$credentials, 'redirect_uri' => $redirectUri, 'code' => $code]);
-        $long = $this->request('GET', '/oauth/access_token', [...$credentials, 'grant_type' => 'fb_exchange_token', 'fb_exchange_token' => (string) $short['access_token']]);
+        $short = $this->request('POST', '/oauth/access_token', [...$credentials, 'redirect_uri' => $redirectUri, 'code' => $code]);
+        $long = $this->request('POST', '/oauth/access_token', [...$credentials, 'grant_type' => 'fb_exchange_token', 'fb_exchange_token' => (string) $short['access_token']]);
 
         $pages = $this->request('GET', '/me/accounts', ['access_token' => (string) $long['access_token'], 'fields' => 'id,name,access_token,instagram_business_account{id,username}', 'limit' => '100'])['data'] ?? [];
 
@@ -77,7 +77,7 @@ class MetaGraphClient
         return $connections;
     }
 
-    // One Graph call, parameters sent in the query for a GET and in the body otherwise
+    // One Graph call, parameters sent in the query for a GET and in the body otherwise, the token always in a header
     /**
      * @param array<string, string> $parameters
      *
@@ -96,10 +96,13 @@ class MetaGraphClient
      */
     public function requestAt(string $host, string $method, string $path, array $parameters): array
     {
-        // A transport error names the whole address, a GET's token and secret with it, and its message ends in emails, logs and screens: the path alone is said
+        // The token goes in a header, never in the address Symfony logs; a transport error names the path alone, its message ending in emails, logs and screens
+        $token = $parameters['access_token'] ?? null;
+        unset($parameters['access_token']);
         try {
             $response = $this->httpClient->request($method, $host . $path, [
                 'GET' === $method ? 'query' : 'body' => $parameters,
+                'headers' => null === $token ? [] : ['Authorization' => 'Bearer ' . $token],
                 'timeout' => 30,
             ]);
             $body = $response->getContent(false);

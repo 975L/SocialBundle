@@ -53,6 +53,7 @@ class BlueskyOAuthClient
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly Es256Signer $signer,
         private readonly LockFactory $lockFactory,
+        private readonly ProductionGuard $productionGuard = new ProductionGuard(),
     ) {
     }
 
@@ -256,6 +257,10 @@ class BlueskyOAuthClient
             // Another process may have refreshed the pair while this one waited or kept its configs in memory
             if ((int) $session['expiresAt'] > time() + self::EXPIRY_MARGIN) {
                 return $session;
+            }
+            // The refresh token is single-use: spent outside production, it would end production's connection
+            if (!$this->productionGuard->isProduction()) {
+                throw new \RuntimeException('The Bluesky tokens are only renewed in production.');
             }
 
             $response = $this->send('POST', (string) $session['tokenEndpoint'], (string) $session['dpopKey'], null, ['body' => [

@@ -56,6 +56,7 @@ class SocialFontProviderTest extends TestCase
         $path = $provider->path('Item Font');
 
         $this->assertSame('ttf-bytes', file_get_contents((string) $path));
+        $this->assertSame([], glob(\dirname((string) $path) . '/*.tmp'));
         $this->assertStringStartsWith($this->projectDir . '/var/social-fonts/', (string) $path);
         $this->assertStringContainsString('family=Item%20Font', $this->requested[0]);
         $this->assertSame('https://fonts.gstatic.com/s/family/v1/file.ttf', $this->requested[1]);

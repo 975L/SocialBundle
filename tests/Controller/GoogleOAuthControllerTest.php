@@ -28,9 +28,10 @@ class GoogleOAuthControllerTest extends TestCase
         ?GoogleOAuthClient $googleOAuthClient = null,
         ?ConfigValueWriter $configValueWriter = null,
         ?GoogleBusinessLocationResolver $googleBusinessLocationResolver = null,
+        array $config = [],
     ): GoogleOAuthController {
         $controller = new GoogleOAuthController(
-            $this->configService(),
+            $this->configService($config),
             $configValueWriter ?? $this->createStub(ConfigValueWriter::class),
             $googleOAuthClient ?? $this->oauthClient(GoogleOAuthClient::class, 'https://accounts.google.com/o/oauth2/v2/auth?state=x'),
             $googleBusinessLocationResolver ?? $this->createStub(GoogleBusinessLocationResolver::class),
@@ -62,6 +63,9 @@ class GoogleOAuthControllerTest extends TestCase
         $response = $this->createController($request, $googleOAuthClient)->connect($request);
 
         $this->assertSame('/management_social_connections', $response->getTargetUrl());
+        $session = $request->getSession();
+        \assert($session instanceof Session);
+        $this->assertSame('social', $session->getFlashBag()->peek('danger')[0]->getDomain());
         $this->assertSame(['danger' => ['review.google_not_configured']], $this->flashes($request));
     }
 
@@ -166,8 +170,8 @@ class GoogleOAuthControllerTest extends TestCase
         $this->assertSame('/management_social_connections', $response->getTargetUrl());
     }
 
-    // A fresh token left paired with the previous account's listing would answer 403 on every later synchronization, so the failed connection goes back to "not connected"
-    public function testCallbackClearsTheTokenWhenTheListingCannotBeResolved(): void
+    // A fresh token left paired with the previous account's listing would answer 403 on every later synchronization, so the failed reconnection puts back the connection that worked
+    public function testCallbackPutsBackTheWorkingConnectionWhenTheListingCannotBeResolved(): void
     {
         $googleOAuthClient = $this->createStub(GoogleOAuthClient::class);
         $googleOAuthClient->method('exchangeCode')->willReturn(['refreshToken' => 'refresh-token', 'accessToken' => 'access-token']);
@@ -184,12 +188,9 @@ class GoogleOAuthControllerTest extends TestCase
         $request = $this->createRequest(['code' => 'auth-code', 'state' => 'expected-state']);
         $request->getSession()->set('social_google_oauth_state', 'expected-state');
 
-        $this->createController($request, $googleOAuthClient, $configValueWriter, $resolver)->callback($request);
+        $previous = ['social-google-oauth-refresh-token' => 'old-token', 'social-google-business-account-id' => 'accounts/1', 'social-google-business-location-id' => 'locations/2'];
+        $this->createController($request, $googleOAuthClient, $configValueWriter, $resolver, $previous)->callback($request);
 
-        $this->assertSame([
-            'social-google-oauth-refresh-token' => null,
-            'social-google-business-account-id' => null,
-            'social-google-business-location-id' => null,
-        ], end($written));
+        $this->assertSame($previous, end($written));
     }
 }

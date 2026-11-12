@@ -29,8 +29,20 @@ class SocialSeriesRepository extends ServiceEntityRepository
     // The moment of a series' last post, null for one whose posts were all deleted
     public function findLastPlannedAt(SocialSeries $series): ?\DateTimeImmutable
     {
+        return $this->plannedAt($series, 'MAX');
+    }
+
+    // The moment of the series' first post, the day a monthly series keeps - null for a series without posts
+    public function findFirstPlannedAt(SocialSeries $series): ?\DateTimeImmutable
+    {
+        return $this->plannedAt($series, 'MIN');
+    }
+
+    // The latest or earliest moment of the series' posts
+    private function plannedAt(SocialSeries $series, string $aggregate): ?\DateTimeImmutable
+    {
         $last = $this->getEntityManager()->createQueryBuilder()
-            ->select('MAX(p.plannedAt)')
+            ->select($aggregate . '(p.plannedAt)')
             ->from(SocialPost::class, 'p')
             ->where('p.series = :series')
             ->setParameter('series', $series)

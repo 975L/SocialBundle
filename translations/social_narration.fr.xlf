@@ -48,7 +48,7 @@
             </trans-unit>
             <trans-unit id="HdY9GHw">
                 <source>narration.guided_step_social_comments_email</source>
-                <target>Ensuite, le site vous écrit toutes les trois heures s'il y a du nouveau : un seul e-mail, avec l'adresse de chaque post.</target>
+                <target>Ensuite, le site vous écrit toutes les trois heures s'il y a du nouveau : un seul e-mail, qui cite chaque nouveau commentaire avec l'adresse de son post.</target>
             </trans-unit>
             <trans-unit id="9Xxpgca">
                 <source>narration.guided_step_social_connections_open</source>

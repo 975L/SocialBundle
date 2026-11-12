@@ -140,7 +140,7 @@
             </trans-unit>
             <trans-unit id="LxI8f0T">
                 <source>description.guided_step_social_comments_email</source>
-                <target>Toutes les trois heures, le site lit le nombre de commentaires sur Bluesky, Instagram et YouTube et écrit à « email-to » un seul e-mail, avec l'adresse de chaque post. LinkedIn et Facebook préviennent déjà d'eux-mêmes.</target>
+                <target>Toutes les trois heures, le site lit les commentaires sur Bluesky, Instagram et YouTube et écrit à « email-to » un seul e-mail, qui cite chaque nouveau commentaire avec l'adresse de son post. LinkedIn et Facebook préviennent déjà d'eux-mêmes.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
@@ -188,7 +188,7 @@
             </trans-unit>
             <trans-unit id="sP4YKFK">
                 <source>description.guided_step_social_instagram_prerequisites</source>
-                <target>Cette partie se passe sur developers.facebook.com, dans l'application Meta, sous « Configuration de l'API avec la connexion Instagram » : ajoutez les autorisations instagram_business_basic et instagram_business_content_publish, déclarez comme URI de redirection l'adresse du site suivie de « /social/instagram/callback », puis invitez le compte comme testeur Instagram et acceptez l'invitation dans les réglages « Applications et sites Web » d'Instagram. Revenez ici avec l'ID et la clé secrète de l'application Instagram.</target>
+                <target>Cette partie se passe sur developers.facebook.com, dans l'application Meta, sous « Configuration de l'API avec la connexion Instagram » : ajoutez les autorisations instagram_business_basic, instagram_business_content_publish et instagram_business_manage_comments, déclarez comme URI de redirection l'adresse du site suivie de « /social/instagram/callback », puis invitez le compte comme testeur Instagram et acceptez l'invitation dans les réglages « Applications et sites Web » d'Instagram. Revenez ici avec l'ID et la clé secrète de l'application Instagram.</target>
             </trans-unit>
             <trans-unit id="2BLT8wV">
                 <source>description.guided_step_social_linkedin_connect</source>
@@ -376,7 +376,7 @@
             </trans-unit>
             <trans-unit id="7jaXTbn">
                 <source>description.guided_step_social_youtube_prerequisites</source>
-                <target>Cette partie se passe sur console.cloud.google.com, dans le projet du client OAuth Google (celui de la fiche Google, ou un nouveau) : activer « YouTube Data API v3 », ajouter les scopes youtube.upload et youtube.readonly à l'écran de consentement et le passer « En production », puis déclarer dans le client OAuth l'adresse du site suivie de « /social/youtube/callback ». Pour que les vidéos sortent en public, le projet doit aussi passer l'audit de l'API YouTube.</target>
+                <target>Cette partie se passe sur console.cloud.google.com, dans le projet du client OAuth Google (celui de la fiche Google, ou un nouveau) : activer « YouTube Data API v3 », ajouter les scopes youtube.upload, youtube.readonly et youtube.force-ssl à l'écran de consentement et le passer « En production », puis déclarer dans le client OAuth l'adresse du site suivie de « /social/youtube/callback ». Pour que les vidéos sortent en public, le projet doit aussi passer l'audit de l'API YouTube.</target>
             </trans-unit>
             <trans-unit id="yuPeBS_">
                 <source>description.social_drafts_due</source>
@@ -394,9 +394,17 @@
                 <source>email.social_comments_body</source>
                 <target>De nouveaux commentaires attendent une réponse. Le lien de chacun ouvre sa publication :</target>
             </trans-unit>
+            <trans-unit id="eJCBQmL">
+                <source>email.social_comments_quote</source>
+                <target>« %text% »</target>
+            </trans-unit>
             <trans-unit id="9p8rLGp">
                 <source>email.social_comments_subject</source>
                 <target>%count% nouveau(x) commentaire(s) sur vos publications</target>
+            </trans-unit>
+            <trans-unit id="D.UQAAl">
+                <source>email.social_comments_unread</source>
+                <target>Texte non lu : reconnectez ce réseau dans « Connexions » pour qu'il soit cité ici :</target>
             </trans-unit>
             <trans-unit id="h2bpfmG">
                 <source>email.social_drafts_reminder_body</source>
@@ -593,6 +601,10 @@
             <trans-unit id="k5cHJcN">
                 <source>flash.social_post_failed</source>
                 <target>%network% a refusé la publication : %error%</target>
+            </trans-unit>
+            <trans-unit id="oa5njhM">
+                <source>flash.social_post_gone_out</source>
+                <target>Cette publication est déjà partie : elle reste comme trace de ce qui a été envoyé.</target>
             </trans-unit>
             <trans-unit id="14WGC.k">
                 <source>flash.social_post_nothing</source>

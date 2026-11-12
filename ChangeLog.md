@@ -1,5 +1,35 @@
 # Changelog
 
+## v2.34.0
+
+New comments quoted by email, audit fixes for tokens and publishing
+
+- The email of the new comments quotes their text and author, five per post at most (12/11/2026)
+- [BC-Break] Added `CommentCountPublisherInterface::latestComments()`, implemented on Bluesky, Instagram and YouTube (12/11/2026)
+- Added `instagram_business_manage_comments` to Instagram Login's scopes and `youtube.force-ssl` to YouTube's (12/11/2026)
+- A text a connection may not read says to connect the network again, with the "Connections" address (12/11/2026)
+- Meta's tokens sent in a header, its token exchanges in POST, never in a logged address (12/11/2026)
+- A post TikTok, LinkedIn or Facebook accepted is never marked failed by a later error (12/11/2026)
+- A post accepted without its id takes no first comment nor reshare (12/11/2026)
+- Added `ProductionGuard`: Bluesky's and Pinterest's refresh tokens are only spent in `prod`, like TikTok's (12/11/2026)
+- `c975l:social:publish` sends no planned post outside `prod`, unless given `--force` (12/11/2026)
+- A monthly series prolonged keeps the day of its first post (12/11/2026)
+- Added `SocialSeriesRepository::findFirstPlannedAt()` (12/11/2026)
+- Google reviews seen twice in one run remove no missing review, the author's name and avatar bounded to their columns (12/11/2026)
+- Each network's sending flushed at once, so a killed process never posts it again (12/11/2026)
+- The JPEG copies and fonts written to a temporary file then renamed (12/11/2026)
+- A network the site does not use gives a skipped health check row instead of none (12/11/2026)
+- A Google outage is a warning in the YouTube and Google reviews health checks, no longer an error (12/11/2026)
+- Third-party text escaped in the back-office flashes (12/11/2026)
+- A post gone out can no longer be deleted from the list or by a batch (12/11/2026)
+- The media purge keeps the references (gallery photos) (12/11/2026)
+- The Google connection's flashes translated in the `social` domain, a failed reconnection putting back the working one (12/11/2026)
+- A media's text alternative bounded to 255 characters (12/11/2026)
+- `c975l:social:series:ending` no longer announces series finished long ago (12/11/2026)
+- `SocialPostWriter` sizes its answer's ceiling to the texts asked, a cut answer dropped (12/11/2026)
+- Every string column carries its `Assert\Length`, checked by `CodeRulesTest` (12/11/2026)
+- Requires `c975l/core-bundle` `^1.90` (12/11/2026)
+
 ## v2.33.1
 
 Instagram: a media not available yet is published again

@@ -63,7 +63,7 @@ class InstagramOAuthController extends AbstractController
         }
 
         $this->configValueWriter->write($values);
-        $this->addFlash('success', t('flash.instagram_connected', ['%name%' => $values['social-instagram-username']], 'social'));
+        $this->addFlash('success', t('flash.instagram_connected', ['%name%' => htmlspecialchars($values['social-instagram-username'])], 'social'));
 
         return $this->redirectToRoute(SocialConnectionsController::ROUTE);
     }

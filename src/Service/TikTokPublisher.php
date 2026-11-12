@@ -110,7 +110,14 @@ class TikTokPublisher implements NetworkPublisherInterface, PostOptionsPublisher
             if ($this->pollSeconds > 0) {
                 sleep($this->pollSeconds);
             }
-            $status = $this->tikTokClient->status($publishId);
+            // Accepted is published: a status TikTok cannot answer now (network, server, token renewal) never marks the post failed, so it is never sent twice
+            try {
+                $status = $this->tikTokClient->status($publishId);
+            } catch (\RuntimeException $exception) {
+                $this->logger->warning('TikTok accepted the post {id} but its status could not be read: {error}', ['id' => $publishId, 'error' => $exception->getMessage()]);
+
+                return $publishId;
+            }
             if ('FAILED' === $status['status']) {
                 throw new \RuntimeException('TikTok could not post the video: ' . ($status['reason'] ?? 'no reason given'));
             }

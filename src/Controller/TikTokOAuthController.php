@@ -63,7 +63,7 @@ class TikTokOAuthController extends AbstractController
         }
 
         $this->configValueWriter->write($values);
-        $this->addFlash('success', t('flash.tiktok_connected', ['%name%' => $values['social-tiktok-display-name']], 'social'));
+        $this->addFlash('success', t('flash.tiktok_connected', ['%name%' => htmlspecialchars($values['social-tiktok-display-name'])], 'social'));
 
         return $this->redirectToRoute(SocialConnectionsController::ROUTE);
     }

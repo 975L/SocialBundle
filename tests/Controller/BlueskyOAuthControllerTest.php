@@ -99,7 +99,7 @@ class BlueskyOAuthControllerTest extends TestCase
         $response = $this->createController($request, siteHost: new \RuntimeException('"site-url" is not set.'))->connect($request);
 
         $this->assertSame('/management_social_connections', $response->getTargetUrl());
-        $this->assertSame(['danger' => ['"site-url" is not set.']], $this->flashes($request));
+        $this->assertSame(['danger' => ['&quot;site-url&quot; is not set.']], $this->flashes($request));
     }
 
     public function testConnectShowsWhatBlueskyRefused(): void
@@ -111,7 +111,7 @@ class BlueskyOAuthControllerTest extends TestCase
         $response = $this->createController($request, $oauthClient)->connect($request);
 
         $this->assertSame('/management_social_connections', $response->getTargetUrl());
-        $this->assertSame(['danger' => ['The Bluesky handle "nobody" cannot be resolved.']], $this->flashes($request));
+        $this->assertSame(['danger' => ['The Bluesky handle &quot;nobody&quot; cannot be resolved.']], $this->flashes($request));
     }
 
     public function testCallbackFinishesTheAuthorizationWithTheCodeAndTheIssuer(): void

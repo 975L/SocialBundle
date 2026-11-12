@@ -19,6 +19,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 // The Pinterest tokens renew themselves nightly (see PinterestRefreshCommand): an access token past its end says the refresh stopped working, a refresh token past its end that the account has to connect again, a connection without a board that nothing is pinned. Read from the config only, no call to Pinterest
 class PinterestHealthCheckProvider implements HealthCheckProviderInterface
 {
+    use SkippedRowTrait;
+
     public const string KIND = 'social-pinterest';
 
     public function __construct(
@@ -37,7 +39,7 @@ class PinterestHealthCheckProvider implements HealthCheckProviderInterface
     {
         $refreshExpiresAt = $this->pinterestClient->refreshExpiresAt();
         if (!$this->pinterestClient->isConfigured() || null === $refreshExpiresAt) {
-            return [];
+            return $this->skipped('pinterest', 'Pinterest', 'Pinterest is not connected.');
         }
 
         $expiresAt = $this->pinterestClient->expiresAt();
