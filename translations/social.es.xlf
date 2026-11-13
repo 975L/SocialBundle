@@ -290,6 +290,14 @@
                 <source>description.guided_step_social_series_approve_picked</source>
                 <target>Todos los borradores están marcados al principio: desmarque los que quiera conservar como borradores y luego «Validar la selección» valida los demás juntos, cada uno en su momento. «Seleccionar todo» los marca o desmarca todos.</target>
             </trans-unit>
+            <trans-unit id="hdT6lTG">
+                <source>description.guided_step_social_series_delete</source>
+                <target>«Eliminar la serie», en la parte superior de su página, cancela sus publicaciones aún no enviadas y conserva las ya enviadas, fuera de la serie, tras confirmarlo.</target>
+            </trans-unit>
+            <trans-unit id="T.dB46C">
+                <source>description.guided_step_social_series_ended</source>
+                <target>Una serie acabada sale de las series en curso: «Series terminadas», plegada en la página de una serie, la guarda con su fecha de fin, para releerla, prolongarla o eliminarla.</target>
+            </trans-unit>
             <trans-unit id="Sr07Dp3">
                 <source>description.guided_step_social_series_frequency</source>
                 <target>Un borrador cada N días (1 cada día, 2 un día de cada dos, 7 cada semana), algunos días de la semana o cada mes, desde el momento elegido.</target>
@@ -625,6 +633,14 @@
             <trans-unit id="TbRULOl">
                 <source>flash.social_posts_approved</source>
                 <target>%count% publicación(es) validada(s): saldrán en su fecha.</target>
+            </trans-unit>
+            <trans-unit id="1ZZu95h">
+                <source>flash.social_series_delete_sending</source>
+                <target>Una publicación de la serie se está enviando: inténtelo de nuevo en un momento.</target>
+            </trans-unit>
+            <trans-unit id="rf6o3Oc">
+                <source>flash.social_series_deleted</source>
+                <target>Serie «%title%» eliminada: %cancelled% publicación(es) cancelada(s), %kept% conservada(s).</target>
             </trans-unit>
             <trans-unit id="BmODYyf">
                 <source>flash.social_series_generated</source>
@@ -1226,6 +1242,14 @@
                 <source>label.guided_step_social_series_approve_picked</source>
                 <target>Validar la selección</target>
             </trans-unit>
+            <trans-unit id="zOe8TYJ">
+                <source>label.guided_step_social_series_delete</source>
+                <target>Eliminar la serie</target>
+            </trans-unit>
+            <trans-unit id="KrkNKln">
+                <source>label.guided_step_social_series_ended</source>
+                <target>Encontrar una serie terminada</target>
+            </trans-unit>
             <trans-unit id="auA9NI7">
                 <source>label.guided_step_social_series_frequency</source>
                 <target>Elegir el ritmo</target>
@@ -1445,6 +1469,10 @@
             <trans-unit id="68T_uBv">
                 <source>label.info_social_series</source>
                 <target>Prepara de una vez una serie de borradores, a intervalo regular. Aparecen en rojo en el calendario: reléalos, corríjalos y valídelos uno a uno o juntos desde la lista. Una vez enviada la serie, genere otra.</target>
+            </trans-unit>
+            <trans-unit id="eC05Jip">
+                <source>label.info_social_series_delete</source>
+                <target>«%title%»: %cancelled% publicación(es) aún no enviada(s) eliminada(s), %kept% ya enviada(s) conservada(s) fuera de la serie. No se puede deshacer.</target>
             </trans-unit>
             <trans-unit id="UQgKT5o">
                 <source>label.info_social_series_prolong</source>
@@ -2102,6 +2130,10 @@
                 <source>label.social_series_count</source>
                 <target>Número de publicaciones</target>
             </trans-unit>
+            <trans-unit id="P.6OKDc">
+                <source>label.social_series_delete</source>
+                <target>Eliminar la serie</target>
+            </trans-unit>
             <trans-unit id="NMEQBct">
                 <source>label.social_series_frequency</source>
                 <target>Ritmo</target>
@@ -2169,6 +2201,14 @@
             <trans-unit id="YJGoSRF">
                 <source>label.social_series_review_empty</source>
                 <target>Ningún post próximo en esta serie.</target>
+            </trans-unit>
+            <trans-unit id="tJaYuhR">
+                <source>label.social_series_review_ended</source>
+                <target>Series terminadas (%count%)</target>
+            </trans-unit>
+            <trans-unit id="d35TKuO">
+                <source>label.social_series_review_ended_at</source>
+                <target>terminada el %date%</target>
             </trans-unit>
             <trans-unit id="kVjSgHZ">
                 <source>label.social_series_review_last</source>

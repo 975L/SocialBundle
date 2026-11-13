@@ -230,6 +230,14 @@
                 <source>narration.guided_step_social_series_approve_picked</source>
                 <target>Todos los borradores están marcados al principio. Desmarque los que quiera conservar como borradores y luego haga clic en «Validar la selección»: los demás se validan juntos, cada uno en su momento.</target>
             </trans-unit>
+            <trans-unit id="wDwM3Ww">
+                <source>narration.guided_step_social_series_delete</source>
+                <target>Una serie que ya no necesita se elimina en la parte superior de su página: sus publicaciones aún no enviadas se cancelan, las ya enviadas se quedan, fuera de la serie.</target>
+            </trans-unit>
+            <trans-unit id="NAbBoCt">
+                <source>narration.guided_step_social_series_ended</source>
+                <target>Una serie acabada no desaparece: despliegue «Series terminadas» en la página de una serie para releerla, prolongarla o eliminarla.</target>
+            </trans-unit>
             <trans-unit id="fl_JIU5">
                 <source>narration.guided_step_social_series_frequency</source>
                 <target>Elija el ritmo: cada N días, algunos días de la semana, o cada mes.</target>

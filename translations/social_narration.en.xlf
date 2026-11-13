@@ -230,6 +230,14 @@
                 <source>narration.guided_step_social_series_approve_picked</source>
                 <target>Every draft is checked to begin with. Uncheck those you want to keep as drafts, then click "Approve the selection": the others are approved together, each at its own moment.</target>
             </trans-unit>
+            <trans-unit id="wDwM3Ww">
+                <source>narration.guided_step_social_series_delete</source>
+                <target>A series you no longer need is deleted at the top of its page: its posts not gone out yet are cancelled, those already gone out stay, outside any series.</target>
+            </trans-unit>
+            <trans-unit id="NAbBoCt">
+                <source>narration.guided_step_social_series_ended</source>
+                <target>A finished series does not disappear: unfold "Ended series" on a series' page to read it again, prolong it or delete it.</target>
+            </trans-unit>
             <trans-unit id="fl_JIU5">
                 <source>narration.guided_step_social_series_frequency</source>
                 <target>Choose the pace: every N days, some days of the week, or every month.</target>

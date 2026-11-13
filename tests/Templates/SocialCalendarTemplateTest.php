@@ -459,9 +459,44 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringNotContainsString('label.social_calendar_series_view', $this->panel('draft'));
     }
 
+    // The series' page leads to its deletion, beside its prolongation
+    public function testTheSeriesLeadsToItsDeletion(): void
+    {
+        $this->assertStringContainsString('href="/series/delete"', $this->series([]));
+    }
+
+    // The series ended are listed folded, each with its end
+    public function testTheSeriesListsTheEndedOnesFolded(): void
+    {
+        $html = $this->series([], [['series' => new SocialSeries('item-1', 3, 'days', 1, [], 'text', 'Text', [], ['bluesky']), 'lastPlannedAt' => new \DateTimeImmutable('2026-10-13 09:00')]]);
+
+        $this->assertStringContainsString('<details class="social-series-review-ended mb-3">', $html);
+        $this->assertStringContainsString('label.social_series_review_ended_at', $html);
+        $this->assertStringNotContainsString('social-series-review-ended', $this->series([]));
+    }
+
+    // The deletion is confirmed by a form posting its token, what goes and what stays counted
+    public function testTheSeriesDeletionIsConfirmedByAForm(): void
+    {
+        $html = $this->twig()->render('@c975LSocial/management/social_series_delete.html.twig', [
+            'series' => new SocialSeries('item-1', 3, 'days', 1, [], 'text', 'Text', [], ['bluesky']),
+            'counts' => ['cancelled' => 2, 'kept' => 1],
+            'token' => 'social_calendar',
+            'back_url' => '/series/3',
+        ]);
+
+        $this->assertStringContainsString('<form method="post">', $html);
+        $this->assertStringContainsString('name="token"', $html);
+        $this->assertStringContainsString('label.info_social_series_delete', $html);
+        $this->assertStringContainsString('href="/series/3"', $html);
+    }
+
     // A series' coming posts side by side, each with its approval, its networks to tick and its picture or video to open
-    /** @param list<array<string, mixed>> $posts */
-    private function series(array $posts): string
+    /**
+     * @param list<array<string, mixed>>                                           $posts
+     * @param list<array{series: SocialSeries, lastPlannedAt: \DateTimeImmutable}> $ended
+     */
+    private function series(array $posts, array $ended = []): string
     {
         $series = new SocialSeries('Photo du jour', 3, 'days', 1, [], 'text', "Photo du jour\n#photo", [], ['bluesky']);
 
@@ -486,6 +521,8 @@ class SocialCalendarTemplateTest extends TestCase
             'open_id' => 0,
             'token' => 'social_calendar',
             'prolong_url' => '/prolong',
+            'delete_series_url' => '/series/delete',
+            'ended' => $ended,
         ]);
     }
 

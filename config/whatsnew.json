@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-11-13",
+        "description": [
+            {
+                "en": "A series you no longer need can be deleted, at the top of its page: its posts not gone out yet are cancelled, those already gone out stay as the record of what was sent.",
+                "fr": "Une série qui ne sert plus peut être supprimée, en tête de sa page : ses posts pas encore partis sont annulés, ceux déjà partis restent comme trace de ce qui a été envoyé.",
+                "es": "Una serie que ya no necesita puede eliminarse, en la parte superior de su página: sus publicaciones aún no enviadas se cancelan, las ya enviadas quedan como registro de lo que se envió."
+            },
+            {
+                "en": "Ended series no longer disappear: \"Ended series\", folded on a series' page, lists them with their end date, to read them again, prolong or delete them.",
+                "fr": "Les séries finies ne disparaissent plus : « Séries terminées », repliée sur la page d'une série, les liste avec leur date de fin, pour les relire, les prolonger ou les supprimer.",
+                "es": "Las series acabadas ya no desaparecen: «Series terminadas», plegada en la página de una serie, las lista con su fecha de fin, para releerlas, prolongarlas o eliminarlas."
+            }
+        ]
+    },
+    {
         "date": "2026-11-12",
         "description": [
             {

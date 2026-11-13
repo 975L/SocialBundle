@@ -1,0 +1,14 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{# A series deleted (see SocialCalendarController::deleteSeries()), confirmed once what goes and what stays is counted #}
+{% block main %}
+    <h1>{{ 'label.social_series_delete'|trans({}, 'social') }}</h1>
+
+    <p>{{ 'label.info_social_series_delete'|trans({'%title%': series.title, '%cancelled%': counts.cancelled, '%kept%': counts.kept}, 'social') }}</p>
+
+    <form method="post">
+        <input type="hidden" name="token" value="{{ csrf_token(token) }}">
+        <twig:ea:Button color="danger" icon="fa fa-trash">{{ 'label.social_series_delete'|trans({}, 'social') }}</twig:ea:Button>
+        <twig:ea:Button htmlElement="a" href="{{ back_url }}" variant="link">{{ 'action.cancel'|trans({}, 'EasyAdminBundle') }}</twig:ea:Button>
+    </form>
+{% endblock main %}

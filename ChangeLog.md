@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.35.0
+
+Series deleted from the back-office, ended ones listed
+
+- Added "Delete the series" on the series' page: confirmed, its posts not gone out cancelled, those gone out kept outside any series (13/11/2026)
+- Added `SocialSeriesDeleter`, the series' media removed once no post shows it (13/11/2026)
+- Added the step "Delete the series" to the guided project of the series (13/11/2026)
+- The series' page lists the ended series, folded, with their end date (13/11/2026)
+- The menu's "Series" opens the series ended last when none is running (13/11/2026)
+- Added the step "Find an ended series" to the guided project of the series (13/11/2026)
+
 ## v2.34.1
 
 CI replay runs the other PHP versions in parallel

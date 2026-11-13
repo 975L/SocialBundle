@@ -25,6 +25,7 @@ use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPostApprover;
 use c975L\SocialBundle\Service\SocialPostDuplicator;
 use c975L\SocialBundle\Service\SocialPublisher;
+use c975L\SocialBundle\Service\SocialSeriesDeleter;
 use c975L\SocialBundle\Service\SocialSharedCalendar;
 use c975L\SocialBundle\Tests\Controller\ControllerTestTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -98,6 +99,9 @@ class SocialCalendarControllerTest extends TestCase
     // Whether a "Publish" holds the post SocialPublisher::delete() is asked for
     private bool $deleteHeld = false;
 
+    // The last answer a test helper got, read by its assertions
+    private Response $lastResponse;
+
     // The networks SocialPublisher::retryFailed() was asked for, and what it answers - null while another "Publish" holds the post
     /** @var list<?string> */
     private array $retried = [];
@@ -111,6 +115,13 @@ class SocialCalendarControllerTest extends TestCase
 
     /** @var list<array{site: string, reason: string}> */
     private array $sharedErrors = [];
+
+    // What deleting the series answers - null while one of its posts is being sent - and the series it was asked for
+    /** @var ?array{cancelled: int, kept: int} */
+    private ?array $seriesDeleted = ['cancelled' => 2, 'kept' => 1];
+
+    /** @var list<SocialSeries> */
+    private array $deletedSeries = [];
 
     protected function setUp(): void
     {
@@ -135,6 +146,7 @@ class SocialCalendarControllerTest extends TestCase
             new SocialPostDuplicator($this->createStub(SocialPublisher::class), sys_get_temp_dir()),
             $this->createStub(SocialSeriesRepository::class),
             $this->sharedCalendar(),
+            $this->createStub(SocialSeriesDeleter::class),
         );
     }
 
@@ -294,6 +306,7 @@ class SocialCalendarControllerTest extends TestCase
             new SocialPostDuplicator($this->createStub(SocialPublisher::class), sys_get_temp_dir()),
             $seriesRepository,
             $this->sharedCalendar(),
+            $this->seriesDeleter(),
         );
 
         $csrf = $this->createStub(CsrfTokenManagerInterface::class);
@@ -962,6 +975,85 @@ class SocialCalendarControllerTest extends TestCase
         return $this->createController($request)->series($request);
     }
 
+    // The deleter counting two posts cancelled and one kept, recording the series it deletes
+    private function seriesDeleter(): SocialSeriesDeleter
+    {
+        $deleter = $this->createStub(SocialSeriesDeleter::class);
+        $deleter->method('count')->willReturn(['cancelled' => 2, 'kept' => 1]);
+        $deleter->method('delete')->willReturnCallback(function (SocialSeries $series): ?array {
+            $this->deletedSeries[] = $series;
+
+            return $this->seriesDeleted;
+        });
+
+        return $deleter;
+    }
+
+    // The series' deletion asked or, POST, confirmed with $token - its answer kept in lastResponse, the request returned for its flashes
+    private function deleteSeries(string $id, string $method = 'GET', string $token = 'valid'): Request
+    {
+        $request = Request::create('/?id=' . $id, $method, 'POST' === $method ? ['token' => $token] : []);
+        $request->setSession(new Session(new MockArraySessionStorage()));
+        $this->lastResponse = $this->createController($request)->deleteSeries($request);
+
+        return $request;
+    }
+
+    // Asked, the deletion is confirmed first, counting what goes and what stays
+    public function testDeletingASeriesIsConfirmedFirst(): void
+    {
+        $this->seriesPost('Other');
+
+        $this->deleteSeries('3');
+
+        $this->assertSame([], $this->deletedSeries);
+        $this->assertSame(['cancelled' => 2, 'kept' => 1], $this->rendered['counts']);
+        $this->assertSame($this->post->getSeries(), $this->rendered['series']);
+    }
+
+    // Confirmed, the series is deleted and the calendar opens, saying what went and what stayed
+    public function testAConfirmedSeriesIsDeleted(): void
+    {
+        $this->seriesPost('Other');
+
+        $request = $this->deleteSeries('3', 'POST');
+
+        $this->assertSame([$this->post->getSeries()], $this->deletedSeries);
+        $this->assertSame('/' . SocialCalendarController::ROUTE, $this->lastResponse->headers->get('Location'));
+        $this->assertSame(['success' => ['flash.social_series_deleted']], $this->flashes($request));
+    }
+
+    // One of its posts being sent, the series' page opens again, saying so
+    public function testASeriesWhosePostIsBeingSentIsKept(): void
+    {
+        $this->seriesPost('Other');
+        $this->seriesDeleted = null;
+
+        $request = $this->deleteSeries('3', 'POST');
+
+        $this->assertSame('/' . SocialCalendarController::SERIES_ROUTE, $this->lastResponse->headers->get('Location'));
+        $this->assertSame(['warning' => ['flash.social_series_delete_sending']], $this->flashes($request));
+    }
+
+    // A forged confirmation deletes nothing, the confirmation shown again
+    public function testAForgedConfirmationDeletesNothing(): void
+    {
+        $this->seriesPost('Other');
+
+        $this->deleteSeries('3', 'POST', 'forged');
+
+        $this->assertSame([], $this->deletedSeries);
+        $this->assertArrayHasKey('counts', $this->rendered);
+    }
+
+    // A series that does not exist is not found, rather than deleted
+    public function testDeletingAnUnknownSeriesIsNotFound(): void
+    {
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->deleteSeries('99', 'POST');
+    }
+
     // The series' coming posts, each with what its card needs, counted by their approval
     public function testTheSeriesShowsItsComingPostsCounted(): void
     {
@@ -980,6 +1072,7 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertSame('Text', $this->rendered['posts'][0]['excerpt']);
         $this->assertSame("Own text\nSecond line", $this->rendered['posts'][1]['excerpt']);
         $this->assertSame(['bluesky', 'linkedin'], $this->rendered['offered_networks']);
+        $this->assertSame('/management_social_calendar_series_delete', $this->rendered['delete_series_url']);
     }
 
     // A post with no text of its own and an empty one on its network shows its title on the card
@@ -1052,6 +1145,25 @@ class SocialCalendarControllerTest extends TestCase
         $this->series('3');
 
         $this->assertSame([$this->post->getSeries(), $running], array_column($this->rendered['others'], 'series'));
+        $this->assertSame(['Ended'], array_map(static fn (array $row): string => $row['series']->getTitle(), $this->rendered['ended']));
+    }
+
+    // None running, the menu opens the series ended last, the others ended listed apart, the last one first
+    public function testWithNoSeriesRunningTheMenuOpensTheLastEnded(): void
+    {
+        $this->seriesPost('Other');
+        $older = new SocialSeries('item-1', 3, 'daily', 1, [], 'text', 'Text', [], ['bluesky']);
+        $old = new SocialSeries('item-2', 3, 'daily', 1, [], 'text', 'Text', [], ['bluesky']);
+        $this->seriesRows = [
+            ['series' => $older, 'lastPlannedAt' => new \DateTimeImmutable('-3 days')],
+            ['series' => $old, 'lastPlannedAt' => new \DateTimeImmutable('-2 days')],
+            ['series' => $this->post->getSeries(), 'lastPlannedAt' => new \DateTimeImmutable('-1 day')],
+        ];
+
+        $this->series(null);
+
+        $this->assertSame($this->post->getSeries(), $this->rendered['series']);
+        $this->assertSame([$old, $older], array_column($this->rendered['ended'], 'series'));
     }
 
     // The drafts checked on the series' page are approved, the ones left unchecked staying drafts

@@ -230,6 +230,14 @@
                 <source>narration.guided_step_social_series_approve_picked</source>
                 <target>Tous les brouillons sont cochés au départ. Décochez ceux que vous voulez garder en brouillon, puis cliquez sur « Valider la sélection » : les autres sont validés ensemble, chacun à son moment.</target>
             </trans-unit>
+            <trans-unit id="wDwM3Ww">
+                <source>narration.guided_step_social_series_delete</source>
+                <target>Une série qui ne sert plus se supprime en tête de sa page : ses posts pas encore partis sont annulés, ceux déjà partis restent, hors série.</target>
+            </trans-unit>
+            <trans-unit id="NAbBoCt">
+                <source>narration.guided_step_social_series_ended</source>
+                <target>Une série finie ne disparaît pas : dépliez « Séries terminées » sur la page d'une série pour la relire, la prolonger ou la supprimer.</target>
+            </trans-unit>
             <trans-unit id="fl_JIU5">
                 <source>narration.guided_step_social_series_frequency</source>
                 <target>Choisissez le rythme : tous les N jours, certains jours de la semaine, ou tous les mois.</target>

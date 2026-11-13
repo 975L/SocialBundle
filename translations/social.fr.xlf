@@ -290,6 +290,14 @@
                 <source>description.guided_step_social_series_approve_picked</source>
                 <target>Tous les brouillons sont cochés au départ : décochez ceux à garder en brouillon, puis « Valider la sélection » valide les autres ensemble, chacun à son moment. « Tout sélectionner » les coche ou les décoche tous.</target>
             </trans-unit>
+            <trans-unit id="hdT6lTG">
+                <source>description.guided_step_social_series_delete</source>
+                <target>« Supprimer la série », en tête de sa page, annule ses posts pas encore partis et garde ceux déjà partis, hors série, après confirmation.</target>
+            </trans-unit>
+            <trans-unit id="T.dB46C">
+                <source>description.guided_step_social_series_ended</source>
+                <target>Une série finie quitte la liste des séries en cours : « Séries terminées », repliée sur la page d'une série, la garde avec sa date de fin, pour la relire, la prolonger ou la supprimer.</target>
+            </trans-unit>
             <trans-unit id="Sr07Dp3">
                 <source>description.guided_step_social_series_frequency</source>
                 <target>Un brouillon tous les N jours (1 tous les jours, 2 un jour sur deux, 7 toutes les semaines), certains jours de la semaine ou tous les mois, à partir du moment choisi.</target>
@@ -625,6 +633,14 @@
             <trans-unit id="TbRULOl">
                 <source>flash.social_posts_approved</source>
                 <target>%count% publication(s) validée(s) : elles partiront à leur date.</target>
+            </trans-unit>
+            <trans-unit id="1ZZu95h">
+                <source>flash.social_series_delete_sending</source>
+                <target>Un post de la série est en cours d'envoi : réessayez dans un instant.</target>
+            </trans-unit>
+            <trans-unit id="rf6o3Oc">
+                <source>flash.social_series_deleted</source>
+                <target>Série « %title% » supprimée : %cancelled% post(s) annulé(s), %kept% gardé(s).</target>
             </trans-unit>
             <trans-unit id="BmODYyf">
                 <source>flash.social_series_generated</source>
@@ -1226,6 +1242,14 @@
                 <source>label.guided_step_social_series_approve_picked</source>
                 <target>Valider la sélection</target>
             </trans-unit>
+            <trans-unit id="zOe8TYJ">
+                <source>label.guided_step_social_series_delete</source>
+                <target>Supprimer la série</target>
+            </trans-unit>
+            <trans-unit id="KrkNKln">
+                <source>label.guided_step_social_series_ended</source>
+                <target>Retrouver une série terminée</target>
+            </trans-unit>
             <trans-unit id="auA9NI7">
                 <source>label.guided_step_social_series_frequency</source>
                 <target>Choisir le rythme</target>
@@ -1445,6 +1469,10 @@
             <trans-unit id="68T_uBv">
                 <source>label.info_social_series</source>
                 <target>Prépare d'un coup une série de brouillons, à intervalle régulier. Ils apparaissent en rouge sur le calendrier : relisez-les, corrigez-les, puis validez-les un par un ou ensemble depuis la liste. Une fois la série partie, générez-en une nouvelle.</target>
+            </trans-unit>
+            <trans-unit id="eC05Jip">
+                <source>label.info_social_series_delete</source>
+                <target>« %title% » : %cancelled% post(s) pas encore parti(s) supprimé(s), %kept% déjà parti(s) gardé(s) hors série. La suppression est définitive.</target>
             </trans-unit>
             <trans-unit id="UQgKT5o">
                 <source>label.info_social_series_prolong</source>
@@ -2102,6 +2130,10 @@
                 <source>label.social_series_count</source>
                 <target>Nombre de publications</target>
             </trans-unit>
+            <trans-unit id="P.6OKDc">
+                <source>label.social_series_delete</source>
+                <target>Supprimer la série</target>
+            </trans-unit>
             <trans-unit id="NMEQBct">
                 <source>label.social_series_frequency</source>
                 <target>Rythme</target>
@@ -2169,6 +2201,14 @@
             <trans-unit id="YJGoSRF">
                 <source>label.social_series_review_empty</source>
                 <target>Aucun post à venir dans cette série.</target>
+            </trans-unit>
+            <trans-unit id="tJaYuhR">
+                <source>label.social_series_review_ended</source>
+                <target>Séries terminées (%count%)</target>
+            </trans-unit>
+            <trans-unit id="d35TKuO">
+                <source>label.social_series_review_ended_at</source>
+                <target>finie le %date%</target>
             </trans-unit>
             <trans-unit id="kVjSgHZ">
                 <source>label.social_series_review_last</source>

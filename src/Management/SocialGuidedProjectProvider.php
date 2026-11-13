@@ -239,6 +239,18 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'description' => 'description.guided_step_social_series_prolong',
                     'narration' => 'narration.guided_step_social_series_prolong',
                 ],
+                [
+                    // No highlight: the list only shows once a series has ended
+                    'label' => 'label.guided_step_social_series_ended',
+                    'description' => 'description.guided_step_social_series_ended',
+                    'narration' => 'narration.guided_step_social_series_ended',
+                ],
+                [
+                    // No highlight either, the button sitting on the series' page beside "Prolong the series"
+                    'label' => 'label.guided_step_social_series_delete',
+                    'description' => 'description.guided_step_social_series_delete',
+                    'narration' => 'narration.guided_step_social_series_delete',
+                ],
             ],
         ];
     }

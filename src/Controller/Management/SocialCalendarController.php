@@ -26,6 +26,7 @@ use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPostApprover;
 use c975L\SocialBundle\Service\SocialPostDuplicator;
 use c975L\SocialBundle\Service\SocialPublisher;
+use c975L\SocialBundle\Service\SocialSeriesDeleter;
 use c975L\SocialBundle\Service\SocialSharedCalendar;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
@@ -69,6 +70,8 @@ class SocialCalendarController extends AbstractController
     private const string FEED_TOKEN_ROUTE = 'management_social_calendar_feed_token';
 
     public const string SERIES_ROUTE = 'management_social_calendar_series';
+
+    private const string SERIES_DELETE_ROUTE = 'management_social_calendar_series_delete';
 
     // A drag plans a post that goes out under the site's name: checked against a token, like "Publish"
     private const string CSRF_TOKEN = 'social_calendar';
@@ -118,6 +121,7 @@ class SocialCalendarController extends AbstractController
         private readonly SocialPostDuplicator $duplicator,
         private readonly SocialSeriesRepository $seriesRepository,
         private readonly SocialSharedCalendar $sharedCalendar,
+        private readonly SocialSeriesDeleter $seriesDeleter,
     ) {
     }
 
@@ -212,18 +216,19 @@ class SocialCalendarController extends AbstractController
         return '' === $token ? null : $this->generateUrl(SocialCalendarFeedController::ROUTE, ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
-    // A series' coming posts side by side, to be read and approved one by one: each picture or video opened at its size, its networks ticked or unticked, its approval given or taken back - through the panel's own move and networks, the page reloaded after each. The other series still running are a click away
+    // A series' coming posts side by side, to be read and approved one by one: each picture or video opened at its size, its networks ticked or unticked, its approval given or taken back - through the panel's own move and networks, the page reloaded after each. The other series still running are a click away, the ended ones listed apart
     #[AdminRoute(path: '/social-calendar/series', name: 'social_calendar_series')]
     public function series(Request $request): Response
     {
         $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
 
-        // The menu's entry names no series: the one still running that ends first opens, the calendar when none is - an id named but unknown staying a 404
+        // The menu's entry names no series: the one still running that ends first opens, else the one ended last, the calendar when there is none - an id named but unknown staying a 404
         $now = new \DateTimeImmutable();
         $all = $this->seriesRepository->findWithLastPlannedAt();
         $running = array_values(array_filter($all, static fn (array $row): bool => $row['lastPlannedAt'] >= $now));
+        $ended = array_reverse(array_values(array_filter($all, static fn (array $row): bool => $row['lastPlannedAt'] < $now)));
         $named = $request->query->has('id');
-        $series = $named ? $this->seriesRepository->find($request->query->getInt('id')) : ($running[0]['series'] ?? null);
+        $series = $named ? $this->seriesRepository->find($request->query->getInt('id')) : ($running[0]['series'] ?? $ended[0]['series'] ?? null);
         if (!$named && null === $series) {
             $this->addFlash('info', new TranslatableMessage('flash.social_series_none', [], 'social'));
 
@@ -256,6 +261,8 @@ class SocialCalendarController extends AbstractController
             'to_approve' => \count($cards) - ($states['approved'] ?? 0),
             'last' => $lastPlannedAt,
             'others' => array_values(array_filter($all, static fn (array $row): bool => $row['lastPlannedAt'] >= $now || $row['series'] === $series)),
+            // The series ended, the last one first, to be read again, prolonged or deleted - the one shown left out, already among the others
+            'ended' => array_values(array_filter($ended, static fn (array $row): bool => $row['series'] !== $series)),
             'connected' => $connected,
             'offered_networks' => $this->offeredNetworks($connected),
             'move_url' => $this->generateUrl(self::MOVE_ROUTE),
@@ -272,7 +279,49 @@ class SocialCalendarController extends AbstractController
             'open_id' => $request->query->getInt('post'),
             'token' => self::CSRF_TOKEN,
             'prolong_url' => null === $last ? null : $this->postUrl($last, 'prolongSeries', self::SERIES),
+            'delete_series_url' => $this->generateUrl(self::SERIES_DELETE_ROUTE, ['id' => $series->getId()]),
         ]);
+    }
+
+    // A series deleted once confirmed: its posts not gone out cancelled, those gone out kept outside any series - the confirmation counting both first
+    #[AdminRoute(path: '/social-calendar/series/delete', name: 'social_calendar_series_delete')]
+    public function deleteSeries(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
+
+        $series = $this->seriesRepository->find($request->query->getInt('id'));
+        if (!$series instanceof SocialSeries) {
+            throw $this->createNotFoundException();
+        }
+
+        if ($request->isMethod('POST') && $this->isCsrfTokenValid(self::CSRF_TOKEN, $request->request->getString('token'))) {
+            return $this->seriesDeleted($series);
+        }
+
+        return $this->render('@c975LSocial/management/social_series_delete.html.twig', [
+            'series' => $series,
+            'counts' => $this->seriesDeleter->count($series),
+            'token' => self::CSRF_TOKEN,
+            'back_url' => $this->generateUrl(self::SERIES_ROUTE, ['id' => $series->getId()]),
+        ]);
+    }
+
+    // The calendar once the series is deleted, saying what went and what stayed - its page again when one of its posts is being sent, the series and its posts still there kept for another try
+    private function seriesDeleted(SocialSeries $series): Response
+    {
+        $id = $series->getId();
+        // Escaped: EasyAdmin renders its flashes raw, and the title may come from an imported file
+        $title = htmlspecialchars($series->getTitle());
+        $counts = $this->seriesDeleter->delete($series);
+        if (null === $counts) {
+            $this->addFlash('warning', new TranslatableMessage('flash.social_series_delete_sending', [], 'social'));
+
+            return $this->redirectToRoute(self::SERIES_ROUTE, ['id' => $id]);
+        }
+
+        $this->addFlash('success', new TranslatableMessage('flash.social_series_deleted', ['%title%' => $title, '%cancelled%' => $counts['cancelled'], '%kept%' => $counts['kept']], 'social'));
+
+        return $this->redirectToRoute(self::ROUTE);
     }
 
     // The panel a card opens beside the calendar: when the post goes out, the moment to set it to, its approval, its medias, its texts - the screen of the post a link away, where they are corrected and rephrased

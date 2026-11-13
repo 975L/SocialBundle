@@ -290,6 +290,14 @@
                 <source>description.guided_step_social_series_approve_picked</source>
                 <target>Every draft is checked to begin with: uncheck those to keep as drafts, then "Approve the selection" approves the others together, each at its own moment. "Select all" checks or unchecks them all.</target>
             </trans-unit>
+            <trans-unit id="hdT6lTG">
+                <source>description.guided_step_social_series_delete</source>
+                <target>"Delete the series", at the top of its page, cancels its posts not gone out yet and keeps those already gone out, outside any series, once confirmed.</target>
+            </trans-unit>
+            <trans-unit id="T.dB46C">
+                <source>description.guided_step_social_series_ended</source>
+                <target>A finished series leaves the running ones: "Ended series", folded on a series' page, keeps it with its end date, to read it again, prolong it or delete it.</target>
+            </trans-unit>
             <trans-unit id="Sr07Dp3">
                 <source>description.guided_step_social_series_frequency</source>
                 <target>A draft every N days (1 every day, 2 every other day, 7 every week), on some days of the week or every month, from the moment chosen.</target>
@@ -625,6 +633,14 @@
             <trans-unit id="TbRULOl">
                 <source>flash.social_posts_approved</source>
                 <target>%count% post(s) approved: they will go out at their date.</target>
+            </trans-unit>
+            <trans-unit id="1ZZu95h">
+                <source>flash.social_series_delete_sending</source>
+                <target>A post of the series is being sent: try again in a moment.</target>
+            </trans-unit>
+            <trans-unit id="rf6o3Oc">
+                <source>flash.social_series_deleted</source>
+                <target>Series "%title%" deleted: %cancelled% post(s) cancelled, %kept% kept.</target>
             </trans-unit>
             <trans-unit id="BmODYyf">
                 <source>flash.social_series_generated</source>
@@ -1226,6 +1242,14 @@
                 <source>label.guided_step_social_series_approve_picked</source>
                 <target>Approve the selection</target>
             </trans-unit>
+            <trans-unit id="zOe8TYJ">
+                <source>label.guided_step_social_series_delete</source>
+                <target>Delete the series</target>
+            </trans-unit>
+            <trans-unit id="KrkNKln">
+                <source>label.guided_step_social_series_ended</source>
+                <target>Find an ended series</target>
+            </trans-unit>
             <trans-unit id="auA9NI7">
                 <source>label.guided_step_social_series_frequency</source>
                 <target>Choose the pace</target>
@@ -1445,6 +1469,10 @@
             <trans-unit id="68T_uBv">
                 <source>label.info_social_series</source>
                 <target>Prepares a series of drafts at once, at a steady pace. They show in red on the calendar: read them, correct them, then approve them one by one or together from the list. Once the series has gone out, generate a new one.</target>
+            </trans-unit>
+            <trans-unit id="eC05Jip">
+                <source>label.info_social_series_delete</source>
+                <target>"%title%": %cancelled% post(s) not gone out yet deleted, %kept% already gone out kept outside any series. This cannot be undone.</target>
             </trans-unit>
             <trans-unit id="UQgKT5o">
                 <source>label.info_social_series_prolong</source>
@@ -2102,6 +2130,10 @@
                 <source>label.social_series_count</source>
                 <target>Number of posts</target>
             </trans-unit>
+            <trans-unit id="P.6OKDc">
+                <source>label.social_series_delete</source>
+                <target>Delete the series</target>
+            </trans-unit>
             <trans-unit id="NMEQBct">
                 <source>label.social_series_frequency</source>
                 <target>Pace</target>
@@ -2169,6 +2201,14 @@
             <trans-unit id="YJGoSRF">
                 <source>label.social_series_review_empty</source>
                 <target>No coming post in this series.</target>
+            </trans-unit>
+            <trans-unit id="tJaYuhR">
+                <source>label.social_series_review_ended</source>
+                <target>Ended series (%count%)</target>
+            </trans-unit>
+            <trans-unit id="d35TKuO">
+                <source>label.social_series_review_ended_at</source>
+                <target>ended on %date%</target>
             </trans-unit>
             <trans-unit id="kVjSgHZ">
                 <source>label.social_series_review_last</source>

@@ -17,9 +17,13 @@
                 <p class="small text-muted mb-0">{{ 'label.info_social_series_review'|trans({}, 'social') }}</p>
                 {% if last %}<p class="small text-muted mb-0">{{ 'label.social_series_review_last'|trans({'%date%': last|date('d/m/Y H:i')}, 'social') }}</p>{% endif %}
             </div>
-            {% if prolong_url %}
-                <twig:ea:Button htmlElement="a" href="{{ prolong_url }}" icon="fa fa-forward">{{ 'label.social_series_prolong'|trans({}, 'social') }}</twig:ea:Button>
-            {% endif %}
+            <div class="d-flex flex-wrap gap-2">
+                {% if prolong_url %}
+                    <twig:ea:Button htmlElement="a" href="{{ prolong_url }}" icon="fa fa-forward">{{ 'label.social_series_prolong'|trans({}, 'social') }}</twig:ea:Button>
+                {% endif %}
+                {# Its posts not gone out cancelled, those gone out kept, once confirmed on a page of its own #}
+                <twig:ea:Button htmlElement="a" href="{{ delete_series_url }}" color="danger" icon="fa fa-trash">{{ 'label.social_series_delete'|trans({}, 'social') }}</twig:ea:Button>
+            </div>
         </div>
 
         {# The other series still running, a click away #}
@@ -29,6 +33,18 @@
                     <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar_series', {id: row.series.id}) }}" size="sm" color="{{ row.series is same as(series) ? 'primary' : 'default' }}">{{ row.series.title }}</twig:ea:Button>
                 {% endfor %}
             </nav>
+        {% endif %}
+
+        {# The series ended, folded, each with its end, the last one first #}
+        {% if ended is not empty %}
+            <details class="social-series-review-ended mb-3">
+                <summary class="small">{{ 'label.social_series_review_ended'|trans({'%count%': ended|length}, 'social') }}</summary>
+                <nav class="social-series-review-others mt-2" aria-label="{{ 'label.social_series_review_ended'|trans({'%count%': ended|length}, 'social') }}">
+                    {% for row in ended %}
+                        <twig:ea:Button htmlElement="a" href="{{ path('management_social_calendar_series', {id: row.series.id}) }}" size="sm">{{ row.series.title }} <span class="text-muted">{{ 'label.social_series_review_ended_at'|trans({'%date%': row.lastPlannedAt|date('d/m/Y')}, 'social') }}</span></twig:ea:Button>
+                    {% endfor %}
+                </nav>
+            </details>
         {% endif %}
 
         {# The text every post of the series starts from, read once rather than on each card #}
