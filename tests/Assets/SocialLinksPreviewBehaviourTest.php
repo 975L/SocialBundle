@@ -101,6 +101,30 @@ class SocialLinksPreviewBehaviourTest extends JsCase
         );
     }
 
+    // The Google listing has no form row of its own: a drag reorders the saved links ahead of it, never past it
+    public function testADragKeepsTheListingLast(): void
+    {
+        $order = $this->observe(
+            '<ul data-social-links-preview-list class="social-links social-links--minimal">
+                <li data-social-link-index="0">facebook</li>
+                <li data-social-link-index="1">mastodon</li>
+                <li data-social-link-listing>google</li>
+            </ul>
+            <div id="links">
+                <input name="block[links][1][position]">
+                <input name="block[links][0][position]">
+                <select data-social-link-network-select></select>
+            </div>',
+            [],
+            'root.querySelector("#links").dispatchEvent(new Event("ui.collection.reordered", { bubbles: true }));
+
+             return [...root.querySelectorAll("[data-social-links-preview-list] li")].map((entry) => entry.textContent.trim());',
+            ['modules' => ['preview' => 'social-links-preview']]
+        );
+
+        $this->assertSame(['mastodon', 'facebook', 'google'], $order, 'A drag moved the saved links past the Google listing, which the real render always shows last.');
+    }
+
     private function links(string $probe): mixed
     {
         $preamble = 'const list = () => root.querySelector("[data-social-links-preview-list]");

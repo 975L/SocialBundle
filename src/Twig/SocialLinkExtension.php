@@ -10,6 +10,8 @@
 
 namespace c975L\SocialBundle\Twig;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\SocialBundle\Service\GoogleBusinessProfileSource;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Repository\BlockRepository;
 use c975L\UiBundle\Service\IconServiceInterface;
@@ -19,7 +21,10 @@ use Twig\Attribute\AsTwigFunction;
 
 class SocialLinkExtension
 {
-    // Kind of the "social_links" singleton Block (see SocialLinksCrudController) - not shared as a public constant there either, matching ShareButtonsExtension's own literal use of "share_buttons_settings" for the same reason (no other consumer needs it)
+    // The tag of the cached singleton and of every render of it, dropped when the block is saved (SingletonBlockCacheInvalidationListener) or the Google listing url changes (GoogleReviewsCacheInvalidationListener)
+    public const string CACHE_TAG = 'singleton_block_' . self::KIND;
+
+    // Kind of the "social_links" singleton Block (see SocialLinksCrudController)
     private const string KIND = 'social_links';
 
     // The networks whose name is not their key capitalized - every other one reads as "Facebook" from "facebook"
@@ -40,6 +45,7 @@ class SocialLinkExtension
         private readonly BlockRepository $blockRepository,
         private readonly IconServiceInterface $iconService,
         private readonly TagAwareCacheInterface $cache,
+        private readonly ConfigServiceInterface $configService,
     ) {
     }
 
@@ -47,9 +53,9 @@ class SocialLinkExtension
     #[AsTwigFunction('social_link_block')]
     public function getSocialLinkBlock(): ?Block
     {
-        return $this->cache->get('singleton_block_' . self::KIND, function (ItemInterface $item): ?Block {
+        return $this->cache->get(self::CACHE_TAG, function (ItemInterface $item): ?Block {
             $item->expiresAfter(null);
-            $item->tag(['singleton_block_' . self::KIND]);
+            $item->tag([self::CACHE_TAG]);
 
             return $this->blockRepository->findOneByKind(self::KIND);
         });
@@ -67,5 +73,22 @@ class SocialLinkExtension
     public function getSocialLinkLabel(string $network): string
     {
         return self::LABELS[$network] ?? ucfirst($network);
+    }
+
+    // The block's links followed by the Google listing, read from "social-google-listing-url" rather than retyped - left out while the key is empty or when a link already points to it
+    /**
+     * @param array<mixed> $links
+     *
+     * @return array<mixed>
+     */
+    #[AsTwigFunction('social_links_with_listing')]
+    public function getLinksWithListing(array $links): array
+    {
+        $listing = trim((string) $this->configService->get(GoogleBusinessProfileSource::LISTING_URL));
+        if ('' === $listing || \in_array($listing, array_column($links, 'url'), true)) {
+            return $links;
+        }
+
+        return [...$links, ['network' => 'google', 'url' => $listing]];
     }
 }

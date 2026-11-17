@@ -92,7 +92,7 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
         ]);
     }
 
-    // One per SocialLinksType::ICON_STYLES choice - rendered via the same "blocks/SocialLinks.html.twig" adapter a real block uses, just fed sample links directly instead of through render_block()
+    // One per SocialLinksType::ICON_STYLES choice - rendered via the same "blocks/SocialLinks.html.twig" adapter a real block uses, just fed sample links directly instead of through render_block(), without the site's own Google listing
     private function socialLinksVariants(): array
     {
         $links = array_map(
@@ -106,6 +106,7 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
                 'links' => $links,
                 'iconStyle' => $style,
                 'displayLabel' => true,
+                'withListing' => false,
             ]);
         }
 

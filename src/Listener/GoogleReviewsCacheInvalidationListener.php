@@ -12,6 +12,7 @@ namespace c975L\SocialBundle\Listener;
 
 use c975L\ConfigBundle\Entity\Config;
 use c975L\SocialBundle\Service\GoogleBusinessProfileSource;
+use c975L\SocialBundle\Twig\SocialLinkExtension;
 use c975L\UiBundle\Service\ReviewCollectionSourceProvider;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PostFlushEventArgs;
@@ -21,7 +22,7 @@ use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-// The "google_reviews" block links to the Google listing, a setting its cached render knows nothing about: UiBundle's ReviewCacheInvalidationListener only empties the reviews' tag when a review changes, so a listing url typed or corrected would otherwise wait for the next import to show
+// The "google_reviews" block and the social links link to the Google listing, a setting their cached renders know nothing about: UiBundle's ReviewCacheInvalidationListener only empties the reviews' tag when a review changes, and the links' tag drops when their block is saved, so a listing url typed or corrected would otherwise wait for one of those to show
 #[AsDoctrineListener(event: Events::postPersist)]
 #[AsDoctrineListener(event: Events::postUpdate)]
 #[AsDoctrineListener(event: Events::postRemove)]
@@ -61,7 +62,7 @@ class GoogleReviewsCacheInvalidationListener
         }
 
         $this->stale = false;
-        $this->cache->invalidateTags([ReviewCollectionSourceProvider::CACHE_TAG]);
+        $this->cache->invalidateTags([ReviewCollectionSourceProvider::CACHE_TAG, SocialLinkExtension::CACHE_TAG]);
     }
 
     // Raises the flag when the entity is the listing url's config row

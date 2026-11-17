@@ -27,11 +27,11 @@ class GoogleReviewsCacheInvalidationListenerTest extends TestCase
         $listener->postFlush(new PostFlushEventArgs($entityManager));
     }
 
-    // The block links to the listing, so a corrected url has to reach the cached render at once rather than at the next import
-    public function testTheListingUrlEmptiesTheReviewsTagOnceFlushed(): void
+    // The reviews and the social links link to the listing, so a corrected url has to reach their cached renders at once
+    public function testTheListingUrlEmptiesTheReviewsAndLinksTagsOnceFlushed(): void
     {
         $cache = $this->createMock(TagAwareCacheInterface::class);
-        $cache->expects($this->once())->method('invalidateTags')->with(['ui_reviews']);
+        $cache->expects($this->once())->method('invalidateTags')->with(['ui_reviews', 'singleton_block_social_links']);
 
         $this->saveAndFlush(new GoogleReviewsCacheInvalidationListener($cache), 'social-google-listing-url');
     }

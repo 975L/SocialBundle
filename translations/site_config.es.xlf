@@ -56,7 +56,7 @@
             </trans-unit>
             <trans-unit id="R3dEfsB">
                 <source>description.social_google_listing_url</source>
-                <target>Dirección pública de la ficha, por ejemplo https://www.google.com/maps?cid=... : publicada como sameAs en el bloque de contacto, vincula el sitio y la ficha como una sola empresa.</target>
+                <target>Dirección pública de la ficha, por ejemplo https://www.google.com/maps?cid=... : publicada como sameAs en el bloque de contacto, vincula el sitio y la ficha como una sola empresa, y mostrada como último de los enlaces de redes sociales.</target>
             </trans-unit>
             <trans-unit id="3Uz1NWR">
                 <source>description.social_google_oauth_client_id</source>

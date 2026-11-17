@@ -60,6 +60,25 @@ class GalleryShowcaseProviderTest extends TestCase
         );
     }
 
+    // The samples are rendered without the site's own Google listing appended
+    public function testSocialLinksShowcaseLeavesOutTheListing(): void
+    {
+        $contexts = [];
+        $twig = $this->createStub(Environment::class);
+        $twig->method('render')->willReturnCallback(static function (string $template, array $context) use (&$contexts): string {
+            $contexts[$template][] = $context;
+
+            return '';
+        });
+
+        new GalleryShowcaseProvider($twig, $this->createStub(ShareButtonsServiceInterface::class), $this->createStub(IconServiceInterface::class), $this->createStub(TranslatorInterface::class))->getShowcases();
+
+        $this->assertNotEmpty($contexts['@c975LSocial/blocks/SocialLinks.html.twig']);
+        foreach ($contexts['@c975LSocial/blocks/SocialLinks.html.twig'] as $context) {
+            $this->assertFalse($context['withListing']);
+        }
+    }
+
     // Stands in for "social_links_display" - the gallery suppresses that kind's own regular preview card once "kind" is set here, so it only shows up once
     public function testSocialLinksShowcaseStandsInForSocialLinksDisplay(): void
     {

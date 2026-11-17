@@ -12,6 +12,7 @@ namespace c975L\SocialBundle\Tests\Service;
 
 use c975L\SocialBundle\Listener\SingletonBlockCacheInvalidationListener;
 use c975L\SocialBundle\Service\SocialBlockCacheTagProvider;
+use c975L\SocialBundle\Twig\SocialLinkExtension;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Service\ReviewCollectionSourceProvider;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,9 +23,10 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 // What lets the pointer kind and the Google reviews be cached at all: each borrows the tag of what it renders
 class SocialBlockCacheTagProviderTest extends TestCase
 {
-    public function testThePointerAndTheGoogleReviewsAreTheKindsCovered(): void
+    // The pointer, the links themselves and the Google reviews, nothing else
+    public function testThePointerTheLinksAndTheGoogleReviewsAreTheKindsCovered(): void
     {
-        $this->assertSame(['social_links_display', 'google_reviews'], array_keys(new SocialBlockCacheTagProvider()->getCacheTagResolvers()));
+        $this->assertSame(['social_links_display', 'social_links', 'google_reviews'], array_keys(new SocialBlockCacheTagProvider()->getCacheTagResolvers()));
     }
 
     // The reviews' own tag, emptied by UiBundle after every flush touching one - an import, a review hidden from the moderation list
@@ -55,5 +57,13 @@ class SocialBlockCacheTagProviderTest extends TestCase
             ->postUpdate(new PostUpdateEventArgs($singleton, $this->createStub(EntityManagerInterface::class)));
 
         $this->assertSame($tags, $invalidated);
+    }
+
+    // The links print the Google listing too, so their render carries the tag a listing url change drops
+    public function testTheLinksCarryTheSingletonTag(): void
+    {
+        $resolvers = new SocialBlockCacheTagProvider()->getCacheTagResolvers();
+
+        $this->assertSame([SocialLinkExtension::CACHE_TAG], $resolvers['social_links'](new Block()));
     }
 }

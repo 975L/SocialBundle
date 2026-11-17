@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Service;
 
+use c975L\SocialBundle\Twig\SocialLinkExtension;
 use c975L\UiBundle\Contract\BlockCacheTagProviderInterface;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Service\ReviewCollectionSourceProvider;
@@ -17,13 +18,12 @@ use c975L\UiBundle\Service\ReviewCollectionSourceProvider;
 // Each kind here renders something else than its own data, so its entry borrows the tag of what it renders. "social_links_display" holds no data of its own and always renders the site-wide singleton (see SocialLinksDisplay.html.twig), which BlockCacheInvalidationListener has no way to tie it to: the tag it drops names the edited Block, and the one edited is the singleton. So the pointer's entry carries the singleton's own tag, the very one SingletonBlockCacheInvalidationListener already drops for SocialLinkExtension's cached entity - nothing new to invalidate, the pointer simply joins what was already being dropped
 class SocialBlockCacheTagProvider implements BlockCacheTagProviderInterface
 {
-    // Written as SocialLinkExtension writes it, for the same reason it is not shared as a constant there: the two are the only readers of that key
-    private const string SINGLETON_TAG = 'singleton_block_social_links';
-
     public function getCacheTagResolvers(): array
     {
         return [
-            'social_links_display' => static fn (Block $block): array => [self::SINGLETON_TAG],
+            'social_links_display' => static fn (Block $block): array => [SocialLinkExtension::CACHE_TAG],
+            // "social_links" also prints the Google listing read from the config, whose change drops this same tag (GoogleReviewsCacheInvalidationListener)
+            'social_links' => static fn (Block $block): array => [SocialLinkExtension::CACHE_TAG],
             // "google_reviews" draws the reviews rather than its own data: their tag, which UiBundle's ReviewCacheInvalidationListener empties after every flush touching one - an import, a review hidden from the moderation list
             'google_reviews' => static fn (Block $block): array => [ReviewCollectionSourceProvider::CACHE_TAG],
         ];

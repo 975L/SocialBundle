@@ -45,6 +45,20 @@ class SameAsProviderTest extends TestCase
         );
     }
 
+    // The listing also typed among the links is published once
+    public function testTheListingTypedAmongTheLinksIsPublishedOnce(): void
+    {
+        $provider = $this->createProvider(
+            [['network' => '', 'url' => 'https://www.google.com/maps?cid=1'], ['network' => 'facebook', 'url' => 'https://facebook.com/example']],
+            'https://www.google.com/maps?cid=1'
+        );
+
+        $this->assertSame(
+            ['https://www.google.com/maps?cid=1', 'https://facebook.com/example'],
+            $provider->getSameAs()
+        );
+    }
+
     // A site that never filled the block, or never saved a link, must contribute nothing rather than an empty entry
     public function testAMissingBlockContributesNothing(): void
     {

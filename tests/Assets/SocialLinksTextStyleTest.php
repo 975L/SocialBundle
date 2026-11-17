@@ -55,6 +55,15 @@ class SocialLinksTextStyleTest extends TestCase
         $this->assertStringContainsString("{% if not display_label and icon_style != 'text' %} hidden{% endif %}", $template);
     }
 
+    // The preview shows the Google listing as the real render does, outside the indexes a drag follows
+    public function testThePreviewAppendsTheListingOutsideTheDraggedRows(): void
+    {
+        $template = $this->read('templates/management/social_links_preview_theme.html.twig');
+
+        $this->assertStringContainsString('{% set links = social_links_with_listing(links) %}', $template);
+        $this->assertStringContainsString('{% if loop.index0 < saved %}data-social-link-index="{{ loop.index0 }}"{% else %}data-social-link-listing{% endif %}', $template);
+    }
+
     // A custom logo is rarely square, and its box is: without this a wide one comes out squeezed
     public function testTheStylesheetKeepsTheProportionsOfACustomLogo(): void
     {

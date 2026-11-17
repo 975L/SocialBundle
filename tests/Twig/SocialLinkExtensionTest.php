@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Tests\Twig;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Twig\SocialLinkExtension;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Repository\BlockRepository;
@@ -34,6 +35,7 @@ class SocialLinkExtensionTest extends TestCase
         ?Block $socialLinksBlock,
         array $icons = [],
         ?TagAwareCacheInterface $cache = null,
+        ?string $listingUrl = null,
     ): SocialLinkExtension {
         $blockRepository = $this->createStub(BlockRepository::class);
         $blockRepository->method('findOneByKind')->willReturnCallback(
@@ -43,7 +45,16 @@ class SocialLinkExtensionTest extends TestCase
         $iconService = $this->createStub(IconServiceInterface::class);
         $iconService->method('getIcons')->willReturn($icons);
 
-        return new SocialLinkExtension($blockRepository, $iconService, $cache ?? $this->createCache());
+        return new SocialLinkExtension($blockRepository, $iconService, $cache ?? $this->createCache(), $this->createConfig($listingUrl));
+    }
+
+    // A config answering "social-google-listing-url" with $listingUrl
+    private function createConfig(?string $listingUrl = null): ConfigServiceInterface
+    {
+        $config = $this->createStub(ConfigServiceInterface::class);
+        $config->method('get')->willReturnCallback(static fn (string $slug) => 'social-google-listing-url' === $slug ? $listingUrl : null);
+
+        return $config;
     }
 
     // Both functions are plain value-returning helpers, not html-rendering ones (no needs_environment/is_safe)
@@ -51,9 +62,9 @@ class SocialLinkExtensionTest extends TestCase
     {
         $functions = new AttributeExtension(SocialLinkExtension::class)->getFunctions();
 
-        $this->assertCount(3, $functions);
+        $this->assertCount(4, $functions);
         $this->assertSame(
-            ['social_link_block', 'social_link_icon', 'social_link_label'],
+            ['social_link_block', 'social_link_icon', 'social_link_label', 'social_links_with_listing'],
             array_map(static fn (TwigFunction $function) => $function->getName(), $functions)
         );
         foreach ($functions as $function) {
@@ -98,7 +109,7 @@ class SocialLinkExtensionTest extends TestCase
 
         $iconService = $this->createStub(IconServiceInterface::class);
         $cache = $this->createCache();
-        $extension = new SocialLinkExtension($blockRepository, $iconService, $cache);
+        $extension = new SocialLinkExtension($blockRepository, $iconService, $cache, $this->createConfig());
 
         $extension->getSocialLinkBlock();
         $extension->getSocialLinkBlock();
@@ -113,10 +124,10 @@ class SocialLinkExtensionTest extends TestCase
         $iconService = $this->createStub(IconServiceInterface::class);
 
         $cache = $this->createCache();
-        $firstRequest = new SocialLinkExtension($blockRepository, $iconService, $cache);
+        $firstRequest = new SocialLinkExtension($blockRepository, $iconService, $cache, $this->createConfig());
         $this->assertEquals($block, $firstRequest->getSocialLinkBlock());
 
-        $secondRequest = new SocialLinkExtension($blockRepository, $iconService, $cache);
+        $secondRequest = new SocialLinkExtension($blockRepository, $iconService, $cache, $this->createConfig());
         $this->assertEquals($block, $secondRequest->getSocialLinkBlock());
     }
 
@@ -134,5 +145,43 @@ class SocialLinkExtensionTest extends TestCase
         $extension = $this->createExtension(null, ['facebook' => 'icons/facebook.svg']);
 
         $this->assertNull($extension->getSocialLinkIcon('myspace'));
+    }
+
+    // The configured listing follows the stored links, as a "google" entry
+    public function testGetLinksWithListingAppendsTheListing(): void
+    {
+        $extension = $this->createExtension(null, listingUrl: ' https://www.google.com/maps?cid=1 ');
+        $links = [['network' => 'facebook', 'url' => 'https://facebook.com/catalog']];
+
+        $this->assertSame(
+            [...$links, ['network' => 'google', 'url' => 'https://www.google.com/maps?cid=1']],
+            $extension->getLinksWithListing($links)
+        );
+    }
+
+    // No listing configured: the links as they are
+    public function testGetLinksWithListingLeavesTheLinksWithoutListing(): void
+    {
+        $links = [['network' => 'facebook', 'url' => 'https://facebook.com/catalog']];
+
+        $this->assertSame($links, $this->createExtension(null, listingUrl: '')->getLinksWithListing($links));
+        $this->assertSame($links, $this->createExtension(null)->getLinksWithListing($links));
+    }
+
+    // A listing already typed among the links is not shown twice
+    public function testGetLinksWithListingSkipsAListingAlreadyLinked(): void
+    {
+        $links = [['network' => '', 'url' => 'https://www.google.com/maps?cid=1', 'customLabel' => 'Google']];
+
+        $this->assertSame($links, $this->createExtension(null, listingUrl: 'https://www.google.com/maps?cid=1')->getLinksWithListing($links));
+    }
+
+    // A site with no link yet still gets the listing
+    public function testGetLinksWithListingWorksWithoutLinks(): void
+    {
+        $this->assertSame(
+            [['network' => 'google', 'url' => 'https://www.google.com/maps?cid=1']],
+            $this->createExtension(null, listingUrl: 'https://www.google.com/maps?cid=1')->getLinksWithListing([])
+        );
     }
 }

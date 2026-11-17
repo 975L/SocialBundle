@@ -1,5 +1,7 @@
 {# Adapter spreading the stored data keys onto the component's props #}
-{% if links is defined and links is not empty %}
+{# The Google listing joins the stored links, so a site with no link yet still shows it - except in the gallery's samples, which pass "withListing: false" #}
+{% set links = (withListing ?? true) ? social_links_with_listing(links ?? []) : links ?? [] %}
+{% if links is not empty %}
     {# A <div>, not a <section>: this block carries no heading of its own, and a headingless <section> is invalid HTML (same fallback as UiBundle's own block components). It owns the vertical room above it, see sass/_social.scss #}
     <div class="social-links-block">
         {# Rich text (TrixEditorType), sanitized; no wrapper at all when left empty #}

@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.38.0
+
+Google listing shown among the social links
+
+- Added `social_links_with_listing()`: the Google listing from `social-google-listing-url` appended as the last social link, unless already linked (17/11/2026)
+- Added `SocialLinkExtension::CACHE_TAG`, carried by the `social_links` block and dropped when the listing url changes (17/11/2026)
+- [BC-Break] `SocialLinkExtension` takes the `ConfigServiceInterface` (17/11/2026)
+- The back-office preview of the social links shows the Google listing last, outside the dragged rows (17/11/2026)
+- Fixed the listing published twice in `sameAs` when also typed among the links (17/11/2026)
+
 ## v2.37.0
 
 Google connection checked while the reviews are off

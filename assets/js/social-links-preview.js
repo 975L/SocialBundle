@@ -38,18 +38,19 @@ document.addEventListener('change', event => {
     }
 });
 
-// Puts the saved entries in the order their form rows were dragged to, matched by the row index their names carry ("[links][2][position]"). A row added since the last save has no entry to move, and an entry whose row was removed stays, last
+// Puts the saved entries in the order their form rows were dragged to, matched by the row index their names carry ("[links][2][position]"). A row added since the last save has no entry to move, an entry whose row was removed stays after the others, and the Google listing stays last
 function reorderPreview(field) {
     const list = document.querySelector('[data-social-links-preview-list]');
     if (!list) return;
 
     const entries = [...list.querySelectorAll('[data-social-link-index]')];
+    const listing = list.querySelector('[data-social-link-listing]');
     const ordered = [...field.querySelectorAll('[name$="[position]"]')]
         .map(input => input.name.match(/\[links\]\[(\d+)\]\[position\]$/)?.[1])
         .map(index => entries.find(entry => entry.dataset.socialLinkIndex === index))
         .filter(Boolean);
 
-    [...ordered, ...entries.filter(entry => !ordered.includes(entry))].forEach(entry => { list.appendChild(entry); });
+    [...ordered, ...entries.filter(entry => !ordered.includes(entry))].forEach(entry => { list.insertBefore(entry, listing); });
 }
 
 // Fired by UiBundle's ea-sortable.js once the positions are rewritten, on a drop as on an added row

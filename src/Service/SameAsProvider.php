@@ -25,9 +25,10 @@ class SameAsProvider implements SameAsProviderInterface
     ) {
     }
 
+    // The listing then the links, once each: the listing may also have been typed among the links
     public function getSameAs(): array
     {
-        return [...$this->listingUrl(), ...$this->socialLinks()];
+        return array_values(array_unique([...$this->listingUrl(), ...$this->socialLinks()]));
     }
 
     // The listing first: it is the profile Google itself reconciles the site against, where a social account only corroborates it
