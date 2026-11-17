@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-17",
+        "description": [
+            {
+                "en": "Your Google listing can now receive posts too: once it is connected for the reviews, \"Google\" shows among the networks of a post. It is never ticked by itself: tick it on the posts that count, something new, an offer, an event, about one a week. The link to the page goes out in a \"Learn more\" button.",
+                "fr": "Votre fiche Google peut désormais recevoir des posts : une fois connectée pour les avis, « Google » apparaît parmi les réseaux d'une publication. Elle n'est jamais cochée d'office : cochez-la sur les posts qui comptent, une nouveauté, une offre, un événement, environ un par semaine. Le lien vers la page part dans un bouton « En savoir plus ».",
+                "es": "Su ficha de Google ya puede recibir publicaciones: una vez conectada para las opiniones, «Google» aparece entre las redes de una publicación. Nunca se marca sola: márquela en las publicaciones que cuentan, una novedad, una oferta, un evento, una por semana aproximadamente. El enlace a la página sale en un botón «Más información»."
+            }
+        ]
+    },
+    {
         "date": "2026-11-13",
         "description": [
             {

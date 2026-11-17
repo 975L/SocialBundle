@@ -111,6 +111,12 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'description' => 'description.guided_step_social_google_sync',
                     'narration' => 'narration.guided_step_social_google_sync',
                 ],
+                [
+                    // No highlight: the listing is ticked on a post's own screen, by hand only (see GoogleBusinessPublisher)
+                    'label' => 'label.guided_step_social_google_posts',
+                    'description' => 'description.guided_step_social_google_posts',
+                    'narration' => 'narration.guided_step_social_google_posts',
+                ],
             ],
         ];
     }

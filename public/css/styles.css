@@ -211,6 +211,19 @@ footer .social-links-block {
   background-color: rgb(8.4705882353%, 8.1176470588%, 8.1176470588%);
 }
 
+.social-links--colored .social-link--google a {
+  background-color: #4285f4;
+  color: #fff;
+}
+
+.social-links--colored .social-link--google .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--colored .social-link--google a:hover {
+  background-color: rgb(14.3941176471%, 44.7411764706%, 95.0176470588%);
+}
+
 .social-links--colored .social-link--instagram a {
   background-color: #e4405f;
   color: #fff;
@@ -698,6 +711,21 @@ footer .social-links-block {
 }
 
 .social-links--outline .social-link--github a:hover .social-link-icon {
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
+}
+
+.social-links--outline .social-link--google a {
+  background-color: transparent;
+  border: 3px solid #4285f4;
+  color: #4285f4;
+}
+
+.social-links--outline .social-link--google a:hover {
+  background-color: #4285f4;
+  color: #fff;
+}
+
+.social-links--outline .social-link--google a:hover .social-link-icon {
   filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(262deg) brightness(102%) contrast(101%);
 }
 
@@ -1345,6 +1373,15 @@ footer .social-link a:hover {
 }
 
 .social-share-btn--github:hover {
+  background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
+}
+
+.social-share-btn--google {
+  --network-color: #4285f4;
+  background-color: var(--social-share-btn-background, var(--network-color));
+}
+
+.social-share-btn--google:hover {
   background-color: var(--social-share-btn-background-hover, var(--social-share-btn-background, var(--network-color)));
 }
 

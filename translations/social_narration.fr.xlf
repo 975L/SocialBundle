@@ -70,6 +70,10 @@
                 <source>narration.guided_step_social_google_hide</source>
                 <target>Au bout de chaque ligne, l'interrupteur Affiché masque l'avis sur le site, ou le réaffiche, en un clic. Un avis masqué le reste : l'import de la nuit ne le republie pas.</target>
             </trans-unit>
+            <trans-unit id="4sDLoPq">
+                <source>narration.guided_step_social_google_posts</source>
+                <target>La fiche sert aussi à publier. Elle apparaît parmi les réseaux d'une publication, mais n'est jamais cochée d'office : cochez-la sur les posts qui comptent, une nouveauté, une offre, un événement, environ un par semaine. Le lien de la page part dans un bouton « En savoir plus ».</target>
+            </trans-unit>
             <trans-unit id="Ies79nd">
                 <source>narration.guided_step_social_google_prerequisites</source>
                 <target>Cette première partie ne se passe pas sur le site mais chez Google, et elle prend sept à dix jours ouvrés : demander l'accès à l'API Business Profile, puis publier l'application OAuth. La procédure d'aide « Afficher les avis Google de votre établissement » donne les liens et l'ordre exact. Revenez ici une fois l'accès accordé.</target>

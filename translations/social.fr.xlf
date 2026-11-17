@@ -162,6 +162,10 @@
                 <source>description.guided_step_social_google_hide</source>
                 <target>L'interrupteur Affiché de la ligne masque l'avis sur le site, ou le réaffiche, en un clic. Un avis masqué le reste : l'import de la nuit ne le republie pas. Le bloc rappelle que les avis viennent de Google et renvoie vers tous les autres.</target>
             </trans-unit>
+            <trans-unit id="ae2tGGD">
+                <source>description.guided_step_social_google_posts</source>
+                <target>La fiche Google rejoint les réseaux d'une publication, sans jamais être cochée d'office : la cocher sur les posts qui comptent (une nouveauté, une offre, un événement), environ un par semaine. Le texte part sans lien, un bouton « En savoir plus » menant à la page.</target>
+            </trans-unit>
             <trans-unit id="6xgYazB">
                 <source>description.guided_step_social_google_prerequisites</source>
                 <target>Cette première partie se passe chez Google et prend 7 à 10 jours ouvrés : accès à l'API Business Profile, puis publication de l'application OAuth. La procédure d'aide "Afficher les avis Google de votre établissement" donne les liens et l'ordre exact. Revenir ici une fois l'accès accordé.</target>
@@ -1082,6 +1086,10 @@
                 <source>label.guided_step_social_google_hide</source>
                 <target>Masquer un avis</target>
             </trans-unit>
+            <trans-unit id="drgfQ6H">
+                <source>label.guided_step_social_google_posts</source>
+                <target>Publier sur la fiche, post par post</target>
+            </trans-unit>
             <trans-unit id="ilGA6aD">
                 <source>label.guided_step_social_google_prerequisites</source>
                 <target>Préparer l'accès chez Google</target>
@@ -1380,7 +1388,7 @@
             </trans-unit>
             <trans-unit id="stDBjT.">
                 <source>label.info_google_connect</source>
-                <target>Autorise le site à lire les avis de votre fiche Google et à y répondre.</target>
+                <target>Autorise le site à lire les avis de votre fiche Google, à y répondre et à y publier les posts où vous la cochez.</target>
             </trans-unit>
             <trans-unit id="8MsrPrS">
                 <source>label.info_google_not_configured</source>

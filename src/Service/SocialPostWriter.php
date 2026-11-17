@@ -36,6 +36,7 @@ class SocialPostWriter extends AbstractAiProviderClient
     private const array RULES = [
         'bluesky' => 'A short post. The link written out in the text. Zero to two hashtags.',
         'facebook' => 'Three to six short lines, ending with an open question to the reader. The link alone on the last line.',
+        'google' => 'A post on the business\'s Google listing, read by someone looking the business up: two to four plain sentences saying what is new and what the reader gains. No link, the post\'s button carrying it. No phone number, which Google refuses. No hashtag.',
         'instagram' => 'A caption of four to eight lines. Then the link written out, followed by "link in bio" in the language of the post. Then eight to twelve hashtags on a last line.',
         'linkedin' => 'A professional tone, three to six short lines, what the reader gains first. The link on the last line. Three hashtags at most.',
         'pinterest' => 'The first line is the pin\'s title: under 100 characters, the words someone would search for, no hashtag, no emoji. Then a description of two to four sentences saying what the reader finds behind the pin, with those words in it. No link, the pin carrying it. Two hashtags at most, at the end.',

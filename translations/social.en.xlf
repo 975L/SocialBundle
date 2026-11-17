@@ -162,6 +162,10 @@
                 <source>description.guided_step_social_google_hide</source>
                 <target>The Displayed switch on the row hides the review from the site, or shows it again, in one click. A hidden review stays hidden: the nightly import does not publish it again. The block says the reviews come from Google and links to all the others.</target>
             </trans-unit>
+            <trans-unit id="ae2tGGD">
+                <source>description.guided_step_social_google_posts</source>
+                <target>The Google listing joins the networks of a post, never ticked by itself: tick it on the posts that count (something new, an offer, an event), about one a week. The text goes out without a link, a "Learn more" button leading to the page.</target>
+            </trans-unit>
             <trans-unit id="6xgYazB">
                 <source>description.guided_step_social_google_prerequisites</source>
                 <target>This first part happens at Google and takes 7 to 10 business days: access to the Business Profile API, then publishing the OAuth app. The help procedure "Display your listing's Google reviews" gives the links and the exact order. Come back here once access is granted.</target>
@@ -1082,6 +1086,10 @@
                 <source>label.guided_step_social_google_hide</source>
                 <target>Hide a review</target>
             </trans-unit>
+            <trans-unit id="drgfQ6H">
+                <source>label.guided_step_social_google_posts</source>
+                <target>Post on the listing, one post at a time</target>
+            </trans-unit>
             <trans-unit id="ilGA6aD">
                 <source>label.guided_step_social_google_prerequisites</source>
                 <target>Prepare the access at Google</target>
@@ -1380,7 +1388,7 @@
             </trans-unit>
             <trans-unit id="stDBjT.">
                 <source>label.info_google_connect</source>
-                <target>Lets the site read the reviews of your Google listing and answer them.</target>
+                <target>Lets the site read the reviews of your Google listing, answer them and publish there the posts you tick it on.</target>
             </trans-unit>
             <trans-unit id="8MsrPrS">
                 <source>label.info_google_not_configured</source>

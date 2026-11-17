@@ -41,6 +41,15 @@ class SocialSeriesTypeTest extends TypeTestCase
         $this->assertSame('social-series-source', $form->get('sources')->createView()->vars['choices'][0]->attr['class']);
     }
 
+    // Every network offered, those ticked by hand only left unticked at first
+    public function testTheNetworksTickedFirstLeaveOutThoseTickedByHand(): void
+    {
+        $form = $this->factory->create(SocialSeriesType::class, null, ['networks' => ['bluesky', 'listing'], 'ticked' => ['bluesky']]);
+
+        $this->assertSame(['bluesky', 'listing'], array_values($form->get('networks')->getConfig()->getOption('choices')));
+        $this->assertSame(['bluesky'], $form->get('networks')->getData());
+    }
+
     // Some days of the week need at least one day ticked
     public function testSomeDaysOfTheWeekNeedADay(): void
     {

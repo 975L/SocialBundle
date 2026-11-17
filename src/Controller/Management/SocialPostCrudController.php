@@ -532,6 +532,7 @@ class SocialPostCrudController extends AbstractCrudController
 
         $form = $this->createForm(SocialSeriesType::class, null, [
             'networks' => $this->socialPublisher->getConnectedNetworkNames(),
+            'ticked' => $this->socialPublisher->getDefaultNetworkNames(),
             'sources' => $this->socialPublisher->getSourceChoices(),
             'start' => $this->planner->nextQuarter(new \DateTimeImmutable('tomorrow 09:00')),
         ])->handleRequest($request);

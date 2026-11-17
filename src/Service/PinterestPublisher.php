@@ -112,7 +112,7 @@ class PinterestPublisher implements NetworkPublisherInterface
     {
         $media = $medias[0] ?? null;
 
-        return null === $media ? $content : new SocialContent($content->sourceId, $content->title, $content->url, imagePath: $media->path, imageAlt: $media->alt ?? $content->imageAlt);
+        return $media?->onContent($content) ?? $content;
     }
 
     // The body of POST /v5/pins, the picture served as a JPEG, as the pin or as its video's cover: the title is the text's first line, the content's title when the text is empty, the description the lines after - the whole text for a single line too long a title, none otherwise

@@ -12,6 +12,7 @@ namespace c975L\SocialBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Model\ReviewData;
+use c975L\SocialBundle\Service\GoogleBusinessClient;
 use c975L\SocialBundle\Service\GoogleBusinessProfileSource;
 use c975L\SocialBundle\Service\GoogleOAuthClient;
 use PHPUnit\Framework\TestCase;
@@ -42,7 +43,7 @@ class GoogleBusinessProfileSourceTest extends TestCase
 
     private function createSource(MockHttpClient $httpClient, ?string $accountId = '123'): GoogleBusinessProfileSource
     {
-        return new GoogleBusinessProfileSource($httpClient, $this->createOAuthClient(), $this->createConfigService($accountId));
+        return new GoogleBusinessProfileSource(new GoogleBusinessClient($httpClient, $this->createOAuthClient(), $this->createConfigService($accountId)));
     }
 
     // starRating is an enum, so a review whose rating is read as a number would be stored at zero

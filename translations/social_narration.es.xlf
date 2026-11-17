@@ -70,6 +70,10 @@
                 <source>narration.guided_step_social_google_hide</source>
                 <target>En cada fila, el interruptor Mostrada oculta la opinión en el sitio, o la vuelve a mostrar, con un clic. Una opinión oculta lo sigue estando: la importación nocturna no la vuelve a publicar.</target>
             </trans-unit>
+            <trans-unit id="4sDLoPq">
+                <source>narration.guided_step_social_google_posts</source>
+                <target>La ficha también sirve para publicar. Aparece entre las redes de una publicación, pero nunca se marca sola: márquela en las publicaciones que cuentan, una novedad, una oferta, un evento, una por semana aproximadamente. El enlace de la página sale en un botón «Más información».</target>
+            </trans-unit>
             <trans-unit id="Ies79nd">
                 <source>narration.guided_step_social_google_prerequisites</source>
                 <target>Esta primera parte no ocurre en el sitio sino en Google, y tarda de siete a diez días hábiles: pedir el acceso a la API Business Profile y luego publicar la aplicación OAuth. El procedimiento de ayuda «Mostrar las opiniones de Google de su establecimiento» da los enlaces y el orden exacto. Vuelva aquí una vez concedido el acceso.</target>

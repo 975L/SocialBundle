@@ -162,6 +162,10 @@
                 <source>description.guided_step_social_google_hide</source>
                 <target>El interruptor Mostrada de la fila oculta la opinión en el sitio, o la vuelve a mostrar, con un clic. Una opinión oculta lo sigue estando: la importación nocturna no la vuelve a publicar. El bloque indica que las opiniones vienen de Google y enlaza con todas las demás.</target>
             </trans-unit>
+            <trans-unit id="ae2tGGD">
+                <source>description.guided_step_social_google_posts</source>
+                <target>La ficha de Google se suma a las redes de una publicación, sin marcarse nunca sola: márquela en las publicaciones que cuentan (una novedad, una oferta, un evento), una por semana aproximadamente. El texto sale sin enlace, un botón «Más información» lleva a la página.</target>
+            </trans-unit>
             <trans-unit id="6xgYazB">
                 <source>description.guided_step_social_google_prerequisites</source>
                 <target>Esta primera parte ocurre en Google y tarda de 7 a 10 días hábiles: acceso a la API Business Profile y luego publicación de la aplicación OAuth. El procedimiento de ayuda "Mostrar las opiniones de Google de su establecimiento" da los enlaces y el orden exacto. Volver aquí una vez concedido el acceso.</target>
@@ -1082,6 +1086,10 @@
                 <source>label.guided_step_social_google_hide</source>
                 <target>Ocultar una opinión</target>
             </trans-unit>
+            <trans-unit id="drgfQ6H">
+                <source>label.guided_step_social_google_posts</source>
+                <target>Publicar en la ficha, publicación por publicación</target>
+            </trans-unit>
             <trans-unit id="ilGA6aD">
                 <source>label.guided_step_social_google_prerequisites</source>
                 <target>Preparar el acceso en Google</target>
@@ -1380,7 +1388,7 @@
             </trans-unit>
             <trans-unit id="stDBjT.">
                 <source>label.info_google_connect</source>
-                <target>Permite al sitio leer las opiniones de su ficha de Google y responderlas.</target>
+                <target>Permite al sitio leer las opiniones de su ficha de Google, responderlas y publicar en ella las publicaciones en las que la marque.</target>
             </trans-unit>
             <trans-unit id="8MsrPrS">
                 <source>label.info_google_not_configured</source>

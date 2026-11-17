@@ -10,19 +10,15 @@
 
 namespace c975L\SocialBundle\Service;
 
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Contract\ReviewsReplySourceInterface;
 use c975L\SocialBundle\Model\ReviewData;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-// The reviews of the Google listing the site was connected to. Still on the v4 host: the reviews endpoints were never moved to the split Business Profile APIs, and are only reachable once the Cloud project has been allowlisted
+// The reviews of the Google listing the site was connected to, read and answered through GoogleBusinessClient
 class GoogleBusinessProfileSource implements ReviewsReplySourceInterface
 {
     public const string NAME = 'google';
     // The config holding the listing's public address, linked under the reviews and given to search engines
     public const string LISTING_URL = 'social-google-listing-url';
-
-    private const string API_BASE = 'https://mybusiness.googleapis.com/v4';
 
     // Google's own maximum for this endpoint; asking for more is refused rather than clamped
     private const int PAGE_SIZE = 50;
@@ -36,11 +32,8 @@ class GoogleBusinessProfileSource implements ReviewsReplySourceInterface
         'FIVE' => 5,
     ];
 
-    public function __construct(
-        private readonly HttpClientInterface $httpClient,
-        private readonly GoogleOAuthClient $googleOAuthClient,
-        private readonly ConfigServiceInterface $configService,
-    ) {
+    public function __construct(private readonly GoogleBusinessClient $googleBusinessClient)
+    {
     }
 
     public function getName(): string
@@ -50,9 +43,7 @@ class GoogleBusinessProfileSource implements ReviewsReplySourceInterface
 
     public function isConfigured(): bool
     {
-        return $this->googleOAuthClient->isConfigured()
-            && null !== $this->accountId()
-            && null !== $this->locationId();
+        return $this->googleBusinessClient->isConfigured();
     }
 
     public function fetch(): iterable
@@ -60,7 +51,7 @@ class GoogleBusinessProfileSource implements ReviewsReplySourceInterface
         $pageToken = null;
 
         do {
-            $payload = $this->request('GET', $this->reviewsPath(), [
+            $payload = $this->googleBusinessClient->request('GET', $this->reviewsPath(), [
                 'pageSize' => self::PAGE_SIZE,
                 'orderBy' => 'updateTime desc',
                 ...(null !== $pageToken ? ['pageToken' => $pageToken] : []),
@@ -83,12 +74,12 @@ class GoogleBusinessProfileSource implements ReviewsReplySourceInterface
         $path = $this->reviewsPath() . '/' . rawurlencode($externalId) . '/reply';
 
         if (null === $comment || '' === trim($comment)) {
-            $this->request('DELETE', $path);
+            $this->googleBusinessClient->request('DELETE', $path);
 
             return;
         }
 
-        $this->request('PUT', $path, body: ['comment' => $comment]);
+        $this->googleBusinessClient->request('PUT', $path, body: ['comment' => $comment]);
     }
 
     // A review Google returns without an id or a readable rating is skipped rather than stored half-built: it could neither be updated on the next run nor displayed
@@ -164,55 +155,6 @@ class GoogleBusinessProfileSource implements ReviewsReplySourceInterface
 
     private function reviewsPath(): string
     {
-        return sprintf('/accounts/%s/locations/%s/reviews', (string) $this->accountId(), (string) $this->locationId());
-    }
-
-    /**
-     * @param array<string, mixed>      $query
-     * @param array<string, mixed>|null $body
-     *
-     * @return array<string, mixed>
-     */
-    private function request(string $method, string $path, array $query = [], ?array $body = null): array
-    {
-        $response = $this->httpClient->request($method, self::API_BASE . $path, [
-            'auth_bearer' => $this->googleOAuthClient->getAccessToken(),
-            'query' => $query,
-            ...(null !== $body ? ['json' => $body] : []),
-            'timeout' => 30,
-        ]);
-
-        if ($response->getStatusCode() >= 400) {
-            throw new \RuntimeException(sprintf('Google answered %d on %s: %s', $response->getStatusCode(), $path, $response->getContent(false)));
-        }
-
-        // A DELETE answers with an empty body, which is a success and not an unreadable payload
-        $content = $response->getContent(false);
-
-        if ('' === trim($content)) {
-            return [];
-        }
-
-        $payload = json_decode($content, true);
-
-        if (!is_array($payload)) {
-            throw new \RuntimeException(sprintf('Google answered %s with something other than a json object.', $path));
-        }
-
-        return $payload;
-    }
-
-    private function accountId(): ?string
-    {
-        $value = $this->configService->get('social-google-business-account-id');
-
-        return is_string($value) && '' !== $value ? $value : null;
-    }
-
-    private function locationId(): ?string
-    {
-        $value = $this->configService->get('social-google-business-location-id');
-
-        return is_string($value) && '' !== $value ? $value : null;
+        return $this->googleBusinessClient->locationPath() . '/reviews';
     }
 }

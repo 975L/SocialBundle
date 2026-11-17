@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Service;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use c975L\SocialBundle\Contract\FirstCommentPublisherInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
+use c975L\SocialBundle\Contract\OnDemandPublisherInterface;
 use c975L\SocialBundle\Contract\PostOptionsPublisherInterface;
 use c975L\SocialBundle\Contract\ProfileResharePublisherInterface;
 use c975L\SocialBundle\Contract\RepostPublisherInterface;
@@ -87,6 +88,13 @@ class SocialPublisher
     public function getConnectedNetworkNames(): array
     {
         return array_keys($this->networksByName());
+    }
+
+    // The connected networks ticked first where networks are picked for posts to come (a series), those ticked by hand only left out
+    /** @return list<string> */
+    public function getDefaultNetworkNames(): array
+    {
+        return array_keys($this->byDefault($this->networksByName()));
     }
 
     // Every network a post may go to, configured or not yet
@@ -288,11 +296,11 @@ class SocialPublisher
         }
     }
 
-    // A post written on its screen, planned at $at and ticked on every network connected but those of videos alone, ticked once a video is added - one empty text each, written from the post's text once it is saved (see rewriteTargets())
+    // A post written on its screen, planned at $at and ticked on every network connected but those of videos alone, ticked once a video is added, and those ticked by hand only - one empty text each, written from the post's text once it is saved (see rewriteTargets())
     public function createManual(\DateTimeImmutable $at): SocialPost
     {
         $post = new SocialPost(SocialPost::SOURCE_MANUAL, bin2hex(random_bytes(8)), '', '', null, $at);
-        foreach (array_keys($this->withoutVideoOnly($this->networksByName())) as $network) {
+        foreach (array_keys($this->byDefault($this->withoutVideoOnly($this->networksByName()))) as $network) {
             new SocialPostTarget($post, $network, '');
         }
 
@@ -513,8 +521,8 @@ class SocialPublisher
         $post = new SocialPost($sourceType, $content->sourceId, $content->title, $content->url, $content->imageUrl, $plannedAt)->setLocale($content->locale);
         $this->prepared = null;
 
-        // Every network on a dry run, the configured ones only otherwise: the dry run is what is read before any credential is plugged in. A content brings no video, so a network of videos alone is left out
-        $targets = $dryRun ? $this->allNetworks() : $this->withoutVideoOnly($this->networksByName());
+        // Every network on a dry run, the configured ones only otherwise: the dry run is what is read before any credential is plugged in. A content brings no video, so a network of videos alone is left out, and a network ticked by hand only is
+        $targets = $dryRun ? $this->allNetworks() : $this->byDefault($this->withoutVideoOnly($this->networksByName()));
         // Written by the site's AI in one call where it has one, the template writing whatever it left out - never on a dry run, which costs nothing and shows the template's text
         $written = $dryRun ? [] : $this->writer->write($content, array_map(static fn (NetworkPublisherInterface $network): int => $network->getMaxLength(), $targets));
 
@@ -935,6 +943,17 @@ class SocialPublisher
     private function withoutVideoOnly(array $networks): array
     {
         return array_filter($networks, static fn (NetworkPublisherInterface $network): bool => !$network->getMediaRules()->videoRequired);
+    }
+
+    // The networks ticked without being asked, those ticked by hand only left out (see OnDemandPublisherInterface)
+    /**
+     * @param array<string, NetworkPublisherInterface> $networks
+     *
+     * @return array<string, NetworkPublisherInterface>
+     */
+    private function byDefault(array $networks): array
+    {
+        return array_filter($networks, static fn (NetworkPublisherInterface $network): bool => !$network instanceof OnDemandPublisherInterface);
     }
 
     /**

@@ -79,7 +79,8 @@ class SocialSeriesType extends AbstractType
             ->add('networks', ChoiceType::class, [
                 'label' => t('label.social_post_send_on', [], 'social'),
                 'choices' => array_combine(array_map(ucfirst(...), $options['networks']), $options['networks']),
-                'data' => $options['networks'],
+                // Ticked first on every network but those ticked by hand only, which stay offered
+                'data' => $options['ticked'] ?? $options['networks'],
                 'multiple' => true,
                 'expanded' => true,
                 'constraints' => [new Count(min: 1)],
@@ -150,11 +151,13 @@ class SocialSeriesType extends AbstractType
         $resolver->setDefaults([
             'data_class' => null,
             'networks' => [],
+            'ticked' => null,
             'sources' => [],
             'start' => null,
             'constraints' => [new Callback(self::validate(...))],
         ]);
         $resolver->setAllowedTypes('networks', 'array');
+        $resolver->setAllowedTypes('ticked', ['null', 'array']);
         $resolver->setAllowedTypes('sources', 'array');
     }
 

@@ -37,6 +37,8 @@ class SocialPostRepositoryTest extends TestCase
     {
         $config = ORMSetup::createAttributeMetadataConfig([\dirname(__DIR__, 2) . '/src/Entity'], true);
         $config->enableNativeLazyObjects(true);
+        // The schema written through DBAL's editor, the only way left in Doctrine ORM 4
+        $config->setUseSchemaEditorApi(true);
         // The one a Symfony application maps with, the entities' indexes naming their columns by it
         $config->setNamingStrategy(new UnderscoreNamingStrategy(\CASE_LOWER, true));
         $this->entityManager = new EntityManager(DriverManager::getConnection(['driver' => 'pdo_sqlite', 'memory' => true], $config), $config);

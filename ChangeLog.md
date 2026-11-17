@@ -1,5 +1,19 @@
 # Changelog
 
+## v2.36.0
+
+Posts on the Google listing, ticked by hand only
+
+- Added `GoogleBusinessPublisher`: posts on the Google listing connected for the reviews, with one picture and a "Learn more" button (17/11/2026)
+- Added `OnDemandPublisherInterface`: a network left out of drafts, new posts and a series' first choices, ticked by hand only (17/11/2026)
+- Added `SocialPublisher::getDefaultNetworkNames()`, the networks a series form ticks first (17/11/2026)
+- [BC-Break] `GoogleBusinessProfileSource` takes the new `GoogleBusinessClient`, shared with the listing's posts (17/11/2026)
+- Added the AI writing rule of the Google listing: no link, no phone number, no hashtag (17/11/2026)
+- Added the `google` icon and brand colour, for the listing's badge on the calendar (17/11/2026)
+- Added the step "Post on the listing" to the guided project of the Google connection (17/11/2026)
+- Added `PostMedia::onContent()`, the content with the post's own picture, shared by Pinterest and the Google listing (17/11/2026)
+- Requires `doctrine/orm` ^3.8, the repository tests writing their schema through DBAL's editor (17/11/2026)
+
 ## v2.35.0
 
 Series deleted from the back-office, ended ones listed

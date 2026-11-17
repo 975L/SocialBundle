@@ -10,6 +10,8 @@
 
 namespace c975L\SocialBundle\Model;
 
+use c975L\UiBundle\Model\SocialContent;
+
 // A picture or a video of a post as a network receives it: the file on disk, its public url, and what was measured of it (see SocialMedia)
 final class PostMedia
 {
@@ -23,6 +25,12 @@ final class PostMedia
         public readonly ?float $duration = null,
         public readonly ?string $alt = null,
     ) {
+    }
+
+    // The content with this picture in place of its own, the content's alternative text kept when this one has none
+    public function onContent(SocialContent $content): SocialContent
+    {
+        return new SocialContent($content->sourceId, $content->title, $content->url, imagePath: $this->path, imageAlt: $this->alt ?? $content->imageAlt, variables: $content->variables, locale: $content->locale);
     }
 
     public function isVideo(): bool

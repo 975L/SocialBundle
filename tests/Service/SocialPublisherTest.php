@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use c975L\SocialBundle\Contract\FirstCommentPublisherInterface;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
+use c975L\SocialBundle\Contract\OnDemandPublisherInterface;
 use c975L\SocialBundle\Contract\PostOptionsPublisherInterface;
 use c975L\SocialBundle\Contract\ProfileResharePublisherInterface;
 use c975L\SocialBundle\Contract\RepostPublisherInterface;
@@ -278,6 +279,22 @@ class SocialPublisherTest extends TestCase
 
         $this->assertSame(['bluesky'], $posts[0]->getNetworks());
         $this->assertSame(['bluesky'], $this->asked['writer']['networks']);
+    }
+
+    // A network ticked by hand only gets no target on a draft nor on a new post, and is not ticked first on a series - yet it stays connected, and a target is added once it is ticked
+    public function testANetworkTickedByHandOnlyIsLeftOutUntilTicked(): void
+    {
+        $onDemand = $this->createFollowingNetwork(OnDemandPublisherInterface::class, 'listing', 1500, 1);
+        $publisher = $this->createPublisher([$this->createSource('gallery_media', '42')], [$this->createNetwork('bluesky'), $onDemand]);
+
+        $posts = $publisher->prepareDrafts([new \DateTimeImmutable('2026-10-06 09:00')]);
+        $this->assertSame(['bluesky'], $posts[0]->getNetworks());
+        $this->assertSame(['bluesky'], $publisher->createManual(new \DateTimeImmutable('2026-10-06 09:15'))->getNetworks());
+        $this->assertSame(['bluesky'], $publisher->getDefaultNetworkNames());
+        $this->assertSame(['bluesky', 'listing'], $publisher->getConnectedNetworkNames());
+
+        $publisher->addTargets($posts[0], ['listing']);
+        $this->assertSame(['bluesky', 'listing'], $posts[0]->getNetworks());
     }
 
     // No moment asked, no draft

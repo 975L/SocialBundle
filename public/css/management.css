@@ -73,6 +73,10 @@
   background-color: #181717;
 }
 
+.social-network-badge--google:not(.is-off) {
+  background-color: #4285f4;
+}
+
 .social-network-badge--instagram:not(.is-off) {
   background-color: #e4405f;
 }

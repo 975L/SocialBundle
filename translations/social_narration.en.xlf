@@ -70,6 +70,10 @@
                 <source>narration.guided_step_social_google_hide</source>
                 <target>On each row, the Displayed switch hides the review from the site, or shows it again, in one click. A hidden review stays hidden: the nightly import does not publish it again.</target>
             </trans-unit>
+            <trans-unit id="4sDLoPq">
+                <source>narration.guided_step_social_google_posts</source>
+                <target>The listing is also a place to post. It shows among the networks of a post, but is never ticked by itself: tick it on the posts that count, something new, an offer, an event, about one a week. The page's link goes out in a "Learn more" button.</target>
+            </trans-unit>
             <trans-unit id="Ies79nd">
                 <source>narration.guided_step_social_google_prerequisites</source>
                 <target>This first part does not happen on the site but at Google, and it takes seven to ten business days: request access to the Business Profile API, then publish the OAuth app. The help procedure "Display your listing's Google reviews" gives the links and the exact order. Come back here once access is granted.</target>
