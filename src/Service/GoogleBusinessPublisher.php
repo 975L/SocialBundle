@@ -10,6 +10,7 @@
 
 namespace c975L\SocialBundle\Service;
 
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\SocialBundle\Contract\NetworkPublisherInterface;
 use c975L\SocialBundle\Contract\OnDemandPublisherInterface;
 use c975L\SocialBundle\Model\MediaRules;
@@ -27,6 +28,7 @@ class GoogleBusinessPublisher implements NetworkPublisherInterface, OnDemandPubl
     public function __construct(
         private readonly GoogleBusinessClient $googleBusinessClient,
         private readonly SocialImageExporter $imageExporter,
+        private readonly SiteLocales $siteLocales,
     ) {
     }
 
@@ -82,7 +84,7 @@ class GoogleBusinessPublisher implements NetworkPublisherInterface, OnDemandPubl
         return $media?->onContent($content) ?? $content;
     }
 
-    // The body of POST .../localPosts: a standard post, in the content's language when it says one, its picture and its button left out when it has none - the content's address taken out of the text, the template's own putting it there, since the button carries it
+    // The body of POST .../localPosts: a standard post, in the content's language or the site's default one, Google filing a post without any as English, its picture and its button left out when it has none - the content's address taken out of the text, the template's own putting it there, since the button carries it
     /** @return array<string, mixed> */
     private function post(string $text, SocialContent $content, bool $preview = false): array
     {
@@ -91,7 +93,7 @@ class GoogleBusinessPublisher implements NetworkPublisherInterface, OnDemandPubl
         $summary = '' === $content->url ? $text : str_replace($content->url, '', $text);
 
         return array_filter([
-            'languageCode' => $content->locale,
+            'languageCode' => $content->locale ?? $this->siteLocales->getDefaultLocale(),
             'summary' => mb_substr(trim($summary), 0, self::MAX_LENGTH),
             'topicType' => 'STANDARD',
             'callToAction' => '' === $content->url ? null : ['actionType' => 'LEARN_MORE', 'url' => $content->url],

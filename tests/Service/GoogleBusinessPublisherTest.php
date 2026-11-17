@@ -11,6 +11,7 @@
 namespace c975L\SocialBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\SocialBundle\Contract\OnDemandPublisherInterface;
 use c975L\SocialBundle\Model\PostMedia;
 use c975L\SocialBundle\Service\GoogleBusinessClient;
@@ -46,25 +47,31 @@ class GoogleBusinessPublisherTest extends TestCase
         $exporter = $this->createStub(SocialImageExporter::class);
         $exporter->method('jpegUrl')->willReturn('https://example.org/medias/social/item-1.jpg');
 
-        return new GoogleBusinessPublisher(new GoogleBusinessClient($httpClient, $oauth, $config), $exporter);
+        return new GoogleBusinessPublisher(new GoogleBusinessClient($httpClient, $oauth, $config), $exporter, new SiteLocales(['fr', 'en'], 'fr'));
     }
 
-    private function content(string $url = 'https://example.org/catalog/item-1', ?string $imagePath = '/tmp/item-1.webp'): SocialContent
+    private function content(string $url = 'https://example.org/catalog/item-1', ?string $imagePath = '/tmp/item-1.webp', ?string $locale = 'en'): SocialContent
     {
-        return new SocialContent('1', 'Item 1', $url, imagePath: $imagePath, locale: 'fr');
+        return new SocialContent('1', 'Item 1', $url, imagePath: $imagePath, locale: $locale);
     }
 
     // A standard post: the text as summary, the content's language, the picture, and the address behind "Learn more" - the source picture in a preview, nothing sent
     public function testThePreviewIsAStandardPostWithItsPictureAndButton(): void
     {
         $this->assertSame([
-            'languageCode' => 'fr',
+            'languageCode' => 'en',
             'summary' => 'What is new',
             'topicType' => 'STANDARD',
             'callToAction' => ['actionType' => 'LEARN_MORE', 'url' => 'https://example.org/catalog/item-1'],
             'media' => [['mediaFormat' => 'PHOTO', 'sourceUrl' => '/tmp/item-1.webp']],
         ], $this->publisher()->preview(' What is new ', $this->content()));
         $this->assertSame([], $this->calls);
+    }
+
+    // A content saying no language goes out in the site's default one, Google filing a post without any as English
+    public function testAContentWithoutLanguageTakesTheSiteDefault(): void
+    {
+        $this->assertSame('fr', $this->publisher()->preview('Text', $this->content(locale: null))['languageCode']);
     }
 
     // The template's text putting the address last loses it, the button carrying it
@@ -116,9 +123,9 @@ class GoogleBusinessPublisherTest extends TestCase
         $httpClient = new MockHttpClient(new MockResponse('{"error":{"message":"invalid argument"}}', ['http_code' => 400]));
         $oauth = $this->createStub(GoogleOAuthClient::class);
         $oauth->method('getAccessToken')->willReturn('access-token');
-        $publisher = new GoogleBusinessPublisher(new GoogleBusinessClient($httpClient, $oauth, $this->createStub(ConfigServiceInterface::class)), $this->createStub(SocialImageExporter::class));
+        $publisher = new GoogleBusinessPublisher(new GoogleBusinessClient($httpClient, $oauth, $this->createStub(ConfigServiceInterface::class)), $this->createStub(SocialImageExporter::class), new SiteLocales(['fr', 'en'], 'fr'));
 
-        $this->expectExceptionMessage('invalid argument');
+        $this->expectExceptionMessageIsOrContains('invalid argument');
         $publisher->publish('What is new', $this->content(imagePath: null));
     }
 

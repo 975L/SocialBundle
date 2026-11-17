@@ -605,7 +605,7 @@ An app TikTok has not audited posts **privately** only, from **private** account
 
 The listing posted on is the one the reviews are imported from: connected once (see [Connecting the site to Google](#connecting-the-site-to-google)), the "Google listing" network is offered on every post, with no other key. It is **never ticked by itself** - not on a draft prepared from a content, a new post or a series' first choices - since a listing is read by whoever looks the business up, and takes a post that counts (something new, an offer, an event) about once a week rather than every one the site sends out: tick it on the post's screen or the calendar's panel.
 
-`GoogleBusinessPublisher` sends a standard "What's new" post (`localPosts`, on the v4 host shared with the reviews through `GoogleBusinessClient`): the text as its summary (1,500 characters), in the content's language, one picture - the post's own, the content's otherwise - served as a JPEG, and the content's address behind a **"Learn more"** button, a link written in the text not being one there. The AI writes it without link, phone number (which Google refuses) or hashtag.
+`GoogleBusinessPublisher` sends a standard "What's new" post (`localPosts`, on the v4 host shared with the reviews through `GoogleBusinessClient`): the text as its summary (1,500 characters), in the content's language or the site's default one (Google filing a post without any as English), one picture - the post's own, the content's otherwise - served as a JPEG, and the content's address behind a **"Learn more"** button, a link written in the text not being one there. The AI writes it without link, phone number (which Google refuses) or hashtag.
 
 #### What happens behind
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.39.0
+
+Google listing posts in the site's language
+
+- Fixed the Google listing posts filed as English: a content without language goes out in the site's default one (17/11/2026)
+- [BC-Break] `GoogleBusinessPublisher` takes `SiteLocales` (17/11/2026)
+
 ## v2.38.0
 
 Google listing shown among the social links
