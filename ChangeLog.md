@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.37.0
+
+Google connection checked while the reviews are off
+
+- The health check of the Google connection runs whether the reviews are on or off, the listing's posts going through it (17/11/2026)
+- [BC-Break] `GoogleReviewsHealthCheckProvider` no longer takes the `ConfigServiceInterface` (17/11/2026)
+
 ## v2.36.0
 
 Posts on the Google listing, ticked by hand only

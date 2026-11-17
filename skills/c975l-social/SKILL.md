@@ -342,7 +342,7 @@ site shows, UiBundle's entity carrying this bundle's rows), `Service\SocialBlock
 export/import provider per
 singleton (`SocialLinksExportProvider`, `ShareButtonsSettingsExportProvider` and their import twins),
 `Management\GoogleReviewsHealthCheckProvider` (one row on the health check page, saying whether the
-Google connection still answers - the import being the one thing here that stops silently) and
+Google connection still answers - the import and the listing's posts being what stops silently, checked whether the reviews are on or off) and
 `Scheduler\SocialMaintenanceTaskProvider` (the nightly review sync and LinkedIn and Bluesky reminders, the morning drafts reminder, and the publication run every 15 minutes).
 
 ## Do not

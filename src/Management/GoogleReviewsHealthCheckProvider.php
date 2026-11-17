@@ -12,12 +12,11 @@ namespace c975L\SocialBundle\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Management\HealthCheckProviderInterface;
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Service\GoogleBusinessProfileSource;
 use c975L\SocialBundle\Service\GoogleOAuthClient;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// Whether the Google connection still works, which is the one place this bundle fails without anyone seeing it: the refresh token is revoked by a password change, by an owner leaving the listing, or on its own every seven days while the Cloud project is unpublished - and the sync then stops importing while the site keeps serving the reviews of the last successful run, so nothing on the page looks wrong
+// Whether the Google connection still works, which is the one place this bundle fails without anyone seeing it: the refresh token is revoked by a password change, by an owner leaving the listing, or on its own every seven days while the Cloud project is unpublished - and the sync then stops importing while the site keeps serving the reviews of the last successful run, the listing's posts failing as quietly, so nothing on the page looks wrong
 // Run from c975l:health-check:run only - it goes to Google's token endpoint, and no dashboard page may block on that
 class GoogleReviewsHealthCheckProvider implements HealthCheckProviderInterface
 {
@@ -29,7 +28,6 @@ class GoogleReviewsHealthCheckProvider implements HealthCheckProviderInterface
     public function __construct(
         private readonly GoogleOAuthClient $googleOAuthClient,
         private readonly GoogleBusinessProfileSource $googleBusinessProfileSource,
-        private readonly ConfigServiceInterface $configService,
         private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
@@ -41,12 +39,9 @@ class GoogleReviewsHealthCheckProvider implements HealthCheckProviderInterface
 
     public function runChecks(): array
     {
-        // Reviews off, or no Google application declared at all: a site collecting only what its own visitors write is not a site whose import is broken. UiBundle owns the switch, this bundle only feeds it (see ReviewSynchronizer)
-        if (
-            !$this->configService->getBool($this->configService->get('ui-enable-reviews'))
-            || !$this->googleOAuthClient->isConfigured()
-        ) {
-            return $this->skipped(GoogleBusinessProfileSource::NAME, 'Google Business Profile', 'The reviews are off or no Google application is declared: nothing is imported.');
+        // No Google application declared at all: a site neither importing reviews nor posting on a listing is not a site whose connection is broken. The reviews switched off are no reason to skip, the connection also carrying the listing's posts (see GoogleBusinessPublisher)
+        if (!$this->googleOAuthClient->isConfigured()) {
+            return $this->skipped(GoogleBusinessProfileSource::NAME, 'Google Business Profile', 'No Google application is declared: nothing is imported nor posted.');
         }
 
         return [$this->check()];
@@ -69,7 +64,7 @@ class GoogleReviewsHealthCheckProvider implements HealthCheckProviderInterface
             return [
                 ...$row,
                 'status' => HealthCheckResult::STATUS_WARNING,
-                'summary' => 'The Google keys are stored but the site was never connected: no review can be imported.',
+                'summary' => 'The Google keys are stored but the site was never connected: no review can be imported, no post sent to the listing.',
             ];
         }
 
@@ -85,7 +80,7 @@ class GoogleReviewsHealthCheckProvider implements HealthCheckProviderInterface
             return [
                 ...$row,
                 'status' => HealthCheckResult::STATUS_ERROR,
-                'summary' => 'Google refuses the stored connection, so the reviews are no longer imported: ' . $exception->getMessage(),
+                'summary' => 'Google refuses the stored connection, so the reviews are no longer imported nor the listing posted on: ' . $exception->getMessage(),
             ];
         }
 

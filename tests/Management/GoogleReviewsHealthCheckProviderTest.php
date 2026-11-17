@@ -11,7 +11,6 @@
 namespace c975L\SocialBundle\Tests\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Management\GoogleReviewsHealthCheckProvider;
 use c975L\SocialBundle\Service\GoogleBusinessProfileSource;
 use c975L\SocialBundle\Service\GoogleOAuthClient;
@@ -21,10 +20,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 // The one failure this bundle has that nobody sees: the import stops while the site keeps serving the reviews of the last successful run
 class GoogleReviewsHealthCheckProviderTest extends TestCase
 {
-    // Nothing to watch over: UiBundle's switch is off, so no imported review is displayed anywhere
-    public function testASkippedRowIsReportedWhileTheReviewsAreOff(): void
+    // The reviews switched off still leave a connection to watch over, the listing's posts going through it
+    public function testTheConnectionIsCheckedWhileTheReviewsAreOff(): void
     {
-        $this->assertSame(HealthCheckResult::STATUS_SKIPPED, $this->provider(reviewsEnabled: false)->runChecks()[0]['status']);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $this->provider()->runChecks()[0]['status']);
     }
 
     // A site collecting only what its own visitors write never declared a Google application, and is not a site whose import is broken
@@ -77,7 +76,6 @@ class GoogleReviewsHealthCheckProviderTest extends TestCase
     }
 
     private function provider(
-        bool $reviewsEnabled = true,
         bool $configured = true,
         bool $connected = true,
         ?string $accessTokenError = null,
@@ -97,13 +95,9 @@ class GoogleReviewsHealthCheckProviderTest extends TestCase
         $source = $this->createStub(GoogleBusinessProfileSource::class);
         $source->method('isConfigured')->willReturn($listingSelected);
 
-        $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturn('ui-enable-reviews');
-        $configService->method('getBool')->willReturn($reviewsEnabled);
-
         $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $urlGenerator->method('generate')->willReturn('/social/google/connect');
 
-        return new GoogleReviewsHealthCheckProvider($googleOAuthClient, $source, $configService, $urlGenerator);
+        return new GoogleReviewsHealthCheckProvider($googleOAuthClient, $source, $urlGenerator);
     }
 }
