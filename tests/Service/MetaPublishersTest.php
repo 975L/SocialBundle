@@ -423,13 +423,22 @@ class MetaPublishersTest extends TestCase
     {
         $comments = new InstagramPublisher($this->graph([['data' => [
             ['username' => 'ann', 'text' => 'Old', 'timestamp' => '2026-11-01T10:00:00+0000'],
-            ['username' => 'bob', 'text' => 'New', 'timestamp' => '2026-11-02T10:00:00+0000'],
+            ['id' => '18', 'username' => 'bob', 'text' => 'New', 'timestamp' => '2026-11-02T10:00:00+0000'],
             ['username' => 'cid', 'text' => 'Older', 'timestamp' => '2026-10-01T10:00:00+0000'],
-        ]]]), $this->login(), $this->exporter(null), $this->config(), 0)->latestComments('77', 2);
+        ]]]), $this->login(), $this->exporter(null), $this->config(), 0)->latestComments('77', 2, 'https://www.instagram.com/p/x/');
 
         $this->assertSame([['bob', 'New'], ['ann', 'Old']], array_map(static fn ($comment): array => [$comment->author, $comment->text], $comments));
+        $this->assertSame(['https://www.instagram.com/p/x/c/18/', null], array_map(static fn ($comment): ?string => $comment->url, $comments));
         $this->assertSame('/77/comments', $this->calls[0]['path']);
-        $this->assertSame('username,text,timestamp', $this->calls[0]['parameters']['fields']);
+        $this->assertSame('id,username,text,timestamp', $this->calls[0]['parameters']['fields']);
+    }
+
+    // Without its post's address, a comment has none of its own
+    public function testAnInstagramCommentHasNoAddressWithoutItsPosts(): void
+    {
+        $comments = new InstagramPublisher($this->graph([['data' => [['id' => '18', 'username' => 'bob', 'text' => 'New']]]]), $this->login(), $this->exporter(null), $this->config(), 0)->latestComments('77', 2);
+
+        $this->assertNull($comments[0]->url);
     }
 
     // An account connected by Instagram Login takes over from the Page's: its id, its token and its own host, without the Page's client being called

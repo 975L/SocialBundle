@@ -66,10 +66,18 @@ class BlueskyPublicReader
             }
 
             $author = $post['author'] ?? [];
-            $replies[] = new PostComment((string) ($author['displayName'] ?? '') ?: (string) ($author['handle'] ?? ''), (string) $post['record']['text'], PostComment::date($post['record']['createdAt'] ?? null));
+            $replies[] = new PostComment((string) ($author['displayName'] ?? '') ?: (string) ($author['handle'] ?? ''), (string) $post['record']['text'], PostComment::date($post['record']['createdAt'] ?? null), isset($post['uri']) ? self::webUrl((string) $post['uri']) : null);
         }
 
         return PostComment::newest($replies, $limit);
+    }
+
+    // A post's address on bsky.app, written from at://<did>/app.bsky.feed.post/<key>
+    public static function webUrl(string $uri): string
+    {
+        $parts = explode('/', $uri);
+
+        return sprintf('https://bsky.app/profile/%s/post/%s', $parts[2] ?? '', $parts[4] ?? '');
     }
 
     // One public method called, any refusal thrown

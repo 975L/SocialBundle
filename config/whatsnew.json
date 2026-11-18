@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-11-18",
+        "description": [
+            {
+                "en": "The email of new comments now gives each comment its own link: one click opens it on Bluesky, Instagram or YouTube, to answer or delete it.",
+                "fr": "L'e-mail des nouveaux commentaires donne désormais à chaque commentaire son propre lien : un clic l'ouvre sur Bluesky, Instagram ou YouTube, pour y répondre ou le supprimer.",
+                "es": "El correo de los comentarios nuevos da ahora a cada comentario su propio enlace: un clic lo abre en Bluesky, Instagram o YouTube, para responderlo o eliminarlo."
+            },
+            {
+                "en": "The email of posts still in draft now comes from two days ahead until approved, giving for each the networks waiting for your approval.",
+                "fr": "L'e-mail des publications encore en brouillon arrive désormais dès deux jours avant et jusqu'à la validation, en donnant pour chacune les réseaux qui attendent votre validation.",
+                "es": "El correo de las publicaciones aún en borrador llega ahora desde dos días antes hasta su validación, indicando para cada una las redes que esperan su validación."
+            }
+        ]
+    },
+    {
         "date": "2026-11-17",
         "description": [
             {

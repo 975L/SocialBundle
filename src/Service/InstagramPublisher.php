@@ -144,16 +144,26 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
     }
 
     // The comments on the media, its replies left out - what instagram_business_manage_comments (instagram_manage_comments on a Page) opens, a connection made before refused. Meta's order not being documented, a page as long as it gives is sorted here
-    public function latestComments(string $externalId, int $limit): array
+    public function latestComments(string $externalId, int $limit, ?string $postUrl = null): array
     {
         $comments = [];
-        foreach ($this->graph()->request('GET', '/' . $externalId . '/comments', ['fields' => 'username,text,timestamp', 'limit' => (string) self::COMMENTS_PAGE, 'access_token' => $this->token()])['data'] ?? [] as $comment) {
+        foreach ($this->graph()->request('GET', '/' . $externalId . '/comments', ['fields' => 'id,username,text,timestamp', 'limit' => (string) self::COMMENTS_PAGE, 'access_token' => $this->token()])['data'] ?? [] as $comment) {
             if (isset($comment['text'])) {
-                $comments[] = new PostComment((string) ($comment['username'] ?? ''), (string) $comment['text'], PostComment::date($comment['timestamp'] ?? null));
+                $comments[] = new PostComment((string) ($comment['username'] ?? ''), (string) $comment['text'], PostComment::date($comment['timestamp'] ?? null), $this->commentUrl($postUrl, $comment['id'] ?? null));
             }
         }
 
         return PostComment::newest($comments, $limit);
+    }
+
+    // A comment's address, its post's followed by c/<id>/ - none without the post's
+    private function commentUrl(?string $postUrl, mixed $id): ?string
+    {
+        if (null === $postUrl || !\is_scalar($id) || '' === (string) $id) {
+            return null;
+        }
+
+        return rtrim($postUrl, '/') . '/c/' . rawurlencode((string) $id) . '/';
     }
 
     // The source pictures in place of their JPEG copies, a preview writing nothing to disk

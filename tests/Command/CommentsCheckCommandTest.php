@@ -109,13 +109,14 @@ class CommentsCheckCommandTest extends TestCase
         $this->assertNull($target->getCommentCount());
     }
 
-    // Each new comment on one line under its post, its spaces folded, cut when long, its author after it
+    // Each new comment on one line under its post, its spaces folded, cut when long, its author then its own address after it
     public function testTheCommentsAreQuotedUnderTheirPost(): void
     {
         $long = new PostComment('', str_repeat('a', 300));
-        $this->tester([['target' => $this->target(), 'count' => 2, 'added' => 2, 'url' => 'https://example.org/post', 'comments' => [new PostComment('Ann', "Nice\n\n  story"), $long]]])->execute([]);
+        $linked = new PostComment('Ann', "Nice\n\n  story", url: 'https://example.org/post/c/1/');
+        $this->tester([['target' => $this->target(), 'count' => 2, 'added' => 2, 'url' => 'https://example.org/post', 'comments' => [$linked, $long]]])->execute([]);
 
-        $this->assertStringContainsString("- Title (Bluesky) : +2\n  email.social_comments_quote - Ann\n  email.social_comments_quote\n  https://example.org/post", $this->sent[0]);
+        $this->assertStringContainsString("- Title (Bluesky) : +2\n  email.social_comments_quote - Ann - https://example.org/post/c/1/\n  email.social_comments_quote\n  https://example.org/post", $this->sent[0]);
     }
 
     // The text the translator receives, folded and cut

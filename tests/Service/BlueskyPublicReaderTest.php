@@ -62,10 +62,11 @@ class BlueskyPublicReaderTest extends TestCase
         $replies = $this->reader(['thread' => ['replies' => [
             ['post' => ['author' => ['handle' => 'a.bsky.social', 'displayName' => 'Ann'], 'record' => ['text' => 'Old', 'createdAt' => '2026-11-01T10:00:00Z']]],
             ['$type' => 'app.bsky.feed.defs#notFoundPost', 'uri' => 'gone'],
-            ['post' => ['author' => ['handle' => 'b.bsky.social'], 'record' => ['text' => 'New', 'createdAt' => '2026-11-02T10:00:00Z']]],
+            ['post' => ['uri' => 'at://did:plc:b/app.bsky.feed.post/k2', 'author' => ['handle' => 'b.bsky.social'], 'record' => ['text' => 'New', 'createdAt' => '2026-11-02T10:00:00Z']]],
         ]]])->latestReplies('uri', 5);
 
         $this->assertSame([['b.bsky.social', 'New'], ['Ann', 'Old']], array_map(static fn ($reply): array => [$reply->author, $reply->text], $replies));
+        $this->assertSame(['https://bsky.app/profile/did:plc:b/post/k2', null], array_map(static fn ($reply): ?string => $reply->url, $replies));
     }
 
     // A post not shown says nothing of its replies, its count staying as it was

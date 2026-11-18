@@ -140,7 +140,7 @@
             </trans-unit>
             <trans-unit id="LxI8f0T">
                 <source>description.guided_step_social_comments_email</source>
-                <target>Cada tres horas, el sitio lee los comentarios en Bluesky, Instagram y YouTube y escribe a «email-to» un solo correo, que cita cada comentario nuevo con la dirección de su publicación. LinkedIn y Facebook ya avisan por sí mismos.</target>
+                <target>Cada tres horas, el sitio lee los comentarios en Bluesky, Instagram y YouTube y escribe a «email-to» un solo correo, que cita cada comentario nuevo con su dirección, para responderlo o eliminarlo, y la de su publicación. LinkedIn y Facebook ya avisan por sí mismos.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
@@ -264,7 +264,7 @@
             </trans-unit>
             <trans-unit id="2_2asy8">
                 <source>description.guided_step_social_posts_approve</source>
-                <target>Este botón con forma de calendario marcado valida la publicación: saldrá sola en su fecha prevista, en lugar de enviarse enseguida. Marque varios borradores para validarlos juntos con «Validar la selección». Un borrador previsto en las próximas 24 horas se le recuerda por correo cada mañana.</target>
+                <target>Este botón con forma de calendario marcado valida la publicación: saldrá sola en su fecha prevista, en lugar de enviarse enseguida. Marque varios borradores para validarlos juntos con «Validar la selección». Un borrador se le recuerda por correo cada mañana, desde dos días antes hasta su validación.</target>
             </trans-unit>
             <trans-unit id="cJ_J6x4">
                 <source>description.guided_step_social_posts_change_content</source>
@@ -404,7 +404,7 @@
             </trans-unit>
             <trans-unit id="08Si0qd">
                 <source>email.social_comments_body</source>
-                <target>Hay comentarios nuevos esperando respuesta. Cada enlace abre su publicación:</target>
+                <target>Hay comentarios nuevos esperando respuesta. La dirección de un comentario lo abre para responderlo o eliminarlo, el botón abre su publicación:</target>
             </trans-unit>
             <trans-unit id="eJCBQmL">
                 <source>email.social_comments_quote</source>
@@ -420,11 +420,11 @@
             </trans-unit>
             <trans-unit id="h2bpfmG">
                 <source>email.social_drafts_reminder_body</source>
-                <target>Estas publicaciones están previstas en las próximas 24 horas pero aún esperan su validación: un borrador nunca se publica. El enlace de cada una abre su panel en el calendario:</target>
+                <target>Estas publicaciones están previstas hasta pasado mañana pero aún esperan su validación en las redes indicadas: un borrador nunca se publica. El enlace de cada una abre su panel en el calendario:</target>
             </trans-unit>
             <trans-unit id="V15sv54">
                 <source>email.social_drafts_reminder_subject</source>
-                <target>%count% publicación(es) en borrador por validar en 24 horas</target>
+                <target>%count% publicación(es) en borrador por validar hasta pasado mañana</target>
             </trans-unit>
             <trans-unit id="jdGTNCS">
                 <source>email.social_instagram_refresh_failed_body</source>

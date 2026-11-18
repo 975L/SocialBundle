@@ -12,9 +12,10 @@ namespace c975L\SocialBundle\Tests\Command;
 
 use c975L\SocialBundle\Command\DraftsReminderCommand;
 use c975L\SocialBundle\Entity\SocialPost;
-use c975L\SocialBundle\Management\SocialDraftAlertProvider;
+use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Service\SocialAdminMailer;
+use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -56,34 +57,47 @@ class DraftsReminderCommandTest extends TestCase
         $post->method('getId')->willReturn(5);
         $post->method('getTitle')->willReturn('item-1');
         $post->method('getPlannedAt')->willReturn(new \DateTimeImmutable('2026-11-06 20:30'));
+        $post->method('getTargets')->willReturn(new ArrayCollection([$this->target('bluesky', true), $this->target('instagram', false), $this->target('facebook', true)]));
 
         return $post;
     }
 
-    // A post due in draft is told with its moment and a link to its panel on the calendar's day
+    private function target(string $network, bool $draft): SocialPostTarget
+    {
+        $target = new SocialPostTarget(new SocialPost('book', '1', 'item-1', 'https://example.org/item-1', null, new \DateTimeImmutable('2026-11-06 20:30')), $network, 'item-1');
+        if (!$draft) {
+            $target->approve();
+        }
+
+        return $target;
+    }
+
+    // A post due in draft is told with its moment, its networks still in draft and a link to its panel on the calendar's day
     public function testADraftDueIsToldWithItsPanel(): void
     {
         $this->assertSame(Command::SUCCESS, $this->tester([$this->draft()])->execute([]));
 
         $this->assertCount(1, $this->sent);
-        $this->assertStringContainsString('06/11/2026 20:30 : item-1', $this->sent[0]);
+        $this->assertStringContainsString('06/11/2026 20:30 : item-1 (Bluesky, Facebook)', $this->sent[0]);
         $this->assertStringContainsString('date=2026-11-06&post=5', $this->sent[0]);
     }
 
-    // The window runs from now over the dashboard's notice
-    public function testTheWindowIsTheDashboardsNotice(): void
+    // The window runs from now to the end of the day after tomorrow, a draft made late told as well
+    public function testTheWindowEndsWithTheDayAfterTomorrow(): void
     {
+        $before = new \DateTimeImmutable();
         $this->tester([])->execute([]);
 
-        $this->assertEquals($this->window[0]->modify(SocialDraftAlertProvider::NOTICE), $this->window[1]);
+        $this->assertGreaterThanOrEqual($before, $this->window[0]);
+        $this->assertEquals(new \DateTimeImmutable('today')->modify('+' . (DraftsReminderCommand::DAYS_AHEAD + 1) . ' days'), $this->window[1]);
     }
 
-    // One morning's window ends where the next one's starts, even on the day the clocks go back: no post is left out
-    public function testTheNoticeKeepsTheHourAcrossAClockChange(): void
+    // The window ends at midnight, even on the day the clocks go back
+    public function testTheWindowEndsAtMidnightAcrossAClockChange(): void
     {
-        $morning = new \DateTimeImmutable('2026-10-24 07:17', new \DateTimeZone('Europe/Paris'));
+        $end = new \DateTimeImmutable('2026-10-23', new \DateTimeZone('Europe/Paris'))->modify('+' . (DraftsReminderCommand::DAYS_AHEAD + 1) . ' days');
 
-        $this->assertSame('2026-10-25 07:17', $morning->modify(SocialDraftAlertProvider::NOTICE)->format('Y-m-d H:i'));
+        $this->assertSame('2026-10-26 00:00', $end->format('Y-m-d H:i'));
     }
 
     // No draft due, no email

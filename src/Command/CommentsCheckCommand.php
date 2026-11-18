@@ -126,7 +126,7 @@ class CommentsCheckCommand extends Command
         return implode("\n", $lines);
     }
 
-    // A comment on one line, cut past QUOTE_LENGTH, then its author
+    // A comment on one line, cut past QUOTE_LENGTH, then its author and its own address
     private function quote(PostComment $comment): string
     {
         $text = trim((string) preg_replace('/\s+/u', ' ', $comment->text));
@@ -135,6 +135,8 @@ class CommentsCheckCommand extends Command
         }
         $quote = $this->translator->trans('email.social_comments_quote', ['%text%' => $text], 'social');
 
-        return '' !== trim($comment->author) ? $quote . ' - ' . trim($comment->author) : $quote;
+        $quote = '' !== trim($comment->author) ? $quote . ' - ' . trim($comment->author) : $quote;
+
+        return null !== $comment->url ? $quote . ' - ' . $comment->url : $quote;
     }
 }

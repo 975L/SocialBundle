@@ -142,9 +142,11 @@ class YoutubeClient
 
         $comments = [];
         foreach ($threads['items'] ?? [] as $thread) {
-            $snippet = $thread['snippet']['topLevelComment']['snippet'] ?? null;
+            $comment = $thread['snippet']['topLevelComment'] ?? [];
+            $snippet = $comment['snippet'] ?? null;
             if (\is_array($snippet) && isset($snippet['textDisplay'])) {
-                $comments[] = new PostComment((string) ($snippet['authorDisplayName'] ?? ''), (string) $snippet['textDisplay'], PostComment::date($snippet['publishedAt'] ?? null));
+                $url = isset($comment['id']) ? 'https://www.youtube.com/watch?' . http_build_query(['v' => $videoId, 'lc' => (string) $comment['id']]) : null;
+                $comments[] = new PostComment((string) ($snippet['authorDisplayName'] ?? ''), (string) $snippet['textDisplay'], PostComment::date($snippet['publishedAt'] ?? null), $url);
             }
         }
 

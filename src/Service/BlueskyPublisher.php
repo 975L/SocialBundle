@@ -106,16 +106,14 @@ class BlueskyPublisher implements NetworkPublisherInterface, RepostPublisherInte
         return (string) $created['uri'];
     }
 
-    // The replies, its address written from at://<did>/app.bsky.feed.post/<key>
+    // The replies and the post's address
     public function commentCount(string $externalId): CommentCount
     {
-        $parts = explode('/', $externalId);
-
-        return new CommentCount($this->publicReader->replyCount($externalId), sprintf('https://bsky.app/profile/%s/post/%s', $parts[2] ?? '', $parts[4] ?? ''));
+        return new CommentCount($this->publicReader->replyCount($externalId), BlueskyPublicReader::webUrl($externalId));
     }
 
     // Read as the count is, with no token
-    public function latestComments(string $externalId, int $limit): array
+    public function latestComments(string $externalId, int $limit, ?string $postUrl = null): array
     {
         return $this->publicReader->latestReplies($externalId, $limit);
     }

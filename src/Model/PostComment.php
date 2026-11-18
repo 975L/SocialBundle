@@ -10,13 +10,14 @@
 
 namespace c975L\SocialBundle\Model;
 
-// One comment of a post as its network shows it, what the email of the new comments quotes so that it is read without opening the post
+// One comment of a post as its network shows it, what the email of the new comments quotes so that it is read without opening the post, with its own address to answer or delete it
 final readonly class PostComment
 {
     public function __construct(
         public string $author,
         public string $text,
         public ?\DateTimeImmutable $publishedAt = null,
+        public ?string $url = null,
     ) {
     }
 

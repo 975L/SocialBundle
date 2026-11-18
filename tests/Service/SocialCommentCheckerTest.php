@@ -42,7 +42,7 @@ class SocialCommentCheckerTest extends TestCase
 
     // $texts the comments the network quotes, a Throwable when it refuses them
     /** @param list<PostComment>|\Throwable $texts */
-    private function checker(SocialPost $post, ?\Throwable $failure = null, int $count = 3, array | \Throwable $texts = [], ?int &$limit = null): SocialCommentChecker
+    private function checker(SocialPost $post, ?\Throwable $failure = null, int $count = 3, array | \Throwable $texts = [], ?int &$limit = null, ?string &$postUrl = null): SocialCommentChecker
     {
         $network = $this->createStubForIntersectionOfInterfaces([NetworkPublisherInterface::class, CommentCountPublisherInterface::class]);
         $network->method('getName')->willReturn('bluesky');
@@ -56,8 +56,9 @@ class SocialCommentCheckerTest extends TestCase
         if ($texts instanceof \Throwable) {
             $network->method('latestComments')->willThrowException($texts);
         } else {
-            $network->method('latestComments')->willReturnCallback(static function (string $id, int $asked) use ($texts, &$limit): array {
+            $network->method('latestComments')->willReturnCallback(static function (string $id, int $asked, ?string $url = null) use ($texts, &$limit, &$postUrl): array {
                 $limit = $asked;
+                $postUrl = $url;
 
                 return $texts;
             });
@@ -126,17 +127,18 @@ class SocialCommentCheckerTest extends TestCase
         $this->assertSame([], $this->checker($post, new \RuntimeException('Down'))->read(30));
     }
 
-    // The text of the new ones only, no more than QUOTED asked
+    // The text of the new ones only, no more than QUOTED asked, with the post's address for each comment's own
     public function testTheNewCommentsAreQuoted(): void
     {
         $post = $this->post();
         $this->target($post, seen: 0);
         $text = new PostComment('Ann', 'Nice');
 
-        $read = $this->checker($post, count: 9, texts: [$text], limit: $limit)->read(30);
+        $read = $this->checker($post, count: 9, texts: [$text], limit: $limit, postUrl: $postUrl)->read(30);
 
         $this->assertSame([$text], $read[0]['comments']);
         $this->assertSame(SocialCommentChecker::QUOTED, $limit);
+        $this->assertSame('https://example.org/post', $postUrl);
     }
 
     // Nothing new, nothing asked

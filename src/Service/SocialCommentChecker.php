@@ -58,7 +58,7 @@ class SocialCommentChecker
                 }
 
                 $added = $this->added($target, $comments->count, $now);
-                $read[] = ['target' => $target, 'count' => $comments->count, 'added' => $added, 'url' => $comments->url, 'comments' => $this->latest($network, $target, $added)];
+                $read[] = ['target' => $target, 'count' => $comments->count, 'added' => $added, 'url' => $comments->url, 'comments' => $this->latest($network, $target, $added, $comments->url)];
             }
         }
 
@@ -67,14 +67,14 @@ class SocialCommentChecker
 
     // The text of the new comments, asked only when there are some; null when the network refuses it, the count going out all the same
     /** @return ?list<PostComment> */
-    private function latest(CommentCountPublisherInterface $network, SocialPostTarget $target, int $added): ?array
+    private function latest(CommentCountPublisherInterface $network, SocialPostTarget $target, int $added, ?string $postUrl): ?array
     {
         if ($added <= 0) {
             return [];
         }
 
         try {
-            return $network->latestComments((string) $target->getExternalId(), min($added, self::QUOTED));
+            return $network->latestComments((string) $target->getExternalId(), min($added, self::QUOTED), $postUrl);
         } catch (\Throwable $exception) {
             $this->logger->warning('Social comments text not read on {network}: {message}', ['network' => $target->getNetwork(), 'message' => $exception->getMessage()]);
 

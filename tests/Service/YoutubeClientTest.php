@@ -102,10 +102,11 @@ class YoutubeClientTest extends TestCase
     // The top-level comments as YouTube orders them, newest first, asked no further than needed
     public function testTheLatestCommentsAreRead(): void
     {
-        $threads = new MockResponse('{"items": [{"snippet": {"topLevelComment": {"snippet": {"authorDisplayName": "Ann", "textDisplay": "Nice", "publishedAt": "2026-11-02T10:00:00Z"}}}}, {"snippet": {}}]}');
+        $threads = new MockResponse('{"items": [{"snippet": {"topLevelComment": {"id": "Ug1", "snippet": {"authorDisplayName": "Ann", "textDisplay": "Nice", "publishedAt": "2026-11-02T10:00:00Z"}}}}, {"snippet": {}}]}');
         $comments = $this->client([new MockResponse('{"access_token": "access", "expires_in": 3600}'), $threads])->latestComments('abc', 2);
 
         $this->assertSame([['Ann', 'Nice']], array_map(static fn ($comment): array => [$comment->author, $comment->text], $comments));
+        $this->assertSame('https://www.youtube.com/watch?v=abc&lc=Ug1', $comments[0]->url);
         $this->assertStringContainsString('maxResults=2', $threads->getRequestUrl());
         $this->assertStringContainsString('order=time', $threads->getRequestUrl());
     }

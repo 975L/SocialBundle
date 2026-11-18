@@ -140,7 +140,7 @@
             </trans-unit>
             <trans-unit id="LxI8f0T">
                 <source>description.guided_step_social_comments_email</source>
-                <target>Toutes les trois heures, le site lit les commentaires sur Bluesky, Instagram et YouTube et écrit à « email-to » un seul e-mail, qui cite chaque nouveau commentaire avec l'adresse de son post. LinkedIn et Facebook préviennent déjà d'eux-mêmes.</target>
+                <target>Toutes les trois heures, le site lit les commentaires sur Bluesky, Instagram et YouTube et écrit à « email-to » un seul e-mail, qui cite chaque nouveau commentaire avec son adresse, pour y répondre ou le supprimer, et celle de son post. LinkedIn et Facebook préviennent déjà d'eux-mêmes.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
@@ -264,7 +264,7 @@
             </trans-unit>
             <trans-unit id="2_2asy8">
                 <source>description.guided_step_social_posts_approve</source>
-                <target>Ce bouton en forme de calendrier coché valide la publication : elle partira d'elle-même à sa date prévue, au lieu d'être envoyée tout de suite. Cochez plusieurs brouillons pour les valider ensemble avec « Valider la sélection ». Un brouillon prévu sous 24 heures vous est rappelé par e-mail chaque matin.</target>
+                <target>Ce bouton en forme de calendrier coché valide la publication : elle partira d'elle-même à sa date prévue, au lieu d'être envoyée tout de suite. Cochez plusieurs brouillons pour les valider ensemble avec « Valider la sélection ». Un brouillon vous est rappelé par e-mail chaque matin, dès deux jours avant et jusqu'à sa validation.</target>
             </trans-unit>
             <trans-unit id="cJ_J6x4">
                 <source>description.guided_step_social_posts_change_content</source>
@@ -404,7 +404,7 @@
             </trans-unit>
             <trans-unit id="08Si0qd">
                 <source>email.social_comments_body</source>
-                <target>De nouveaux commentaires attendent une réponse. Le lien de chacun ouvre sa publication :</target>
+                <target>De nouveaux commentaires attendent une réponse. L'adresse d'un commentaire l'ouvre pour y répondre ou le supprimer, le bouton ouvre sa publication :</target>
             </trans-unit>
             <trans-unit id="eJCBQmL">
                 <source>email.social_comments_quote</source>
@@ -420,11 +420,11 @@
             </trans-unit>
             <trans-unit id="h2bpfmG">
                 <source>email.social_drafts_reminder_body</source>
-                <target>Ces publications sont prévues dans les prochaines 24 heures mais attendent encore votre validation : un brouillon ne part jamais. Le lien de chacune ouvre son panneau dans le calendrier :</target>
+                <target>Ces publications sont prévues d'ici après-demain mais attendent encore votre validation sur les réseaux indiqués : un brouillon ne part jamais. Le lien de chacune ouvre son panneau dans le calendrier :</target>
             </trans-unit>
             <trans-unit id="V15sv54">
                 <source>email.social_drafts_reminder_subject</source>
-                <target>%count% publication(s) en brouillon à valider sous 24 heures</target>
+                <target>%count% publication(s) en brouillon à valider d'ici après-demain</target>
             </trans-unit>
             <trans-unit id="jdGTNCS">
                 <source>email.social_instagram_refresh_failed_body</source>

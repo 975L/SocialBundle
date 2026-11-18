@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.40.0
+
+Comment addresses and drafts reminder two days ahead
+
+- Added `PostComment::$url`, each new comment quoted in the email with its own address on Bluesky, Instagram and YouTube, to answer or delete it there (18/11/2026)
+- Added `BlueskyPublicReader::webUrl()` (18/11/2026)
+- [BC-Break] `CommentCountPublisherInterface::latestComments()` takes the post's address as `$postUrl` (18/11/2026)
+- Changed the drafts reminder to the posts due until the day after tomorrow, each with its networks still in draft (18/11/2026)
+- Added `DraftsReminderCommand::DAYS_AHEAD` (18/11/2026)
+
 ## v2.39.0
 
 Google listing posts in the site's language

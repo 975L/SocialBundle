@@ -140,7 +140,7 @@
             </trans-unit>
             <trans-unit id="LxI8f0T">
                 <source>description.guided_step_social_comments_email</source>
-                <target>Every three hours, the site reads the comments on Bluesky, Instagram and YouTube and writes one email to "email-to", quoting each new comment with its post's address. LinkedIn and Facebook already tell you themselves.</target>
+                <target>Every three hours, the site reads the comments on Bluesky, Instagram and YouTube and writes one email to "email-to", quoting each new comment with its own address, to answer or delete it, and its post's. LinkedIn and Facebook already tell you themselves.</target>
             </trans-unit>
             <trans-unit id="hLyq6N2">
                 <source>description.guided_step_social_connections_open</source>
@@ -264,7 +264,7 @@
             </trans-unit>
             <trans-unit id="2_2asy8">
                 <source>description.guided_step_social_posts_approve</source>
-                <target>This checked-calendar button approves the post: it goes out on its own at its planned date, instead of being sent at once. Tick several drafts to approve them together with "Approve the selection". You are reminded by email each morning of a draft due within 24 hours.</target>
+                <target>This checked-calendar button approves the post: it goes out on its own at its planned date, instead of being sent at once. Tick several drafts to approve them together with "Approve the selection". You are reminded by email each morning, from two days ahead until approved, of a draft still waiting.</target>
             </trans-unit>
             <trans-unit id="cJ_J6x4">
                 <source>description.guided_step_social_posts_change_content</source>
@@ -404,7 +404,7 @@
             </trans-unit>
             <trans-unit id="08Si0qd">
                 <source>email.social_comments_body</source>
-                <target>New comments are waiting for an answer. Each link opens its post:</target>
+                <target>New comments are waiting for an answer. A comment's address opens it to answer or delete it, the button opens its post:</target>
             </trans-unit>
             <trans-unit id="eJCBQmL">
                 <source>email.social_comments_quote</source>
@@ -420,11 +420,11 @@
             </trans-unit>
             <trans-unit id="h2bpfmG">
                 <source>email.social_drafts_reminder_body</source>
-                <target>These posts are planned within the next 24 hours but still wait for your approval: a draft never goes out. Each link opens its panel on the calendar:</target>
+                <target>These posts are planned until the day after tomorrow but still wait for your approval on the networks given: a draft never goes out. Each link opens its panel on the calendar:</target>
             </trans-unit>
             <trans-unit id="V15sv54">
                 <source>email.social_drafts_reminder_subject</source>
-                <target>%count% post(s) in draft to approve within 24 hours</target>
+                <target>%count% post(s) in draft to approve by the day after tomorrow</target>
             </trans-unit>
             <trans-unit id="jdGTNCS">
                 <source>email.social_instagram_refresh_failed_body</source>

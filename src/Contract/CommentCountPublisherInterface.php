@@ -19,7 +19,7 @@ interface CommentCountPublisherInterface
     // The comments of the post $externalId and its public address. Throws rather than reporting failure, the post being read again at the next check
     public function commentCount(string $externalId): CommentCount;
 
-    // The $limit newest comments of the post $externalId, asked only when some are new. Throws when the network refuses, a permission the connection was not granted included
+    // The $limit newest comments of the post $externalId, each with its own address when the network gives one, $postUrl being the post's from commentCount(), asked only when some are new. Throws when the network refuses, a permission the connection was not granted included
     /** @return list<PostComment> */
-    public function latestComments(string $externalId, int $limit): array;
+    public function latestComments(string $externalId, int $limit, ?string $postUrl = null): array;
 }
