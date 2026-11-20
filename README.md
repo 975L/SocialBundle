@@ -579,7 +579,7 @@ A new app has **Trial** access: only the app owner's own account can be connecte
 
 TikTok needs an app too, created once on [developers.tiktok.com](https://developers.tiktok.com/) from a developer account (an email address is enough, no TikTok account needed) and an **organization**. One app serves several sites and several accounts. Each post is the post's **video**, its text as the caption: TikTok fetches the video from the site itself (`PULL_FROM_URL`), so the domain it is served from has to be verified in the app.
 
-1. In **Manage apps**, click **Connect an app**, pick the organization and the type **Other**. Fill its icon (1024 × 1024), its category, its description, the site's **terms of service** and **privacy policy** addresses and the **Web** platform with the site's address.
+1. In **Manage apps**, click **Connect an app**, pick the organization and the type **Other**. Fill its icon (1024 × 1024, the same picture as the site's favicon, which the review compares with the browser tab), its category, its description, the site's **terms of service** and **privacy policy** addresses and the **Web** platform with the site's address.
 2. Add the products **Login Kit** and **Content Posting API**, and turn on **Direct Post**. The site asks only `user.info.basic` and `video.publish` (`TikTokClient::SCOPES`); the app also lists `video.upload`, which comes with the product and cannot be removed: say in the review that drafts are not used.
 3. In Login Kit, add one **Redirect URI** per site: `https://<your-site>/social/tiktok/callback`.
 4. In **URL properties**, verify the domain of every site whose videos go out, as a **Domain**: TikTok gives a `tiktok-developers-site-verification=…` TXT record to add to the domain's DNS zone, then **Verify**. A domain covers its subdomains. Production and each sandbox verify their domains separately, each with its own record.
@@ -598,7 +598,7 @@ An app TikTok has not audited posts **privately** only, from **private** account
 2. Under **Target Users**, click **Add account** and sign in with the TikTok account that will post: only those accounts can connect to a sandbox.
 3. Set the sandbox's key and secret as `social-tiktok-client-key` and `social-tiktok-client-secret`, set the account **private** in TikTok (Settings > Privacy), then connect it from "Connections".
 4. Create a post with a video, ticked on TikTok, make its choices with **Only me**, approve it and publish it: the video shows on the account, private.
-5. Film the demonstration: "Connections" and the connection, then the post's screen, its TikTok choices, the approval and the publication, then the video on TikTok. On the app's **Production** page, fill the same information as the sandbox's, the explanation of each product and scope, and the video, then **Submit for review**. The review takes a few weeks.
+5. Film the demonstration, the browser's address bar showing the site's full address on every screen (no full screen, no zoom cropping it): "Connections" and the connection, then the post's screen, its TikTok choices, the approval and the publication, then the video on TikTok. On the app's **Production** page, fill the same information as the sandbox's, the explanation of each product and scope, and the video, then **Submit for review**. The review takes a few weeks.
 6. Once audited, set production's key and secret, connect the account again from "Connections", and set it back to public.
 
 #### Google listing, step by step

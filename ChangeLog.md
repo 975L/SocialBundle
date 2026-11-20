@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.40.1
+
+TikTok review requirements in the README
+
+- Changed the TikTok steps: the app icon matches the site's favicon, the demonstration shows the full address on every screen (20/11/2026)
+
 ## v2.40.0
 
 Comment addresses and drafts reminder two days ahead
