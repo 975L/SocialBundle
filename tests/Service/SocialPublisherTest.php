@@ -1015,6 +1015,22 @@ class SocialPublisherTest extends TestCase
         $this->assertSame(['bluesky:https://example.org/medias/a.jpg,https://example.org/medias/b.jpg'], $this->published);
     }
 
+    // A network with medias kept for it goes out with those alone, the others with the medias kept for none
+    public function testANetworkGoesOutWithItsOwnMedias(): void
+    {
+        $post = new SocialPost(SocialPost::SOURCE_MANUAL, 'abc', 'Hello', '', null, new \DateTimeImmutable());
+        new SocialPostTarget($post, 'bluesky', 'Hello');
+        new SocialPostTarget($post, 'instagram', 'Hello');
+        $post->addMedia(SocialMedia::reference($post, 'medias/a.jpg', 'image/jpeg'));
+        $post->addMedia(SocialMedia::reference($post, 'medias/b.jpg', 'image/jpeg'));
+        $post->addMedia(SocialMedia::reference($post, 'medias/board.jpg', 'image/jpeg')->setNetwork('bluesky'));
+        $publisher = $this->createPublisher([], [$this->createNetwork('bluesky'), $this->createNetwork('instagram')]);
+
+        $publisher->publish($post);
+
+        $this->assertSame(['bluesky:https://example.org/medias/board.jpg', 'instagram:https://example.org/medias/a.jpg,https://example.org/medias/b.jpg'], $this->published);
+    }
+
     // A connected network that also does $contract, its limits those of $name, previewed as its text and link
     /** @param class-string $contract */
     private function createFollowingNetwork(string $contract, string $name, int $maxLength, int $maxImages): NetworkPublisherInterface & Stub

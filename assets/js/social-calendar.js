@@ -11,14 +11,14 @@ import { addSortGesture } from "@c975l/ui-bundle/pointer-sort.js";
 
 // The publications calendar (see management/social_calendar.html.twig): a card dragged onto a quarter of an hour of the week is planned at that moment, onto a day of the month at its own time that day, its approval untouched; a coming moment double-clicked writes a new post there. The gesture is UiBundle's (pointer-sort.js), this controller owning only where a card lands, saved on the spot then the page reloaded, the server computing where every other post falls
 export default class extends Controller {
-    static targets = ["item", "zone", "panel", "planAt", "group", "media", "thumbnail", "badges", "drop", "zoom", "pick", "pickAll"];
+    static targets = ["item", "zone", "panel", "planAt", "group", "media", "thumbnail", "badges", "drop", "zoom", "pick", "pickAll", "notice", "question"];
     static values = { url: String, token: String, panelUrl: String, mediasUrl: String, uploadUrl: String, textsUrl: String, networksUrl: String, duplicateUrl: String, deleteUrl: String, retryUrl: String, openId: Number, newUrl: String, failedLabel: String, openFailedLabel: String, textsFailedLabel: String, retryFailedLabel: String };
 
     // A copy just made, or the next draft after an approval from a series' panel, opens its panel with the page - said when it is gone meanwhile - its id then taken off the address so a reload does not open it again
     connect() {
         if (this.openIdValue <= 0) return;
 
-        this.openPanel(this.openIdValue, () => window.alert(this.openFailedLabelValue));
+        this.openPanel(this.openIdValue, () => this.say(this.openFailedLabelValue));
         const url = new URL(window.location.href);
         url.searchParams.delete("post");
         window.history.replaceState(window.history.state, "", url);
@@ -113,6 +113,8 @@ export default class extends Controller {
     // Closed by its button or Escape, the calendar taking its whole width back - an Escape typed in a field only closing what the browser opened there, so its unsaved text stays
     closePanel(event) {
         if (event?.type === "keydown" && event.target.closest?.("input, textarea, select")) return;
+        // The escape key closes a modal first, Bootstrap doing it on its own - the panel behind it, and the texts typed there, kept
+        if (event?.type === "keydown" && (event.target.closest?.(".modal") || this.element.querySelector(".modal.show"))) return;
         // The escape key closes the picture or the video shown over the panel first, the dialog doing it on its own - UiBundle's for a picture, this controller's for a video
         if (event?.type === "keydown" && this.element.querySelector("dialog[open]")) return;
         this.panelTarget.hidden = true;
@@ -144,7 +146,7 @@ export default class extends Controller {
     mediaTargetConnected(media) {
         addSortGesture(media, {
             item: media,
-            ignore: "button",
+            ignore: "button, select",
             onStart: () => {
                 this.mediaItems = [...media.parentElement.children];
                 this.mediaOrder = this.mediaIds(media).join();
@@ -196,16 +198,21 @@ export default class extends Controller {
     // A media taken off the post, once confirmed: its file goes with it
     removeMedia(event) {
         const button = event.currentTarget;
-        if (!window.confirm(button.dataset.confirm)) return;
-
-        this.saveMedias(button.dataset.postId, [], button.dataset.mediaId);
+        this.ask(button.dataset.confirm).then((confirmed) => confirmed && this.saveMedias(button.dataset.postId, [], button.dataset.mediaId));
     }
 
-    // The order of the medias, or the one taken off, saved on the spot: the server answers the panel as it now reads, the calendar staying where it is
-    saveMedias(post, medias, remove = "") {
+    // A media kept for the network chosen, in place of the other medias there - or for every network again - saved on the spot
+    keepMedia(event) {
+        const select = event.currentTarget;
+        this.saveMedias(select.dataset.postId, [], "", { [select.dataset.mediaId]: select.value });
+    }
+
+    // The order of the medias, the one taken off, or the network one is kept for, saved on the spot: the server answers the panel as it now reads, the calendar staying where it is
+    saveMedias(post, medias, remove = "", networks = {}) {
         const body = new URLSearchParams({ post });
         if (remove) body.set("remove", remove);
         for (const id of medias) body.append("medias[]", id);
+        for (const [id, network] of Object.entries(networks)) body.set(`networks[${id}]`, network);
 
         this.postPanel(this.mediasUrlValue, body).catch(() => this.saved(false));
     }
@@ -263,10 +270,7 @@ export default class extends Controller {
         if (label) label.textContent = zone.dataset.uploading;
 
         // Only a refusal of the files says its own reason, a file too heavy for the server answering a page of its own
-        const refused = (reason = "") => {
-            window.alert("" !== reason ? reason : this.failedLabelValue);
-            this.openPanel(zone.dataset.postId);
-        };
+        const refused = (reason = "") => this.say("" !== reason ? reason : this.failedLabelValue).then(() => this.openPanel(zone.dataset.postId));
         this.postPanel(this.uploadUrlValue, body).catch((response) => (response instanceof Response && 422 === response.status ? response.text().then(refused) : refused()));
     }
 
@@ -275,7 +279,7 @@ export default class extends Controller {
         const [button, body] = this.panelForm(event);
         const refused = (reason = "") => {
             if (button) button.disabled = false;
-            window.alert("" !== reason ? reason : this.textsFailedLabelValue);
+            this.say("" !== reason ? reason : this.textsFailedLabelValue);
         };
         this.postPanel(this.textsUrlValue, body).catch((response) => (response instanceof Response ? response.text().then(refused) : refused()));
     }
@@ -337,10 +341,12 @@ export default class extends Controller {
     // The post deleted once confirmed, the page reloaded without it
     remove(event) {
         const button = event.currentTarget;
-        if (!window.confirm(button.dataset.confirm)) return;
+        this.ask(button.dataset.confirm).then((confirmed) => {
+            if (!confirmed) return;
 
-        button.disabled = true;
-        this.send(this.deleteUrlValue, new URLSearchParams({ post: button.dataset.postId }));
+            button.disabled = true;
+            this.send(this.deleteUrlValue, new URLSearchParams({ post: button.dataset.postId }));
+        });
     }
 
     // A refused network sent again at once from its text, the button held while it goes - texts corrected in the panel saved first, so the correction is what goes out - the panel answered with its new status, a refusal saying the server's reason
@@ -351,7 +357,7 @@ export default class extends Controller {
         const refused = (label) => (response) => {
             const say = (reason = "") => {
                 button.disabled = false;
-                window.alert("" !== reason ? reason : label);
+                this.say("" !== reason ? reason : label);
             };
             return response instanceof Response ? response.text().then(say) : say();
         };
@@ -409,10 +415,14 @@ export default class extends Controller {
             .catch(() => this.saved(false));
     }
 
-    // Announced before the reload, cancelable, so a page refreshing its calendar on its own may take over - a refusal says the server's reason when it gave one; a post to open next is put in the address first, the reload keeping the scroll and the filter (see connect())
+    // A refusal says the server's reason when it gave one, the reload waiting for its modal to be closed
     saved(ok, reason = "", next = null) {
-        if (!ok) window.alert("" !== reason ? reason : this.failedLabelValue);
+        const said = ok ? Promise.resolve() : this.say("" !== reason ? reason : this.failedLabelValue);
+        said.then(() => this.reload(ok, next));
+    }
 
+    // Announced before the reload, cancelable, so a page refreshing its calendar on its own may take over - a post to open next is put in the address first, the reload keeping the scroll and the filter (see connect())
+    reload(ok, next) {
         const event = this.dispatch("saved", { detail: { ok, next }, cancelable: true });
         if (event.defaultPrevented) return;
         if (ok && null !== next) {
@@ -421,5 +431,31 @@ export default class extends Controller {
             window.history.replaceState(window.history.state, "", url);
         }
         window.location.reload();
+    }
+
+    // A message said in the page's EasyAdmin modal (see _social_calendar_dialogs.html.twig) rather than the browser's own box, resolved once it is closed
+    say(message) {
+        return this.dialog(this.noticeTarget, message);
+    }
+
+    // A question asked in the page's EasyAdmin modal, resolved true once its button confirms it, false however else it is closed
+    ask(message) {
+        return this.dialog(this.questionTarget, message);
+    }
+
+    // The modal shown with its message written as text - a reason may carry a post's title or a file's name - and resolved with whether its confirming button closed it
+    dialog(modal, message) {
+        modal.querySelector(".social-calendar-dialog-message").textContent = message;
+
+        return new Promise((resolve) => {
+            let confirmed = false;
+            const answered = (event) => (confirmed = null !== event.target.closest("[data-social-calendar-confirm]"));
+            modal.addEventListener("click", answered);
+            modal.addEventListener("hidden.bs.modal", () => {
+                modal.removeEventListener("click", answered);
+                resolve(confirmed);
+            }, { once: true });
+            window.bootstrap.Modal.getOrCreateInstance(modal).show();
+        });
     }
 }

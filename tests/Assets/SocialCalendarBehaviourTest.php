@@ -18,6 +18,9 @@ class SocialCalendarBehaviourTest extends JsCase
 {
     private const string URL = '/management/social-calendar/move';
 
+    // The calendar's two modals as _social_calendar_dialogs.html.twig gives them, reduced to what the controller reads
+    private const string MODALS = '<div class="modal" data-social-calendar-target="notice"><p class="social-calendar-dialog-message"></p></div><div class="modal" data-social-calendar-target="question"><p class="social-calendar-dialog-message"></p><button type="button" data-social-calendar-confirm>OK</button></div>';
+
     private const string CSS = '
         [data-social-calendar-target=zone] { display: block; width: 200px; min-height: 60px; margin: 10px; }
         [data-social-calendar-target=item] { display: block; width: 150px; height: 20px; }
@@ -147,18 +150,16 @@ class SocialCalendarBehaviourTest extends JsCase
     // A move the server refuses says its reason - a media a network does not take - or the screen's own words when it gave none
     public function testARefusalSaysTheServersReason(): void
     {
-        $alerts = $this->calendar(
-            'const alerts = [];
-             window.alert = (message) => alerts.push(message);
-             window.__refusal = "Instagram : une photo au moins";
+        $said = $this->calendar(
+            'window.__refusal = "Instagram : une photo au moins";
              await drag("draft", "d1005"); await frame();
              window.__refusal = "";
              await drag("draft", "d1005"); await frame();
 
-             return alerts;'
+             return window.__said;'
         );
 
-        $this->assertSame(['Instagram : une photo au moins', 'Echec'], $alerts, 'A refused move did not say why.');
+        $this->assertSame(['Instagram : une photo au moins', 'Echec'], $said, 'A refused move did not say why.');
     }
 
     // A media dragged past another takes its place, the order as it now stands saved on the spot; the panel answered is shown, and the card takes the post's picture as it now is
@@ -214,7 +215,7 @@ class SocialCalendarBehaviourTest extends JsCase
     {
         $card = $this->calendar(
             'window.__refusal = undefined;
-             window.confirm = () => true;
+             window.__answer = true;
              window.__image = "";
              item("draft").click(); await frame(); await frame();
              item("remove").click(); await frame(); await frame();
@@ -245,10 +246,10 @@ class SocialCalendarBehaviourTest extends JsCase
              point(document, "pointermove", box.left + 15, box.top + 15);
              point(document, "pointerup", box.left + 15, box.top + 15);
              await frame();
-             window.confirm = () => false;
+             window.__answer = false;
              item("remove").click(); await frame();
              const refused = window.__saves;
-             window.confirm = () => true;
+             window.__answer = true;
              item("remove").click(); await frame();
 
              return { refused, body: window.__sent.body };'
@@ -338,10 +339,8 @@ class SocialCalendarBehaviourTest extends JsCase
     // A badge the server refuses on the series' page says its reason, or the screen's own words when it gave none
     public function testANetworkRefusedOnTheSeriesPageSaysWhy(): void
     {
-        $alerts = $this->calendar(
-            'const alerts = [];
-             window.alert = (message) => alerts.push(message);
-             document.querySelector("[data-controller=social-calendar]").insertAdjacentHTML("beforeend", \'<form data-name="refused" data-action="change->social-calendar#toggleNetworks" data-post-id="9"><fieldset><input data-name="refused-linkedin" type="checkbox" name="networks[]" value="linkedin"></fieldset></form>\');
+        $said = $this->calendar(
+            'document.querySelector("[data-controller=social-calendar]").insertAdjacentHTML("beforeend", \'<form data-name="refused" data-action="change->social-calendar#toggleNetworks" data-post-id="9"><fieldset><input data-name="refused-linkedin" type="checkbox" name="networks[]" value="linkedin"></fieldset></form>\');
              await frame(); await frame();
              window.__refusal = "Linkedin : refusé";
              item("refused-linkedin").dispatchEvent(new Event("change", { bubbles: true }));
@@ -352,10 +351,10 @@ class SocialCalendarBehaviourTest extends JsCase
              await frame(); await frame();
              window.__refusal = undefined;
 
-             return alerts;'
+             return window.__said;'
         );
 
-        $this->assertSame(['Linkedin : refusé', 'Echec'], $alerts, 'A refused network did not say why.');
+        $this->assertSame(['Linkedin : refusé', 'Echec'], $said, 'A refused network did not say why.');
     }
 
     // On the series' page, the box above the cards checks or unchecks every draft and follows them, half-checked when only some are, and the button approves those checked, its button held meanwhile
@@ -414,17 +413,15 @@ class SocialCalendarBehaviourTest extends JsCase
     // A post to open with the page that cannot be read any more says so
     public function testAPostOpenedWithThePageThatIsGoneIsSaid(): void
     {
-        $alerts = $this->calendar(
-            'const alerts = [];
-             window.alert = (message) => alerts.push(message);
-             window.fetch = () => Promise.resolve({ ok: false, text: () => Promise.resolve("") });
-             root.insertAdjacentHTML("beforeend", \'<div data-controller="social-calendar" data-social-calendar-panel-url-value="/management/social-calendar/post" data-social-calendar-open-id-value="9" data-social-calendar-open-failed-label-value="Introuvable"><aside data-social-calendar-target="panel" hidden></aside></div>\');
+        $said = $this->calendar(
+            'window.fetch = () => Promise.resolve({ ok: false, text: () => Promise.resolve("") });
+             root.insertAdjacentHTML("beforeend", \'<div data-controller="social-calendar" data-social-calendar-panel-url-value="/management/social-calendar/post" data-social-calendar-open-id-value="9" data-social-calendar-open-failed-label-value="Introuvable"><aside data-social-calendar-target="panel" hidden></aside>' . self::MODALS . '</div>\');
              await frame(); await frame(); await frame();
 
-             return alerts;'
+             return window.__said;'
         );
 
-        $this->assertSame(['Introuvable'], $alerts, 'A post gone before its panel opened with the page was not said.');
+        $this->assertSame(['Introuvable'], $said, 'A post gone before its panel opened with the page was not said.');
     }
 
     // The duplicate is asked for the post, its button held meanwhile
@@ -432,7 +429,6 @@ class SocialCalendarBehaviourTest extends JsCase
     {
         $sent = $this->calendar(
             'item("draft").click(); await frame(); await frame();
-             window.alert = () => {};
              window.__refusal = "";
              item("duplicate").click();
              const held = item("duplicate").disabled;
@@ -501,6 +497,62 @@ class SocialCalendarBehaviourTest extends JsCase
         $this->assertTrue($open, 'Escape in a field of the panel closed it.');
     }
 
+    // Escape closing a modal leaves the panel behind it open, the texts typed there kept - whether the modal holds the focus or not
+    public function testEscapeOnAModalKeepsThePanel(): void
+    {
+        $open = $this->calendar(
+            'item("draft").click(); await frame(); await frame();
+             const notice = root.querySelector("[data-social-calendar-target=notice]");
+             notice.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+             const focused = !item("panel").hidden;
+             notice.classList.add("show");
+             document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+             notice.classList.remove("show");
+
+             return focused && !item("panel").hidden;'
+        );
+
+        $this->assertTrue($open, 'Escape on a modal closed the panel behind it.');
+    }
+
+    // A refusal waits for its modal to be closed before the page reloads, the message written as text
+    public function testARefusalReloadsOnceItsModalIsClosed(): void
+    {
+        $steps = $this->calendar(
+            'let notice = null;
+             window.bootstrap = { Modal: { getOrCreateInstance: (modal) => ({ show: () => (notice = modal) }) } };
+             let reloads = 0;
+             document.addEventListener("social-calendar:saved", () => (reloads += 1));
+             window.__refusal = "<b>Bluesky</b> : 4 photos au plus";
+             await drag("draft", "d1005"); await frame();
+             const shown = { reloads, text: notice.querySelector(".social-calendar-dialog-message").textContent, bold: null !== notice.querySelector("b") };
+             notice.dispatchEvent(new Event("hidden.bs.modal"));
+             await frame();
+             window.__refusal = undefined;
+
+             return { ...shown, after: reloads };'
+        );
+
+        $this->assertSame(['reloads' => 0, 'text' => '<b>Bluesky</b> : 4 photos au plus', 'bold' => false, 'after' => 1], $steps, 'The page reloaded before the refusal was read, or the refusal was written as HTML.');
+    }
+
+    // A network chosen for a media is saved on the spot for that media alone
+    public function testTheNetworkChosenForAMediaIsSaved(): void
+    {
+        $sent = $this->calendar(
+            'item("draft").click(); await frame(); await frame();
+             item("panel").insertAdjacentHTML("beforeend", \'<select data-name="keep" data-action="social-calendar#keepMedia" data-post-id="7" data-media-id="2"><option value="">Tous</option><option value="bluesky">Bluesky</option></select>\');
+             await frame();
+             item("keep").value = "bluesky";
+             item("keep").dispatchEvent(new Event("change", { bubbles: true }));
+             await frame();
+
+             return window.__sent;'
+        );
+
+        $this->assertSame(['/management/social-calendar/medias', 'post=7&networks%5B2%5D=bluesky'], [$sent['url'], $sent['body']], 'The network chosen was not saved for its media.');
+    }
+
     private function calendar(string $probe): mixed
     {
         $preamble = 'const item = (name) => root.querySelector(`[data-name=${name}]`);
@@ -525,7 +577,15 @@ class SocialCalendarBehaviourTest extends JsCase
             [
                 'css' => self::CSS,
                 // The move route answered by the scenario, which is also what keeps this test off the network
-                'before' => 'window.__saves = 0;
+                // EasyAdmin's modal answered at once: its message kept, its confirming button clicked unless the scenario says no (see _social_calendar_dialogs.html.twig)
+                'before' => 'window.__said = [];
+                    window.__answer = true;
+                    window.bootstrap = { Modal: { getOrCreateInstance: (modal) => ({ show: () => {
+                        window.__said.push(modal.querySelector(".social-calendar-dialog-message").textContent);
+                        (window.__answer ? modal.querySelector("[data-social-calendar-confirm]") ?? modal : modal).click();
+                        modal.dispatchEvent(new Event("hidden.bs.modal"));
+                    } }) } };
+                    window.__saves = 0;
                     window.__sent = null;
                     window.fetch = (url, options) => {
                         // The panel of a card, read with a GET: what _social_calendar_panel.html.twig gives
@@ -562,6 +622,7 @@ class SocialCalendarBehaviourTest extends JsCase
                 </div>
                 <aside data-name="panel" data-social-calendar-target="panel" hidden></aside>
                 <dialog data-name="zoom" data-social-calendar-target="zoom" data-action="click->social-calendar#closeZoom close->social-calendar#clearZoom"></dialog>
+                ' . self::MODALS . '
             </div>';
     }
 }

@@ -192,7 +192,7 @@
             </trans-unit>
             <trans-unit id="HRyz2B3">
                 <source>narration.guided_step_social_posts_medias</source>
-                <target>Añada aquí fotos o un vídeo, en el orden en que salen, o tómelos de la galería con «Añadir desde el sitio». Las reglas de cada red marcada se comprueban al guardar.</target>
+                <target>Añada aquí fotos o un vídeo, en el orden en que salen, o tómelos de la galería con «Añadir desde el sitio». Las reglas de cada red marcada se comprueban al guardar. Un medio reservado a una red sustituye allí a los demás.</target>
             </trans-unit>
             <trans-unit id="kNA4Y5N">
                 <source>narration.guided_step_social_posts_networks</source>
@@ -314,6 +314,22 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>Debajo, elija la forma: botón ancho, cuadrado o redondo. Es el espacio que ocuparán los botones bajo sus páginas.</target>
             </trans-unit>
+            <trans-unit id="59ENoYI">
+                <source>narration.guided_step_social_slots_new</source>
+                <target>Añada una franja con este formulario: un nombre, una frecuencia y una hora al cuarto de hora.</target>
+            </trans-unit>
+            <trans-unit id="jIHvtgJ">
+                <source>narration.guided_step_social_slots_open</source>
+                <target>Esta es la semana tipo: cada franja bajo su día, a su hora. Una franja en rojo cae en el mismo minuto que otra.</target>
+            </trans-unit>
+            <trans-unit id="r4pzr7Z">
+                <source>narration.guided_step_social_slots_relay</source>
+                <target>¿Ha movido una franja? Este botón recoloca los borradores futuros de la serie; las publicaciones validadas se quedan donde están.</target>
+            </trans-unit>
+            <trans-unit id="HClhcXT">
+                <source>narration.guided_step_social_slots_series</source>
+                <target>Ligue aquí una serie a la franja: sus prolongaciones caerán en ella. Un archivo importado nombra la franja por su clave.</target>
+            </trans-unit>
             <trans-unit id="pX2axbN">
                 <source>narration.guided_step_social_tiktok_connect</source>
                 <target>Haga clic en Conectar en la ficha TikTok, y autorice el acceso con la cuenta que publica.</target>
@@ -365,6 +381,10 @@
             <trans-unit id="9pWPQRy">
                 <source>narration.social_series_review</source>
                 <target>«Series» muestra los próximos posts de una serie uno al lado del otro. Desmarque los que quiera dejar como borrador y valide todos los demás con un clic.</target>
+            </trans-unit>
+            <trans-unit id="KVOuEdp">
+                <source>narration.social_slots</source>
+                <target>«Semana tipo» coloca las franjas de publicación del sitio en una semana. Ligue una serie a sus franjas: sus prolongaciones caen en ellas, y una franja movida recoloca sus borradores con un clic.</target>
             </trans-unit>
         </body>
     </file>

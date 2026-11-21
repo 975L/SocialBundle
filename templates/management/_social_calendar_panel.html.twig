@@ -104,6 +104,15 @@
                         {# UiBundle's lightbox, the stored file being the only one a media of the post has #}
                         <twig:c975LUi:Image:Zoom src="{{ media.publicPath }}" highres="{{ media.publicPath }}" alt="{{ media.alt }}" label="{{ 'label.social_calendar_media_zoom'|trans({}, 'social') }}" priority="false" />
                     {% endif %}
+                    {# The network it is kept for, in place of the other medias there - offered once the post goes to more than one, and kept when that network was unticked since #}
+                    {% if editable and (networks|length > 1 or media.network) %}
+                        <select class="form-select form-select-sm" data-action="social-calendar#keepMedia" data-post-id="{{ post.id }}" data-media-id="{{ media.id }}" aria-label="{{ 'label.social_media_network'|trans({}, 'social') }}" title="{{ 'help.social_media_network'|trans({}, 'social') }}">
+                            <option value="">{{ 'label.social_media_network_all'|trans({}, 'social') }}</option>
+                            {% for network in networks|merge(media.network and media.network not in networks ? [media.network] : []) %}
+                                <option value="{{ network }}"{% if network == media.network %} selected{% endif %}>{{ network|capitalize }}{% if network not in networks %} - {{ 'label.social_media_network_unticked'|trans({}, 'social') }}{% endif %}</option>
+                            {% endfor %}
+                        </select>
+                    {% endif %}
                     {% if editable %}
                         <twig:ea:Button type="button" color="danger" size="sm" icon="fa fa-trash" data-action="social-calendar#removeMedia" data-post-id="{{ post.id }}" data-media-id="{{ media.id }}" data-confirm="{{ 'label.social_calendar_media_remove_confirm'|trans({}, 'social') }}" title="{{ 'label.social_calendar_media_remove'|trans({}, 'social') }}" aria-label="{{ 'label.social_calendar_media_remove'|trans({}, 'social') }}" />
                     {% endif %}

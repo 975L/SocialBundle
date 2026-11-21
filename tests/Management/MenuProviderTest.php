@@ -16,6 +16,7 @@ use c975L\SocialBundle\Controller\Management\SocialCalendarController;
 use c975L\SocialBundle\Controller\Management\SocialConnectionsController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use c975L\SocialBundle\Controller\Management\SocialPostCrudController;
+use c975L\SocialBundle\Controller\Management\SocialSlotsController;
 use c975L\SocialBundle\Management\MenuProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -66,7 +67,8 @@ class MenuProviderTest extends TestCase
     {
         $links = $this->createProvider()->getLinks();
 
-        $this->assertSame(['social_calendar', 'social_series', 'social_connections'], array_keys($links));
+        $this->assertSame(['social_calendar', 'social_series', 'social_slots', 'social_connections'], array_keys($links));
+        $this->assertSame(SocialSlotsController::ROUTE, $links['social_slots']['name']);
         $this->assertSame(SocialCalendarController::SERIES_ROUTE, $links['social_series']['name']);
         $this->assertSame('ROLE_EDITOR', $links['social_series']['role']);
         $this->assertSame(SocialCalendarController::ROUTE, $links['social_calendar']['name']);

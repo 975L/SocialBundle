@@ -77,7 +77,8 @@ class TemplateTestKernel extends Kernel
         $container->extension('framework', ['test' => true, 'secret' => 'test', 'http_method_override' => false, 'router' => ['enabled' => false], 'assets' => ['enabled' => false], 'csrf_protection' => false, 'translator' => ['enabled' => false]]);
         $container->extension('twig', [
             'strict_variables' => true,
-            'paths' => [\dirname(__DIR__, 2) . '/templates' => 'c975LSocial', $easyAdmin => 'EasyAdmin', $ui => 'c975LUi'],
+            // EasyAdmin's anonymous components (ea:Modal) found under its "ea" namespace, as its bundle prepends it
+            'paths' => [\dirname(__DIR__, 2) . '/templates' => 'c975LSocial', $easyAdmin => 'EasyAdmin', $easyAdmin . '/' => 'ea', $ui => 'c975LUi'],
         ]);
         $container->extension('twig_component', [
             'anonymous_template_directory' => 'components/',

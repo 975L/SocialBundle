@@ -264,4 +264,18 @@ class SocialPostRepositoryTest extends TestCase
         $this->assertSame(['gone'], array_map(static fn (SocialPost $post): string => $post->getSourceId(), $posts));
         $this->assertSame([], $this->repository->findPublishedWithMediasBefore(new \DateTimeImmutable('-200 days')));
     }
+
+    // A minute held by a post whatever its networks, with its title, one being moved left out
+    public function testTheTakenMinutesAreRead(): void
+    {
+        $this->post('item-1', null, '2026-12-11 20:30');
+        $this->post('item-2', null, '2026-12-14 20:30');
+        $held = $this->repository->findOneBy(['sourceId' => 'item-1']);
+        \assert($held instanceof SocialPost);
+        $moments = [new \DateTimeImmutable('2026-12-11 20:30'), new \DateTimeImmutable('2026-12-12 20:30'), new \DateTimeImmutable('2026-12-14 20:30')];
+
+        $this->assertSame(['2026-12-11 20:30' => 'Title item-1', '2026-12-14 20:30' => 'Title item-2'], $this->repository->findTakenAt($moments));
+        $this->assertSame(['2026-12-14 20:30' => 'Title item-2'], $this->repository->findTakenAt($moments, [(int) $held->getId()]));
+        $this->assertSame([], $this->repository->findTakenAt([]));
+    }
 }

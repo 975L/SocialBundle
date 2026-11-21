@@ -1,0 +1,104 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{# What a slot's pace says beside its time: one week in two from its first week, a rank of the month, a date of the month #}
+{% macro pace(slot) %}
+    {%- if slot.pace == 'fortnight' -%}
+        {{ 'label.social_slot_pace_fortnight'|trans({}, 'social') }} · {{ slot.startsOn|date('d/m') }}
+    {%- elseif slot.pace == 'month_rank' -%}
+        {{ ('label.social_slot_rank_' ~ (slot.rank == -1 ? 'last' : slot.rank))|trans({}, 'social') }} {{ ('label.social_series_weekday_' ~ slot.weekday)|trans({}, 'social')|lower }}
+    {%- elseif slot.pace == 'month_day' -%}
+        {{ 'label.social_slot_month_day_short'|trans({'%day%': slot.monthDay}, 'social') }}
+    {%- endif -%}
+{% endmacro %}
+
+{# A slot on the week: its time, its name, its pace when it is not every week, the series or the key it serves, flagged when another slot falls on the same minute #}
+{% macro item(slot, clashes, editing) %}
+    {% set others = clashes[slot.id] ?? [] %}
+    <a href="{{ path('management_social_slots', {slot: slot.id}) }}" class="d-block border rounded p-2 mb-2 text-decoration-none{{ others is not empty ? ' border-danger' : '' }}{{ editing ? ' bg-primary-subtle' : '' }}">
+        <strong class="d-block">{{ slot.time }} · {{ slot.label }}</strong>
+        {% set pace = _self.pace(slot) %}
+        {% if pace|trim %}<small class="d-block text-body-secondary">{{ pace }}</small>{% endif %}
+        {% if slot.series %}<small class="d-block text-body-secondary"><i class="fa fa-layer-group"></i> {{ slot.series.title }}</small>{% endif %}
+        {% if slot.slotKey %}<small class="d-block text-body-secondary"><i class="fa fa-key"></i> {{ slot.slotKey }}</small>{% endif %}
+        {% if others is not empty %}<small class="d-block text-danger"><i class="fa fa-triangle-exclamation"></i> {{ 'label.social_slot_clash'|trans({'%slots%': others|map(o => o.label)|join(', ')}, 'social') }}</small>{% endif %}
+    </a>
+{% endmacro %}
+
+{# The template week (see SocialSlotsController): the slots by day and time, a click opening one in the form beside them #}
+{% block main %}
+    <h1>{{ 'label.social_slots'|trans({}, 'social') }}</h1>
+    <p class="text-body-secondary">{{ 'label.info_social_slots'|trans({}, 'social') }}</p>
+
+    <div class="row g-4">
+        <div class="col-12 col-xl-8">
+            <div class="table-responsive">
+                <table class="table table-borderless align-top">
+                    <thead>
+                        <tr>{% for day in 1..7 %}<th scope="col" class="text-center">{{ ('label.social_series_weekday_' ~ day)|trans({}, 'social') }}</th>{% endfor %}</tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for slots in days %}
+                                <td class="align-top">
+                                    {% for item in slots %}{{ _self.item(item, clashes, item.id == slot.id) }}{% endfor %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            {% if month_days is not empty %}
+                <h2 class="h5">{{ 'label.social_slot_pace_month_day'|trans({}, 'social') }}</h2>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for item in month_days %}<div>{{ _self.item(item, clashes, item.id == slot.id) }}</div>{% endfor %}
+                </div>
+            {% endif %}
+
+            {% if days|filter(d => d is not empty) is empty and month_days is empty %}
+                <p>{{ 'label.social_slots_none'|trans({}, 'social') }}</p>
+            {% endif %}
+
+            {# The series prolonged on the slots, their drafts laid again on them once a slot moved #}
+            {% if series is not empty %}
+                <h2 class="h5 mt-4">{{ 'label.social_slots_series'|trans({}, 'social') }}</h2>
+                <ul class="list-unstyled">
+                    {% for row in series %}
+                        <li class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                            <span>{{ row.series.title }}</span>
+                            {% if row.off > 0 %}
+                                <span class="badge text-bg-warning">{{ 'label.social_slots_off'|trans({'%count%': row.off}, 'social') }}</span>
+                                <form method="post" action="{{ relay_url }}">
+                                    <input type="hidden" name="token" value="{{ csrf_token(token) }}">
+                                    <input type="hidden" name="series" value="{{ row.series.id }}">
+                                    <twig:ea:Button icon="fa fa-arrows-rotate" size="sm" class="social-slots-relay">{{ 'label.social_slots_relay'|trans({}, 'social') }}</twig:ea:Button>
+                                </form>
+                            {% else %}
+                                <span class="badge text-bg-success">{{ 'label.social_slots_on'|trans({}, 'social') }}</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="col-12 col-xl-4">
+            <h2 class="h5">{{ (slot.id ? 'label.social_slot_edit' : 'label.social_slot_new')|trans({}, 'social') }}</h2>
+            {{ form_start(form, {attr: {class: 'social-slot-form'}}) }}
+                {{ form_widget(form) }}
+                <div class="d-flex flex-wrap gap-2">
+                    <twig:ea:Button color="primary" icon="fa fa-check">{{ 'action.save'|trans({}, 'EasyAdminBundle') }}</twig:ea:Button>
+                    {% if slot.id %}<twig:ea:Button htmlElement="a" href="{{ path('management_social_slots') }}" variant="link">{{ 'label.social_slot_new'|trans({}, 'social') }}</twig:ea:Button>{% endif %}
+                </div>
+            {{ form_end(form) }}
+
+            {% if slot.id %}
+                <form method="post" action="{{ delete_url }}" class="mt-3">
+                    <input type="hidden" name="token" value="{{ csrf_token(token) }}">
+                    <input type="hidden" name="id" value="{{ slot.id }}">
+                    <twig:ea:Button color="danger" variant="link" icon="fa fa-trash">{{ 'action.delete'|trans({}, 'EasyAdminBundle') }}</twig:ea:Button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% endblock main %}

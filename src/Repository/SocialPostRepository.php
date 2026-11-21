@@ -16,6 +16,7 @@ use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -125,6 +126,35 @@ class SocialPostRepository extends ServiceEntityRepository
             ->setParameter('moment', $moment)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    // The minutes among $moments a post already holds, whatever its networks, with that post's title - the posts of $exceptIds, the ones being moved, left out: two posts never go out at the same minute on a site, one post going to several networks instead
+    /**
+     * @param list<\DateTimeImmutable> $moments
+     * @param list<int>                $exceptIds
+     *
+     * @return array<string, string>
+     */
+    public function findTakenAt(array $moments, array $exceptIds = []): array
+    {
+        if ([] === $moments) {
+            return [];
+        }
+
+        $builder = $this->createQueryBuilder('p')
+            ->where('p.plannedAt IN (:moments)')
+            ->setParameter('moments', array_map(static fn (\DateTimeImmutable $moment): string => $moment->format('Y-m-d H:i:00'), $moments), ArrayParameterType::STRING);
+        if ([] !== $exceptIds) {
+            $builder->andWhere('p.id NOT IN (:except)')->setParameter('except', $exceptIds, ArrayParameterType::INTEGER);
+        }
+
+        $taken = [];
+        foreach ($builder->getQuery()->getResult() as $post) {
+            \assert($post instanceof SocialPost);
+            $taken[$post->getPlannedAt()->format('Y-m-d H:i')] ??= $post->getTitle();
+        }
+
+        return $taken;
     }
 
     // The posts planned between the two moments, whatever their targets became - what the calendar lays at their moment

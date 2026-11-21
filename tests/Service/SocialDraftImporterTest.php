@@ -10,14 +10,18 @@
 
 namespace c975L\SocialBundle\Tests\Service;
 
+use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Entity\SocialSeries;
+use c975L\SocialBundle\Entity\SocialSlot;
 use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Repository\SocialSeriesRepository;
+use c975L\SocialBundle\Repository\SocialSlotRepository;
 use c975L\SocialBundle\Service\SocialDraftImporter;
 use c975L\SocialBundle\Service\SocialPublisher;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
+use c975L\SocialBundle\Service\SocialSlotCalendar;
 use c975L\UiBundle\Model\SocialContent;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -47,10 +51,11 @@ class SocialDraftImporterTest extends TestCase
 
     // LinkedIn taking a first comment and a reshare, Bluesky a story alone - both connected. $series is the series of the same title already there, $existing the post found in it by its key, $keyless the posts a former import made without a key at the draft's moment, $held the contents held by a post to come of another series, $keyed the series a keyed import made when it is not the latest one
     /**
-     * @param list<SocialPost> $keyless
-     * @param list<string>     $held
+     * @param list<SocialPost>      $keyless
+     * @param list<string>          $held
+     * @param array<string, string> $taken
      */
-    private function importer(?SocialSeries $series = null, ?SocialPost $existing = null, array $keyless = [], array $held = [], ?SocialSeries $keyed = null): SocialDraftImporter
+    private function importer(?SocialSeries $series = null, ?SocialPost $existing = null, array $keyless = [], array $held = [], ?SocialSeries $keyed = null, array $taken = []): SocialDraftImporter
     {
         $publisher = $this->createStub(SocialPublisher::class);
         $publisher->method('getConnectedNetworkNames')->willReturn(['bluesky', 'linkedin']);
@@ -83,7 +88,43 @@ class SocialDraftImporterTest extends TestCase
         $postRepository = $this->createStub(SocialPostRepository::class);
         $postRepository->method('findBy')->willReturnCallback(static fn (array $criteria): array => $criteria['series'] === ($keyed ?? $series) ? array_values(array_filter([$existing, ...$keyless])) : []);
 
-        return new SocialDraftImporter($publisher, $generator, $entityManager, $postRepository, $seriesRepository, $this->dir);
+        $postRepository->method('findTakenAt')->willReturnCallback(static fn (array $moments): array => array_intersect_key($taken, array_flip(array_map(static fn (\DateTimeImmutable $moment): string => $moment->format('Y-m-d H:i'), $moments))));
+        $slotRepository = $this->createStub(SocialSlotRepository::class);
+        $slotRepository->method('findOneByKey')->willReturnCallback(static fn (string $key): ?SocialSlot => 'sortie-bd' === $key ? new SocialSlot()->setLabel('item-1')->setWeekday(1)->setTime('08:30') : null);
+
+        return new SocialDraftImporter($publisher, $generator, $entityManager, $postRepository, $seriesRepository, $slotRepository, new SocialSlotCalendar(), $this->dir);
+    }
+
+    // A draft naming a slot of the template week takes its time on the day given, a day the slot does not fall on or an unknown slot refused
+    public function testASlotGivesItsTime(): void
+    {
+        $monday = new \DateTimeImmutable('monday next week')->format('Y-m-d');
+        $tuesday = new \DateTimeImmutable('tuesday next week')->format('Y-m-d');
+        $post = ['networks' => ['bluesky'], 'text' => 'item-1'];
+
+        $read = $this->importer()->read(['title' => 'catalog', 'posts' => [['slot' => 'sortie-bd', 'at' => $monday] + $post]], $this->dir);
+        $this->assertSame([], $read['errors']);
+        $this->assertSame($monday . ' 08:30', $read['drafts'][0]['at']->format('Y-m-d H:i'));
+
+        $read = $this->importer()->read(['title' => 'catalog', 'posts' => [['slot' => 'sortie-bd', 'at' => $tuesday] + $post, ['slot' => 'nowhere', 'at' => $monday] + $post, ['slot' => 'sortie-bd', 'at' => $monday . ' 08:30'] + $post]], $this->dir);
+        $this->assertSame([
+            sprintf('Post 1: the slot "sortie-bd" does not fall on %s.', $tuesday),
+            'Post 2: the slot "nowhere" is not on the template week.',
+            'Post 3: with a "slot", "at" is a day written "YYYY-MM-DD".',
+        ], $read['errors']);
+    }
+
+    // A draft made at a minute another post holds is refused, on the site or in the file, whatever the networks
+    public function testATakenMinuteIsRefused(): void
+    {
+        $at = new \DateTimeImmutable('+3 days')->format('Y-m-d') . ' 20:30';
+        $post = ['at' => $at, 'networks' => ['bluesky'], 'text' => 'item-1'];
+
+        $read = $this->importer(taken: [$at => 'item-2'])->read(['title' => 'catalog', 'posts' => [$post]], $this->dir);
+        $this->assertSame([sprintf('Post 1: %s is already held by "item-2".', $at)], $read['errors']);
+
+        $read = $this->importer()->read(['title' => 'catalog', 'posts' => [$post, ['networks' => ['linkedin']] + $post]], $this->dir);
+        $this->assertSame([sprintf('Post 1: %s is already held by "post 2 of the file".', $at), sprintf('Post 2: %s is already held by "post 1 of the file".', $at)], $read['errors']);
     }
 
     // Every mistake of the file listed at once, and no draft while there is one
@@ -421,6 +462,48 @@ class SocialDraftImporterTest extends TestCase
         $this->assertCount(1, $post->getMedias());
     }
 
+    // A network's own pictures go on the post kept for it, after the others; the same file imported again leaves the post as it is, and pictures moved from one network to another update it
+    public function testANetworkTakesItsOwnPictures(): void
+    {
+        $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 09:30';
+        $file = ['title' => 'T', 'posts' => [['key' => 'k', 'at' => $at, 'networks' => ['bluesky', 'linkedin'], 'text' => 'One idea', 'media' => ['card.png', 'card.png'], 'medias' => ['bluesky' => 'card.png']]]];
+        $first = $this->importer();
+        $read = $first->read($file, $this->dir);
+        $this->assertSame([], $read['errors']);
+        $post = $first->import('T', $read['drafts'])['created'][0];
+        $this->assertSame([null, null, 'bluesky'], array_map(static fn (SocialMedia $media): ?string => $media->getNetwork(), $post->getMedias()->getValues()));
+        $this->assertCount(1, $post->getMediasFor('bluesky'));
+        $this->assertCount(2, $post->getMediasFor('linkedin'));
+        file_put_contents($this->dir . '/public/medias/card.jpg', 'png');
+        $post->approve();
+
+        $again = $this->importer($this->importedSeries(), $post);
+        $this->assertSame(1, $again->import('T', $again->read($file, $this->dir)['drafts'])['unchanged']);
+        $this->assertTrue($post->isApproved());
+
+        $file['posts'][0]['medias'] = ['linkedin' => ['card.png']];
+        $changed = $this->importer($this->importedSeries(), $post);
+        $this->assertSame([$post], $changed->import('T', $changed->read($file, $this->dir)['drafts'])['updated']);
+        $this->assertSame([null, null, 'linkedin'], array_map(static fn (SocialMedia $media): ?string => $media->getNetwork(), $post->getMedias()->getValues()));
+    }
+
+    // A network's own pictures for a network the draft does not go to, none given, or one missing: told before anything is written
+    public function testWrongOwnPicturesAreRefused(): void
+    {
+        $post = ['networks' => ['bluesky'], 'text' => 'A'];
+        $errors = $this->importer()->read(['title' => 'T', 'posts' => [
+            ['at' => new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 09:30', 'medias' => ['linkedin' => 'card.png']] + $post,
+            ['at' => new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 10:30', 'medias' => ['bluesky' => []]] + $post,
+            ['at' => new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 11:30', 'medias' => ['bluesky' => 'missing.png']] + $post,
+        ]], $this->dir)['errors'];
+
+        $this->assertSame([
+            'Post 1: "medias" names linkedin, which is not among its "networks".',
+            'Post 2: the medias of bluesky are empty.',
+            'Post 3: the media "' . $this->dir . '/missing.png" does not exist.',
+        ], $errors);
+    }
+
     // A file giving no post a key makes a new series, even when one of its title was imported, and says so
     public function testAFileWithoutKeysMakesANewSeries(): void
     {
@@ -503,7 +586,7 @@ class SocialDraftImporterTest extends TestCase
     public function testAKeyedFileKeysEveryPost(): void
     {
         $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 09:30';
-        $read = $this->importer()->read(['title' => 'T', 'posts' => [['key' => 'k', 'at' => $at, 'networks' => ['linkedin'], 'text' => 'One'], ['at' => $at, 'networks' => ['linkedin'], 'text' => 'Two']]], $this->dir);
+        $read = $this->importer()->read(['title' => 'T', 'posts' => [['key' => 'k', 'at' => $at, 'networks' => ['linkedin'], 'text' => 'One'], ['at' => str_replace('09:30', '10:00', $at), 'networks' => ['linkedin'], 'text' => 'Two']]], $this->dir);
 
         $this->assertSame(['Post 2: "key" is missing, the other posts giving one.'], $read['errors']);
     }
@@ -534,7 +617,7 @@ class SocialDraftImporterTest extends TestCase
         $held = $this->importer(held: ['book:12'])->read(['title' => 'T', 'posts' => [$post]], $this->dir);
         $this->assertStringContainsString('the source "book:12" is already held by a post to come of another series', implode("\n", $held['errors']));
 
-        $shared = $this->importer()->read(['title' => 'T', 'posts' => [$post, ['key' => 'l', 'networks' => ['bluesky']] + $post]], $this->dir);
+        $shared = $this->importer()->read(['title' => 'T', 'posts' => [$post, ['key' => 'l', 'networks' => ['bluesky'], 'at' => str_replace('09:30', '10:00', $at)] + $post]], $this->dir);
         $this->assertSame([], $shared['errors']);
 
         $first = $this->importer();

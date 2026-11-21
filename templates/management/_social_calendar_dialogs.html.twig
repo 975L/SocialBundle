@@ -1,0 +1,14 @@
+{# The social-calendar controller's own modals, EasyAdmin's in place of the browser's boxes: a message said, and a question asked before a removal - their text written by the controller, as text #}
+<twig:ea:Modal id="social-calendar-notice" topIcon="internal:circle-exclamation" data-social-calendar-target="notice">
+    <twig:block name="body"><p class="social-calendar-dialog-message mb-0"></p></twig:block>
+    <twig:block name="footer">
+        <twig:ea:Modal:Close color="primary">{{ 'label.social_calendar_dialog_close'|trans({}, 'social') }}</twig:ea:Modal:Close>
+    </twig:block>
+</twig:ea:Modal>
+<twig:ea:Modal id="social-calendar-question" topIcon="internal:circle-exclamation" data-social-calendar-target="question">
+    <twig:block name="body"><p class="social-calendar-dialog-message mb-0"></p></twig:block>
+    <twig:block name="footer">
+        <twig:ea:Modal:Close>{{ 'label.social_calendar_dialog_cancel'|trans({}, 'social') }}</twig:ea:Modal:Close>
+        <twig:ea:Button type="button" color="danger" data-bs-dismiss="modal" data-social-calendar-confirm>{{ 'label.social_calendar_dialog_confirm'|trans({}, 'social') }}</twig:ea:Button>
+    </twig:block>
+</twig:ea:Modal>

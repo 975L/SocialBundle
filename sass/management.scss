@@ -424,6 +424,15 @@ $quarter: 1.25rem;
         top: .25rem;
         right: .25rem;
     }
+
+    // The network a media is kept for, across its foot
+    select {
+        position: absolute;
+        right: .25rem;
+        bottom: .25rem;
+        left: .25rem;
+        width: auto;
+    }
 }
 
 // The zone files are dropped on, outlined so it reads as one - lit while a file is held over it, dimmed while they are sent
@@ -782,4 +791,9 @@ $quarter: 1.25rem;
         margin-top: .5rem;
         font-weight: 600;
     }
+}
+
+// A message of the calendar's modals keeps the lines a refusal is written on, one per network and problem
+.social-calendar-dialog-message {
+    white-space: pre-line;
 }

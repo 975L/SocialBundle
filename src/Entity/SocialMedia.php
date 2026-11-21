@@ -81,6 +81,11 @@ class SocialMedia implements \Stringable
     #[ORM\Column(options: ['default' => 0])]
     private int $position = 0;
 
+    // The one network it goes out on, in place of the post's other medias there (see SocialPost::getMediasFor()) - null for every network without medias of its own
+    #[ORM\Column(length: 32, nullable: true)]
+    #[Assert\Length(max: 32)]
+    private ?string $network = null;
+
     // Changed with every upload, Vich saving a new file only when a mapped column changes
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
@@ -274,6 +279,18 @@ class SocialMedia implements \Stringable
     public function setPosition(?int $position): self
     {
         $this->position = (int) $position;
+
+        return $this;
+    }
+
+    public function getNetwork(): ?string
+    {
+        return $this->network;
+    }
+
+    public function setNetwork(?string $network): self
+    {
+        $this->network = null === $network || '' === trim($network) ? null : trim($network);
 
         return $this;
     }

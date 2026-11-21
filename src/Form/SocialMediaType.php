@@ -12,6 +12,7 @@ namespace c975L\SocialBundle\Form;
 
 use c975L\SocialBundle\Entity\SocialMedia;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -25,7 +26,7 @@ use Vich\UploaderBundle\Form\Type\VichFileType;
 
 use function Symfony\Component\Translation\t;
 
-// One picture or video of a post on its screen: seen as it will go out, replaced by a new upload, described, ordered - removed with the collection's own button
+// One picture or video of a post on its screen: seen as it will go out, replaced by a new upload, described, kept for one network, ordered - removed with the collection's own button
 class SocialMediaType extends AbstractType
 {
     // Above every network's own limit for a video, which the rules then say network by network
@@ -45,6 +46,13 @@ class SocialMediaType extends AbstractType
                 'required' => false,
                 'attr' => ['maxlength' => 255],
                 'constraints' => [new Length(max: 255)],
+            ])
+            ->add('network', ChoiceType::class, [
+                'label' => t('label.social_media_network', [], 'social'),
+                'help' => t('help.social_media_network', [], 'social'),
+                'required' => false,
+                'placeholder' => t('label.social_media_network_all', [], 'social'),
+                'choices' => $options['networks'],
             ])
             ->add('position', IntegerType::class, [
                 'label' => t('label.social_media_position', [], 'social'),
@@ -82,9 +90,12 @@ class SocialMediaType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
+        // The networks it may be kept for, labelled, the post's screen giving every one a post may go to
         $resolver->setDefaults([
             'data_class' => SocialMedia::class,
             'label' => false,
+            'networks' => [],
         ]);
+        $resolver->setAllowedTypes('networks', 'array');
     }
 }

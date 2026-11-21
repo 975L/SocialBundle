@@ -78,8 +78,12 @@ class SeriesProlongCommand extends Command
 
         $lines = [];
         $short = [];
+        $skipped = [];
         foreach ($rows as $row) {
-            [$made, $last, $cut] = $this->prolong($row['series'], $row['lastPlannedAt'], $until, (bool) $input->getOption('dry-run'));
+            [$made, $last, $cut, $held] = $this->prolong($row['series'], $row['lastPlannedAt'], $until, (bool) $input->getOption('dry-run'));
+            foreach ($held as $minute => $title) {
+                $skipped[] = sprintf('Series %d: %s passed over, already held by "%s".', $row['series']->getId(), $minute, $title);
+            }
             $lines[] = [$row['series']->getId(), $row['series']->getTitle(), $row['lastPlannedAt']->format('d/m/Y H:i'), $made, $last->format('d/m/Y H:i')];
             if ($cut) {
                 $short[] = sprintf('Series %d stopped at %s, short of --until: run the command again.', $row['series']->getId(), $last->format('d/m/Y H:i'));
@@ -89,6 +93,10 @@ class SeriesProlongCommand extends Command
         if ([] !== $short) {
             $io->warning($short);
         }
+        // A minute of a slot another post holds is passed over rather than refused: the prolongation goes on, the run staying a success
+        if ([] !== $skipped) {
+            $io->note($skipped);
+        }
 
         if ($input->getOption('dry-run')) {
             $io->note('Dry run: nothing written, the drafts counted as the moments to come (the AI or the sources may make fewer).');
@@ -97,12 +105,14 @@ class SeriesProlongCommand extends Command
         return Command::SUCCESS;
     }
 
-    // Prolonged round after round until its last post reaches the day, none made past it - on a dry run, its moments only counted. The number of drafts, the new end, and whether the rounds ran out before the day returned
-    /** @return array{int, \DateTimeImmutable, bool} */
+    // Prolonged round after round until its last post reaches the day, none made past it - on a dry run, its moments only counted. The number of drafts, the new end, whether the rounds ran out before the day, and the minutes of its slots passed over with the post holding them returned
+    /** @return array{int, \DateTimeImmutable, bool, array<string, string>} */
     private function prolong(SocialSeries $series, \DateTimeImmutable $last, \DateTimeImmutable $until, bool $dryRun): array
     {
         $made = 0;
+        $skipped = [];
         for ($round = 0; $last < $until && $round < self::MAX_ROUNDS; ++$round) {
+            $skipped += $this->seriesGenerator->skippedMoments($series, $last, $until);
             if ($dryRun) {
                 $new = $this->seriesGenerator->prolongMoments($series, $last, $until);
                 $next = [] === $new ? null : end($new);
@@ -117,6 +127,6 @@ class SeriesProlongCommand extends Command
             $last = $next;
         }
 
-        return [$made, $last, self::MAX_ROUNDS === $round && $last < $until];
+        return [$made, $last, self::MAX_ROUNDS === $round && $last < $until, $skipped];
     }
 }

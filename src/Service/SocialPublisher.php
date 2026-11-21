@@ -632,13 +632,13 @@ class SocialPublisher
         return new SocialContent($post->getSourceId(), $post->getTitle(), $post->getUrl(), imageUrl: $post->getImageUrl());
     }
 
-    // The post's own pictures and videos, in their order, as the networks read them: on disk, and at their public address
+    // The post's own pictures and videos going out on the target's network, in their order, as the networks read them: on disk, and at their public address
     /** @return list<PostMedia> */
-    private function mediasOf(SocialPost $post): array
+    private function mediasOf(SocialPostTarget $target): array
     {
         $siteUrl = (string) $this->siteUrlResolver->siteUrl();
         $medias = [];
-        foreach ($post->getMedias() as $media) {
+        foreach ($target->getPost()->getMediasFor($target->getNetwork()) as $media) {
             $path = $media->getPublicPath();
             if (null !== $path && null !== $media->getMimeType()) {
                 $medias[] = new PostMedia($this->projectDir . '/public' . $path, $siteUrl . $path, $media->getMimeType(), $media->getSize(), $media->getWidth(), $media->getHeight(), $media->getDuration(), $media->getAlt());
@@ -682,7 +682,7 @@ class SocialPublisher
             return $network->repost($target->getRepost(), (string) $target->getPost()->getUrl());
         }
 
-        return $this->optioned($network, $target)->publish($target->getText(), $this->sentContent($network, $target, $content), $this->mediasOf($target->getPost()));
+        return $this->optioned($network, $target)->publish($target->getText(), $this->sentContent($network, $target, $content), $this->mediasOf($target));
     }
 
     // What follows a post gone out, each refusal kept on the target without touching the post: its first comment, its reshare on the member's profile, then its story
@@ -789,7 +789,7 @@ class SocialPublisher
     // The post's first own video, the one a story shows before any picture
     private function storyVideo(SocialPostTarget $target): ?PostMedia
     {
-        foreach ($this->mediasOf($target->getPost()) as $media) {
+        foreach ($this->mediasOf($target) as $media) {
             if ($media->isVideo()) {
                 return $media;
             }
@@ -801,7 +801,7 @@ class SocialPublisher
     // The content whose image the story shows, the post's first own picture when it has one
     private function storyContent(SocialPostTarget $target, SocialContent $content): SocialContent
     {
-        foreach ($this->mediasOf($target->getPost()) as $media) {
+        foreach ($this->mediasOf($target) as $media) {
             if (!$media->isVideo()) {
                 return new SocialContent($content->sourceId, $content->title, $content->url, imagePath: $media->path, imageAlt: $media->alt);
             }
@@ -821,7 +821,7 @@ class SocialPublisher
             return ['status' => self::DRY_RUN, 'message' => $this->mode($network), 'payload' => ['repost' => $target->getRepost(), 'url' => $target->getPost()->getUrl()]];
         }
 
-        $preview = $this->preview($this->optioned($network, $target), $target->getText(), $this->sentContent($network, $target, $content), $this->mediasOf($target->getPost()));
+        $preview = $this->preview($this->optioned($network, $target), $target->getText(), $this->sentContent($network, $target, $content), $this->mediasOf($target));
         if ($network instanceof FirstCommentPublisherInterface && null !== $target->getComment()) {
             $preview['payload']['first_comment'] = $target->getComment();
         }

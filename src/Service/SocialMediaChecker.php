@@ -32,7 +32,7 @@ class SocialMediaChecker
         $problems = [];
         foreach ($post->getTargets() as $target) {
             $rules = $target->isPending() ? $this->socialPublisher->getMediaRules($target->getNetwork()) : null;
-            $found = null === $rules ? [] : [...$this->problems($post, $rules), ...$this->socialPublisher->checkOptions($target, $live)];
+            $found = null === $rules ? [] : [...$this->problems($post, $target->getNetwork(), $rules), ...$this->socialPublisher->checkOptions($target, $live)];
             if ([] !== $found) {
                 $problems[$target->getNetwork()] = $found;
             }
@@ -41,10 +41,11 @@ class SocialMediaChecker
         return $problems;
     }
 
+    // The medias going out on $network alone, a picture kept for another one never counted against it
     /** @return list<TranslatableMessage> */
-    private function problems(SocialPost $post, MediaRules $rules): array
+    private function problems(SocialPost $post, string $network, MediaRules $rules): array
     {
-        $medias = $post->getMedias()->toArray();
+        $medias = $post->getMediasFor($network);
         $problems = $this->countProblems($post, $medias, $rules);
 
         foreach ($medias as $media) {

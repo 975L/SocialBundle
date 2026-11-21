@@ -1,5 +1,13 @@
 # Upgrade
 
+## To 2.42
+
+**Database:** `social_media` gains `network` (null by default, every network), the one network a media is kept for, and the new `social_slot` table holds the template week - a site's own migration (`doctrine:migrations:diff`, then `migrate`).
+
+**Behaviour:** two posts at the same minute on the site are refused at import (`c975l:social:draft`), from the MCP endpoint, on the calendar's drop and on the post's screen (`FreeMinute`): a file giving two posts the same "at" gives them one post with several networks instead. A copy moves to the next free quarter of an hour, and a prolongation skips a minute already held.
+
+**Code:** `SocialSeriesGenerator`'s constructor takes `SocialSlotRepository` and `SocialSlotFinder` before the project's folder, `SocialDraftImporter`'s takes `SocialSlotRepository` and `SocialSlotCalendar` before it.
+
 ## To 2.29
 
 **Database:** migration for `social_post_target.comment_count` and `social_post.dropped_reposts`.

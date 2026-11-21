@@ -86,6 +86,10 @@
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Choisir les réseaux proposés à vos visiteurs, leur ordre et leur allure</target>
             </trans-unit>
+            <trans-unit id="vXJnSyN">
+                <source>description.guided_project_social_slots</source>
+                <target>Poser les créneaux du site sur une semaine, y relier les séries et recaler leurs brouillons quand un créneau bouge.</target>
+            </trans-unit>
             <trans-unit id="ot1_rRx">
                 <source>description.guided_project_social_tiktok_connect</source>
                 <target>La partie agence : l'application TikTok, ses deux clés et le consentement. À faire une fois : l'accès se renouvelle ensuite tout seul chaque nuit.</target>
@@ -128,7 +132,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série ou l'ouvre pour en relire les posts côte à côte, passe à son post précédent ou suivant par les flèches, réordonne ou retire ses médias, les agrandit ou lit ses vidéos d'un clic, en ajoute depuis le site ou en y déposant des fichiers, change son contenu, renvoie sur-le-champ un réseau qui l'a refusée, la duplique au lendemain ou la supprime.</target>
+                <target>Cliquez une publication : son panneau change sa date et son heure, la valide ou la remet en brouillon, valide d'un coup toute sa série ou l'ouvre pour en relire les posts côte à côte, passe à son post précédent ou suivant par les flèches, réordonne ou retire ses médias, en réserve un à un réseau, les agrandit ou lit ses vidéos d'un clic, en ajoute depuis le site ou en y déposant des fichiers, change son contenu, renvoie sur-le-champ un réseau qui l'a refusée, la duplique au lendemain ou la supprime.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -361,6 +365,22 @@
             <trans-unit id="bRoisnG">
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Bouton large, carré ou rond : c'est la place que les boutons prennent sous vos pages.</target>
+            </trans-unit>
+            <trans-unit id="Yaw_48M">
+                <source>description.guided_step_social_slots_new</source>
+                <target>Donnez-lui un nom, une fréquence (chaque semaine, une semaine sur deux, une fois par mois au rang ou à date fixe) et une heure au quart d'heure.</target>
+            </trans-unit>
+            <trans-unit id="sJEZ3fW">
+                <source>description.guided_step_social_slots_open</source>
+                <target>Chaque créneau est posé sous son jour, à son heure ; un créneau qui tombe à la même minute qu'un autre est signalé en rouge.</target>
+            </trans-unit>
+            <trans-unit id="lzMAB3p">
+                <source>description.guided_step_social_slots_relay</source>
+                <target>Après avoir déplacé un créneau, « Recaler les brouillons » remet les brouillons à venir de la série sur ses créneaux ; un post validé ne bouge pas.</target>
+            </trans-unit>
+            <trans-unit id="uUlopHU">
+                <source>description.guided_step_social_slots_series</source>
+                <target>Une série reliée à ses créneaux est prolongée dessus. Pour un fichier importé, donnez plutôt une clé au créneau : le fichier la nomme avec la date seule.</target>
             </trans-unit>
             <trans-unit id="UmUOu7_">
                 <source>description.guided_step_social_tiktok_connect</source>
@@ -658,6 +678,22 @@
                 <source>flash.social_series_none</source>
                 <target>Aucune série en cours : créez-en une avec « Générer une série ».</target>
             </trans-unit>
+            <trans-unit id="sHVtxBx">
+                <source>flash.social_series_skipped</source>
+                <target>Créneaux sautés, déjà pris par un autre post : %moments%.</target>
+            </trans-unit>
+            <trans-unit id="zXemgpG">
+                <source>flash.social_slot_deleted</source>
+                <target>Créneau supprimé.</target>
+            </trans-unit>
+            <trans-unit id="Dwd77pE">
+                <source>flash.social_slot_relayed</source>
+                <target>%count% brouillon(s) recalé(s) sur les créneaux de la série.</target>
+            </trans-unit>
+            <trans-unit id="RH00bQq">
+                <source>flash.social_slot_saved</source>
+                <target>Créneau enregistré.</target>
+            </trans-unit>
             <trans-unit id="K4CZlG4">
                 <source>flash.tiktok_connected</source>
                 <target>TikTok est connecté avec le compte %name%.</target>
@@ -702,6 +738,10 @@
                 <source>help.social_calendar_plan</source>
                 <target>Choisissez la date et l'heure (au quart d'heure), puis cliquez sur Replanifier.</target>
             </trans-unit>
+            <trans-unit id="DK6lXje">
+                <source>help.social_media_network</source>
+                <target>Réservé à ce réseau, il y remplace les médias de tous les réseaux ; les autres réseaux ne le reçoivent pas.</target>
+            </trans-unit>
             <trans-unit id="TRKXywk">
                 <source>help.social_media_reference</source>
                 <target>Fichier de la galerie : il se modifie dans la galerie, et n'est jamais supprimé avec la publication.</target>
@@ -716,7 +756,7 @@
             </trans-unit>
             <trans-unit id="MzBnBYd">
                 <source>help.social_post_medias</source>
-                <target>Dans l'ordre où elles partent. Une photo est enregistrée en JPEG, le seul format que tous les réseaux acceptent. Quand le site a une galerie, « Ajouter depuis le site » y reprend une photo ou une vidéo. Sans photo ni vidéo, une publication préparée depuis un contenu part avec l'image de ce contenu. Les règles de chaque réseau coché sont vérifiées à l'enregistrement, et la validation est refusée tant qu'un réseau n'accepte pas les médias.</target>
+                <target>Dans l'ordre où elles partent. Une photo est enregistrée en JPEG, le seul format que tous les réseaux acceptent. Quand le site a une galerie, « Ajouter depuis le site » y reprend une photo ou une vidéo. Sans photo ni vidéo, une publication préparée depuis un contenu part avec l'image de ce contenu. Les règles de chaque réseau coché sont vérifiées à l'enregistrement, et la validation est refusée tant qu'un réseau n'accepte pas les médias. Un média réservé à un réseau y remplace les autres : une seule image pour l'un, un carrousel pour l'autre.</target>
             </trans-unit>
             <trans-unit id="6dpEFVs">
                 <source>help.social_post_planned_at</source>
@@ -757,6 +797,30 @@
             <trans-unit id="4h1xjIz">
                 <source>help.social_series_text</source>
                 <target>Le texte de chaque publication, ou, avec l'IA, ce dont elles parlent : l'IA en écrit une version différente pour chacune, à la longueur du réseau coché le plus court. Inutile pour les contenus du site.</target>
+            </trans-unit>
+            <trans-unit id="pg.lFOS">
+                <source>help.social_slot_key</source>
+                <target>Le nom que donne un fichier importé ("slot"), en minuscules, chiffres et tirets.</target>
+            </trans-unit>
+            <trans-unit id="4akQ51G">
+                <source>help.social_slot_month_day</source>
+                <target>Pour « une fois par mois, à date fixe » : le dernier jour du mois quand il est plus court.</target>
+            </trans-unit>
+            <trans-unit id="Vo194QS">
+                <source>help.social_slot_rank</source>
+                <target>Pour « une fois par mois, au rang » : le 1er, 2e, 3e, 4e ou dernier jour choisi du mois.</target>
+            </trans-unit>
+            <trans-unit id="gkhKT6j">
+                <source>help.social_slot_series</source>
+                <target>La série est prolongée sur ses créneaux plutôt qu'à l'heure de son dernier post.</target>
+            </trans-unit>
+            <trans-unit id="DJg9Zl7">
+                <source>help.social_slot_starts_on</source>
+                <target>Pour « une semaine sur deux » : un jour de la première semaine où le créneau tombe.</target>
+            </trans-unit>
+            <trans-unit id="cp157Z.">
+                <source>help.social_slot_weekday</source>
+                <target>Pas utilisé pour une date fixe du mois.</target>
             </trans-unit>
             <trans-unit id="I8AKzzK">
                 <source>help.social_tiktok_account</source>
@@ -1013,6 +1077,10 @@
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Régler les boutons de partage</target>
+            </trans-unit>
+            <trans-unit id="FWLJ19H">
+                <source>label.guided_project_social_slots</source>
+                <target>Fixer la semaine type des publications</target>
             </trans-unit>
             <trans-unit id="K_sxbNO">
                 <source>label.guided_project_social_tiktok_connect</source>
@@ -1334,6 +1402,22 @@
                 <source>label.guided_step_social_share_buttons_shape</source>
                 <target>Choisir la forme</target>
             </trans-unit>
+            <trans-unit id="gQpCmqi">
+                <source>label.guided_step_social_slots_new</source>
+                <target>Ajouter un créneau</target>
+            </trans-unit>
+            <trans-unit id="hf7HiQU">
+                <source>label.guided_step_social_slots_open</source>
+                <target>Ouvrir la semaine type</target>
+            </trans-unit>
+            <trans-unit id="FgWbhhH">
+                <source>label.guided_step_social_slots_relay</source>
+                <target>Recaler les brouillons</target>
+            </trans-unit>
+            <trans-unit id="A1NoepV">
+                <source>label.guided_step_social_slots_series</source>
+                <target>Relier une série</target>
+            </trans-unit>
             <trans-unit id="a5R1HzE">
                 <source>label.guided_step_social_tiktok_connect</source>
                 <target>Lancer la connexion</target>
@@ -1494,6 +1578,10 @@
                 <source>label.info_social_series_review</source>
                 <target>Les posts à venir d'une série côte à côte : chacun relu, ses réseaux cochés, puis validé seul ou avec les autres.</target>
             </trans-unit>
+            <trans-unit id="TwS1CzI">
+                <source>label.info_social_slots</source>
+                <target>Les créneaux de publication du site posés sur une semaine : une série reliée à un créneau est prolongée dessus, et un brouillon importé qui nomme un créneau par sa clé prend son heure. Deux posts ne partent jamais à la même minute.</target>
+            </trans-unit>
             <trans-unit id="WjZtbyj">
                 <source>label.info_tiktok_connect</source>
                 <target>Relie le site à un compte TikTok : la vidéo de chaque post y est publiée, son texte en légende, avec les choix que TikTok demande sur l'écran du post. Les jetons se renouvellent seuls chaque nuit.</target>
@@ -1645,6 +1733,18 @@
             <trans-unit id="hYDcRDD">
                 <source>label.social_calendar_delete_confirm</source>
                 <target>Supprimer cette publication ? Elle ne partira pas.</target>
+            </trans-unit>
+            <trans-unit id="Cc91PTx">
+                <source>label.social_calendar_dialog_cancel</source>
+                <target>Annuler</target>
+            </trans-unit>
+            <trans-unit id="N.h9cl0">
+                <source>label.social_calendar_dialog_close</source>
+                <target>OK</target>
+            </trans-unit>
+            <trans-unit id="k7nV2Ju">
+                <source>label.social_calendar_dialog_confirm</source>
+                <target>Confirmer</target>
             </trans-unit>
             <trans-unit id="l0Dqa_D">
                 <source>label.social_calendar_drag_hint</source>
@@ -1902,6 +2002,18 @@
                 <source>label.social_media_image_too_big</source>
                 <target>une photo dépasse %max% Mo</target>
             </trans-unit>
+            <trans-unit id="bJsgnXw">
+                <source>label.social_media_network</source>
+                <target>Réseau</target>
+            </trans-unit>
+            <trans-unit id="DDIce8Y">
+                <source>label.social_media_network_all</source>
+                <target>Tous les réseaux</target>
+            </trans-unit>
+            <trans-unit id="LLCgoW3">
+                <source>label.social_media_network_unticked</source>
+                <target>plus coché</target>
+            </trans-unit>
             <trans-unit id="f6SQAxN">
                 <source>label.social_media_no_mix</source>
                 <target>photos et vidéo ne vont pas ensemble dans une publication</target>
@@ -2021,6 +2133,10 @@
             <trans-unit id="3pF3BRH">
                 <source>label.social_post_medias</source>
                 <target>Photos et vidéos</target>
+            </trans-unit>
+            <trans-unit id="kXR9uwq">
+                <source>label.social_post_minute_held</source>
+                <target>Ce moment est déjà pris par « %title% » : deux posts ne partent jamais à la même minute.</target>
             </trans-unit>
             <trans-unit id="6O9YNYV">
                 <source>label.social_post_networks</source>
@@ -2317,6 +2433,122 @@
             <trans-unit id="6prrGwu">
                 <source>label.social_series_weekdays_required</source>
                 <target>Cochez au moins un jour de la semaine.</target>
+            </trans-unit>
+            <trans-unit id="vTSiaj4">
+                <source>label.social_slot_clash</source>
+                <target>Même minute que : %slots%</target>
+            </trans-unit>
+            <trans-unit id="tIiuu1x">
+                <source>label.social_slot_edit</source>
+                <target>Modifier le créneau</target>
+            </trans-unit>
+            <trans-unit id="EgHh_wY">
+                <source>label.social_slot_key</source>
+                <target>Clé pour les imports</target>
+            </trans-unit>
+            <trans-unit id="0sfUu_U">
+                <source>label.social_slot_label</source>
+                <target>Nom du créneau</target>
+            </trans-unit>
+            <trans-unit id="c1ew3Vg">
+                <source>label.social_slot_missing</source>
+                <target>Ce champ est demandé par la fréquence choisie.</target>
+            </trans-unit>
+            <trans-unit id="DbfLLYb">
+                <source>label.social_slot_month_day</source>
+                <target>Jour du mois</target>
+            </trans-unit>
+            <trans-unit id="zeuWXNa">
+                <source>label.social_slot_month_day_short</source>
+                <target>le %day% du mois</target>
+            </trans-unit>
+            <trans-unit id="K3LNbJD">
+                <source>label.social_slot_new</source>
+                <target>Nouveau créneau</target>
+            </trans-unit>
+            <trans-unit id="FDeiXkb">
+                <source>label.social_slot_pace</source>
+                <target>Fréquence</target>
+            </trans-unit>
+            <trans-unit id="gtCl62r">
+                <source>label.social_slot_pace_fortnight</source>
+                <target>Une semaine sur deux</target>
+            </trans-unit>
+            <trans-unit id="dDaQZPV">
+                <source>label.social_slot_pace_month_day</source>
+                <target>Une fois par mois, à date fixe</target>
+            </trans-unit>
+            <trans-unit id="gZUmcel">
+                <source>label.social_slot_pace_month_rank</source>
+                <target>Une fois par mois, au rang</target>
+            </trans-unit>
+            <trans-unit id="RaGID0E">
+                <source>label.social_slot_pace_week</source>
+                <target>Chaque semaine</target>
+            </trans-unit>
+            <trans-unit id="cJ8I9kO">
+                <source>label.social_slot_rank</source>
+                <target>Rang dans le mois</target>
+            </trans-unit>
+            <trans-unit id="WOG4hXo">
+                <source>label.social_slot_rank_1</source>
+                <target>1er</target>
+            </trans-unit>
+            <trans-unit id="D5algYP">
+                <source>label.social_slot_rank_2</source>
+                <target>2e</target>
+            </trans-unit>
+            <trans-unit id="D5aUYmt">
+                <source>label.social_slot_rank_3</source>
+                <target>3e</target>
+            </trans-unit>
+            <trans-unit id="Q7NTxkM">
+                <source>label.social_slot_rank_4</source>
+                <target>4e</target>
+            </trans-unit>
+            <trans-unit id="5x5ZV7K">
+                <source>label.social_slot_rank_last</source>
+                <target>Dernier</target>
+            </trans-unit>
+            <trans-unit id="Ezf3G30">
+                <source>label.social_slot_series</source>
+                <target>Série prolongée sur ce créneau</target>
+            </trans-unit>
+            <trans-unit id="OnesdLu">
+                <source>label.social_slot_starts_on</source>
+                <target>Première semaine</target>
+            </trans-unit>
+            <trans-unit id="ufaZLKK">
+                <source>label.social_slot_time</source>
+                <target>Heure</target>
+            </trans-unit>
+            <trans-unit id="AKl_Ij9">
+                <source>label.social_slot_weekday</source>
+                <target>Jour</target>
+            </trans-unit>
+            <trans-unit id="y57XJtU">
+                <source>label.social_slots</source>
+                <target>Semaine type</target>
+            </trans-unit>
+            <trans-unit id="GD6uz0h">
+                <source>label.social_slots_none</source>
+                <target>Aucun créneau pour l'instant : ajoutez le premier avec le formulaire.</target>
+            </trans-unit>
+            <trans-unit id="auiEfOB">
+                <source>label.social_slots_off</source>
+                <target>%count% brouillon(s) hors créneau</target>
+            </trans-unit>
+            <trans-unit id="zJXlNFv">
+                <source>label.social_slots_on</source>
+                <target>Brouillons sur leurs créneaux</target>
+            </trans-unit>
+            <trans-unit id="caT4.08">
+                <source>label.social_slots_relay</source>
+                <target>Recaler les brouillons</target>
+            </trans-unit>
+            <trans-unit id="eO1TOZd">
+                <source>label.social_slots_series</source>
+                <target>Séries prolongées sur les créneaux</target>
             </trans-unit>
             <trans-unit id="OHJ769G">
                 <source>label.social_tiktok_brand_content</source>

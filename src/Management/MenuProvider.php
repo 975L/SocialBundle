@@ -17,6 +17,7 @@ use c975L\SocialBundle\Controller\Management\SocialCalendarController;
 use c975L\SocialBundle\Controller\Management\SocialConnectionsController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use c975L\SocialBundle\Controller\Management\SocialPostCrudController;
+use c975L\SocialBundle\Controller\Management\SocialSlotsController;
 
 class MenuProvider implements MenuProviderInterface
 {
@@ -72,7 +73,7 @@ class MenuProvider implements MenuProviderInterface
         ];
     }
 
-    // The networks the site connects to, gathered on one screen of tiles rather than one link each; the calendar and the series' page, screens of their own rather than lists of entities
+    // The networks the site connects to, gathered on one screen of tiles rather than one link each; the calendar, the series' page and the template week, screens of their own rather than lists of entities
     public function getLinks(): array
     {
         return [
@@ -93,6 +94,15 @@ class MenuProvider implements MenuProviderInterface
                 'icon' => 'fas fa-layer-group',
                 'role' => $this->configService->get('site-role-editor'),
                 'description' => 'label.info_social_series_review',
+            ],
+            'social_slots' => [
+                'name' => SocialSlotsController::ROUTE,
+                'label' => 'label.social_slots',
+                'narration' => 'narration.social_slots',
+                'translation_domain' => 'social',
+                'icon' => 'fas fa-table-cells',
+                'role' => $this->configService->get('site-role-editor'),
+                'description' => 'label.info_social_slots',
             ],
             'social_connections' => [
                 'name' => SocialConnectionsController::ROUTE,

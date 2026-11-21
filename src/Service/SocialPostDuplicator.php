@@ -14,17 +14,22 @@ use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Namer\SocialMediaNamer;
+use c975L\SocialBundle\Repository\SocialPostRepository;
 
 // A post written again a day later, a draft of no series holding the same content, texts and medias - on the networks still connected only, with a reshare or a story where the network still offers it. An upload gets a file of its own, deleted with its own media; a file of the site's own stays a reference to it
 class SocialPostDuplicator
 {
+    // How many quarters of an hour from the copy's moment are looked at for a free one: a whole day
+    private const int QUARTERS = 96;
+
     public function __construct(
         private readonly SocialPublisher $socialPublisher,
+        private readonly SocialPostRepository $postRepository,
         private readonly string $projectDir,
     ) {
     }
 
-    // The copy, not persisted - $networks the ones the site is connected to. Planned at the same time the day after, or tomorrow at that time when that day is already gone
+    // The copy, not persisted - $networks the ones the site is connected to. Planned at the same time the day after, or tomorrow at that time when that day is already gone - the next quarter of an hour no other post holds when that minute is
     /** @param list<string> $networks */
     public function duplicate(SocialPost $post, array $networks): SocialPost
     {
@@ -33,7 +38,7 @@ class SocialPostDuplicator
             $plannedAt = new \DateTimeImmutable('tomorrow')->setTime((int) $plannedAt->format('G'), (int) $plannedAt->format('i'));
         }
 
-        $copy = new SocialPost($post->getSourceType(), $post->getSourceId(), $post->getTitle(), $post->getUrl(), $post->getImageUrl(), $plannedAt);
+        $copy = new SocialPost($post->getSourceType(), $post->getSourceId(), $post->getTitle(), $post->getUrl(), $post->getImageUrl(), $this->freeMoment($plannedAt));
         $copy->setText($post->getText());
 
         foreach ($post->getTargets() as $target) {
@@ -56,6 +61,20 @@ class SocialPostDuplicator
         }
 
         return $copy;
+    }
+
+    // The first quarter of an hour from $moment that no post holds, a day of them read at once - $moment itself when they all are
+    private function freeMoment(\DateTimeImmutable $moment): \DateTimeImmutable
+    {
+        $moments = array_map(static fn (int $quarter): \DateTimeImmutable => $moment->modify(sprintf('+%d minutes', 15 * $quarter)), range(0, self::QUARTERS - 1));
+        $held = $this->postRepository->findTakenAt($moments);
+        foreach ($moments as $candidate) {
+            if (!isset($held[$candidate->format('Y-m-d H:i')])) {
+                return $candidate;
+            }
+        }
+
+        return $moment;
     }
 
     // The media for the copy, null when its upload is no longer on disk (purged once the post went out everywhere)
@@ -81,6 +100,7 @@ class SocialPostDuplicator
 
         $copied->setAlt($media->getAlt());
         $copied->setPosition($media->getPosition());
+        $copied->setNetwork($media->getNetwork());
 
         return $copied;
     }

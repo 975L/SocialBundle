@@ -51,4 +51,15 @@ class SocialMediaTest extends TestCase
     {
         $this->assertSame(255, mb_strlen((string) new SocialMedia()->setAlt(str_repeat('é', 300))->getAlt()));
     }
+
+    // A network kept trimmed, an empty one meaning every network
+    public function testTheNetworkIsNoneWhenEmpty(): void
+    {
+        $media = new SocialMedia();
+
+        $this->assertNull($media->getNetwork());
+        $this->assertSame('bluesky', $media->setNetwork(' bluesky ')->getNetwork());
+        $this->assertNull($media->setNetwork('')->getNetwork());
+        $this->assertNull($media->setNetwork(null)->getNetwork());
+    }
 }

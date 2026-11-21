@@ -111,6 +111,17 @@ class SocialMcpProviderTest extends TestCase
         $this->provider()->create('text-1', '2026-11-21 09:00');
     }
 
+    // A minute another post holds is refused, naming it, whatever its networks
+    public function testCreateRefusesAMinuteHeld(): void
+    {
+        $repository = $this->createStub(SocialPostRepository::class);
+        $repository->method('findTakenAt')->willReturn(['2026-11-22 09:00' => 'item-2']);
+
+        $this->expectException(ToolCallException::class);
+        $this->expectExceptionMessage('The moment 2026-11-22 09:00 is already held by "item-2"');
+        $this->provider($repository)->create('text-1', '2026-11-22 09:00');
+    }
+
     // An empty text is refused before anything is written
     public function testCreateRefusesAnEmptyText(): void
     {

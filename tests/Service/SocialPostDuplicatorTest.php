@@ -15,6 +15,7 @@ use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Namer\SocialMediaNamer;
+use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Service\SocialPostDuplicator;
 use c975L\SocialBundle\Service\SocialPublisher;
 use PHPUnit\Framework\TestCase;
@@ -24,6 +25,10 @@ use Symfony\Component\Filesystem\Filesystem;
 class SocialPostDuplicatorTest extends TestCase
 {
     private string $projectDir;
+
+    // The minutes another post holds, with its title
+    /** @var array<string, string> */
+    private array $held = [];
 
     protected function setUp(): void
     {
@@ -53,7 +58,10 @@ class SocialPostDuplicatorTest extends TestCase
         $publisher->method('supportsReshare')->willReturnCallback(static fn (string $network): bool => 'linkedin' === $network);
         $publisher->method('supportsStory')->willReturnCallback(static fn (string $network): bool => 'facebook' === $network);
 
-        return new SocialPostDuplicator($publisher, $this->projectDir);
+        $repository = $this->createStub(SocialPostRepository::class);
+        $repository->method('findTakenAt')->willReturnCallback(fn (array $moments): array => array_intersect_key($this->held, array_flip(array_map(static fn (\DateTimeImmutable $moment): string => $moment->format('Y-m-d H:i'), $moments))));
+
+        return new SocialPostDuplicator($publisher, $repository, $this->projectDir);
     }
 
     // A reshare or a story copied only where the network still offers it, never one that could only fail
@@ -96,12 +104,23 @@ class SocialPostDuplicatorTest extends TestCase
         $this->assertEquals(new \DateTimeImmutable('tomorrow 18:45'), $copy->getPlannedAt());
     }
 
-    // An upload gets a file of its own, a reference stays one, and an upload no longer on disk is left out
+    // A minute another post holds moves the copy to the next free quarter of an hour
+    public function testTheCopyPassesOverAHeldMinute(): void
+    {
+        $tomorrow = new \DateTimeImmutable('tomorrow')->format('Y-m-d');
+        $this->held = [$tomorrow . ' 18:45' => 'item-2', $tomorrow . ' 19:00' => 'item-3'];
+
+        $copy = $this->duplicator()->duplicate($this->post('-10 days 18:45'), []);
+
+        $this->assertEquals(new \DateTimeImmutable('tomorrow 19:15'), $copy->getPlannedAt());
+    }
+
+    // An upload gets a file of its own, a reference stays one, each kept for the network it was, and an upload no longer on disk is left out
     public function testTheMediasAreTheCopysOwn(): void
     {
         $post = $this->post('+1 day 10:00');
         $upload = new SocialMedia($post);
-        $upload->setFilename(SocialMediaNamer::DIRECTORY . '/upload.jpg')->setMimeType('image/jpeg')->setAlt('Alt')->setPosition(1);
+        $upload->setFilename(SocialMediaNamer::DIRECTORY . '/upload.jpg')->setMimeType('image/jpeg')->setAlt('Alt')->setPosition(1)->setNetwork('bluesky');
         $post->addMedia($upload);
         $reference = SocialMedia::reference($post, '/medias/gallery/lac.jpg', 'image/jpeg', 800, 600);
         $reference->setSource('gallery_media', '7');
@@ -117,7 +136,8 @@ class SocialPostDuplicatorTest extends TestCase
         $this->assertNotSame($upload->getFilename(), $copiedUpload->getFilename());
         $this->assertStringStartsWith(SocialMediaNamer::DIRECTORY . '/', (string) $copiedUpload->getFilename());
         $this->assertSame('picture', file_get_contents($this->projectDir . '/public/' . $copiedUpload->getFilename()));
-        $this->assertSame(['Alt', 1, 'image/jpeg'], [$copiedUpload->getAlt(), $copiedUpload->getPosition(), $copiedUpload->getMimeType()]);
+        $this->assertSame(['Alt', 1, 'image/jpeg', 'bluesky'], [$copiedUpload->getAlt(), $copiedUpload->getPosition(), $copiedUpload->getMimeType(), $copiedUpload->getNetwork()]);
+        $this->assertNull($copiedReference->getNetwork());
         $this->assertTrue($copiedReference->isReference());
         $this->assertSame(['medias/gallery/lac.jpg', 'gallery_media', '7', 800, 0], [$copiedReference->getFilename(), $copiedReference->getSourceType(), $copiedReference->getSourceId(), $copiedReference->getWidth(), $copiedReference->getPosition()]);
     }

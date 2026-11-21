@@ -135,4 +135,14 @@ class SocialMediaCheckerTest extends TestCase
         $this->assertSame(['tiktok' => ['label.social_media_video_required']], $this->keys($checker->check($this->post(['tiktok'], []))));
         $this->assertSame(['tiktok' => ['label.social_media_video_required', 'label.social_tiktok_cannot_post']], $this->keys($checker->check($this->post(['tiktok'], []), true)));
     }
+
+    // Each network is checked against the medias going out on it alone: a board kept for Bluesky beside a carousel for the others suits both
+    public function testEachNetworkIsCheckedOnItsOwnMedias(): void
+    {
+        $post = $this->post(['bluesky', 'instagram'], array_fill(0, 6, ['image/jpeg', 500000, null]));
+        $this->assertSame(['bluesky' => ['label.social_media_too_many']], $this->keys($this->checker()->check($post)));
+
+        $post->addMedia(SocialMedia::reference($post, 'medias/board', 'image/jpeg')->setSize(500000)->setNetwork('bluesky'));
+        $this->assertSame([], $this->checker()->check($post));
+    }
 }

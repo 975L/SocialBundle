@@ -13,11 +13,15 @@ namespace c975L\SocialBundle\Tests\Command;
 use c975L\SocialBundle\Command\SeriesProlongCommand;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialSeries;
+use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Repository\SocialSeriesRepository;
+use c975L\SocialBundle\Repository\SocialSlotRepository;
 use c975L\SocialBundle\Service\SocialMediaFile;
 use c975L\SocialBundle\Service\SocialPostWriter;
 use c975L\SocialBundle\Service\SocialPublisher;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
+use c975L\SocialBundle\Service\SocialSlotCalendar;
+use c975L\SocialBundle\Service\SocialSlotFinder;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
@@ -25,6 +29,9 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class SeriesProlongCommandTest extends TestCase
 {
+    /** @var array<string, string> */
+    private array $skipped = [];
+
     /** @var array<int, \DateTimeImmutable> */
     private array $last = [];
 
@@ -58,6 +65,8 @@ class SeriesProlongCommandTest extends TestCase
             return $next > $until ? [] : [$next];
         });
 
+        $generator->method('skippedMoments')->willReturn($this->skipped);
+
         return new CommandTester(new SeriesProlongCommand($repository, $generator));
     }
 
@@ -86,6 +95,16 @@ class SeriesProlongCommandTest extends TestCase
         $rows[0]['lastPlannedAt'] = $this->last[1];
         $this->tester($rows)->execute(['--until' => $until]);
         $this->assertSame([], $this->prolonged);
+    }
+
+    // A minute of a slot another post holds is said, the run staying a success
+    public function testTheMinutesPassedOverAreSaid(): void
+    {
+        $this->skipped = ['2026-12-11 20:30' => 'item-2'];
+        $tester = $this->tester([['series' => $this->series(1), 'lastPlannedAt' => new \DateTimeImmutable('+3 days 21:00')]]);
+
+        $this->assertSame(Command::SUCCESS, $tester->execute(['--until' => new \DateTimeImmutable('+10 days')->format('Y-m-d')]));
+        $this->assertStringContainsString('2026-12-11 20:30 passed over, already held by "item-2"', $tester->getDisplay());
     }
 
     // A series named is prolonged even once ended, and a day not written YYYY-MM-DD is refused
@@ -150,7 +169,7 @@ class SeriesProlongCommandTest extends TestCase
         $repository->method('findLastPlannedAt')->willReturnCallback(static function () use (&$last): \DateTimeImmutable {
             return $last;
         });
-        $generator = new SocialSeriesGenerator($publisher, $this->createStub(SocialPostWriter::class), new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $repository, sys_get_temp_dir());
+        $generator = new SocialSeriesGenerator($publisher, $this->createStub(SocialPostWriter::class), new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $repository, $this->createStub(SocialSlotRepository::class), new SocialSlotFinder(new SocialSlotCalendar(), $this->createStub(SocialPostRepository::class)), sys_get_temp_dir());
 
         $tester = new CommandTester(new SeriesProlongCommand($repository, $generator));
 

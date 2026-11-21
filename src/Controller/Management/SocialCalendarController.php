@@ -338,7 +338,7 @@ class SocialCalendarController extends AbstractController
         return $this->renderPanel($post, $this->panelView($request));
     }
 
-    // The panel's medias put in the order given, one of them taken off the post first when asked - its file going with it, and the content it was picked from freed. Answers the panel as it now reads; a post gone out on a network keeps what it went out with
+    // The panel's medias put in the order given, kept for the network chosen, one of them taken off the post first when asked - its file going with it, and the content it was picked from freed. Answers the panel as it now reads, with what a network would refuse in them; a post gone out on a network keeps what it went out with
     #[AdminRoute(path: '/social-calendar/medias', name: 'social_calendar_medias', options: ['methods' => ['POST']])]
     public function medias(Request $request): Response
     {
@@ -347,6 +347,7 @@ class SocialCalendarController extends AbstractController
             return $post;
         }
 
+        $this->keepForNetworks($post, $request->request->all('networks'));
         $remove = (int) $request->request->get('remove');
         $order = array_flip(array_map(intval(...), $request->request->all('medias')));
         $kept = [];
@@ -366,7 +367,19 @@ class SocialCalendarController extends AbstractController
         $post->sortMedias();
         $this->entityManager->flush();
 
-        return $this->renderPanel($post, $this->panelView($request));
+        return $this->renderPanel($post, $this->panelView($request), problems: $this->mediaChecker->check($post));
+    }
+
+    // Each media named kept for the network given, or for every network when none is - a network the post does not go to ignored, unless the media already had it
+    /** @param array<mixed, mixed> $networks */
+    private function keepForNetworks(SocialPost $post, array $networks): void
+    {
+        foreach ($post->getMedias() as $media) {
+            $network = $networks[(int) $media->getId()] ?? null;
+            if (\is_string($network) && ('' === $network || $network === $media->getNetwork() || \in_array($network, $post->getNetworks(), true))) {
+                $media->setNetwork($network);
+            }
+        }
     }
 
     // The pictures and videos dropped on the panel, or picked from its zone, added after the post's medias as files of its own - Vich storing each one as the post's screen does (see SocialMediaUploadListener). A file of another type, or one the server did not receive whole, refuses the whole drop, said in the answer; a post gone out on a network keeps what it went out with
@@ -610,6 +623,11 @@ class SocialCalendarController extends AbstractController
             $plannedAt = $this->moment($to, $post->getPlannedAt());
             if (null === $plannedAt || $plannedAt <= new \DateTimeImmutable()) {
                 return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+            // Two posts never go out at the same minute on a site, whatever their networks: the holder said in the answer
+            $held = $this->postRepository->findTakenAt([$plannedAt], [(int) $post->getId()]);
+            if ([] !== $held) {
+                return new Response($this->translator->trans('label.social_post_minute_held', ['%title%' => reset($held)], 'social'), Response::HTTP_UNPROCESSABLE_ENTITY);
             }
             $post->setPlannedAt($plannedAt);
         }

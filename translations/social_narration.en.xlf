@@ -192,7 +192,7 @@
             </trans-unit>
             <trans-unit id="HRyz2B3">
                 <source>narration.guided_step_social_posts_medias</source>
-                <target>Add photos or a video here, in the order they go out, or take some from the gallery with "Add from the site". Each ticked network's rules are checked when saving.</target>
+                <target>Add photos or a video here, in the order they go out, or take some from the gallery with "Add from the site". Each ticked network's rules are checked when saving. A media kept for one network replaces the others there.</target>
             </trans-unit>
             <trans-unit id="kNA4Y5N">
                 <source>narration.guided_step_social_posts_networks</source>
@@ -314,6 +314,22 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>Below, pick the shape: wide, square or round button. That is the room the buttons will take under your pages.</target>
             </trans-unit>
+            <trans-unit id="59ENoYI">
+                <source>narration.guided_step_social_slots_new</source>
+                <target>Add a slot with this form: a name, a frequency and a time on the quarter hour.</target>
+            </trans-unit>
+            <trans-unit id="jIHvtgJ">
+                <source>narration.guided_step_social_slots_open</source>
+                <target>Here is the template week: each slot under its day, at its time. A slot in red falls on the same minute as another.</target>
+            </trans-unit>
+            <trans-unit id="r4pzr7Z">
+                <source>narration.guided_step_social_slots_relay</source>
+                <target>Moved a slot? This button puts the series' coming drafts back on its slots; approved posts stay where they are.</target>
+            </trans-unit>
+            <trans-unit id="HClhcXT">
+                <source>narration.guided_step_social_slots_series</source>
+                <target>Tie a series to the slot here: its prolongations will fall on it. An imported file names the slot by its key instead.</target>
+            </trans-unit>
             <trans-unit id="pX2axbN">
                 <source>narration.guided_step_social_tiktok_connect</source>
                 <target>Click Connect on the TikTok tile, then allow access with the account that posts.</target>
@@ -365,6 +381,10 @@
             <trans-unit id="9pWPQRy">
                 <source>narration.social_series_review</source>
                 <target>"Series" shows a series' coming posts side by side. Untick the ones to keep as drafts, then approve all the others in one click.</target>
+            </trans-unit>
+            <trans-unit id="KVOuEdp">
+                <source>narration.social_slots</source>
+                <target>"Template week" lays the site's publishing slots on a week. Tie a series to its slots: its prolongations fall on them, and a moved slot puts its drafts back in one click.</target>
             </trans-unit>
         </body>
     </file>

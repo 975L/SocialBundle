@@ -86,6 +86,10 @@
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Elegir las redes que se ofrecen a sus visitantes, su orden y su aspecto</target>
             </trans-unit>
+            <trans-unit id="vXJnSyN">
+                <source>description.guided_project_social_slots</source>
+                <target>Colocar las franjas del sitio en una semana, ligarles las series y recolocar sus borradores cuando una franja cambia.</target>
+            </trans-unit>
             <trans-unit id="ot1_rRx">
                 <source>description.guided_project_social_tiktok_connect</source>
                 <target>La parte de la agencia: la aplicación de TikTok, sus dos claves y el consentimiento. Se hace una vez: el acceso se renueva luego solo cada noche.</target>
@@ -128,7 +132,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Haga clic en una publicación: su panel cambia su fecha y hora, la valida o la devuelve a borrador, valida de una vez toda su serie o la abre para releer sus publicaciones una al lado de otra, pasa a su publicación anterior o siguiente con las flechas, reordena o quita sus medios, los amplía o reproduce sus vídeos con un clic, añade otros desde el sitio o soltando archivos en él, cambia su contenido, la vuelve a enviar al momento en una red que la rechazó, la duplica al día siguiente o la elimina.</target>
+                <target>Haga clic en una publicación: su panel cambia su fecha y hora, la valida o la devuelve a borrador, valida de una vez toda su serie o la abre para releer sus publicaciones una al lado de otra, pasa a su publicación anterior o siguiente con las flechas, reordena o quita sus medios, reserva uno a una red, los amplía o reproduce sus vídeos con un clic, añade otros desde el sitio o soltando archivos en él, cambia su contenido, la vuelve a enviar al momento en una red que la rechazó, la duplica al día siguiente o la elimina.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -361,6 +365,22 @@
             <trans-unit id="bRoisnG">
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Botón ancho, cuadrado o redondo: es el espacio que ocupan los botones bajo sus páginas.</target>
+            </trans-unit>
+            <trans-unit id="Yaw_48M">
+                <source>description.guided_step_social_slots_new</source>
+                <target>Dele un nombre, una frecuencia (cada semana, una de cada dos, una vez al mes por orden o en fecha fija) y una hora al cuarto de hora.</target>
+            </trans-unit>
+            <trans-unit id="sJEZ3fW">
+                <source>description.guided_step_social_slots_open</source>
+                <target>Cada franja está bajo su día, a su hora; una franja que cae en el mismo minuto que otra se señala en rojo.</target>
+            </trans-unit>
+            <trans-unit id="lzMAB3p">
+                <source>description.guided_step_social_slots_relay</source>
+                <target>Tras mover una franja, «Recolocar los borradores» vuelve a poner los borradores futuros de la serie en sus franjas; una publicación validada no se mueve.</target>
+            </trans-unit>
+            <trans-unit id="uUlopHU">
+                <source>description.guided_step_social_slots_series</source>
+                <target>Una serie ligada a sus franjas se prolonga en ellas. Para un archivo importado, dé más bien una clave a la franja: el archivo la nombra con la fecha sola.</target>
             </trans-unit>
             <trans-unit id="UmUOu7_">
                 <source>description.guided_step_social_tiktok_connect</source>
@@ -658,6 +678,22 @@
                 <source>flash.social_series_none</source>
                 <target>Ninguna serie en curso: cree una con «Generar una serie».</target>
             </trans-unit>
+            <trans-unit id="sHVtxBx">
+                <source>flash.social_series_skipped</source>
+                <target>Franjas omitidas, ya ocupadas por otra publicación: %moments%.</target>
+            </trans-unit>
+            <trans-unit id="zXemgpG">
+                <source>flash.social_slot_deleted</source>
+                <target>Franja eliminada.</target>
+            </trans-unit>
+            <trans-unit id="Dwd77pE">
+                <source>flash.social_slot_relayed</source>
+                <target>%count% borrador(es) recolocado(s) en las franjas de la serie.</target>
+            </trans-unit>
+            <trans-unit id="RH00bQq">
+                <source>flash.social_slot_saved</source>
+                <target>Franja guardada.</target>
+            </trans-unit>
             <trans-unit id="K4CZlG4">
                 <source>flash.tiktok_connected</source>
                 <target>TikTok está conectado con la cuenta %name%.</target>
@@ -702,6 +738,10 @@
                 <source>help.social_calendar_plan</source>
                 <target>Elija la fecha y la hora (al cuarto de hora) y luego haga clic en Reprogramar.</target>
             </trans-unit>
+            <trans-unit id="DK6lXje">
+                <source>help.social_media_network</source>
+                <target>Reservado a esta red, sustituye allí los medios de todas las redes; las demás redes no lo reciben.</target>
+            </trans-unit>
             <trans-unit id="TRKXywk">
                 <source>help.social_media_reference</source>
                 <target>Archivo de la galería: se modifica en la galería, y nunca se borra con la publicación.</target>
@@ -716,7 +756,7 @@
             </trans-unit>
             <trans-unit id="MzBnBYd">
                 <source>help.social_post_medias</source>
-                <target>En el orden en que salen. Una foto se guarda en JPEG, el único formato que aceptan todas las redes. Cuando el sitio tiene una galería, «Añadir desde el sitio» toma de ella una foto o un vídeo. Sin foto ni vídeo, una publicación preparada desde un contenido sale con la imagen de ese contenido. Las reglas de cada red marcada se comprueban al guardar, y la validación se rechaza mientras una red no acepte los medios.</target>
+                <target>En el orden en que salen. Una foto se guarda en JPEG, el único formato que aceptan todas las redes. Cuando el sitio tiene una galería, «Añadir desde el sitio» toma de ella una foto o un vídeo. Sin foto ni vídeo, una publicación preparada desde un contenido sale con la imagen de ese contenido. Las reglas de cada red marcada se comprueban al guardar, y la validación se rechaza mientras una red no acepte los medios. Un medio reservado a una red sustituye allí a los demás: una sola imagen para una, un carrusel para otra.</target>
             </trans-unit>
             <trans-unit id="6dpEFVs">
                 <source>help.social_post_planned_at</source>
@@ -757,6 +797,30 @@
             <trans-unit id="4h1xjIz">
                 <source>help.social_series_text</source>
                 <target>El texto de cada publicación o, con la IA, de qué tratan: la IA escribe una versión distinta para cada una, a la longitud de la red marcada más corta. Innecesario para los contenidos del sitio.</target>
+            </trans-unit>
+            <trans-unit id="pg.lFOS">
+                <source>help.social_slot_key</source>
+                <target>El nombre que da un archivo importado ("slot"), en minúsculas, cifras y guiones.</target>
+            </trans-unit>
+            <trans-unit id="4akQ51G">
+                <source>help.social_slot_month_day</source>
+                <target>Para «una vez al mes, en fecha fija»: el último día del mes cuando es más corto.</target>
+            </trans-unit>
+            <trans-unit id="Vo194QS">
+                <source>help.social_slot_rank</source>
+                <target>Para «una vez al mes, por orden»: el 1.º, 2.º, 3.º, 4.º o último día elegido del mes.</target>
+            </trans-unit>
+            <trans-unit id="gkhKT6j">
+                <source>help.social_slot_series</source>
+                <target>La serie se prolonga en sus franjas en lugar de a la hora de su última publicación.</target>
+            </trans-unit>
+            <trans-unit id="DJg9Zl7">
+                <source>help.social_slot_starts_on</source>
+                <target>Para «una semana de cada dos»: un día de la primera semana en que cae la franja.</target>
+            </trans-unit>
+            <trans-unit id="cp157Z.">
+                <source>help.social_slot_weekday</source>
+                <target>No se usa para una fecha fija del mes.</target>
             </trans-unit>
             <trans-unit id="I8AKzzK">
                 <source>help.social_tiktok_account</source>
@@ -1013,6 +1077,10 @@
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Ajustar los botones de compartir</target>
+            </trans-unit>
+            <trans-unit id="FWLJ19H">
+                <source>label.guided_project_social_slots</source>
+                <target>Fijar la semana tipo de las publicaciones</target>
             </trans-unit>
             <trans-unit id="K_sxbNO">
                 <source>label.guided_project_social_tiktok_connect</source>
@@ -1334,6 +1402,22 @@
                 <source>label.guided_step_social_share_buttons_shape</source>
                 <target>Elegir la forma</target>
             </trans-unit>
+            <trans-unit id="gQpCmqi">
+                <source>label.guided_step_social_slots_new</source>
+                <target>Añadir una franja</target>
+            </trans-unit>
+            <trans-unit id="hf7HiQU">
+                <source>label.guided_step_social_slots_open</source>
+                <target>Abrir la semana tipo</target>
+            </trans-unit>
+            <trans-unit id="FgWbhhH">
+                <source>label.guided_step_social_slots_relay</source>
+                <target>Recolocar los borradores</target>
+            </trans-unit>
+            <trans-unit id="A1NoepV">
+                <source>label.guided_step_social_slots_series</source>
+                <target>Ligar una serie</target>
+            </trans-unit>
             <trans-unit id="a5R1HzE">
                 <source>label.guided_step_social_tiktok_connect</source>
                 <target>Iniciar la conexión</target>
@@ -1494,6 +1578,10 @@
                 <source>label.info_social_series_review</source>
                 <target>Los próximos posts de una serie uno al lado del otro: cada uno releído, sus redes marcadas y luego validado solo o con los demás.</target>
             </trans-unit>
+            <trans-unit id="TwS1CzI">
+                <source>label.info_social_slots</source>
+                <target>Las franjas de publicación del sitio en una semana: una serie ligada a una franja se prolonga en ella, y un borrador importado que nombra una franja por su clave toma su hora. Dos publicaciones nunca salen en el mismo minuto.</target>
+            </trans-unit>
             <trans-unit id="WjZtbyj">
                 <source>label.info_tiktok_connect</source>
                 <target>Vincula el sitio a una cuenta de TikTok: el vídeo de cada publicación se publica allí, su texto como descripción, con las opciones que TikTok pide en la pantalla de la publicación. Los tokens se renuevan solos cada noche.</target>
@@ -1645,6 +1733,18 @@
             <trans-unit id="hYDcRDD">
                 <source>label.social_calendar_delete_confirm</source>
                 <target>¿Eliminar esta publicación? No se enviará.</target>
+            </trans-unit>
+            <trans-unit id="Cc91PTx">
+                <source>label.social_calendar_dialog_cancel</source>
+                <target>Cancelar</target>
+            </trans-unit>
+            <trans-unit id="N.h9cl0">
+                <source>label.social_calendar_dialog_close</source>
+                <target>Aceptar</target>
+            </trans-unit>
+            <trans-unit id="k7nV2Ju">
+                <source>label.social_calendar_dialog_confirm</source>
+                <target>Confirmar</target>
             </trans-unit>
             <trans-unit id="l0Dqa_D">
                 <source>label.social_calendar_drag_hint</source>
@@ -1902,6 +2002,18 @@
                 <source>label.social_media_image_too_big</source>
                 <target>una foto supera %max% MB</target>
             </trans-unit>
+            <trans-unit id="bJsgnXw">
+                <source>label.social_media_network</source>
+                <target>Red</target>
+            </trans-unit>
+            <trans-unit id="DDIce8Y">
+                <source>label.social_media_network_all</source>
+                <target>Todas las redes</target>
+            </trans-unit>
+            <trans-unit id="LLCgoW3">
+                <source>label.social_media_network_unticked</source>
+                <target>ya no marcada</target>
+            </trans-unit>
             <trans-unit id="f6SQAxN">
                 <source>label.social_media_no_mix</source>
                 <target>fotos y vídeo no van juntos en una publicación</target>
@@ -2021,6 +2133,10 @@
             <trans-unit id="3pF3BRH">
                 <source>label.social_post_medias</source>
                 <target>Fotos y vídeos</target>
+            </trans-unit>
+            <trans-unit id="kXR9uwq">
+                <source>label.social_post_minute_held</source>
+                <target>Este momento ya lo ocupa «%title%»: dos publicaciones nunca salen en el mismo minuto.</target>
             </trans-unit>
             <trans-unit id="6O9YNYV">
                 <source>label.social_post_networks</source>
@@ -2317,6 +2433,122 @@
             <trans-unit id="6prrGwu">
                 <source>label.social_series_weekdays_required</source>
                 <target>Marque al menos un día de la semana.</target>
+            </trans-unit>
+            <trans-unit id="vTSiaj4">
+                <source>label.social_slot_clash</source>
+                <target>Mismo minuto que: %slots%</target>
+            </trans-unit>
+            <trans-unit id="tIiuu1x">
+                <source>label.social_slot_edit</source>
+                <target>Editar la franja</target>
+            </trans-unit>
+            <trans-unit id="EgHh_wY">
+                <source>label.social_slot_key</source>
+                <target>Clave para las importaciones</target>
+            </trans-unit>
+            <trans-unit id="0sfUu_U">
+                <source>label.social_slot_label</source>
+                <target>Nombre de la franja</target>
+            </trans-unit>
+            <trans-unit id="c1ew3Vg">
+                <source>label.social_slot_missing</source>
+                <target>La frecuencia elegida pide este campo.</target>
+            </trans-unit>
+            <trans-unit id="DbfLLYb">
+                <source>label.social_slot_month_day</source>
+                <target>Día del mes</target>
+            </trans-unit>
+            <trans-unit id="zeuWXNa">
+                <source>label.social_slot_month_day_short</source>
+                <target>el %day% del mes</target>
+            </trans-unit>
+            <trans-unit id="K3LNbJD">
+                <source>label.social_slot_new</source>
+                <target>Nueva franja</target>
+            </trans-unit>
+            <trans-unit id="FDeiXkb">
+                <source>label.social_slot_pace</source>
+                <target>Frecuencia</target>
+            </trans-unit>
+            <trans-unit id="gtCl62r">
+                <source>label.social_slot_pace_fortnight</source>
+                <target>Una semana de cada dos</target>
+            </trans-unit>
+            <trans-unit id="dDaQZPV">
+                <source>label.social_slot_pace_month_day</source>
+                <target>Una vez al mes, en fecha fija</target>
+            </trans-unit>
+            <trans-unit id="gZUmcel">
+                <source>label.social_slot_pace_month_rank</source>
+                <target>Una vez al mes, por orden</target>
+            </trans-unit>
+            <trans-unit id="RaGID0E">
+                <source>label.social_slot_pace_week</source>
+                <target>Cada semana</target>
+            </trans-unit>
+            <trans-unit id="cJ8I9kO">
+                <source>label.social_slot_rank</source>
+                <target>Orden en el mes</target>
+            </trans-unit>
+            <trans-unit id="WOG4hXo">
+                <source>label.social_slot_rank_1</source>
+                <target>1.º</target>
+            </trans-unit>
+            <trans-unit id="D5algYP">
+                <source>label.social_slot_rank_2</source>
+                <target>2.º</target>
+            </trans-unit>
+            <trans-unit id="D5aUYmt">
+                <source>label.social_slot_rank_3</source>
+                <target>3.º</target>
+            </trans-unit>
+            <trans-unit id="Q7NTxkM">
+                <source>label.social_slot_rank_4</source>
+                <target>4.º</target>
+            </trans-unit>
+            <trans-unit id="5x5ZV7K">
+                <source>label.social_slot_rank_last</source>
+                <target>Último</target>
+            </trans-unit>
+            <trans-unit id="Ezf3G30">
+                <source>label.social_slot_series</source>
+                <target>Serie prolongada en esta franja</target>
+            </trans-unit>
+            <trans-unit id="OnesdLu">
+                <source>label.social_slot_starts_on</source>
+                <target>Primera semana</target>
+            </trans-unit>
+            <trans-unit id="ufaZLKK">
+                <source>label.social_slot_time</source>
+                <target>Hora</target>
+            </trans-unit>
+            <trans-unit id="AKl_Ij9">
+                <source>label.social_slot_weekday</source>
+                <target>Día</target>
+            </trans-unit>
+            <trans-unit id="y57XJtU">
+                <source>label.social_slots</source>
+                <target>Semana tipo</target>
+            </trans-unit>
+            <trans-unit id="GD6uz0h">
+                <source>label.social_slots_none</source>
+                <target>Todavía no hay franjas: añada la primera con el formulario.</target>
+            </trans-unit>
+            <trans-unit id="auiEfOB">
+                <source>label.social_slots_off</source>
+                <target>%count% borrador(es) fuera de franja</target>
+            </trans-unit>
+            <trans-unit id="zJXlNFv">
+                <source>label.social_slots_on</source>
+                <target>Borradores en sus franjas</target>
+            </trans-unit>
+            <trans-unit id="caT4.08">
+                <source>label.social_slots_relay</source>
+                <target>Recolocar los borradores</target>
+            </trans-unit>
+            <trans-unit id="eO1TOZd">
+                <source>label.social_slots_series</source>
+                <target>Series prolongadas en las franjas</target>
             </trans-unit>
             <trans-unit id="OHJ769G">
                 <source>label.social_tiktok_brand_content</source>

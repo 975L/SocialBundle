@@ -103,7 +103,7 @@ class SocialMcpProvider implements McpToolProviderInterface
         ];
     }
 
-    // A draft written on the networks given or those ticked by default, at a moment to come brought to the quarter of an hour, never approved
+    // A draft written on the networks given or those ticked by default, at a moment to come brought to the quarter of an hour that no other post holds, never approved
     /**
      * @param string       $text     text of the post, cut to each network
      * @param ?string      $at       moment it would go out once approved, YYYY-MM-DD HH:MM in the site's time, the next quarter of an hour by default
@@ -119,7 +119,13 @@ class SocialMcpProvider implements McpToolProviderInterface
             throw new ToolCallException('The text is empty.');
         }
 
-        $post = $this->publisher->createManual($this->moment($at))->setUrl($this->url($url));
+        $moment = $this->moment($at);
+        // Two posts never go out at the same minute on a site, whatever their networks
+        $held = $this->postRepository->findTakenAt([$moment]);
+        if ([] !== $held) {
+            throw new ToolCallException(sprintf('The moment %s is already held by "%s": choose another one.', $moment->format('Y-m-d H:i'), reset($held)));
+        }
+        $post = $this->publisher->createManual($moment)->setUrl($this->url($url));
         $post->setText($text);
         if ([] !== $networks) {
             $post->setNetworks($this->networks($networks));

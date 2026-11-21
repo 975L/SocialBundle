@@ -18,6 +18,7 @@ use c975L\SocialBundle\Controller\Management\SocialCalendarController;
 use c975L\SocialBundle\Controller\Management\SocialConnectionsController;
 use c975L\SocialBundle\Controller\Management\SocialLinksCrudController;
 use c975L\SocialBundle\Controller\Management\SocialPostCrudController;
+use c975L\SocialBundle\Controller\Management\SocialSlotsController;
 use c975L\UiBundle\Controller\Management\ReviewCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
@@ -52,6 +53,7 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->socialCalendarProject(),
             $this->instagramConnectProject(),
             $this->commentsAlertProject(),
+            $this->slotsProject(),
         ];
     }
 
@@ -686,6 +688,46 @@ class SocialGuidedProjectProvider implements GuidedProjectProviderInterface
                     'description' => 'description.guided_step_social_calendar_feed',
                     'narration' => 'narration.guided_step_social_calendar_feed',
                     'highlight' => '.social-calendar-feed',
+                ],
+            ],
+        ];
+    }
+
+    // The template week: its slots laid, a series tied to them, and its drafts laid again once a slot moved
+    private function slotsProject(): array
+    {
+        return [
+            'slug' => 'social-slots',
+            'label' => 'label.guided_project_social_slots',
+            'description' => 'description.guided_project_social_slots',
+            'translation_domain' => 'social',
+            'order' => 4160,
+            // The bar SocialSlotsController states on its own actions
+            'role' => $this->configService->get('site-role-editor'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_social_slots_open',
+                    'description' => 'description.guided_step_social_slots_open',
+                    'narration' => 'narration.guided_step_social_slots_open',
+                    'url' => $this->urlGenerator->generate(SocialSlotsController::ROUTE),
+                ],
+                [
+                    'label' => 'label.guided_step_social_slots_new',
+                    'description' => 'description.guided_step_social_slots_new',
+                    'narration' => 'narration.guided_step_social_slots_new',
+                    'highlight' => '.social-slot-form',
+                ],
+                [
+                    'label' => 'label.guided_step_social_slots_series',
+                    'description' => 'description.guided_step_social_slots_series',
+                    'narration' => 'narration.guided_step_social_slots_series',
+                    'highlight' => '#social_slot_series',
+                ],
+                [
+                    // No highlight: the button only shows once a series' drafts stand off its slots
+                    'label' => 'label.guided_step_social_slots_relay',
+                    'description' => 'description.guided_step_social_slots_relay',
+                    'narration' => 'narration.guided_step_social_slots_relay',
                 ],
             ],
         ];

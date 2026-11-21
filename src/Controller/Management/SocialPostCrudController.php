@@ -28,6 +28,7 @@ use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPostApprover;
 use c975L\SocialBundle\Service\SocialPublisher;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
+use c975L\SocialBundle\Validator\FreeMinute;
 use c975L\UiBundle\Contract\ScopedSocialContentSourceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
@@ -339,6 +340,7 @@ class SocialPostCrudController extends AbstractCrudController
         // Its own pictures and videos, in their order, replacing the content's picture - checked against each network's rules once saved
         yield CollectionField::new('medias', t('label.social_post_medias', [], 'social'))
             ->setEntryType(SocialMediaType::class)
+            ->setFormTypeOption('entry_options', ['networks' => $this->networkChoices($post instanceof SocialPost ? $post : null)])
             ->allowAdd()
             ->allowDelete()
             ->setEntryIsComplex()
@@ -638,7 +640,10 @@ class SocialPostCrudController extends AbstractCrudController
         }
 
         if ($request->request->has('prolong') && $this->isCsrfTokenValid(self::PUBLISH_CSRF_TOKEN, $request->request->getString('token'))) {
+            $last = $this->seriesRepository->findLastPlannedAt($series);
+            $skipped = null === $last ? [] : $this->seriesGenerator->skippedMoments($series, $last);
             $posts = $this->seriesGenerator->prolong($series);
+            $this->flashSkipped($skipped);
             if ([] === $posts) {
                 $this->addFlash('warning', t('flash.social_post_nothing', [], 'social'));
 
@@ -658,6 +663,18 @@ class SocialPostCrudController extends AbstractCrudController
             'last' => $this->seriesRepository->findLastPlannedAt($series),
             'back_url' => $this->editUrl($post, $this->from($request)),
         ]);
+    }
+
+    // The minutes of the series' slots the prolongation passed over, each with the post already holding it - escaped, EasyAdmin rendering its flashes raw
+    /** @param array<string, string> $skipped */
+    private function flashSkipped(array $skipped): void
+    {
+        if ([] === $skipped) {
+            return;
+        }
+
+        $moments = implode(', ', array_map(static fn (string $minute, string $title): string => htmlspecialchars($minute . ' (' . $title . ')'), array_keys($skipped), $skipped));
+        $this->addFlash('warning', t('flash.social_series_skipped', ['%moments%' => $moments], 'social'));
     }
 
     // Lists the contents still free in a group - the post's own by default - then ties the post to the one chosen, or to one drawn again in its group, and goes back to it
@@ -711,7 +728,7 @@ class SocialPostCrudController extends AbstractCrudController
                 'input' => 'datetime_immutable',
                 'data' => $this->planner->nextQuarter(new \DateTimeImmutable()),
                 'attr' => ['step' => SocialPlanner::QUARTER],
-                'constraints' => [new NotBlank()],
+                'constraints' => [new NotBlank(), new FreeMinute()],
             ])
             ->getForm()
             ->handleRequest($request);

@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.42.0
+
+Template week of slots, medias kept for one network
+
+- Added `SocialMedia::$network`: a media kept for one network replaces the others there, chosen on the post's screen and in the calendar's panel [Needs db update] (21/11/2026)
+- Added `"medias"` to imported drafts, a network's own pictures (21/11/2026)
+- Changed the calendar's alerts and confirmations into EasyAdmin's modal, the page reloading once it is closed (21/11/2026)
+- Added `SocialSlot` and the "Template week" screen: slots every week, every other week, or once a month by rank or by date [Needs db update] (21/11/2026)
+- Added slots to series: a series tied to slots is prolonged on them, a minute another post holds skipped and said (21/11/2026)
+- Added `"slot"` to imported drafts, the slot's time taken on the day given (21/11/2026)
+- Added the refusal of two posts at the same minute on the site: at import, from the MCP endpoint, on the calendar's drop and on the post's screen (`FreeMinute`), a copy and a prolongation passing over a minute held (21/11/2026)
+- Added "Move the drafts back onto the slots" for a series whose slot moved (21/11/2026)
+
 ## v2.41.2
 
 Bluesky discovery and shared feeds kept off the private network

@@ -192,7 +192,7 @@
             </trans-unit>
             <trans-unit id="HRyz2B3">
                 <source>narration.guided_step_social_posts_medias</source>
-                <target>Ajoutez ici des photos ou une vidéo, dans l'ordre où elles partent, ou reprenez-en de la galerie avec « Ajouter depuis le site ». Les règles de chaque réseau coché sont vérifiées à l'enregistrement.</target>
+                <target>Ajoutez ici des photos ou une vidéo, dans l'ordre où elles partent, ou reprenez-en de la galerie avec « Ajouter depuis le site ». Les règles de chaque réseau coché sont vérifiées à l'enregistrement. Un média réservé à un réseau remplace pour lui les autres.</target>
             </trans-unit>
             <trans-unit id="kNA4Y5N">
                 <source>narration.guided_step_social_posts_networks</source>
@@ -314,6 +314,22 @@
                 <source>narration.guided_step_social_share_buttons_shape</source>
                 <target>En dessous, choisissez la forme : bouton large, carré ou rond. C'est la place que les boutons prendront sous vos pages.</target>
             </trans-unit>
+            <trans-unit id="59ENoYI">
+                <source>narration.guided_step_social_slots_new</source>
+                <target>Ajoutez un créneau avec ce formulaire : un nom, une fréquence et une heure au quart d'heure.</target>
+            </trans-unit>
+            <trans-unit id="jIHvtgJ">
+                <source>narration.guided_step_social_slots_open</source>
+                <target>Voici la semaine type : chaque créneau sous son jour, à son heure. Un créneau en rouge tombe à la même minute qu'un autre.</target>
+            </trans-unit>
+            <trans-unit id="r4pzr7Z">
+                <source>narration.guided_step_social_slots_relay</source>
+                <target>Un créneau déplacé ? Ce bouton recale les brouillons à venir de la série ; les posts validés restent où ils sont.</target>
+            </trans-unit>
+            <trans-unit id="HClhcXT">
+                <source>narration.guided_step_social_slots_series</source>
+                <target>Reliez ici une série au créneau : ses prolongations tomberont dessus. Un fichier importé, lui, nomme le créneau par sa clé.</target>
+            </trans-unit>
             <trans-unit id="pX2axbN">
                 <source>narration.guided_step_social_tiktok_connect</source>
                 <target>Cliquez sur Connecter dans la tuile TikTok, puis autorisez l'accès avec le compte qui publie.</target>
@@ -365,6 +381,10 @@
             <trans-unit id="9pWPQRy">
                 <source>narration.social_series_review</source>
                 <target>« Séries » montre les posts à venir d'une série côte à côte. Décochez ceux à garder en brouillon, puis validez tous les autres d'un clic.</target>
+            </trans-unit>
+            <trans-unit id="KVOuEdp">
+                <source>narration.social_slots</source>
+                <target>« Semaine type » pose les créneaux de publication du site sur une semaine. Reliez une série à ses créneaux : ses prolongations tombent dessus, et un créneau déplacé recale ses brouillons d'un clic.</target>
             </trans-unit>
         </body>
     </file>

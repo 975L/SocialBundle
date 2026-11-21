@@ -244,4 +244,18 @@ class SocialPostTest extends TestCase
 
         $this->assertSame('Tiktok', (string) new SocialPostTarget($post, 'tiktok', 'Text'));
     }
+
+    // A network with medias kept for it goes out with those alone, every other network with the medias kept for none
+    public function testANetworksOwnMediasReplaceTheOthersThere(): void
+    {
+        $post = new SocialPost(SocialPost::SOURCE_MANUAL, 'abc', 'Hello', '', null, new \DateTimeImmutable('+1 day'));
+        $board = SocialMedia::reference($post, 'medias/board.jpg', 'image/jpeg')->setNetwork('bluesky');
+        $first = SocialMedia::reference($post, 'medias/panel-1.jpg', 'image/jpeg');
+        $second = SocialMedia::reference($post, 'medias/panel-2.jpg', 'image/jpeg');
+        $post->addMedia($first)->addMedia($board)->addMedia($second);
+
+        $this->assertSame([$board], $post->getMediasFor('bluesky'));
+        $this->assertSame([$first, $second], $post->getMediasFor('instagram'));
+        $this->assertSame([], new SocialPost(SocialPost::SOURCE_MANUAL, 'abc', 'Hello', '', null, new \DateTimeImmutable('+1 day'))->getMediasFor('bluesky'));
+    }
 }

@@ -3,6 +3,21 @@
         "date": "2026-11-21",
         "description": [
             {
+                "en": "Social: a \"Template week\" screen lays the site's publishing slots on a week, every week, every other week or once a month. A series tied to its slots is prolonged on them, and two posts never go out at the same minute.",
+                "fr": "Réseaux sociaux : un écran « Semaine type » pose les créneaux de publication du site sur une semaine, chaque semaine, une semaine sur deux ou une fois par mois. Une série reliée à ses créneaux est prolongée dessus, et deux posts ne partent jamais à la même minute.",
+                "es": "Redes sociales: una pantalla «Semana tipo» coloca las franjas de publicación del sitio en una semana, cada semana, una de cada dos o una vez al mes. Una serie ligada a sus franjas se prolonga en ellas, y dos publicaciones nunca salen en el mismo minuto."
+            },
+            {
+                "en": "A picture or a video can now be kept for one network: it replaces the others there, so a single post sends one picture to a network and a carousel to another. Choose the network under the media, on the post's screen or in the calendar's panel.",
+                "fr": "Une photo ou une vidéo peut maintenant être réservée à un réseau : elle y remplace les autres, et une même publication envoie une seule image à un réseau et un carrousel à un autre. Le réseau se choisit sous le média, sur l'écran de la publication ou dans le panneau du calendrier.",
+                "es": "Una foto o un vídeo puede reservarse ahora a una red: sustituye allí a los demás, y una misma publicación envía una sola imagen a una red y un carrusel a otra. La red se elige bajo el medio, en la pantalla de la publicación o en el panel del calendario."
+            },
+            {
+                "en": "The calendar now says a refusal and asks before a removal in a back-office window, rather than the browser's own box.",
+                "fr": "Le calendrier signale désormais un refus et demande confirmation avant une suppression dans une fenêtre du back-office, plutôt que dans la boîte du navigateur.",
+                "es": "El calendario indica ahora un rechazo y pide confirmación antes de una eliminación en una ventana del back-office, en lugar del cuadro del navegador."
+            },
+            {
                 "en": "Drafts prepared outside the site can now carry several pictures: they go out in their order, as a carousel on Instagram or several images elsewhere.",
                 "fr": "Les brouillons préparés hors du site peuvent maintenant porter plusieurs images : elles partent dans leur ordre, en carrousel sur Instagram ou en plusieurs images ailleurs.",
                 "es": "Los borradores preparados fuera del sitio pueden llevar ahora varias imágenes: salen en su orden, en carrusel en Instagram o en varias imágenes en otros lugares."

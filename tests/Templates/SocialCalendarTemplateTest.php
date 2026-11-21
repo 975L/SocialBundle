@@ -428,6 +428,30 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertStringNotContainsString('social-calendar-panel-drop', $this->panel('published', editable: false));
     }
 
+    // A media kept for a network the post no longer goes to shows it chosen and unticked; a post going to one network alone offers no choice for a media kept for none
+    public function testThePanelSaysTheNetworkAMediaIsKeptFor(): void
+    {
+        $kept = new SocialMedia()->setFilename('social/a.jpg')->setMimeType('image/jpeg')->setNetwork('instagram');
+        new \ReflectionProperty(SocialMedia::class, 'id')->setValue($kept, 3);
+        $html = $this->panel('draft', [$kept]);
+
+        $this->assertMatchesRegularExpression('#<select class="form-select form-select-sm" data-action="social-calendar\#keepMedia" data-post-id="7" data-media-id="3"#', $html);
+        $this->assertStringContainsString('<option value="instagram" selected>Instagram - label.social_media_network_unticked</option>', $html);
+        $this->assertStringContainsString('<option value="bluesky">Bluesky</option>', $html);
+        $this->assertStringNotContainsString('social-calendar#keepMedia', $this->panel('draft', [new SocialMedia()->setFilename('social/b.jpg')->setMimeType('image/jpeg')]));
+    }
+
+    // Both pages hosting the calendar's controller carry its two modals, the question's confirming button marked
+    public function testTheCalendarAndTheSeriesCarryTheirModals(): void
+    {
+        foreach ([$this->render('week'), $this->series([])] as $html) {
+            $this->assertStringContainsString('data-social-calendar-target="notice"', $html);
+            $this->assertStringContainsString('data-social-calendar-target="question"', $html);
+            $this->assertSame(2, substr_count($html, 'social-calendar-dialog-message'));
+            $this->assertStringContainsString('data-social-calendar-confirm', $html);
+        }
+    }
+
     // The coming posts of its series around it open in the same panel, nothing offered past either end
     public function testThePanelStepsToTheSeriesPostsAround(): void
     {

@@ -172,7 +172,7 @@ class TikTokPublisher implements NetworkPublisherInterface, PostOptionsPublisher
         if ('' !== $privacy && !\in_array($privacy, $creator['privacy_options'], true)) {
             $problems[] = t('label.social_tiktok_privacy_unavailable', [], 'social');
         }
-        foreach ($post->getMedias() as $media) {
+        foreach ($post->getMediasFor($this->getName()) as $media) {
             if ($media->isVideo() && null !== $creator['max_duration'] && $media->getDuration() > $creator['max_duration']) {
                 $problems[] = t('label.social_tiktok_video_too_long', ['%max%' => $creator['max_duration']], 'social');
             }

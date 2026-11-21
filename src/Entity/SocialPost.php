@@ -12,6 +12,7 @@ namespace c975L\SocialBundle\Entity;
 
 use c975L\SocialBundle\Enum\SocialPostStatus;
 use c975L\SocialBundle\Repository\SocialPostRepository;
+use c975L\SocialBundle\Validator\FreeMinute;
 use c975L\UiBundle\Model\SocialContent;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -26,6 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(name: 'social_post_created_at', columns: ['created_at'])]
 #[ORM\Index(name: 'social_post_planned_at', columns: ['planned_at'])]
 #[ORM\UniqueConstraint(name: 'social_post_series_import_key', columns: ['series_id', 'import_key'])]
+#[FreeMinute]
 class SocialPost implements \Stringable
 {
     // The source type of a post prepared from a page's url rather than handed by a source
@@ -461,6 +463,15 @@ class SocialPost implements \Stringable
     public function getMedias(): Collection
     {
         return $this->medias;
+    }
+
+    // What goes out on $network, in its order: the medias kept for it when it has any, the ones for every network otherwise - as a network's own text replaces the post's
+    /** @return list<SocialMedia> */
+    public function getMediasFor(string $network): array
+    {
+        $own = array_values($this->medias->filter(static fn (SocialMedia $media): bool => $network === $media->getNetwork())->toArray());
+
+        return [] !== $own ? $own : array_values($this->medias->filter(static fn (SocialMedia $media): bool => null === $media->getNetwork())->toArray());
     }
 
     public function addMedia(SocialMedia $media): self

@@ -64,8 +64,8 @@ class SocialGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider()->getGuidedProjects();
 
-        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-connect', 'social-google-reviews', 'social-series', 'social-meta-connect', 'social-posts', 'social-bluesky-connect', 'social-linkedin-connect', 'social-youtube-connect', 'social-pinterest-connect', 'social-tiktok-connect', 'social-calendar', 'social-instagram-connect', 'social-comments-alert'], array_column($projects, 'slug'));
-        $this->assertSame([4010, 4020, 4030, 4040, 4050, 4060, 4070, 4080, 4090, 4100, 4110, 4120, 4130, 4140, 4150], array_column($projects, 'order'));
+        $this->assertSame(['social-links', 'social-share-buttons', 'social-google-connect', 'social-google-reviews', 'social-series', 'social-meta-connect', 'social-posts', 'social-bluesky-connect', 'social-linkedin-connect', 'social-youtube-connect', 'social-pinterest-connect', 'social-tiktok-connect', 'social-calendar', 'social-instagram-connect', 'social-comments-alert', 'social-slots'], array_column($projects, 'slug'));
+        $this->assertSame([4010, 4020, 4030, 4040, 4050, 4060, 4070, 4080, 4090, 4100, 4110, 4120, 4130, 4140, 4150, 4160], array_column($projects, 'order'));
     }
 
     public function testEverySlugIsPrefixedWithTheBundleName(): void
@@ -100,6 +100,7 @@ class SocialGuidedProjectProviderTest extends TestCase
             'social-calendar' => 'ROLE_EDITOR',
             'social-instagram-connect' => ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR'],
             'social-comments-alert' => 'ROLE_ADMIN',
+            'social-slots' => 'ROLE_EDITOR',
         ], $roles);
     }
 
@@ -149,8 +150,8 @@ class SocialGuidedProjectProviderTest extends TestCase
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
 
-        // Bluesky, with no key to paste, opens on the connections, and the calendar is a screen of its own: both routes, not CRUD indexes
-        $this->assertSame(['management_social_connections', 'management_social_calendar'], $routes);
+        // Bluesky, with no key to paste, opens on the connections, and the calendar and the template week are screens of their own: routes, not CRUD indexes
+        $this->assertSame(['management_social_connections', 'management_social_calendar', 'management_social_slots'], $routes);
     }
 
     // EasyAdmin renders the form's save button as action-saveAndReturn, .action-save matching nothing and leaving the step highlighting an empty selection

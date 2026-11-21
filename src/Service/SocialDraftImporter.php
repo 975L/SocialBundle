@@ -16,11 +16,12 @@ use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Repository\SocialSeriesRepository;
+use c975L\SocialBundle\Repository\SocialSlotRepository;
 use c975L\UiBundle\Model\SocialContent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
-// Drafts written elsewhere - each its own text, a network's own one in "texts" (kept until "text" changes once taken out of the file, as a text corrected by hand), picture or list of pictures (a carousel where the network makes one), first comment, reshare on the member's profile and story, which no series draws from the site's contents - made at once from a JSON file (see c975l:social:draft), as one series so that its ending is announced like any other. Never sent before being read and approved, as every draft. A post given a "key" is imported again rather than twice: left as it is when unchanged, updated and taken back to a draft when it changed, never touched once it went out, taken back to a draft when its key left the file - a file gives every post a key, or none. A post saying the content it was written from ("source": "book:12") holds it as a series' draft does, so that nothing else posts it again - a content held by a post to come of another series being refused, the posts of the file sharing one at will - and goes out with its own picture alone
+// Drafts written elsewhere - each its own text, a network's own one in "texts" (kept until "text" changes once taken out of the file, as a text corrected by hand), picture or list of pictures (a carousel where the network makes one), a network's own ones in "medias" in place of them there, first comment, reshare on the member's profile and story, which no series draws from the site's contents - made at once from a JSON file (see c975l:social:draft), as one series so that its ending is announced like any other. Never sent before being read and approved, as every draft. A post given a "key" is imported again rather than twice: left as it is when unchanged, updated and taken back to a draft when it changed, never touched once it went out, taken back to a draft when its key left the file - a file gives every post a key, or none. A post saying the content it was written from ("source": "book:12") holds it as a series' draft does, so that nothing else posts it again - a content held by a post to come of another series being refused, the posts of the file sharing one at will - and goes out with its own picture alone
 class SocialDraftImporter
 {
     // The pictures' sha1, by path, each file read once
@@ -33,6 +34,8 @@ class SocialDraftImporter
         private readonly EntityManagerInterface $entityManager,
         private readonly SocialPostRepository $postRepository,
         private readonly SocialSeriesRepository $seriesRepository,
+        private readonly SocialSlotRepository $slotRepository,
+        private readonly SocialSlotCalendar $slotCalendar,
         private readonly string $projectDir,
     ) {
     }
@@ -41,7 +44,7 @@ class SocialDraftImporter
     /**
      * @param array<mixed, mixed> $data
      *
-     * @return array{errors: list<string>, notes: list<string>, drafts: list<array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>}>}
+     * @return array{errors: list<string>, notes: list<string>, drafts: list<array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>}>}
      */
     public function read(array $data, string $baseDir): array
     {
@@ -57,17 +60,22 @@ class SocialDraftImporter
         }
 
         $all = [];
+        $found = [];
         $series = $this->findSeries(trim((string) $data['title']));
         $seriesPosts = $this->seriesPosts($series);
         foreach (array_values($posts) as $index => $post) {
-            $draft = $this->draft(\is_array($post) ? $post : [], $baseDir);
-            $found = $this->findPost($seriesPosts, $draft);
-            if (null === $draft['at'] || true !== $found?->hasGoneOut()) {
-                $errors = [...$errors, ...$this->draftErrors(sprintf('Post %d', $index + 1), $draft, $connected, $series)];
+            $name = sprintf('Post %d', $index + 1);
+            [$post, $slotErrors] = $this->withSlot(\is_array($post) ? $post : [], $name);
+            $draft = $this->draft($post, $baseDir);
+            $found[$index] = $this->findPost($seriesPosts, $draft);
+            if ([] !== $slotErrors) {
+                $errors = [...$errors, ...$slotErrors];
+            } elseif (null === $draft['at'] || true !== $found[$index]?->hasGoneOut()) {
+                $errors = [...$errors, ...$this->draftErrors($name, $draft, $connected, $series)];
             }
             $all[] = $draft;
         }
-        $errors = [...$errors, ...$this->fileErrors($all)];
+        $errors = [...$errors, ...$this->fileErrors($all), ...$this->takenErrors($all, $found)];
         $drafts = array_values(array_filter($all, static fn (array $draft): bool => null !== $draft['at']));
 
         return ['errors' => $errors, 'notes' => $this->notes($series, array_values(array_filter(array_column($all, 'key'))), $seriesPosts), 'drafts' => [] === $errors ? $drafts : []];
@@ -75,7 +83,7 @@ class SocialDraftImporter
 
     // What is wrong across the posts of the file: a key given twice - a source may be shared, the same content going out on several networks or days - and a post without a key beside keyed ones, which would be made again at each import
     /**
-     * @param list<array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>}> $drafts
+     * @param list<array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>}> $drafts
      *
      * @return list<string>
      */
@@ -141,19 +149,88 @@ class SocialDraftImporter
             && !$post->hasGoneOut()));
     }
 
+    // A post naming a slot of the template week ("slot": its key) on a day ("at": YYYY-MM-DD), given the slot's time that day - the post as it is without a slot, and what is wrong with the slot or the day
+    /**
+     * @param array<mixed, mixed> $post
+     *
+     * @return array{array<mixed, mixed>, list<string>}
+     */
+    private function withSlot(array $post, string $name): array
+    {
+        $key = \is_scalar($post['slot'] ?? null) ? trim((string) $post['slot']) : '';
+        if ('' === $key) {
+            return [$post, []];
+        }
+
+        $slot = $this->slotRepository->findOneByKey($key);
+        if (null === $slot) {
+            return [$post, [sprintf('%s: the slot "%s" is not on the template week.', $name, $key)]];
+        }
+        $at = \is_string($post['at'] ?? null) ? trim($post['at']) : '';
+        $day = \DateTimeImmutable::createFromFormat('!Y-m-d', $at);
+        if (false === $day || $day->format('Y-m-d') !== $at) {
+            return [$post, [sprintf('%s: with a "slot", "at" is a day written "YYYY-MM-DD".', $name)]];
+        }
+        if (!$this->slotCalendar->occursOn($slot, $day)) {
+            return [$post, [sprintf('%s: the slot "%s" does not fall on %s.', $name, $key, $at)]];
+        }
+        $post['at'] = $this->slotCalendar->at($slot, $day)->format('Y-m-d H:i');
+
+        return [$post, []];
+    }
+
+    // The posts the import would make or move to a minute another post holds - on the site, or in the file - whatever their networks: one post goes to several networks rather than two at the same minute. A post left where it is, gone out or gone by is never checked, so a file imported again keeps going
+    /**
+     * @param list<array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>}> $drafts
+     * @param array<int, ?SocialPost>                                                                                                                                                                                                                                                           $found
+     *
+     * @return list<string>
+     */
+    private function takenErrors(array $drafts, array $found): array
+    {
+        $now = new \DateTimeImmutable();
+        $byMinute = [];
+        $moving = [];
+        foreach ($drafts as $index => $draft) {
+            if (null === $draft['at']) {
+                continue;
+            }
+            $byMinute[$draft['at']->format('Y-m-d H:i')][] = $index;
+            $post = $found[$index] ?? null;
+            if ($draft['at'] > $now && (null === $post || (!$post->hasGoneOut() && $post->getPlannedAt()->format('Y-m-d H:i') !== $draft['at']->format('Y-m-d H:i')))) {
+                $moving[$index] = $draft['at'];
+            }
+        }
+        if ([] === $moving) {
+            return [];
+        }
+
+        $taken = $this->postRepository->findTakenAt(array_values($moving), array_values(array_map(static fn (SocialPost $post): int => (int) $post->getId(), array_filter($found))));
+        $errors = [];
+        foreach ($moving as $index => $at) {
+            $minute = $at->format('Y-m-d H:i');
+            $others = array_values(array_diff($byMinute[$minute], [$index]));
+            $holder = $taken[$minute] ?? ([] === $others ? null : sprintf('post %d of the file', $others[0] + 1));
+            if (null !== $holder) {
+                $errors[] = sprintf('Post %d: %s is already held by "%s".', $index + 1, $minute, $holder);
+            }
+        }
+
+        return $errors;
+    }
+
     // One post of the file as a draft, its moment null when it is not one
     /**
      * @param array<mixed, mixed> $post
      *
-     * @return array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>}
+     * @return array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>}
      */
     private function draft(array $post, string $baseDir): array
     {
-        $post += ['at' => null, 'networks' => null, 'text' => '', 'comment' => '', 'reshare' => '', 'story' => false, 'url' => '', 'media' => '', 'key' => '', 'source' => '', 'repost' => '', 'texts' => []];
+        $post += ['at' => null, 'networks' => null, 'text' => '', 'comment' => '', 'reshare' => '', 'story' => false, 'url' => '', 'media' => '', 'key' => '', 'source' => '', 'repost' => '', 'texts' => [], 'medias' => []];
         $comment = trim((string) $post['comment']);
         $reshare = trim((string) $post['reshare']);
         $url = trim((string) $post['url']);
-        $medias = array_filter(array_map(static fn (mixed $media): string => \is_scalar($media) ? trim((string) $media) : '', \is_array($post['media']) ? $post['media'] : [$post['media']]), static fn (string $media): bool => '' !== $media);
         $key = mb_substr(trim((string) $post['key']), 0, 190);
         $source = trim((string) $post['source']);
         $repost = trim((string) $post['repost']);
@@ -166,19 +243,30 @@ class SocialDraftImporter
             'reshare' => '' === $reshare ? null : $reshare,
             'story' => true === $post['story'],
             'url' => '' === $url ? null : $url,
-            'media' => array_values(array_map(static fn (string $media): string => rtrim($baseDir, '/') . '/' . ltrim($media, '/'), $medias)),
+            'media' => $this->paths($post['media'], $baseDir),
             'key' => '' === $key ? null : $key,
             'source' => '' === $source ? null : $source,
             'repost' => '' === $repost ? null : $repost,
             // Anything but an object of texts comes out named after no network, or empty, and so refused
             'texts' => array_map(static fn (mixed $text): string => \is_scalar($text) ? trim((string) $text) : '', (array) $post['texts']),
+            // A network's own pictures, written as "media" is - the same way an object of them only is read
+            'medias' => array_map(fn (mixed $paths): array => $this->paths($paths, $baseDir), (array) $post['medias']),
         ];
+    }
+
+    // A picture's path, or a list of them, read from the file's folder - an empty one left out
+    /** @return list<string> */
+    private function paths(mixed $paths, string $baseDir): array
+    {
+        $paths = array_filter(array_map(static fn (mixed $path): string => \is_scalar($path) ? trim((string) $path) : '', \is_array($paths) ? $paths : [$paths]), static fn (string $path): bool => '' !== $path);
+
+        return array_values(array_map(static fn (string $path): string => rtrim($baseDir, '/') . '/' . ltrim($path, '/'), $paths));
     }
 
     // What is wrong with a draft, $name saying which post of the file it is, $series the one a former import made of the file
     /**
-     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>} $draft
-     * @param list<string>                                                                                                                                                                                                                           $connected
+     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>} $draft
+     * @param list<string>                                                                                                                                                                                                                                                                $connected
      *
      * @return list<string>
      */
@@ -211,14 +299,14 @@ class SocialDraftImporter
 
     // What is wrong with what a draft points at: a picture that is not there, a link no post may hold
     /**
-     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>} $draft
+     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>} $draft
      *
      * @return list<string>
      */
     private function attachedErrors(string $name, array $draft): array
     {
         $errors = [];
-        foreach ($draft['media'] as $media) {
+        foreach ($this->mediaPaths($draft) as [, $media]) {
             if (!is_file($media)) {
                 $errors[] = sprintf('%s: the media "%s" does not exist.', $name, $media);
             }
@@ -227,12 +315,32 @@ class SocialDraftImporter
             $errors[] = $name . ': "url" is not an http or https address.';
         }
 
-        return [...$errors, ...$this->repostErrors($name, $draft), ...$this->textsErrors($name, $draft)];
+        return [...$errors, ...$this->repostErrors($name, $draft), ...$this->textsErrors($name, $draft), ...$this->mediasErrors($name, $draft)];
+    }
+
+    // What is wrong with a network's own pictures: a network the draft does not go to, or none given
+    /**
+     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>} $draft
+     *
+     * @return list<string>
+     */
+    private function mediasErrors(string $name, array $draft): array
+    {
+        $errors = [];
+        foreach ($draft['medias'] as $network => $paths) {
+            if (!\in_array((string) $network, $draft['networks'], true)) {
+                $errors[] = sprintf('%s: "medias" names %s, which is not among its "networks".', $name, $network);
+            } elseif ([] === $paths) {
+                $errors[] = sprintf('%s: the medias of %s are empty.', $name, $network);
+            }
+        }
+
+        return $errors;
     }
 
     // What is wrong with a network's own text: a network the draft does not go to, a text empty or too long for it
     /**
-     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>} $draft
+     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>} $draft
      *
      * @return list<string>
      */
@@ -255,7 +363,7 @@ class SocialDraftImporter
 
     // What keeps a draft from reposting: the link the post is found by, and a connection able to, one granted before reposting came to be connected again
     /**
-     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>} $draft
+     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>} $draft
      *
      * @return list<string>
      */
@@ -277,7 +385,7 @@ class SocialDraftImporter
 
     // The series and its drafts, saved - each picture copied, the file given being left where it is. The series of the same title is taken up again when the file gives a post a key, a keyed post found in it imported again rather than made twice; a file without any key makes a new series
     /**
-     * @param list<array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>}> $drafts
+     * @param list<array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>}> $drafts
      *
      * @return array{created: list<SocialPost>, updated: list<SocialPost>, unchanged: int, out: int, past: int}
      */
@@ -338,7 +446,7 @@ class SocialDraftImporter
     }
 
     // What importing a draft does to the post found for it: taken up without a key, left gone by, made, left gone out, left unchanged, or updated
-    /** @param array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>} $draft */
+    /** @param array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>} $draft */
     private function outcome(?SocialPost $post, array $draft, string $hash, \DateTimeImmutable $now): string
     {
         return match (true) {
@@ -352,7 +460,7 @@ class SocialDraftImporter
     }
 
     // The content a draft names held by its post, else none any more - its link the draft's, else the content's, and its picture the draft's alone: a post without "media" never goes out with the content's
-    /** @param array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>} $draft */
+    /** @param array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>} $draft */
     private function writeSource(SocialPost $post, array $draft): void
     {
         $content = null === $draft['source'] ? null : $this->content($draft['source']);
@@ -382,8 +490,8 @@ class SocialDraftImporter
 
     // The post a former import of the series gave the draft's key, else one it made without a key at the same moment on the same networks - none for a draft without a key
     /**
-     * @param list<SocialPost>                                                                                                                                                                                                                       $seriesPosts
-     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>} $draft
+     * @param list<SocialPost>                                                                                                                                                                                                                                                            $seriesPosts
+     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>} $draft
      */
     private function findPost(array $seriesPosts, array $draft): ?SocialPost
     {
@@ -415,10 +523,10 @@ class SocialDraftImporter
     }
 
     // Whether a post already says everything the draft writes - its networks being the draft's ones: its text, its link, its picture read by its content, and the first comment, reshare and story of each target still to go where the network offers them
-    /** @param array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>} $draft */
+    /** @param array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>} $draft */
     private function sameAs(SocialPost $post, array $draft): bool
     {
-        if ($post->getText() !== $draft['text'] || $post->getUrl() !== (string) $draft['url'] || !$this->sameMedia($post, $draft['media'])) {
+        if ($post->getText() !== $draft['text'] || $post->getUrl() !== (string) $draft['url'] || !$this->sameMedia($post, $draft)) {
             return false;
         }
         foreach ($post->getTargets() as $target) {
@@ -435,7 +543,7 @@ class SocialDraftImporter
     }
 
     // Whether a target still to go says something else than the draft, where the network offers it
-    /** @param array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>} $draft */
+    /** @param array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>} $draft */
     private function targetDiffers(SocialPostTarget $target, string $network, array $draft): bool
     {
         return ($this->socialPublisher->supportsComment($network) && $target->getComment() !== $draft['comment'])
@@ -445,22 +553,44 @@ class SocialDraftImporter
             || (isset($draft['texts'][$network]) && $target->getText() !== $draft['texts'][$network]);
     }
 
-    // Whether the post's pictures are the ones at $paths, in their order, read by their content - no picture and no path being the same too
-    /** @param list<string> $paths */
-    private function sameMedia(SocialPost $post, array $paths): bool
+    // Whether the post's pictures are the draft's ones, in their order and kept for the same networks, read by their content - no picture and no path being the same too
+    /** @param array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>} $draft */
+    private function sameMedia(SocialPost $post, array $draft): bool
     {
+        $paths = $this->mediaPaths($draft);
         $medias = array_values($post->getMedias()->toArray());
         if (\count($medias) !== \count($paths)) {
             return false;
         }
         foreach ($medias as $index => $media) {
+            [$network, $path] = $paths[$index];
             $file = null === $media->getFilename() ? null : $this->publicPath($media->getFilename());
-            if (null === $file || !is_file($file) || $this->mediaHash($file) !== $this->mediaHash($paths[$index])) {
+            if ($media->getNetwork() !== $network || null === $file || !is_file($file) || $this->mediaHash($file) !== $this->mediaHash($path)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    // Every picture a draft writes with the network it is kept for: those of every network first, then each network's own, networks in the order of their names
+    /**
+     * @param array{at: ?\DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>} $draft
+     *
+     * @return list<array{?string, string}>
+     */
+    private function mediaPaths(array $draft): array
+    {
+        $paths = array_map(static fn (string $path): array => [null, $path], $draft['media']);
+        $own = $draft['medias'];
+        ksort($own);
+        foreach ($own as $network => $networkPaths) {
+            foreach ($networkPaths as $path) {
+                $paths[] = [(string) $network, $path];
+            }
+        }
+
+        return $paths;
     }
 
     // A picture's sha1, each file read once
@@ -470,7 +600,7 @@ class SocialDraftImporter
     }
 
     // A draft written on its post: networks, text, a network's own one, link, first comment, reshare and story where the network offers them, and its pictures in place of any other - kept rather than copied again when they are the same
-    /** @param array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>} $draft */
+    /** @param array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>} $draft */
     private function write(SocialPost $post, array $draft): void
     {
         $this->writeSource($post, $draft);
@@ -496,19 +626,19 @@ class SocialDraftImporter
                 $target->setRepost($draft['repost']);
             }
         }
-        if ($this->sameMedia($post, $draft['media'])) {
+        if ($this->sameMedia($post, $draft)) {
             return;
         }
         foreach ($post->getMedias()->toArray() as $media) {
             $post->removeMedia($media);
         }
-        foreach ($draft['media'] as $media) {
-            $this->addMedia($post, $media);
+        foreach ($this->mediaPaths($draft) as [$network, $media]) {
+            $this->addMedia($post, $media, $network);
         }
     }
 
     // What a draft writes, its networks in any order and its pictures read by their content rather than their name - by its name when gone, as for a post already out
-    /** @param array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>} $draft */
+    /** @param array{at: \DateTimeImmutable, networks: list<string>, text: string, comment: ?string, reshare: ?string, story: bool, url: ?string, media: list<string>, key: ?string, source: ?string, repost: ?string, texts: array<string, string>, medias: array<string, list<string>>} $draft */
     private function hash(array $draft): string
     {
         $draft['at'] = $draft['at']->format('Y-m-d H:i');
@@ -525,6 +655,12 @@ class SocialDraftImporter
         if ([] === $draft['texts']) {
             unset($draft['texts']);
         }
+        // Nor own pictures, each read by its content as "media" is, networks in any order
+        ksort($draft['medias']);
+        $draft['medias'] = array_map(fn (array $paths): array => array_map(fn (string $media): string | false => is_file($media) ? $this->mediaHash($media) : $media, $paths), $draft['medias']);
+        if ([] === $draft['medias']) {
+            unset($draft['medias']);
+        }
 
         return hash('sha256', (string) json_encode($draft));
     }
@@ -537,13 +673,13 @@ class SocialDraftImporter
         return '' === $id ? null : $this->socialPublisher->findContent($type, $id);
     }
 
-    // The picture copied then stored as a series' media is, the post referencing it
-    private function addMedia(SocialPost $post, string $path): void
+    // The picture copied then stored as a series' media is, the post referencing it - kept for $network alone when one is given
+    private function addMedia(SocialPost $post, string $path, ?string $network = null): void
     {
         $copy = sys_get_temp_dir() . '/social-' . bin2hex(random_bytes(8)) . '.' . pathinfo($path, \PATHINFO_EXTENSION);
         copy($path, $copy);
         [$name, $mimeType, $width, $height, $duration] = $this->seriesGenerator->store(new File($copy));
-        $post->addMedia(SocialMedia::reference($post, $name, $mimeType, $width, $height, $duration)->setSize((int) filesize($this->publicPath($name))));
+        $post->addMedia(SocialMedia::reference($post, $name, $mimeType, $width, $height, $duration)->setSize((int) filesize($this->publicPath($name)))->setNetwork($network));
     }
 
     private function publicPath(string $name): string

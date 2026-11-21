@@ -86,6 +86,10 @@
                 <source>description.guided_project_social_share_buttons</source>
                 <target>Pick the networks offered to your visitors, their order and their look</target>
             </trans-unit>
+            <trans-unit id="vXJnSyN">
+                <source>description.guided_project_social_slots</source>
+                <target>Lay the site's slots on a week, tie the series to them and move their drafts back when a slot changes.</target>
+            </trans-unit>
             <trans-unit id="ot1_rRx">
                 <source>description.guided_project_social_tiktok_connect</source>
                 <target>The agency part: the TikTok app, its two keys and the consent. Done once: the access then renews itself every night.</target>
@@ -128,7 +132,7 @@
             </trans-unit>
             <trans-unit id="UA0SeWu">
                 <source>description.guided_step_social_calendar_panel</source>
-                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once or opens it to read its posts side by side, steps to its previous or next post with the arrows, reorders or removes its medias, enlarges them or plays its videos with a click, adds some from the site or by dropping files on it, changes its content, sends it again at once on a network that refused it, duplicates it to the next day or deletes it.</target>
+                <target>Click a post: its panel changes its date and time, approves it or takes it back to a draft, approves its whole series at once or opens it to read its posts side by side, steps to its previous or next post with the arrows, reorders or removes its medias, keeps one for a single network, enlarges them or plays its videos with a click, adds some from the site or by dropping files on it, changes its content, sends it again at once on a network that refused it, duplicates it to the next day or deletes it.</target>
             </trans-unit>
             <trans-unit id="DKossy4">
                 <source>description.guided_step_social_calendar_texts</source>
@@ -361,6 +365,22 @@
             <trans-unit id="bRoisnG">
                 <source>description.guided_step_social_share_buttons_shape</source>
                 <target>Wide, square or round button: that is the room the buttons take under your pages.</target>
+            </trans-unit>
+            <trans-unit id="Yaw_48M">
+                <source>description.guided_step_social_slots_new</source>
+                <target>Give it a name, a frequency (every week, every other week, once a month by rank or on a set date) and a time on the quarter hour.</target>
+            </trans-unit>
+            <trans-unit id="sJEZ3fW">
+                <source>description.guided_step_social_slots_open</source>
+                <target>Each slot sits under its day, at its time; a slot falling on the same minute as another is flagged in red.</target>
+            </trans-unit>
+            <trans-unit id="lzMAB3p">
+                <source>description.guided_step_social_slots_relay</source>
+                <target>Once a slot has moved, "Move the drafts back onto the slots" puts the series' coming drafts on its slots again; an approved post stays where it is.</target>
+            </trans-unit>
+            <trans-unit id="uUlopHU">
+                <source>description.guided_step_social_slots_series</source>
+                <target>A series tied to its slots is prolonged on them. For an imported file, give the slot a key instead: the file names it with the date alone.</target>
             </trans-unit>
             <trans-unit id="UmUOu7_">
                 <source>description.guided_step_social_tiktok_connect</source>
@@ -658,6 +678,22 @@
                 <source>flash.social_series_none</source>
                 <target>No series is running: create one with "Generate a series".</target>
             </trans-unit>
+            <trans-unit id="sHVtxBx">
+                <source>flash.social_series_skipped</source>
+                <target>Slots skipped, already taken by another post: %moments%.</target>
+            </trans-unit>
+            <trans-unit id="zXemgpG">
+                <source>flash.social_slot_deleted</source>
+                <target>Slot deleted.</target>
+            </trans-unit>
+            <trans-unit id="Dwd77pE">
+                <source>flash.social_slot_relayed</source>
+                <target>%count% draft(s) moved onto the series' slots.</target>
+            </trans-unit>
+            <trans-unit id="RH00bQq">
+                <source>flash.social_slot_saved</source>
+                <target>Slot saved.</target>
+            </trans-unit>
             <trans-unit id="K4CZlG4">
                 <source>flash.tiktok_connected</source>
                 <target>TikTok is connected with the account %name%.</target>
@@ -702,6 +738,10 @@
                 <source>help.social_calendar_plan</source>
                 <target>Pick the date and time (to the quarter of an hour), then click Reschedule.</target>
             </trans-unit>
+            <trans-unit id="DK6lXje">
+                <source>help.social_media_network</source>
+                <target>Kept for this network, it replaces the medias of every network there; the other networks do not get it.</target>
+            </trans-unit>
             <trans-unit id="TRKXywk">
                 <source>help.social_media_reference</source>
                 <target>A gallery file: it is changed in the gallery, and never deleted with the post.</target>
@@ -716,7 +756,7 @@
             </trans-unit>
             <trans-unit id="MzBnBYd">
                 <source>help.social_post_medias</source>
-                <target>In the order they go out. A photo is stored as a JPEG, the one format every network takes. When the site has a gallery, "Add from the site" takes a photo or a video from it. With no photo nor video, a post prepared from a content goes out with that content's picture. Each ticked network's rules are checked when saving, and the approval is refused while a network does not take the medias.</target>
+                <target>In the order they go out. A photo is stored as a JPEG, the one format every network takes. When the site has a gallery, "Add from the site" takes a photo or a video from it. With no photo nor video, a post prepared from a content goes out with that content's picture. Each ticked network's rules are checked when saving, and the approval is refused while a network does not take the medias. A media kept for one network replaces the others there: a single picture for one, a carousel for another.</target>
             </trans-unit>
             <trans-unit id="6dpEFVs">
                 <source>help.social_post_planned_at</source>
@@ -757,6 +797,30 @@
             <trans-unit id="4h1xjIz">
                 <source>help.social_series_text</source>
                 <target>Each post's text or, with the AI, what they are about: the AI writes a different take for each, at the length of the shortest network ticked. Not needed for the site's contents.</target>
+            </trans-unit>
+            <trans-unit id="pg.lFOS">
+                <source>help.social_slot_key</source>
+                <target>The name an imported file gives ("slot"), in lowercase letters, digits and hyphens.</target>
+            </trans-unit>
+            <trans-unit id="4akQ51G">
+                <source>help.social_slot_month_day</source>
+                <target>For "once a month, on a set date": the last day of the month when it is shorter.</target>
+            </trans-unit>
+            <trans-unit id="Vo194QS">
+                <source>help.social_slot_rank</source>
+                <target>For "once a month, by rank": the 1st, 2nd, 3rd, 4th or last chosen day of the month.</target>
+            </trans-unit>
+            <trans-unit id="gkhKT6j">
+                <source>help.social_slot_series</source>
+                <target>The series is prolonged on its slots rather than at the time of its last post.</target>
+            </trans-unit>
+            <trans-unit id="DJg9Zl7">
+                <source>help.social_slot_starts_on</source>
+                <target>For "every other week": a day of the first week the slot falls on.</target>
+            </trans-unit>
+            <trans-unit id="cp157Z.">
+                <source>help.social_slot_weekday</source>
+                <target>Not used for a set date of the month.</target>
             </trans-unit>
             <trans-unit id="I8AKzzK">
                 <source>help.social_tiktok_account</source>
@@ -1013,6 +1077,10 @@
             <trans-unit id="QAWYjtj">
                 <source>label.guided_project_social_share_buttons</source>
                 <target>Set the share buttons</target>
+            </trans-unit>
+            <trans-unit id="FWLJ19H">
+                <source>label.guided_project_social_slots</source>
+                <target>Set the template week of the posts</target>
             </trans-unit>
             <trans-unit id="K_sxbNO">
                 <source>label.guided_project_social_tiktok_connect</source>
@@ -1334,6 +1402,22 @@
                 <source>label.guided_step_social_share_buttons_shape</source>
                 <target>Pick the shape</target>
             </trans-unit>
+            <trans-unit id="gQpCmqi">
+                <source>label.guided_step_social_slots_new</source>
+                <target>Add a slot</target>
+            </trans-unit>
+            <trans-unit id="hf7HiQU">
+                <source>label.guided_step_social_slots_open</source>
+                <target>Open the template week</target>
+            </trans-unit>
+            <trans-unit id="FgWbhhH">
+                <source>label.guided_step_social_slots_relay</source>
+                <target>Move the drafts back</target>
+            </trans-unit>
+            <trans-unit id="A1NoepV">
+                <source>label.guided_step_social_slots_series</source>
+                <target>Tie a series</target>
+            </trans-unit>
             <trans-unit id="a5R1HzE">
                 <source>label.guided_step_social_tiktok_connect</source>
                 <target>Start the connection</target>
@@ -1494,6 +1578,10 @@
                 <source>label.info_social_series_review</source>
                 <target>A series' coming posts side by side: each one read, its networks ticked, then approved alone or with the others.</target>
             </trans-unit>
+            <trans-unit id="TwS1CzI">
+                <source>label.info_social_slots</source>
+                <target>The site's publishing slots laid on a week: a series tied to a slot is prolonged on it, and an imported draft naming a slot by its key takes its time. Two posts never go out at the same minute.</target>
+            </trans-unit>
             <trans-unit id="WjZtbyj">
                 <source>label.info_tiktok_connect</source>
                 <target>Links the site to a TikTok account: each post's video is posted there, its text as the caption, with the choices TikTok asks on the post's screen. The tokens renew themselves every night.</target>
@@ -1645,6 +1733,18 @@
             <trans-unit id="hYDcRDD">
                 <source>label.social_calendar_delete_confirm</source>
                 <target>Delete this post? It will not go out.</target>
+            </trans-unit>
+            <trans-unit id="Cc91PTx">
+                <source>label.social_calendar_dialog_cancel</source>
+                <target>Cancel</target>
+            </trans-unit>
+            <trans-unit id="N.h9cl0">
+                <source>label.social_calendar_dialog_close</source>
+                <target>OK</target>
+            </trans-unit>
+            <trans-unit id="k7nV2Ju">
+                <source>label.social_calendar_dialog_confirm</source>
+                <target>Confirm</target>
             </trans-unit>
             <trans-unit id="l0Dqa_D">
                 <source>label.social_calendar_drag_hint</source>
@@ -1902,6 +2002,18 @@
                 <source>label.social_media_image_too_big</source>
                 <target>a photo is over %max% MB</target>
             </trans-unit>
+            <trans-unit id="bJsgnXw">
+                <source>label.social_media_network</source>
+                <target>Network</target>
+            </trans-unit>
+            <trans-unit id="DDIce8Y">
+                <source>label.social_media_network_all</source>
+                <target>Every network</target>
+            </trans-unit>
+            <trans-unit id="LLCgoW3">
+                <source>label.social_media_network_unticked</source>
+                <target>no longer ticked</target>
+            </trans-unit>
             <trans-unit id="f6SQAxN">
                 <source>label.social_media_no_mix</source>
                 <target>photos and a video do not go together in one post</target>
@@ -2021,6 +2133,10 @@
             <trans-unit id="3pF3BRH">
                 <source>label.social_post_medias</source>
                 <target>Photos and videos</target>
+            </trans-unit>
+            <trans-unit id="kXR9uwq">
+                <source>label.social_post_minute_held</source>
+                <target>This moment is already held by "%title%": two posts never go out at the same minute.</target>
             </trans-unit>
             <trans-unit id="6O9YNYV">
                 <source>label.social_post_networks</source>
@@ -2317,6 +2433,122 @@
             <trans-unit id="6prrGwu">
                 <source>label.social_series_weekdays_required</source>
                 <target>Tick at least one day of the week.</target>
+            </trans-unit>
+            <trans-unit id="vTSiaj4">
+                <source>label.social_slot_clash</source>
+                <target>Same minute as: %slots%</target>
+            </trans-unit>
+            <trans-unit id="tIiuu1x">
+                <source>label.social_slot_edit</source>
+                <target>Edit the slot</target>
+            </trans-unit>
+            <trans-unit id="EgHh_wY">
+                <source>label.social_slot_key</source>
+                <target>Key for imports</target>
+            </trans-unit>
+            <trans-unit id="0sfUu_U">
+                <source>label.social_slot_label</source>
+                <target>Slot name</target>
+            </trans-unit>
+            <trans-unit id="c1ew3Vg">
+                <source>label.social_slot_missing</source>
+                <target>The chosen frequency asks for this field.</target>
+            </trans-unit>
+            <trans-unit id="DbfLLYb">
+                <source>label.social_slot_month_day</source>
+                <target>Day of the month</target>
+            </trans-unit>
+            <trans-unit id="zeuWXNa">
+                <source>label.social_slot_month_day_short</source>
+                <target>on the %day% of the month</target>
+            </trans-unit>
+            <trans-unit id="K3LNbJD">
+                <source>label.social_slot_new</source>
+                <target>New slot</target>
+            </trans-unit>
+            <trans-unit id="FDeiXkb">
+                <source>label.social_slot_pace</source>
+                <target>Frequency</target>
+            </trans-unit>
+            <trans-unit id="gtCl62r">
+                <source>label.social_slot_pace_fortnight</source>
+                <target>Every other week</target>
+            </trans-unit>
+            <trans-unit id="dDaQZPV">
+                <source>label.social_slot_pace_month_day</source>
+                <target>Once a month, on a set date</target>
+            </trans-unit>
+            <trans-unit id="gZUmcel">
+                <source>label.social_slot_pace_month_rank</source>
+                <target>Once a month, by rank</target>
+            </trans-unit>
+            <trans-unit id="RaGID0E">
+                <source>label.social_slot_pace_week</source>
+                <target>Every week</target>
+            </trans-unit>
+            <trans-unit id="cJ8I9kO">
+                <source>label.social_slot_rank</source>
+                <target>Rank in the month</target>
+            </trans-unit>
+            <trans-unit id="WOG4hXo">
+                <source>label.social_slot_rank_1</source>
+                <target>1st</target>
+            </trans-unit>
+            <trans-unit id="D5algYP">
+                <source>label.social_slot_rank_2</source>
+                <target>2nd</target>
+            </trans-unit>
+            <trans-unit id="D5aUYmt">
+                <source>label.social_slot_rank_3</source>
+                <target>3rd</target>
+            </trans-unit>
+            <trans-unit id="Q7NTxkM">
+                <source>label.social_slot_rank_4</source>
+                <target>4th</target>
+            </trans-unit>
+            <trans-unit id="5x5ZV7K">
+                <source>label.social_slot_rank_last</source>
+                <target>Last</target>
+            </trans-unit>
+            <trans-unit id="Ezf3G30">
+                <source>label.social_slot_series</source>
+                <target>Series prolonged on this slot</target>
+            </trans-unit>
+            <trans-unit id="OnesdLu">
+                <source>label.social_slot_starts_on</source>
+                <target>First week</target>
+            </trans-unit>
+            <trans-unit id="ufaZLKK">
+                <source>label.social_slot_time</source>
+                <target>Time</target>
+            </trans-unit>
+            <trans-unit id="AKl_Ij9">
+                <source>label.social_slot_weekday</source>
+                <target>Day</target>
+            </trans-unit>
+            <trans-unit id="y57XJtU">
+                <source>label.social_slots</source>
+                <target>Template week</target>
+            </trans-unit>
+            <trans-unit id="GD6uz0h">
+                <source>label.social_slots_none</source>
+                <target>No slot yet: add the first one with the form.</target>
+            </trans-unit>
+            <trans-unit id="auiEfOB">
+                <source>label.social_slots_off</source>
+                <target>%count% draft(s) off their slots</target>
+            </trans-unit>
+            <trans-unit id="zJXlNFv">
+                <source>label.social_slots_on</source>
+                <target>Drafts on their slots</target>
+            </trans-unit>
+            <trans-unit id="caT4.08">
+                <source>label.social_slots_relay</source>
+                <target>Move the drafts back onto the slots</target>
+            </trans-unit>
+            <trans-unit id="eO1TOZd">
+                <source>label.social_slots_series</source>
+                <target>Series prolonged on the slots</target>
             </trans-unit>
             <trans-unit id="OHJ769G">
                 <source>label.social_tiktok_brand_content</source>

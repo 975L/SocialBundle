@@ -123,6 +123,10 @@ class SocialCalendarControllerTest extends TestCase
     /** @var list<SocialSeries> */
     private array $deletedSeries = [];
 
+    // The minutes another post holds, with its title
+    /** @var array<string, string> */
+    private array $held = [];
+
     protected function setUp(): void
     {
         $this->plannedAt = new \DateTimeImmutable('+1 day 09:30');
@@ -143,7 +147,7 @@ class SocialCalendarControllerTest extends TestCase
             $this->createStub(TranslatorInterface::class),
             $this->createStub(SocialMediaPicker::class),
             $this->createStub(SocialPostApprover::class),
-            new SocialPostDuplicator($this->createStub(SocialPublisher::class), sys_get_temp_dir()),
+            new SocialPostDuplicator($this->createStub(SocialPublisher::class), $this->createStub(SocialPostRepository::class), sys_get_temp_dir()),
             $this->createStub(SocialSeriesRepository::class),
             $this->sharedCalendar(),
             $this->createStub(SocialSeriesDeleter::class),
@@ -249,6 +253,7 @@ class SocialCalendarControllerTest extends TestCase
         $postRepository->method('find')->willReturnCallback(fn (mixed $id): ?SocialPost => 42 === $id ? $this->post : null);
         $postRepository->method('findComingBySeries')->willReturnCallback(fn (): array => $this->seriesPosts);
         $postRepository->method('findComingIdsBySeries')->willReturnCallback(fn (): array => $this->seriesIds);
+        $postRepository->method('findTakenAt')->willReturnCallback(fn (): array => $this->held);
 
         // The series of the post, known by the id 3
         $seriesRepository = $this->createStub(SocialSeriesRepository::class);
@@ -303,7 +308,7 @@ class SocialCalendarControllerTest extends TestCase
             $translator,
             $this->createStub(SocialMediaPicker::class),
             new SocialPostApprover($this->mediaChecker ?? $this->createStub(SocialMediaChecker::class), $entityManager),
-            new SocialPostDuplicator($this->createStub(SocialPublisher::class), sys_get_temp_dir()),
+            new SocialPostDuplicator($this->createStub(SocialPublisher::class), $postRepository, sys_get_temp_dir()),
             $seriesRepository,
             $this->sharedCalendar(),
             $this->seriesDeleter(),
@@ -392,6 +397,19 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertSame(SocialPostStatus::Draft, $this->target()->getStatus());
         $this->assertEquals($at, $this->post->getPlannedAt());
         $this->assertSame(1, $this->flushes);
+    }
+
+    // A moment another post holds refuses the drop, the holder said, the post staying where it was
+    public function testADropOnAHeldMinuteIsRefused(): void
+    {
+        $at = new \DateTimeImmutable('+2 days 19:00');
+        $this->held = [$at->format('Y-m-d H:i') => 'item-2'];
+
+        $response = $this->move($at->format('c'));
+
+        $this->assertSame([Response::HTTP_UNPROCESSABLE_ENTITY, 'label.social_post_minute_held'], [$response->getStatusCode(), $response->getContent()]);
+        $this->assertEquals($this->plannedAt, $this->post->getPlannedAt());
+        $this->assertSame(0, $this->flushes);
     }
 
     // An approved post moved elsewhere keeps its approval: only the panel's button takes it back
@@ -541,6 +559,22 @@ class SocialCalendarControllerTest extends TestCase
         $this->assertSame([1, 3], $this->renderedMediaIds());
         $this->assertCount(2, $this->post->getMedias());
         $this->assertSame([0, 1], array_map(static fn (SocialMedia $media): int => $media->getPosition(), $this->rendered['medias']->getValues()));
+    }
+
+    // A media is kept for a network the post goes to, or for every network again - one it does not go to ignored unless the media already had it - and the panel answered warns of what the networks would refuse
+    public function testAMediaIsKeptForANetworkOfThePost(): void
+    {
+        $this->addMedias(1, 2, 3);
+        $this->post->getMedias()->get(2)?->setNetwork('tiktok');
+        $this->mediaChecker = $this->createStub(SocialMediaChecker::class);
+        $this->mediaChecker->method('check')->willReturn(['bluesky' => [new TranslatableMessage('label.social_media_too_many')]]);
+
+        $this->medias(['networks' => ['1' => 'bluesky', '2' => 'tiktok', '3' => 'tiktok']]);
+        $this->assertSame(['bluesky', null, 'tiktok'], array_map(static fn (SocialMedia $media): ?string => $media->getNetwork(), $this->post->getMedias()->getValues()));
+        $this->assertNotSame('', $this->rendered['media_problems']);
+
+        $this->medias(['networks' => ['1' => '', '3' => '']]);
+        $this->assertSame([null, null, null], array_map(static fn (SocialMedia $media): ?string => $media->getNetwork(), $this->post->getMedias()->getValues()));
     }
 
     // The networks show what the post went out with, and a forged request changes nothing

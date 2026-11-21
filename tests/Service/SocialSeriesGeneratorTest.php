@@ -13,11 +13,16 @@ namespace c975L\SocialBundle\Tests\Service;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Entity\SocialSeries;
+use c975L\SocialBundle\Entity\SocialSlot;
+use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Repository\SocialSeriesRepository;
+use c975L\SocialBundle\Repository\SocialSlotRepository;
 use c975L\SocialBundle\Service\SocialMediaFile;
 use c975L\SocialBundle\Service\SocialPostWriter;
 use c975L\SocialBundle\Service\SocialPublisher;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
+use c975L\SocialBundle\Service\SocialSlotCalendar;
+use c975L\SocialBundle\Service\SocialSlotFinder;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\File;
@@ -30,7 +35,7 @@ class SocialSeriesGeneratorTest extends TestCase
     private int $aiCalls = 0;
 
     // A publisher writing each post's texts from its own, Bluesky, LinkedIn and Instagram connected - Instagram taking stories
-    private function generator(array $variants = [], ?\DateTimeImmutable $lastPlannedAt = null, ?\DateTimeImmutable $firstPlannedAt = null): SocialSeriesGenerator
+    private function generator(array $variants = [], ?\DateTimeImmutable $lastPlannedAt = null, ?\DateTimeImmutable $firstPlannedAt = null, array $slots = [], array $taken = []): SocialSeriesGenerator
     {
         $publisher = $this->createStub(SocialPublisher::class);
         $publisher->method('createManual')->willReturnCallback(static function (\DateTimeImmutable $at): SocialPost {
@@ -68,7 +73,7 @@ class SocialSeriesGeneratorTest extends TestCase
         $seriesRepository->method('findLastPlannedAt')->willReturn($lastPlannedAt);
         $seriesRepository->method('findFirstPlannedAt')->willReturn($firstPlannedAt);
 
-        return new SocialSeriesGenerator($publisher, $writer, new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $seriesRepository, sys_get_temp_dir());
+        return new SocialSeriesGenerator($publisher, $writer, new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $seriesRepository, $this->slotRepository($slots), new SocialSlotFinder(new SocialSlotCalendar(), $this->postRepository($taken)), sys_get_temp_dir());
     }
 
     // A publisher whose only source is dated, holding contents on the days given - the moments it was asked and the AI's calls being recorded
@@ -98,7 +103,27 @@ class SocialSeriesGeneratorTest extends TestCase
         $seriesRepository = $this->createStub(SocialSeriesRepository::class);
         $seriesRepository->method('findLastPlannedAt')->willReturn($lastPlannedAt);
 
-        return new SocialSeriesGenerator($publisher, $writer, new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $seriesRepository, sys_get_temp_dir());
+        return new SocialSeriesGenerator($publisher, $writer, new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $seriesRepository, $this->slotRepository([]), new SocialSlotFinder(new SocialSlotCalendar(), $this->postRepository([])), sys_get_temp_dir());
+    }
+
+    // The slots of the template week every series is prolonged on
+    /** @param list<SocialSlot> $slots */
+    private function slotRepository(array $slots): SocialSlotRepository
+    {
+        $repository = $this->createStub(SocialSlotRepository::class);
+        $repository->method('findBySeries')->willReturn($slots);
+
+        return $repository;
+    }
+
+    // The minutes other posts hold, by their title
+    /** @param array<string, string> $taken */
+    private function postRepository(array $taken): SocialPostRepository
+    {
+        $repository = $this->createStub(SocialPostRepository::class);
+        $repository->method('findTakenAt')->willReturnCallback(static fn (array $moments): array => array_intersect_key($taken, array_flip(array_map(static fn (\DateTimeImmutable $moment): string => $moment->format('Y-m-d H:i'), $moments))));
+
+        return $repository;
     }
 
     // A series as the form makes it
@@ -263,6 +288,37 @@ class SocialSeriesGeneratorTest extends TestCase
         $posts = $this->generator(lastPlannedAt: new \DateTimeImmutable('2026-11-07 21:00'))->prolong($series, new \DateTimeImmutable('2026-11-30 23:59:59'));
 
         $this->assertEquals([new \DateTimeImmutable('2026-11-14 21:00'), new \DateTimeImmutable('2026-11-21 21:00'), new \DateTimeImmutable('2026-11-28 21:00')], array_map(static fn (SocialPost $post): \DateTimeImmutable => $post->getPlannedAt(), $posts));
+    }
+
+    // A series at its own pace passes over a minute another post holds, and says it
+    public function testAProlongationAtItsPacePassesOverAHeldMinute(): void
+    {
+        $taken = ['2026-11-21 21:00' => 'Other'];
+        $last = new \DateTimeImmutable('2026-11-07 21:00');
+        $until = new \DateTimeImmutable('2026-11-30 23:59:59');
+        $series = $this->series(5, SocialSeriesGenerator::MODE_TEXT, ['bluesky'], 'Soir', interval: 7);
+        $generator = $this->generator(lastPlannedAt: $last, taken: $taken);
+
+        $posts = $generator->prolong($series, $until);
+
+        $this->assertSame(['2026-11-14 21:00', '2026-11-28 21:00'], array_map(static fn (SocialPost $post): string => $post->getPlannedAt()->format('Y-m-d H:i'), $posts));
+        $this->assertSame($taken, $generator->skippedMoments($series, $last, $until));
+    }
+
+    // A series on slots of the template week goes on at their moments rather than at the time of its last post, a minute another post holds passed over and said
+    public function testAProlongationFollowsTheSeriesSlots(): void
+    {
+        $monday = new SocialSlot()->setLabel('item-1')->setWeekday(1)->setTime('20:30');
+        $friday = new SocialSlot()->setLabel('item-2')->setWeekday(5)->setTime('20:30');
+        $taken = ['2026-11-13 20:30' => 'Other'];
+        $last = new \DateTimeImmutable('2026-11-07 21:00');
+        $series = $this->series(3, SocialSeriesGenerator::MODE_TEXT, ['bluesky'], 'Soir');
+        $generator = $this->generator(lastPlannedAt: $last, slots: [$monday, $friday], taken: $taken);
+
+        $posts = $generator->prolong($series);
+
+        $this->assertSame(['2026-11-09 20:30', '2026-11-16 20:30', '2026-11-20 20:30'], array_map(static fn (SocialPost $post): string => $post->getPlannedAt()->format('Y-m-d H:i'), $posts));
+        $this->assertSame($taken, $generator->skippedMoments($series, $last));
     }
 
     // Imported drafts have nothing to be prolonged with, the next ones being imported in turn

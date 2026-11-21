@@ -145,6 +145,9 @@
         {# Filled by social-calendar.js with the panel of the card clicked (see _social_calendar_panel.html.twig) #}
         <aside class="social-calendar-panel" data-social-calendar-target="panel" hidden></aside>
 
+        {# The modals saying a refusal and asking before a removal, in place of the browser's boxes #}
+        {{ include('@c975LSocial/management/_social_calendar_dialogs.html.twig') }}
+
         {# A video of the panel at its own size, filled by social-calendar.js - its pictures open in UiBundle's lightbox #}
         <dialog class="social-calendar-zoom" data-social-calendar-target="zoom" data-action="click->social-calendar#closeZoom close->social-calendar#clearZoom"></dialog>
     </div>

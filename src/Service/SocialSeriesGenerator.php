@@ -14,6 +14,7 @@ use c975L\SocialBundle\Entity\SocialMedia;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Repository\SocialSeriesRepository;
+use c975L\SocialBundle\Repository\SocialSlotRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
@@ -47,6 +48,8 @@ class SocialSeriesGenerator
         private readonly SocialMediaFile $mediaFile,
         private readonly EntityManagerInterface $entityManager,
         private readonly SocialSeriesRepository $seriesRepository,
+        private readonly SocialSlotRepository $slotRepository,
+        private readonly SocialSlotFinder $slotFinder,
         private readonly string $projectDir,
     ) {
     }
@@ -142,7 +145,7 @@ class SocialSeriesGenerator
         return (self::MODE_SOURCE === $series->getMode() || [] !== $series->getSources()) && $this->socialPublisher->hasDatedSource($series->getSources());
     }
 
-    // The moments a prolongation from $last takes, at the series' pace, none past $until when given - none for an imported series, its next posts being imported. Nothing is written, so a dry run counts them
+    // The moments a prolongation from $last takes, on the series' slots of the template week when it has some, else at its pace - a minute another post holds passed over - none past $until when given - none for an imported series, its next posts being imported. Nothing is written, so a dry run counts them
     /** @return list<\DateTimeImmutable> */
     public function prolongMoments(SocialSeries $series, \DateTimeImmutable $last, ?\DateTimeImmutable $until = null): array
     {
@@ -150,6 +153,18 @@ class SocialSeriesGenerator
             return [];
         }
 
+        $slots = $this->slotRepository->findBySeries($series);
+        if ([] !== $slots) {
+            return $this->slotFinder->free($slots, $last, $series->getCount(), $until)[0];
+        }
+
+        return $this->slotFinder->split($this->paceMoments($series, $last, $until))[0];
+    }
+
+    // The moments at the series' pace after $last, none past $until when given, whether another post holds them or not
+    /** @return list<\DateTimeImmutable> */
+    private function paceMoments(SocialSeries $series, \DateTimeImmutable $last, ?\DateTimeImmutable $until): array
+    {
         // A monthly series keeps the day of its first post: after 28 February, 31 March again for a series of the 31st
         if ('month' === $series->getFrequency()) {
             $day = (int) ($this->seriesRepository->findFirstPlannedAt($series) ?? $last)->format('j');
@@ -165,6 +180,19 @@ class SocialSeriesGenerator
         $moments = $this->moments($start, $series->getCount(), $series->getFrequency(), $series->getInterval(), $series->getWeekdays());
 
         return null === $until ? $moments : array_values(array_filter($moments, static fn (\DateTimeImmutable $moment): bool => $moment <= $until));
+    }
+
+    // The minutes a prolongation from $last passes over, on the series' slots or at its pace, another post holding them, with that post's title - none for an imported series
+    /** @return array<string, string> */
+    public function skippedMoments(SocialSeries $series, \DateTimeImmutable $last, ?\DateTimeImmutable $until = null): array
+    {
+        if (self::MODE_IMPORT === $series->getMode()) {
+            return [];
+        }
+
+        $slots = $this->slotRepository->findBySeries($series);
+
+        return [] !== $slots ? $this->slotFinder->free($slots, $last, $series->getCount(), $until)[1] : $this->slotFinder->split($this->paceMoments($series, $last, $until))[1];
     }
 
     // The drafts of the series at its moments, on its networks - fewer than asked when the AI answers fewer texts or the sources run out, a dated source only passing over the moments without content. With sources picked, each draft written from a text takes the picture of their next content, reserved as a draft of its own is; the series' media goes with every draft instead. $textMissing says the AI left a draft without a text
