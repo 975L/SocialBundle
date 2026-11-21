@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.41.1
+
+php-http/discovery plugin allowed in Composer
+
+- `php-http/discovery` plugin allowed in `allow-plugins` instead of disabled (21/11/2026)
+
 ## v2.41.0
 
 Carousels in imported drafts, social tools on the MCP endpoint
