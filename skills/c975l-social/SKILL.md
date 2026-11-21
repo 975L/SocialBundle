@@ -234,14 +234,14 @@ every upload, an unaudited Google Cloud project's uploads possibly locked privat
 | TikTok connection | `Service\TikTokClient`, `Controller\TikTokOAuthController` (`/social/tiktok/connect`, `/social/tiktok/callback`), `Form\TikTokOptionsType` (TikTok's choices on the post's screen, read live from `creator_info`), `Command\TikTokRefreshCommand` (`c975l:social:tiktok:refresh`, nightly) |
 | Meta connection | `Service\MetaGraphClient`, `Controller\MetaOAuthController` (`/social/meta/connect`, `/social/meta/callback`), `Controller\Management\SocialMetaPageController` (the Page picked, held 10 minutes in the session) |
 | LinkedIn connection | `Service\LinkedInClient`, `Controller\LinkedInOAuthController` (`/social/linkedin/connect`, `?page=1` for a Page, `/social/linkedin/callback`), `Controller\Management\SocialLinkedInPageController` (the Page picked, held 10 minutes in the session) |
-| Bluesky connection | `Service\BlueskyOAuthClient`, `Service\Es256Signer`, `Controller\BlueskyOAuthController` (`/social/bluesky/connect`, `/social/bluesky/callback`) |
+| Bluesky connection | `Service\BlueskyOAuthClient` (every request through `PublicWeb::guard()`, servers over https only, the handle a domain name), `Service\Es256Signer`, `Controller\BlueskyOAuthController` (`/social/bluesky/connect`, `/social/bluesky/callback`, a transport failure flashed as `flash.bluesky_unreachable`) |
 | Orchestration | `Service\SocialPublisher`, `Command\PublishCommand` (`c975l:social:publish`) |
 | Stored posts | `Entity\SocialPost`, one `Entity\SocialPostTarget` per network, `Enum\SocialPostStatus` |
 | Review screen | `Controller\Management\SocialPostCrudController` ("Publications", `site-role-editor`) |
 | AI texts | `Service\SocialPostWriter` (Donovan's writer key, `social-ai-guidelines`), the template as fallback |
 | Calendar | `Controller\Management\SocialCalendarController` ("Calendrier", `site-role-editor`), `Service\SocialPlanner`, `assets/js/social-calendar.js` |
 | Calendar feed | `Service\SocialCalendarFeed`, `Controller\SocialCalendarFeedController` (`/social/calendar/{token}.ics`, secret `social-calendar-ics-token`) |
-| Shared calendar | `Service\SocialSharedCalendar` (`social-calendar-shared-feeds`, json `{"Name": "feed address"}`, read with `?own=1`, all feeds asked at once, 3 s timeout, 10 min in `cache.app`, failures `unreachable`/`refused` (4xx)/`invalid`/`malformed`), `Service\SocialCalendarParser` (reads only what `SocialCalendarFeed` writes, skips `X-SOCIAL-SHARED`), `Management\SocialSharedCalendarAlertProvider` (last failures, from the cache) |
+| Shared calendar | `Service\SocialSharedCalendar` (`social-calendar-shared-feeds`, json `{"Name": "feed address"}`, read with `?own=1`, off the private network (`PublicWeb::guard()`), all feeds asked at once, 3 s timeout, 10 min in `cache.app`, failures `unreachable`/`refused` (4xx)/`invalid`/`malformed`), `Service\SocialCalendarParser` (reads only what `SocialCalendarFeed` writes, skips `X-SOCIAL-SHARED`), `Management\SocialSharedCalendarAlertProvider` (last failures, from the cache) |
 | Series | `Entity\SocialSeries` (`$story` ticking each draft's story, prolongations included), `Service\SocialSeriesGenerator`, `Command\SeriesEndingCommand` (`c975l:social:series:ending`, `social-series-ending-days`), `Command\SeriesProlongCommand` (`c975l:social:series:prolong --until`, `prolong($series, $until)`), `Service\SocialSeriesDeleter` (`count()`, `delete()`: posts not gone out cancelled, gone out kept with `series` NULL, media unlinked once no `SocialMedia` references it, `null` while a post is being sent; route `social_calendar_series_delete`, GET confirms, POST `token` deletes) |
 | Refusals | `Service\SocialAdminMailer` (emails `email-to`), `SocialPostCrudController::retryPost()` → `SocialPublisher::retryFailed()` |
 | First comment | `Contract\FirstCommentPublisherInterface` (`comment()`, LinkedIn alone), `SocialPostTarget::$comment`, `isCommentPending()` |
@@ -368,7 +368,8 @@ Google connection still answers - the import and the listing's posts being what 
   `label.group_<slug>` in `translations/config.*.xlf`, in each of the three locales, or the back office shows
   the key.
 - **Do not fetch an address an editor typed or a page named with the HTTP client directly.** `PublicWeb::get()`
-  keeps the server on http and https and off the private network, redirects included.
+  keeps the server on http and https and off the private network, redirects included; a client making several
+  requests goes through `PublicWeb::guard()`, as `BlueskyOAuthClient` and `SocialSharedCalendar` do.
 - **Do not print a links block's `intro` with `|raw`.** It goes through `sanitize_html('c975l.rich')`, in the block
   and in its back-office preview alike.
 - **Do not add a page layout to this bundle.** A satellite never ships one.

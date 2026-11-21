@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.41.2
+
+Bluesky discovery and shared feeds kept off the private network
+
+- `BlueskyOAuthClient`: every server asked off the private network (`PublicWeb::guard()`) and over https, the failures flashed short (21/11/2026)
+- `SocialSharedCalendar`: the shared feeds are read off the private network (21/11/2026)
+
 ## v2.41.1
 
 php-http/discovery plugin allowed in Composer

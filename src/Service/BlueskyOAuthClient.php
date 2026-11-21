@@ -41,12 +41,21 @@ class BlueskyOAuthClient
     // The lock both the token refresh and the reminder mark take (see writeSession()), so neither overwrites a session the other just wrote
     private const string REFRESH_LOCK = 'social_bluesky_oauth_refresh';
 
+    // A handle, or the host of a did:web, as the AT Protocol takes it: a domain name, nothing that would make another address of it
+    private const string HOSTNAME = '~^(?=.{1,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]([a-z0-9-]{0,61}[a-z0-9])?$~';
+
+    // How long a refusal's explanation shown on the screen may be
+    private const int MAX_REFUSAL = 200;
+
     // The DPoP nonces each server handed out, by origin: kept for the process, a stale one only costing a retry to a request without a body - call() reads the nonce of the moment before sending one
     /** @var array<string, string> */
     private array $nonces = [];
 
+    // Every server is named by a handle an editor typed or by a document a third party serves: none of them may make the site read what only it can reach
+    private readonly HttpClientInterface $httpClient;
+
     public function __construct(
-        private readonly HttpClientInterface $httpClient,
+        HttpClientInterface $httpClient,
         private readonly ConfigServiceInterface $configService,
         private readonly ConfigValueWriter $configValueWriter,
         private readonly SiteUrlResolver $siteUrlResolver,
@@ -55,6 +64,7 @@ class BlueskyOAuthClient
         private readonly LockFactory $lockFactory,
         private readonly ProductionGuard $productionGuard = new ProductionGuard(),
     ) {
+        $this->httpClient = PublicWeb::guard($httpClient);
     }
 
     public function isConnected(): bool
@@ -420,6 +430,10 @@ class BlueskyOAuthClient
     private function resolveHandle(string $handle): string
     {
         $handle = strtolower(ltrim(trim($handle), '@'));
+        if (1 !== preg_match(self::HOSTNAME, $handle)) {
+            throw new \RuntimeException(sprintf('The Bluesky handle "%s" is no domain name.', $handle));
+        }
+
         foreach (@dns_get_record('_atproto.' . $handle, \DNS_TXT) ?: [] as $record) {
             if (str_starts_with((string) ($record['txt'] ?? ''), 'did=')) {
                 return substr((string) $record['txt'], 4);
@@ -440,7 +454,7 @@ class BlueskyOAuthClient
     {
         $url = match (true) {
             str_starts_with($did, 'did:plc:') => 'https://plc.directory/' . $did,
-            str_starts_with($did, 'did:web:') => 'https://' . substr($did, 8) . '/.well-known/did.json',
+            str_starts_with($did, 'did:web:') && 1 === preg_match(self::HOSTNAME, substr($did, 8)) => 'https://' . substr($did, 8) . '/.well-known/did.json',
             default => throw new \RuntimeException(sprintf('The identifier "%s" is of no known kind.', $did)),
         };
 
@@ -453,7 +467,7 @@ class BlueskyOAuthClient
     {
         foreach ($document['service'] ?? [] as $service) {
             if (str_ends_with((string) ($service['id'] ?? ''), '#atproto_pds')) {
-                return rtrim((string) $service['serviceEndpoint'], '/');
+                return $this->https((string) ($service['serviceEndpoint'] ?? ''), 'The account\'s server');
             }
         }
 
@@ -477,7 +491,17 @@ class BlueskyOAuthClient
     {
         $server = $this->fetch($pds . '/.well-known/oauth-protected-resource')['authorization_servers'][0] ?? null;
 
-        return \is_string($server) ? rtrim($server, '/') : throw new \RuntimeException('The account\'s server names no authorization server.');
+        return \is_string($server) ? $this->https($server, 'The authorization server') : throw new \RuntimeException('The account\'s server names no authorization server.');
+    }
+
+    // A server's address, over https and nothing else, without its trailing slash
+    private function https(string $url, string $what): string
+    {
+        if ('https' !== strtolower((string) parse_url($url, \PHP_URL_SCHEME)) || '' === (string) parse_url($url, \PHP_URL_HOST)) {
+            throw new \RuntimeException(sprintf('%s is not served over https.', $what));
+        }
+
+        return rtrim($url, '/');
     }
 
     // The endpoints of an authorization server, which has to be the issuer it claims to be
@@ -487,6 +511,11 @@ class BlueskyOAuthClient
         $metadata = $this->fetch($issuer . '/.well-known/oauth-authorization-server');
         if (($metadata['issuer'] ?? null) !== $issuer || !isset($metadata['pushed_authorization_request_endpoint'], $metadata['authorization_endpoint'], $metadata['token_endpoint'])) {
             throw new \RuntimeException(sprintf('"%s" is no authorization server of the AT Protocol.', $issuer));
+        }
+
+        // Each endpoint the owner or the tokens are sent to over https alone
+        foreach (['pushed_authorization_request_endpoint', 'authorization_endpoint', 'token_endpoint'] as $endpoint) {
+            $this->https(\is_string($metadata[$endpoint]) ? $metadata[$endpoint] : '', 'The authorization server');
         }
 
         return $metadata;
@@ -509,7 +538,7 @@ class BlueskyOAuthClient
     {
         $data = $response->toArray(false);
         if ($response->getStatusCode() >= 300) {
-            throw new \RuntimeException(sprintf('Bluesky refused %s: %s', $what, $data['error_description'] ?? $data['message'] ?? $data['error'] ?? $response->getStatusCode()));
+            throw new \RuntimeException(sprintf('Bluesky refused %s: %s', $what, mb_substr(strip_tags((string) ($data['error_description'] ?? $data['message'] ?? $data['error'] ?? $response->getStatusCode())), 0, self::MAX_REFUSAL)));
         }
 
         return $data;

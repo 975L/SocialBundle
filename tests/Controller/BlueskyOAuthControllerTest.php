@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Controller\BlueskyOAuthController;
 use c975L\SocialBundle\Service\BlueskyOAuthClient;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 
@@ -159,5 +160,17 @@ class BlueskyOAuthControllerTest extends TestCase
 
         $this->assertSame('/management_social_connections', $response->getTargetUrl());
         $this->assertSame(['danger' => ['Bluesky connected another account than the one asked.']], $this->flashes($request));
+    }
+
+    // What the transport says of a server it could not reach, a blocked private address among them, stays off the screen
+    public function testConnectHidesWhyAServerCouldNotBeReached(): void
+    {
+        $oauthClient = $this->createStub(BlueskyOAuthClient::class);
+        $oauthClient->method('startAuthorization')->willThrowException(new TransportException('Host "internal.example" is blocked for "https://internal.example/".'));
+        $request = $this->createRequest();
+
+        $this->createController($request, $oauthClient)->connect($request);
+
+        $this->assertSame(['danger' => ['flash.bluesky_unreachable']], $this->flashes($request));
     }
 }

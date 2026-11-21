@@ -498,6 +498,10 @@
                 <source>flash.bluesky_refused</source>
                 <target>Connexion Bluesky interrompue : relance-la depuis le tableau de bord.</target>
             </trans-unit>
+            <trans-unit id="JaWFl_W">
+                <source>flash.bluesky_unreachable</source>
+                <target>Les serveurs de Bluesky n'ont pas pu être joints : réessaie plus tard.</target>
+            </trans-unit>
             <trans-unit id="4_w_WZC">
                 <source>flash.bluesky_wrong_host</source>
                 <target>Bluesky ne peut être connecté que depuis %url%, l'adresse par laquelle il connaît le site.</target>

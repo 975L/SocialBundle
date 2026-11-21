@@ -17,6 +17,7 @@ use c975L\SocialBundle\Service\SocialSharedCalendar;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
 // The other sites' feeds, read for their own posts only, kept a few minutes, a feed down or garbled leaving its site out and saying so
@@ -38,7 +39,7 @@ class SocialSharedCalendarTest extends TestCase
      * @param array<mixed>                $feeds     as ConfigService decodes the json
      * @param array<string, MockResponse> $responses by the address asked
      */
-    private function calendar(array $feeds, array $responses): SocialSharedCalendar
+    private function calendar(array $feeds, array $responses, bool $resolved = true): SocialSharedCalendar
     {
         $config = $this->createStub(ConfigServiceInterface::class);
         $config->method('get')->willReturnCallback(static fn (string $key): mixed => [SocialSharedCalendar::FEEDS => $feeds, SocialCalendarFeed::TOKEN => self::OWN][$key] ?? null);
@@ -47,6 +48,12 @@ class SocialSharedCalendarTest extends TestCase
 
             return $responses[$url] ?? new MockResponse('', ['http_code' => 404]);
         });
+
+        // Every listed host resolved to a public address, so the guard against private networks never asks the DNS
+        if ($resolved) {
+            $hosts = array_filter(array_map(static fn (mixed $url): string => \is_string($url) ? (string) parse_url(trim($url), \PHP_URL_HOST) : '', $feeds));
+            $httpClient = new NoPrivateNetworkHttpClient($httpClient)->withOptions(['resolve' => array_fill_keys($hosts, '93.184.216.34')]);
+        }
 
         return new SocialSharedCalendar($config, $httpClient, $this->cache, new SocialCalendarParser());
     }
@@ -125,6 +132,15 @@ class SocialSharedCalendarTest extends TestCase
 
         $this->assertSame([], $calendar->getEvents(new \DateTimeImmutable('2026-10-01'), new \DateTimeImmutable('2026-11-01')));
         $this->assertSame([], $calendar->getKnownErrors());
+        $this->assertSame([], $this->requested);
+    }
+
+    // A feed on the private network is never asked, its site said unreachable - even when the container hands a raw client over
+    public function testAFeedOnThePrivateNetworkIsNeverAsked(): void
+    {
+        $calendar = $this->calendar(['Internal' => 'http://127.0.0.1/social/calendar/i.ics'], [], false);
+
+        $this->assertSame([['site' => 'Internal', 'reason' => SocialSharedCalendar::UNREACHABLE]], $calendar->getErrors());
         $this->assertSame([], $this->requested);
     }
 }

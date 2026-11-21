@@ -39,6 +39,12 @@ final class PublicWeb
             throw new \RuntimeException(sprintf('The address %s is not a web address.', $url));
         }
 
-        return new NoPrivateNetworkHttpClient($httpClient)->request('GET', $url, ['timeout' => 30]);
+        return self::guard($httpClient)->request('GET', $url, ['timeout' => 30]);
+    }
+
+    // The client kept to the public network, redirects included - a client already guarded kept as it is, with the options it was given
+    public static function guard(HttpClientInterface $httpClient): NoPrivateNetworkHttpClient
+    {
+        return $httpClient instanceof NoPrivateNetworkHttpClient ? $httpClient : new NoPrivateNetworkHttpClient($httpClient);
     }
 }

@@ -18,7 +18,7 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-// The other sites publishing on the same accounts, read from their calendar feeds (see SocialCalendarFeed) so one calendar shows them all: one site per entry of "social-calendar-shared-feeds", {"Name": "address of its feed"}. Each feed is asked for its own posts only, all of them at once with a short timeout and kept a few minutes - a feed down or garbled leaves its site out and says so, never breaking the calendar
+// The other sites publishing on the same accounts, read from their calendar feeds (see SocialCalendarFeed) so one calendar shows them all: one site per entry of "social-calendar-shared-feeds", {"Name": "address of its feed"}. Each feed is asked for its own posts only, on the public network alone, all of them at once with a short timeout and kept a few minutes - a feed down, garbled or private leaves its site out and says so, never breaking the calendar
 class SocialSharedCalendar
 {
     // The config listing the other sites' feeds - their addresses being their keys, it is sensitive
@@ -90,6 +90,7 @@ class SocialSharedCalendar
 
         // Every feed the cache lacks asked at once: the client only waits when a body is read, so the timeouts overlap instead of adding up
         $feeds = $this->feeds();
+        $httpClient = PublicWeb::guard($this->httpClient);
         $items = [];
         $responses = [];
         foreach ($feeds as $index => [, $url]) {
@@ -99,7 +100,7 @@ class SocialSharedCalendar
             $items[$index] = $this->cache->getItem('social_shared_calendar_' . hash('xxh128', $url));
             if (!$items[$index]->isHit()) {
                 try {
-                    $responses[$index] = $this->httpClient->request('GET', $url . (str_contains($url, '?') ? '&' : '?') . 'own=1', ['timeout' => self::TIMEOUT, 'max_duration' => self::TIMEOUT * 2]);
+                    $responses[$index] = $httpClient->request('GET', $url . (str_contains($url, '?') ? '&' : '?') . 'own=1', ['timeout' => self::TIMEOUT, 'max_duration' => self::TIMEOUT * 2]);
                 } catch (ExceptionInterface) {
                     $responses[$index] = null;
                 }

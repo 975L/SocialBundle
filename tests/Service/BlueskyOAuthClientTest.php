@@ -17,7 +17,9 @@ use c975L\SocialBundle\Service\ConfigValueWriter;
 use c975L\SocialBundle\Service\Es256Signer;
 use c975L\SocialBundle\Service\ProductionGuard;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\InMemoryStore;
@@ -44,7 +46,27 @@ class BlueskyOAuthClientTest extends TestCase
     // The nonce the account's server asks for, which it changes as time goes
     private string $pdsNonce = 'n-pds';
 
-    private function createClient(string $environment = 'prod'): BlueskyOAuthClient
+    // The account the tokens are issued for, and the server its did:web document names
+    private string $sub = 'did:plc:abc';
+
+    private string $webServiceEndpoint = 'https://pds.example';
+
+    /** @var string|list<string> */
+    private string | array $parEndpoint = 'https://bsky.social/oauth/par';
+
+    // What the authorization server says when it turns the request down, null when it takes it
+    private ?string $parRefusal = null;
+
+    // The addresses the hosts resolve to, so the guard against private networks never asks the DNS
+    private const array RESOLVE = [
+        'bsky.social' => '93.184.216.34',
+        'plc.directory' => '93.184.216.34',
+        'pds.example' => '93.184.216.34',
+        'web.example' => '93.184.216.34',
+        'internal.example' => '10.0.0.1',
+    ];
+
+    private function createClient(string $environment = 'prod', bool $resolved = true): BlueskyOAuthClient
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(fn (string $slug): ?string => $this->config[$slug] ?? null);
@@ -61,7 +83,13 @@ class BlueskyOAuthClientTest extends TestCase
         $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $urlGenerator->method('generate')->willReturnCallback(static fn (string $route): string => '/' . $route);
 
-        return new BlueskyOAuthClient(new MockHttpClient($this->respond(...)), $configService, $writer, new SiteUrlResolver($configService), $urlGenerator, new Es256Signer(), new LockFactory(new InMemoryStore()), new ProductionGuard($environment));
+        // Left unresolved, the client is the raw one the container hands over, which BlueskyOAuthClient guards itself
+        $httpClient = new MockHttpClient($this->respond(...));
+        if ($resolved) {
+            $httpClient = new NoPrivateNetworkHttpClient($httpClient)->withOptions(['resolve' => self::RESOLVE]);
+        }
+
+        return new BlueskyOAuthClient($httpClient, $configService, $writer, new SiteUrlResolver($configService), $urlGenerator, new Es256Signer(), new LockFactory(new InMemoryStore()), new ProductionGuard($environment));
     }
 
     /** @param array<string, mixed> $options */
@@ -78,7 +106,7 @@ class BlueskyOAuthClientTest extends TestCase
         return match (true) {
             'https://bsky.social/.well-known/oauth-authorization-server' === $url => $this->json([
                 'issuer' => 'https://bsky.social',
-                'pushed_authorization_request_endpoint' => 'https://bsky.social/oauth/par',
+                'pushed_authorization_request_endpoint' => $this->parEndpoint,
                 'authorization_endpoint' => 'https://bsky.social/oauth/authorize',
                 'token_endpoint' => 'https://bsky.social/oauth/token',
             ]),
@@ -87,13 +115,18 @@ class BlueskyOAuthClientTest extends TestCase
                 'alsoKnownAs' => ['at://me.bsky.social'],
                 'service' => [['id' => '#atproto_pds', 'type' => 'AtprotoPersonalDataServer', 'serviceEndpoint' => 'https://pds.example']],
             ]),
+            'https://web.example/.well-known/did.json' === $url => $this->json([
+                'id' => 'did:web:web.example',
+                'service' => [['id' => '#atproto_pds', 'type' => 'AtprotoPersonalDataServer', 'serviceEndpoint' => $this->webServiceEndpoint]],
+            ]),
             'https://pds.example/.well-known/oauth-protected-resource' === $url => $this->json(['authorization_servers' => [$this->pdsAuthorizationServer]]),
             // The authorization server asks for its nonce in the body, the PDS in its WWW-Authenticate header
             str_starts_with($url, 'https://bsky.social/oauth/') && 'n-as' !== $nonce => $this->json(['error' => 'use_dpop_nonce'], 400, ['DPoP-Nonce' => 'n-as']),
             str_starts_with($url, 'https://pds.example/xrpc/') && $this->pdsNonce !== $nonce => $this->json(['error' => 'use_dpop_nonce'], 401, ['DPoP-Nonce' => $this->pdsNonce, 'WWW-Authenticate' => 'DPoP error="use_dpop_nonce"']),
+            'https://bsky.social/oauth/par' === $url && null !== $this->parRefusal => $this->json(['error' => 'invalid_request', 'error_description' => $this->parRefusal], 400),
             'https://bsky.social/oauth/par' === $url => $this->json(['request_uri' => 'urn:ietf:params:oauth:request_uri:req-1', 'expires_in' => 300], 201),
             // A scope of its own syntax, as a server without granular permissions answers - the site has to keep what it asked for
-            'https://bsky.social/oauth/token' === $url => $this->json(['access_token' => 'access-' . \count($this->requests), 'refresh_token' => 'refresh-' . \count($this->requests), 'expires_in' => 1800, 'scope' => 'atproto', 'sub' => 'did:plc:abc', 'token_type' => 'DPoP']),
+            'https://bsky.social/oauth/token' === $url => $this->json(['access_token' => 'access-' . \count($this->requests), 'refresh_token' => 'refresh-' . \count($this->requests), 'expires_in' => 1800, 'scope' => 'atproto', 'sub' => $this->sub, 'token_type' => 'DPoP']),
             'https://pds.example/xrpc/com.atproto.repo.createRecord' === $url => $this->json(['uri' => 'at://did:plc:abc/app.bsky.feed.post/3k']),
             'https://pds.example/xrpc/com.atproto.repo.uploadBlob' === $url => $this->json(['blob' => ['$type' => 'blob']]),
             default => new MockResponse('', ['http_code' => 404]),
@@ -319,6 +352,103 @@ class BlueskyOAuthClientTest extends TestCase
             $this->assertSame(['GET', 'https://pds.example/xrpc/com.atproto.server.getSession', ''], [$read['method'], $read['url'], $read['body']]);
             $this->assertSame(['https://pds.example/xrpc/com.atproto.repo.uploadBlob', 'bytes'], [$upload['url'], $upload['body']]);
             $this->assertSame($nonce, $this->dpopClaims($upload['headers']['dpop'])['nonce']);
+        }
+    }
+
+    // A handle is a domain name: anything else could make another address of it, and is refused before any request
+    public function testAHandleThatIsNoDomainNameIsRefused(): void
+    {
+        $this->expectExceptionMessage('is no domain name');
+
+        try {
+            $this->createClient()->startAuthorization('web.example/x@127.0.0.1', 'state-1');
+        } finally {
+            $this->assertSame([], $this->requests);
+        }
+    }
+
+    // A did:web on an address rather than a domain name is of no kind the protocol knows
+    public function testADidWebOnAnAddressIsRefused(): void
+    {
+        $this->sub = 'did:web:127.0.0.1';
+        $this->expectExceptionMessage('of no known kind');
+
+        $this->createClient()->finishAuthorization($this->pending(), 'code-1', 'https://bsky.social');
+    }
+
+    // A did:web document naming its server over plain http is not followed
+    public function testAServerOutsideHttpsIsRefused(): void
+    {
+        $this->sub = 'did:web:web.example';
+        $this->webServiceEndpoint = 'http://pds.example';
+        $this->expectExceptionMessage('is not served over https');
+
+        $this->createClient()->finishAuthorization($this->pending(), 'code-1', 'https://bsky.social');
+    }
+
+    // A did:web document naming a server of the private network is never asked
+    public function testAServerOnThePrivateNetworkIsNeverAsked(): void
+    {
+        $this->sub = 'did:web:web.example';
+        $this->webServiceEndpoint = 'https://internal.example';
+        $this->expectException(TransportException::class);
+
+        try {
+            $this->createClient()->finishAuthorization($this->pending(), 'code-1', 'https://bsky.social');
+        } finally {
+            $this->assertSame([], array_filter($this->requests, static fn (array $request): bool => str_contains($request['url'], 'internal.example')));
+        }
+    }
+
+    public function testAnAuthorizationServerOutsideHttpsIsRefused(): void
+    {
+        $this->pdsAuthorizationServer = 'http://bsky.social';
+        $this->expectExceptionMessage('is not served over https');
+
+        $this->createClient()->finishAuthorization($this->pending(), 'code-1', 'https://bsky.social');
+    }
+
+    // The owner is never sent, nor the request pushed, to an endpoint outside https
+    public function testAnEndpointOutsideHttpsIsRefused(): void
+    {
+        $this->parEndpoint = 'http://bsky.social/oauth/par';
+        $this->expectExceptionMessage('is not served over https');
+
+        $this->createClient()->startAuthorization(null, 'state-1');
+    }
+
+    // An endpoint that is no address is refused like one outside https
+    public function testAnEndpointThatIsNoStringIsRefused(): void
+    {
+        $this->parEndpoint = ['https://bsky.social/oauth/par'];
+        $this->expectExceptionMessage('is not served over https');
+
+        $this->createClient()->startAuthorization(null, 'state-1');
+    }
+
+    // The session's own server is asked through the same guard, even when the container hands a raw client over
+    public function testTheSessionServerOnThePrivateNetworkIsNeverAsked(): void
+    {
+        $this->config[BlueskyOAuthClient::SESSION_SLUG] = (string) json_encode([...$this->pending(), 'did' => 'did:plc:abc', 'pds' => 'https://127.0.0.1', 'accessToken' => 'fresh', 'refreshToken' => 'refresh-fresh', 'expiresAt' => time() + 1800]);
+        $this->expectException(TransportException::class);
+
+        try {
+            $this->createClient(resolved: false)->call('com.atproto.repo.createRecord', ['json' => ['repo' => 'did:plc:abc']]);
+        } finally {
+            $this->assertSame([], $this->requests);
+        }
+    }
+
+    // A refusal's explanation reaches the screen short and without markup
+    public function testARefusalIsShownShort(): void
+    {
+        $this->parRefusal = '<b>' . str_repeat('x', 500) . '</b>';
+
+        try {
+            $this->createClient()->startAuthorization(null, 'state-1');
+            $this->fail('The refusal was not reported.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('Bluesky refused the authorization request: ' . str_repeat('x', 200), $exception->getMessage());
         }
     }
 }

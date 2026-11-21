@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 
 use function Symfony\Component\Translation\t;
 
@@ -63,7 +64,7 @@ class BlueskyOAuthController extends AbstractController
 
             $authorization = $this->oauthClient->startAuthorization('' === $handle ? null : $handle, bin2hex(random_bytes(16)));
         } catch (\Throwable $exception) {
-            $this->addFlash('danger', htmlspecialchars($exception->getMessage()));
+            $this->flashFailure($exception);
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
@@ -90,7 +91,7 @@ class BlueskyOAuthController extends AbstractController
         try {
             $this->oauthClient->finishAuthorization($pending, $code, $request->query->getString('iss'));
         } catch (\Throwable $exception) {
-            $this->addFlash('danger', htmlspecialchars($exception->getMessage()));
+            $this->flashFailure($exception);
 
             return $this->redirectToRoute(SocialConnectionsController::ROUTE);
         }
@@ -98,5 +99,11 @@ class BlueskyOAuthController extends AbstractController
         $this->addFlash('success', t('flash.bluesky_connected', [], 'social'));
 
         return $this->redirectToRoute(SocialConnectionsController::ROUTE);
+    }
+
+    // The reason the service gave, but never what a transport failure says of the servers it tried - a blocked address included
+    private function flashFailure(\Throwable $exception): void
+    {
+        $this->addFlash('danger', $exception instanceof ExceptionInterface ? t('flash.bluesky_unreachable', [], 'social') : htmlspecialchars($exception->getMessage()));
     }
 }
