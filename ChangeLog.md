@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.42.1
+
+Network's own pictures shown by c975l:social:draft
+
+- `c975l:social:draft` shows each network's own pictures after the others (21/11/2026)
+
 ## v2.42.0
 
 Template week of slots, medias kept for one network

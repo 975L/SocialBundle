@@ -64,7 +64,7 @@ class DraftCommand extends Command
             implode(', ', $draft['networks']),
             mb_strimwidth(str_replace("\n", ' ', $draft['text']), 0, 50, '…'),
             null === $draft['comment'] ? '' : mb_strimwidth(str_replace("\n", ' ', $draft['comment']), 0, 30, '…'),
-            implode(', ', array_map(basename(...), $draft['media'])),
+            self::mediaCell($draft['media'], $draft['medias']),
         ], $read['drafts']));
         if ([] !== $read['notes']) {
             $io->note($read['notes']);
@@ -87,5 +87,20 @@ class DraftCommand extends Command
         ));
 
         return Command::SUCCESS;
+    }
+
+    // The pictures for every network, then each network's own after its name
+    /**
+     * @param list<string>                $media
+     * @param array<string, list<string>> $medias
+     */
+    private static function mediaCell(array $media, array $medias): string
+    {
+        $cells = [] === $media ? [] : [implode(', ', array_map(basename(...), $media))];
+        foreach ($medias as $network => $paths) {
+            $cells[] = $network . ': ' . implode(', ', array_map(basename(...), $paths));
+        }
+
+        return implode(' | ', $cells);
     }
 }

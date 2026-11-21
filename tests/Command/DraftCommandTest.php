@@ -24,7 +24,7 @@ class DraftCommandTest extends TestCase
     private function tester(array $errors = []): CommandTester
     {
         $importer = $this->createStub(SocialDraftImporter::class);
-        $importer->method('read')->willReturn(['errors' => $errors, 'notes' => [], 'drafts' => [] === $errors ? [['at' => new \DateTimeImmutable('2026-11-02 09:30'), 'networks' => ['linkedin'], 'text' => 'One idea', 'comment' => 'Link', 'url' => null, 'media' => ['/tmp/card.png', '/tmp/page-2.jpg']]] : []]);
+        $importer->method('read')->willReturn(['errors' => $errors, 'notes' => [], 'drafts' => [] === $errors ? [['at' => new \DateTimeImmutable('2026-11-02 09:30'), 'networks' => ['linkedin'], 'text' => 'One idea', 'comment' => 'Link', 'url' => null, 'media' => ['/tmp/card.png', '/tmp/page-2.jpg'], 'medias' => ['bluesky' => ['/tmp/board.jpg']]]] : []]);
         $importer->method('import')->willReturnCallback(function (): array {
             $this->imported = true;
 
@@ -49,7 +49,7 @@ class DraftCommandTest extends TestCase
 
         $this->assertSame(Command::SUCCESS, $tester->execute(['file' => $this->file(), '--dry-run' => true]));
         $this->assertStringContainsString('02/11/2026 09:30', $tester->getDisplay());
-        $this->assertStringContainsString('card.png, page-2.jpg', $tester->getDisplay());
+        $this->assertStringContainsString('card.png, page-2.jpg | bluesky: board.jpg', $tester->getDisplay());
         $this->assertFalse($this->imported);
     }
 
