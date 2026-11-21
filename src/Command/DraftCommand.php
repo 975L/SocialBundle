@@ -35,7 +35,7 @@ class DraftCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('file', InputArgument::REQUIRED, 'The JSON file: {"title": "...", "posts": [{"key": "...", "at": "2026-11-02 09:30", "networks": ["linkedin"], "text": "...", "texts": {"bluesky": "..."}, "comment": "...", "reshare": "...", "story": true, "media": "card.png", "url": "...", "repost": "other.bsky.social"}]}')
+            ->addArgument('file', InputArgument::REQUIRED, 'The JSON file: {"title": "...", "posts": [{"key": "...", "at": "2026-11-02 09:30", "networks": ["linkedin"], "text": "...", "texts": {"bluesky": "..."}, "comment": "...", "reshare": "...", "story": true, "media": "card.png" or ["page-1.jpg", "page-2.jpg"], "url": "...", "repost": "other.bsky.social"}]}')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Check the file and list the drafts without writing anything')
         ;
     }
@@ -64,7 +64,7 @@ class DraftCommand extends Command
             implode(', ', $draft['networks']),
             mb_strimwidth(str_replace("\n", ' ', $draft['text']), 0, 50, '…'),
             null === $draft['comment'] ? '' : mb_strimwidth(str_replace("\n", ' ', $draft['comment']), 0, 30, '…'),
-            null === $draft['media'] ? '' : basename($draft['media']),
+            implode(', ', array_map(basename(...), $draft['media'])),
         ], $read['drafts']));
         if ([] !== $read['notes']) {
             $io->note($read['notes']);

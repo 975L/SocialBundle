@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-11-21",
+        "description": [
+            {
+                "en": "Drafts prepared outside the site can now carry several pictures: they go out in their order, as a carousel on Instagram or several images elsewhere.",
+                "fr": "Les brouillons préparés hors du site peuvent maintenant porter plusieurs images : elles partent dans leur ordre, en carrousel sur Instagram ou en plusieurs images ailleurs.",
+                "es": "Los borradores preparados fuera del sitio pueden llevar ahora varias imágenes: salen en su orden, en carrusel en Instagram o en varias imágenes en otros lugares."
+            },
+            {
+                "en": "An AI agent holding an agent token of an account editing the posts can list and read the calendar's posts, write a draft and correct its text; approving and sending stay yours, from the back office.",
+                "fr": "Un agent IA muni d'un jeton d'agent d'un compte qui édite les publications peut lister et lire les publications du calendrier, rédiger un brouillon et corriger son texte ; l'approbation et l'envoi restent les vôtres, depuis le back-office.",
+                "es": "Un agente de IA con un token de agente de una cuenta que edita las publicaciones puede listar y leer las publicaciones del calendario, redactar un borrador y corregir su texto; la aprobación y el envío siguen siendo suyos, desde el back-office."
+            }
+        ]
+    },
+    {
         "date": "2026-11-18",
         "description": [
             {

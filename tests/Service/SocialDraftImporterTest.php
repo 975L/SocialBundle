@@ -398,6 +398,29 @@ class SocialDraftImporterTest extends TestCase
         $this->assertSame([$media], $post->getMedias()->toArray());
     }
 
+    // A list of pictures goes on the post in its order, a missing one refused, the same list imported again leaving the post as it is and another one replacing them
+    public function testAListOfPicturesMakesACarousel(): void
+    {
+        $at = new \DateTimeImmutable('+7 days')->format('Y-m-d') . ' 09:30';
+        $this->assertSame(['Post 1: the media "' . $this->dir . '/missing.png" does not exist.'], $this->importer()->read(['title' => 'T', 'posts' => [['key' => 'k', 'at' => $at, 'networks' => ['bluesky'], 'text' => 'One idea', 'media' => ['card.png', 'missing.png']]]], $this->dir)['errors']);
+
+        $file = ['title' => 'T', 'posts' => [['key' => 'k', 'at' => $at, 'networks' => ['bluesky'], 'text' => 'One idea', 'media' => ['card.png', 'card.png']]]];
+        $first = $this->importer();
+        $post = $first->import('T', $first->read($file, $this->dir)['drafts'])['created'][0];
+        $this->assertCount(2, $post->getMedias());
+        file_put_contents($this->dir . '/public/medias/card.jpg', 'png');
+        $post->approve();
+
+        $again = $this->importer($this->importedSeries(), $post);
+        $this->assertSame(1, $again->import('T', $again->read($file, $this->dir)['drafts'])['unchanged']);
+        $this->assertTrue($post->isApproved());
+
+        $file['posts'][0]['media'] = 'card.png';
+        $changed = $this->importer($this->importedSeries(), $post);
+        $this->assertSame([$post], $changed->import('T', $changed->read($file, $this->dir)['drafts'])['updated']);
+        $this->assertCount(1, $post->getMedias());
+    }
+
     // A file giving no post a key makes a new series, even when one of its title was imported, and says so
     public function testAFileWithoutKeysMakesANewSeries(): void
     {

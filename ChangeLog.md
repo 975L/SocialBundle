@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.41.0
+
+Carousels in imported drafts, social tools on the MCP endpoint
+
+- Added a list of pictures to the "media" of an imported draft, going out in its order as a carousel or several images (21/11/2026)
+- `SocialMcpProvider`: an agent lists and reads the posts, writes a draft and corrects its text, with the rights of its token's account (21/11/2026)
+- `php-http/discovery` plugin declared disabled in `allow-plugins`, so `composer qa` no longer stops on its prompt (21/11/2026)
+
 ## v2.40.1
 
 TikTok review requirements in the README
