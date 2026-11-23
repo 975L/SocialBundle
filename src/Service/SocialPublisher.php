@@ -90,6 +90,13 @@ class SocialPublisher
         return array_keys($this->networksByName());
     }
 
+    // The connected networks a post may go to without a video of its own
+    /** @return list<string> */
+    public function getNetworkNamesWithoutVideo(): array
+    {
+        return array_keys($this->withoutVideoOnly($this->networksByName()));
+    }
+
     // The connected networks ticked first where networks are picked for posts to come (a series), those ticked by hand only left out
     /** @return list<string> */
     public function getDefaultNetworkNames(): array

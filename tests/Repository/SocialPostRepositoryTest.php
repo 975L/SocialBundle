@@ -242,6 +242,34 @@ class SocialPostRepositoryTest extends TestCase
         $this->assertSame(2, $this->repository->countComingDraftsBySeries($series, new \DateTimeImmutable()));
     }
 
+    // Every series' posts to come are counted with their drafts in one go, as the series alone counts them
+    public function testEverySeriesComingPostsAndDraftsAreCounted(): void
+    {
+        $series = new SocialSeries('Series', 3, 'daily', 1, [], 'text', 'Text', [], ['bluesky']);
+        $other = new SocialSeries('Other', 3, 'daily', 1, [], 'text', 'Text', [], ['bluesky']);
+        $post = static function (string $id, SocialSeries $series, string $plannedAt = '+1 day', bool $approved = false): SocialPost {
+            $post = new SocialPost('manual', $id, $id, '', null, new \DateTimeImmutable($plannedAt));
+            $post->setSeries($series);
+            $target = new SocialPostTarget($post, 'bluesky', 'Text');
+            if ($approved) {
+                $target->approve();
+            }
+
+            return $post;
+        };
+        $posts = [$post('draft', $series), $post('approved', $series, approved: true), $post('gone-by', $series, '-1 day'), $post('other', $other, approved: true), $post('alone', $other)];
+        $posts[4]->setSeries(null);
+        array_map($this->entityManager->persist(...), [$series, $other, ...$posts]);
+        $this->entityManager->flush();
+        $counts = $this->repository->countComingBySeries(new \DateTimeImmutable());
+        ksort($counts);
+
+        $this->assertSame([
+            (int) $series->getId() => ['coming' => 2, 'drafts' => 1],
+            (int) $other->getId() => ['coming' => 1, 'drafts' => 0],
+        ], $counts);
+    }
+
     // The purge's posts: gone out everywhere, planned before the moment, holding a media - a post still to go out somewhere, with no network at all, or with no media, left alone
     public function testThePurgeReadsThePostsGoneOutThatHoldAMedia(): void
     {

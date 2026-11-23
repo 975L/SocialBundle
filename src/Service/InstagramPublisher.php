@@ -43,8 +43,8 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
     // How many comments are read to find the newest, the most Meta gives in one page
     private const int COMMENTS_PAGE = 50;
 
-    // What Meta answers a container published too soon after FINISHED (error 9007, subcode 2207027)
-    private const string MEDIA_NOT_AVAILABLE = 'Media ID is not available';
+    // What Meta answers a container published too soon after FINISHED: error 9007, subcode 2207027, or a story's container not found yet
+    private const array MEDIA_NOT_AVAILABLE = ['Media ID is not available', 'The requested resource does not exist'];
 
     public function __construct(
         private readonly MetaGraphClient $metaGraphClient,
@@ -253,12 +253,18 @@ class InstagramPublisher implements NetworkPublisherInterface, StoryPublisherInt
             try {
                 return (string) $this->graph()->request('POST', '/' . $this->instagramId() . '/media_publish', ['creation_id' => $containerId, ...$token])['id'];
             } catch (\RuntimeException $e) {
-                if ($attempt >= self::STATUS_ATTEMPTS || !str_contains($e->getMessage(), self::MEDIA_NOT_AVAILABLE)) {
+                if ($attempt >= self::STATUS_ATTEMPTS || !$this->isNotAvailableYet($e->getMessage())) {
                     throw $e;
                 }
                 sleep($this->statusDelay);
             }
         }
+    }
+
+    // Whether Meta's refusal says the media is not ready yet, rather than refused for good
+    private function isNotAvailableYet(string $message): bool
+    {
+        return array_any(self::MEDIA_NOT_AVAILABLE, static fn (string $notAvailable): bool => str_contains($message, $notAvailable));
     }
 
     private function graph(): MetaGraphClient | InstagramLoginClient

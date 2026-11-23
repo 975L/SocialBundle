@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-23",
+        "description": [
+            {
+                "en": "An AI agent holding an agent token of an account editing the posts can now read the template week, add, change or remove a slot, and lay a series' drafts again on its slots, as on the \"Template week\" screen. It can also read the series with their posts to come and prolong one until a day: only drafts are made, approving them staying yours.",
+                "fr": "Un agent IA muni d'un jeton d'agent d'un compte qui édite les publications peut maintenant lire la semaine type, ajouter, modifier ou retirer un créneau, et recaler les brouillons d'une série sur ses créneaux, comme sur l'écran « Semaine type ». Il peut aussi lire les séries avec leurs publications à venir et en prolonger une jusqu'à un jour : seuls des brouillons sont créés, leur approbation restant la vôtre.",
+                "es": "Un agente de IA con un token de agente de una cuenta que edita las publicaciones puede ahora leer la semana tipo, añadir, modificar o quitar una franja, y volver a colocar los borradores de una serie en sus franjas, como en la pantalla «Semana tipo». También puede leer las series con sus publicaciones por venir y prolongar una hasta un día: solo se crean borradores, cuya aprobación sigue siendo suya."
+            }
+        ]
+    },
+    {
         "date": "2026-11-21",
         "description": [
             {

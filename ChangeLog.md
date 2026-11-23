@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.43.0
+
+Template week and series on the MCP endpoint
+
+- Added `social_slots`, `social_slot_save`, `social_slot_delete` and `social_slot_relay` MCP tools for the template week (23/11/2026)
+- `social_create` refuses a network taking videos alone (23/11/2026)
+- Added `SocialPublisher::getNetworkNamesWithoutVideo()` (23/11/2026)
+- Changed `SocialMcpProvider`'s editor check and day parsing into `SocialMcpAccess` [BC-Break] (23/11/2026)
+- Added `social_series`, `social_series_get` and `social_series_prolong` MCP tools for the series (23/11/2026)
+- Changed the rounds of `c975l:social:series:prolong` into `SocialSeriesProlonger`, shared with the MCP endpoint [BC-Break] (23/11/2026)
+- Added `SocialPostRepository::countComingBySeries()` (23/11/2026)
+- Instagram publishes again a container Meta does not find yet past FINISHED (23/11/2026)
+
 ## v2.42.1
 
 Network's own pictures shown by c975l:social:draft

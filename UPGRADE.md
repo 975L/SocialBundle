@@ -1,5 +1,9 @@
 # Upgrade
 
+## To 2.43
+
+**Code:** `SocialMcpProvider`'s constructor takes `SocialMcpAccess`, `SocialSlotTools` and `SocialSeriesTools` in place of `ConfigServiceInterface` and `Security`, and `SeriesProlongCommand`'s takes `SocialSeriesProlonger` in place of `SocialSeriesGenerator`.
+
 ## To 2.42
 
 **Database:** `social_media` gains `network` (null by default, every network), the one network a media is kept for, and the new `social_slot` table holds the template week - a site's own migration (`doctrine:migrations:diff`, then `migrate`).

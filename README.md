@@ -657,14 +657,21 @@ Only the opening step of each carries an `url` (an `AdminUrlGenerator` index, or
 
 ## MCP tools
 
-The calendar brings its tools to the site's MCP endpoint, `/api/mcp`, which c975l/core-bundle serves and opens (see its README, "Opening the site to AI agents"): `Mcp\SocialMcpProvider`, under the `social` key of the agent tokens, for an account holding `site-role-editor` as on the back office. Nothing an agent does approves, sends or deletes a post.
+The calendar brings its tools to the site's MCP endpoint, `/api/mcp`, which c975l/core-bundle serves and opens (see its README, "Opening the site to AI agents"): `Mcp\SocialMcpProvider`, under the `social` key of the agent tokens, for an account holding `site-role-editor` as on the back office (`Mcp\SocialMcpAccess`), the template week's tools joined from `Mcp\SocialSlotTools`, the series' from `Mcp\SocialSeriesTools`. Nothing an agent does approves, sends or deletes a post, nor rewrites a series.
 
 | Tool | Does |
 | --- | --- |
 | `social_list` | The posts planned `from` a day `to` another (a week ago to a month later by default, 92 days at most), drafts, approved and sent alike, each network with its status, in their order |
 | `social_get` | A `post`: its text, link, moment, series, and for each network its text, first comment, status, publication moment and refusal |
-| `social_create` | A draft written with its `text`, an optional `at` moment to come (the next quarter of an hour by default), `url` and `networks` among the connected ones (those ticked by default when none), its texts cut to each network as on the post's screen; never approved |
+| `social_create` | A draft written with its `text`, an optional `at` moment to come (the next quarter of an hour by default), `url` and `networks` among the connected ones taking a post without a video (those ticked by default when none), its texts cut to each network as on the post's screen; never approved |
 | `social_edit` | The `text` of a draft `post` written with a text of its own changed, every network's text written from it again; an approved post, or one written from a content, is left to the back office |
+| `social_slots` | The template week: each slot's day, time, pace, key and series, the slots it `meets` at the same minute and its `next` three moments |
+| `social_slot_save` | A slot added, or the `slot` given rewritten, every field as given (`label`, `pace`, `time`, `weekday`, `rank`, `monthDay`, `startsOn`, `key`, `series`), refused as the screen's form refuses it; a series imported from a file is refused, its file naming the slot by its key |
+| `social_slot_delete` | The `slot` given taken off the week, the posts planned on it left where they are |
+| `social_slot_relay` | The drafts to come of a `series` laid again on the free moments of its slots, as the screen's button does; approved posts and those gone out stay where they are |
+| `social_series` | The series holding posts, the one ending first first: `mode`, `pace` (`frequency`, `interval`, `weekdays`), `networks`, how many posts are `coming` and how many of them are `drafts`, the moment of the `last` post and the `slots` it is prolonged on |
+| `social_series_get` | A `series` with the same, its `count`, `text`, `sources` and `story`, and its `posts` to come, each with its id, moment and state |
+| `social_series_prolong` | A `series` prolonged `until` a day (`YYYY-MM-DD`, 92 days ahead at most, `SocialSeriesTools::MAX_DAYS`) as `c975l:social:series:prolong` does (`Service\SocialSeriesProlonger`), on its slots or at its pace: only drafts are made, how many said with its new `last` moment, whether the rounds fell `short` of the day and the minutes `passed_over` with the post holding them; an imported series, an ended one (prolonged from the back office), or one without any post left, is refused |
 
 ---
 

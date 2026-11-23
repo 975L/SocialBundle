@@ -53,7 +53,11 @@ class SocialSlotRelayerTest extends TestCase
     // The drafts off the slot are counted, then laid on its next free Fridays in their order, an approved post left where it is and a minute held passed over
     public function testTheDraftsAreLaidAgainOnTheSlots(): void
     {
-        $friday = new \DateTimeImmutable('friday next week 21:00');
+        // The first Friday whose slot is still to come, the relay starting from now
+        $friday = new \DateTimeImmutable('today 21:00');
+        while ('5' !== $friday->format('N') || $friday <= new \DateTimeImmutable()) {
+            $friday = $friday->modify('+1 day');
+        }
         $first = $this->post(1, $friday->modify('-1 day')->format('Y-m-d 20:30'));
         $second = $this->post(2, $friday->modify('+6 days')->format('Y-m-d 20:30'));
         $approved = $this->post(3, $friday->modify('+1 day')->format('Y-m-d 20:30'), true);

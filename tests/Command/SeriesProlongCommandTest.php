@@ -20,6 +20,7 @@ use c975L\SocialBundle\Service\SocialMediaFile;
 use c975L\SocialBundle\Service\SocialPostWriter;
 use c975L\SocialBundle\Service\SocialPublisher;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
+use c975L\SocialBundle\Service\SocialSeriesProlonger;
 use c975L\SocialBundle\Service\SocialSlotCalendar;
 use c975L\SocialBundle\Service\SocialSlotFinder;
 use Doctrine\ORM\EntityManagerInterface;
@@ -67,7 +68,7 @@ class SeriesProlongCommandTest extends TestCase
 
         $generator->method('skippedMoments')->willReturn($this->skipped);
 
-        return new CommandTester(new SeriesProlongCommand($repository, $generator));
+        return new CommandTester(new SeriesProlongCommand($repository, new SocialSeriesProlonger($repository, $generator)));
     }
 
     private function series(int $id, string $mode = SocialSeriesGenerator::MODE_TEXT): SocialSeries
@@ -171,7 +172,7 @@ class SeriesProlongCommandTest extends TestCase
         });
         $generator = new SocialSeriesGenerator($publisher, $this->createStub(SocialPostWriter::class), new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $repository, $this->createStub(SocialSlotRepository::class), new SocialSlotFinder(new SocialSlotCalendar(), $this->createStub(SocialPostRepository::class)), sys_get_temp_dir());
 
-        $tester = new CommandTester(new SeriesProlongCommand($repository, $generator));
+        $tester = new CommandTester(new SeriesProlongCommand($repository, new SocialSeriesProlonger($repository, $generator)));
 
         $this->assertSame(Command::SUCCESS, $tester->execute(['--until' => $base->modify('+30 days')->format('Y-m-d')]));
         $this->assertStringContainsString($held->format('d/m/Y H:i'), $tester->getDisplay());

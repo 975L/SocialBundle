@@ -13,15 +13,24 @@ namespace c975L\SocialBundle\Tests\Mcp;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
+use c975L\SocialBundle\Mcp\SocialMcpAccess;
 use c975L\SocialBundle\Mcp\SocialMcpProvider;
+use c975L\SocialBundle\Mcp\SocialSeriesTools;
+use c975L\SocialBundle\Mcp\SocialSlotTools;
 use c975L\SocialBundle\Repository\SocialPostRepository;
+use c975L\SocialBundle\Repository\SocialSeriesRepository;
+use c975L\SocialBundle\Repository\SocialSlotRepository;
 use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPublisher;
+use c975L\SocialBundle\Service\SocialSeriesProlonger;
+use c975L\SocialBundle\Service\SocialSlotCalendar;
+use c975L\SocialBundle\Service\SocialSlotRelayer;
 use Doctrine\ORM\EntityManagerInterface;
 use Mcp\Server\Exception\ToolCallException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Clock\MockClock;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SocialMcpProviderTest extends TestCase
 {
@@ -31,8 +40,9 @@ class SocialMcpProviderTest extends TestCase
         $tools = iterator_to_array($this->provider()->getMcpTools(), false);
 
         $this->assertSame('social', $this->provider()->getMcpKey());
-        $this->assertSame(['social_list', 'social_get', 'social_create', 'social_edit'], array_map(static fn ($tool): string => $tool->name, $tools));
-        $this->assertSame([false, false, true, true], array_map(static fn ($tool): bool => $tool->writes, $tools));
+        $this->assertSame(['social_list', 'social_get', 'social_create', 'social_edit', 'social_slots', 'social_slot_save', 'social_slot_delete', 'social_slot_relay', 'social_series', 'social_series_get', 'social_series_prolong'], array_map(static fn ($tool): string => $tool->name, $tools));
+        $this->assertSame([false, false, true, true, false, true, true, true, false, false, true], array_map(static fn ($tool): bool => $tool->writes, $tools));
+        $this->assertSame([false, false, false, false, false, false, true, false, false, false, false], array_map(static fn ($tool): bool => $tool->destroys, $tools));
     }
 
     // The posts planned in the days asked, in their order, each network with its status
@@ -102,6 +112,13 @@ class SocialMcpProviderTest extends TestCase
     {
         $this->expectException(ToolCallException::class);
         $this->provider()->create('text-1', networks: ['other']);
+    }
+
+    // A network taking videos alone is refused, a draft written here having no media
+    public function testCreateRefusesANetworkOfVideosAlone(): void
+    {
+        $this->expectExceptionMessage('Videos only: video.');
+        $this->provider()->create('text-1', networks: ['video']);
     }
 
     // A moment gone is refused, a draft never planned in the past
@@ -188,13 +205,21 @@ class SocialMcpProviderTest extends TestCase
         if (null === $publisher) {
             $publisher = $this->createStub(SocialPublisher::class);
             $publisher->method('createManual')->willReturnCallback(fn (\DateTimeImmutable $at): SocialPost => $this->post('', $at->format('Y-m-d H:i')));
-            $publisher->method('getConnectedNetworkNames')->willReturn(['catalog']);
+            $publisher->method('getConnectedNetworkNames')->willReturn(['catalog', 'video']);
+            $publisher->method('getNetworkNamesWithoutVideo')->willReturn(['catalog']);
         }
         $config = $this->createStub(ConfigServiceInterface::class);
         $config->method('get')->willReturn('ROLE_EDITOR');
         $security = $this->createStub(Security::class);
         $security->method('isGranted')->willReturn($granted);
 
-        return new SocialMcpProvider($repository ?? $this->createStub(SocialPostRepository::class), $publisher, new SocialPlanner(), $entityManager ?? $this->createStub(EntityManagerInterface::class), $config, $security, new MockClock('2026-11-21 10:00'));
+        $access = new SocialMcpAccess($config, $security);
+        $clock = new MockClock('2026-11-21 10:00');
+        $entityManager ??= $this->createStub(EntityManagerInterface::class);
+        $slotTools = new SocialSlotTools($this->createStub(SocialSlotRepository::class), $this->createStub(SocialSeriesRepository::class), new SocialSlotCalendar(), $this->createStub(SocialSlotRelayer::class), $entityManager, $this->createStub(ValidatorInterface::class), $access, $clock);
+
+        $seriesTools = new SocialSeriesTools($this->createStub(SocialSeriesRepository::class), $this->createStub(SocialPostRepository::class), $this->createStub(SocialSlotRepository::class), $this->createStub(SocialSeriesProlonger::class), $access, $clock);
+
+        return new SocialMcpProvider($repository ?? $this->createStub(SocialPostRepository::class), $publisher, new SocialPlanner(), $entityManager, $access, $slotTools, $seriesTools, $clock);
     }
 }

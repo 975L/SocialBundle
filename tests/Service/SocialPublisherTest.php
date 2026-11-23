@@ -279,6 +279,7 @@ class SocialPublisherTest extends TestCase
 
         $this->assertSame(['bluesky'], $posts[0]->getNetworks());
         $this->assertSame(['bluesky'], $this->asked['writer']['networks']);
+        $this->assertSame(['bluesky'], $publisher->getNetworkNamesWithoutVideo());
     }
 
     // A network ticked by hand only gets no target on a draft nor on a new post, and is not ticked first on a series - yet it stays connected, and a target is added once it is ticked

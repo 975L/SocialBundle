@@ -228,18 +228,44 @@ class SocialPostRepository extends ServiceEntityRepository
     // How many posts of a series still to come are drafts - waiting on a network, none approved nor refused anywhere (see SocialPost::getState()) -, counted without loading them: what "Approve the series" says it will approve
     public function countComingDraftsBySeries(SocialSeries $series, \DateTimeImmutable $after): int
     {
-        return (int) $this->createQueryBuilder('p')
+        $builder = $this->createQueryBuilder('p')
             ->select('COUNT(p.id)')
             ->where('p.series = :series')
             ->andWhere('p.plannedAt > :after')
+            ->setParameter('series', $series)
+            ->setParameter('after', $after);
+
+        return (int) $this->draftsOnly($builder)->getQuery()->getSingleScalarResult();
+    }
+
+    // The posts still to come of every series and the drafts among them, counted as countComingDraftsBySeries() does, by series id - what the MCP list of the series reads in two queries whatever their number
+    /** @return array<int, array{coming: int, drafts: int}> */
+    public function countComingBySeries(\DateTimeImmutable $after): array
+    {
+        $builder = fn (): QueryBuilder => $this->createQueryBuilder('p')
+            ->select('IDENTITY(p.series) AS series', 'COUNT(p.id) AS total')
+            ->where('p.series IS NOT NULL')
+            ->andWhere('p.plannedAt > :after')
+            ->setParameter('after', $after)
+            ->groupBy('p.series');
+        $drafts = array_column($this->draftsOnly($builder())->getQuery()->getArrayResult(), 'total', 'series');
+
+        $counts = [];
+        foreach ($builder()->getQuery()->getArrayResult() as $row) {
+            $counts[(int) $row['series']] = ['coming' => (int) $row['total'], 'drafts' => (int) ($drafts[$row['series']] ?? 0)];
+        }
+
+        return $counts;
+    }
+
+    // The posts kept to the drafts: one network at least waiting, none approved nor refused
+    private function draftsOnly(QueryBuilder $builder): QueryBuilder
+    {
+        return $builder
             ->andWhere('EXISTS (SELECT d.id FROM ' . SocialPostTarget::class . ' d WHERE d.post = p AND d.status = :draft)')
             ->andWhere('NOT EXISTS (SELECT o.id FROM ' . SocialPostTarget::class . ' o WHERE o.post = p AND o.status IN (:decided))')
-            ->setParameter('series', $series)
-            ->setParameter('after', $after)
             ->setParameter('draft', SocialPostStatus::Draft)
-            ->setParameter('decided', [SocialPostStatus::Approved->value, SocialPostStatus::Failed->value])
-            ->getQuery()
-            ->getSingleScalarResult();
+            ->setParameter('decided', [SocialPostStatus::Approved->value, SocialPostStatus::Failed->value]);
     }
 
     // The posts gone out on every network they have - at least one -, planned before the moment given, that still hold a media - what the purge frees their files from

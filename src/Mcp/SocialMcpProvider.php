@@ -12,7 +12,6 @@ namespace c975L\SocialBundle\Mcp;
 
 use c975L\ConfigBundle\Mcp\McpTool;
 use c975L\ConfigBundle\Mcp\McpToolProviderInterface;
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialPostTarget;
 use c975L\SocialBundle\Repository\SocialPostRepository;
@@ -22,9 +21,8 @@ use c975L\SocialBundle\Service\SocialPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use Mcp\Server\Exception\ToolCallException;
 use Psr\Clock\ClockInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 
-// The posts of the social calendar on the site's MCP endpoint, for an account that edits them on the back office: listed, read, a draft written and its text corrected, approving and sending left to a human
+// The posts of the social calendar on the site's MCP endpoint, for an account that edits them on the back office: listed, read, a draft written and its text corrected, approving and sending left to a human - the template week's tools joined from SocialSlotTools, the series' from SocialSeriesTools
 class SocialMcpProvider implements McpToolProviderInterface
 {
     // Days a list covers at most
@@ -38,8 +36,9 @@ class SocialMcpProvider implements McpToolProviderInterface
         private readonly SocialPublisher $publisher,
         private readonly SocialPlanner $planner,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ConfigServiceInterface $configService,
-        private readonly Security $security,
+        private readonly SocialMcpAccess $access,
+        private readonly SocialSlotTools $slotTools,
+        private readonly SocialSeriesTools $seriesTools,
         private readonly ClockInterface $clock,
     ) {
     }
@@ -51,7 +50,7 @@ class SocialMcpProvider implements McpToolProviderInterface
 
     public function getMcpInstructions(): string
     {
-        return 'Social posts are planned on the calendar of the site, one text per network. A post written by an agent is a draft: nothing goes out until a human approves it from the back office, and only a draft is corrected.';
+        return 'Social posts are planned on the calendar of the site, one text per network. A post written by an agent is a draft: nothing goes out until a human approves it from the back office, and only a draft is corrected. The template week holds the slots the series are prolonged on and the imports name: read it before choosing a moment, two posts never share a minute. A series prolonged by an agent only gains drafts; approving, deleting and its texts stay a human\'s, on the back office.';
     }
 
     public function getMcpTools(): iterable
@@ -60,6 +59,8 @@ class SocialMcpProvider implements McpToolProviderInterface
         yield new McpTool('social_get', 'Social post', 'A post: its text, link, moment, series, and for each network its text, first comment, status, publication moment and refusal.', $this->get(...));
         yield new McpTool('social_create', 'Write a draft post', 'Writes a post as a draft at a moment to come, its text cut to each network; it is neither approved nor sent.', $this->create(...), true);
         yield new McpTool('social_edit', 'Correct a post', 'Changes the text of a draft written with a text of its own, every network\'s text written from it again; an approved post is left to the back office.', $this->edit(...), true);
+        yield from $this->slotTools->getMcpTools();
+        yield from $this->seriesTools->getMcpTools();
     }
 
     // The posts planned between the two days, the last one included, in their order
@@ -71,9 +72,9 @@ class SocialMcpProvider implements McpToolProviderInterface
      */
     public function list(?string $from = null, ?string $to = null): array
     {
-        $this->guard();
-        $start = $this->day($from) ?? $this->clock->now()->setTime(0, 0)->modify('-7 days');
-        $end = ($this->day($to) ?? $start->modify('+30 days'))->modify('+1 day');
+        $this->access->guard();
+        $start = $this->access->day($from) ?? $this->clock->now()->setTime(0, 0)->modify('-7 days');
+        $end = ($this->access->day($to) ?? $start->modify('+30 days'))->modify('+1 day');
         if ($end <= $start || $end > $start->modify('+' . self::MAX_DAYS . ' days')) {
             throw new ToolCallException(sprintf('The days run from the first to the last, %d days at most.', self::MAX_DAYS));
         }
@@ -108,13 +109,13 @@ class SocialMcpProvider implements McpToolProviderInterface
      * @param string       $text     text of the post, cut to each network
      * @param ?string      $at       moment it would go out once approved, YYYY-MM-DD HH:MM in the site's time, the next quarter of an hour by default
      * @param ?string      $url      address the post links to
-     * @param list<string> $networks networks it goes to, among the connected ones, those ticked by default when empty
+     * @param list<string> $networks networks it goes to, among the connected ones taking a post without a video, those ticked by default when empty
      *
      * @return array{id: ?int, planned: string, networks: list<string>}
      */
     public function create(string $text, ?string $at = null, ?string $url = null, array $networks = []): array
     {
-        $this->guard();
+        $this->access->guard();
         if ('' === trim($text)) {
             throw new ToolCallException('The text is empty.');
         }
@@ -164,18 +165,10 @@ class SocialMcpProvider implements McpToolProviderInterface
         return ['id' => $found->getId(), 'state' => $found->getState()];
     }
 
-    // The calendar is the editor's business, as on the back office
-    private function guard(): void
-    {
-        if (!$this->security->isGranted((string) $this->configService->get('site-role-editor'))) {
-            throw new ToolCallException('This account may not work on the social posts.');
-        }
-    }
-
     // A post by its id
     private function found(int $id): SocialPost
     {
-        $this->guard();
+        $this->access->guard();
         $post = $this->postRepository->find($id);
         if (!$post instanceof SocialPost) {
             throw new ToolCallException(sprintf('No post %d.', $id));
@@ -223,21 +216,6 @@ class SocialMcpProvider implements McpToolProviderInterface
         ];
     }
 
-    // A day written YYYY-MM-DD, null when none is given - one PHP would roll over refused
-    private function day(?string $day): ?\DateTimeImmutable
-    {
-        if ('' === trim((string) $day)) {
-            return null;
-        }
-
-        $parsed = $this->parse('Y-m-d', $day);
-        if (null === $parsed) {
-            throw new ToolCallException(sprintf('"%s" is not a day written YYYY-MM-DD.', $day));
-        }
-
-        return $parsed;
-    }
-
     // The moment asked brought to the quarter of an hour, the next quarter of an hour without one - a moment gone, or one PHP would roll over, refused
     private function moment(?string $at): \DateTimeImmutable
     {
@@ -246,7 +224,7 @@ class SocialMcpProvider implements McpToolProviderInterface
             return $this->planner->nextQuarter($now);
         }
 
-        $parsed = $this->parse('Y-m-d H:i', $at);
+        $parsed = $this->access->parse('Y-m-d H:i', $at);
         if (null === $parsed) {
             throw new ToolCallException(sprintf('"%s" is not a moment written YYYY-MM-DD HH:MM.', $at));
         }
@@ -256,15 +234,6 @@ class SocialMcpProvider implements McpToolProviderInterface
         }
 
         return $moment;
-    }
-
-    // A date written in $format exactly, null for anything else
-    private function parse(string $format, ?string $value): ?\DateTimeImmutable
-    {
-        $value = trim((string) $value);
-        $parsed = \DateTimeImmutable::createFromFormat('!' . $format, $value);
-
-        return false !== $parsed && $parsed->format($format) === $value ? $parsed : null;
     }
 
     // An http(s) address a post may hold, empty when none is given
@@ -278,7 +247,7 @@ class SocialMcpProvider implements McpToolProviderInterface
         return $url;
     }
 
-    // The networks asked, each a connected one
+    // The networks asked, each a connected one taking a post without a video
     /**
      * @param list<string> $networks
      *
@@ -290,6 +259,11 @@ class SocialMcpProvider implements McpToolProviderInterface
         $unknown = array_diff($networks, $connected);
         if ([] !== $unknown) {
             throw new ToolCallException(sprintf('Not connected: %s. Connected: %s.', implode(', ', $unknown), implode(', ', $connected)));
+        }
+        // A draft written here has no media, so a network taking videos alone could never send it
+        $videoOnly = array_diff($networks, $this->publisher->getNetworkNamesWithoutVideo());
+        if ([] !== $videoOnly) {
+            throw new ToolCallException(sprintf('Videos only: %s. A video is added from the back office.', implode(', ', $videoOnly)));
         }
 
         return array_values(array_unique($networks));

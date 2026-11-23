@@ -18,6 +18,7 @@ use c975L\SocialBundle\Service\InstagramPublisher;
 use c975L\SocialBundle\Service\MetaGraphClient;
 use c975L\SocialBundle\Service\SocialImageExporter;
 use c975L\UiBundle\Model\SocialContent;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class MetaPublishersTest extends TestCase
@@ -191,21 +192,30 @@ class MetaPublishersTest extends TestCase
     }
 
     // A story Meta says is not available yet past FINISHED is published again rather than refused
-    public function testInstagramPublishesAgainAMediaNotAvailableYet(): void
+    #[DataProvider('notAvailableYetProvider')]
+    public function testInstagramPublishesAgainAMediaNotAvailableYet(string $refusal): void
     {
         $answers = [['id' => 'c1'], ['status_code' => 'FINISHED'], null, ['id' => 's1']];
         $graph = $this->createStub(MetaGraphClient::class);
         $graph->method('pageToken')->willReturn('page-token');
-        $graph->method('request')->willReturnCallback(function (string $method, string $path, array $parameters) use (&$answers): array {
+        $graph->method('request')->willReturnCallback(function (string $method, string $path, array $parameters) use (&$answers, $refusal): array {
             $this->calls[] = ['method' => $method, 'path' => $path, 'parameters' => $parameters];
 
-            return array_shift($answers) ?? throw new \RuntimeException('Meta refused ' . $path . ': Media ID is not available');
+            return array_shift($answers) ?? throw new \RuntimeException('Meta refused ' . $path . ': ' . $refusal);
         });
 
         $id = new InstagramPublisher($graph, $this->login(), $this->exporter('https://example.org/medias/social/a.jpg'), $this->config(), 0)->story($this->content());
 
         $this->assertSame('s1', $id);
         $this->assertSame(['/77/media', '/c1', '/77/media_publish', '/77/media_publish'], array_column($this->calls, 'path'));
+    }
+
+    // The refusals Meta gives a container published too soon
+    /** @return iterable<string, array{string}> */
+    public static function notAvailableYetProvider(): iterable
+    {
+        yield 'media not available' => ['Media ID is not available'];
+        yield 'resource not found yet' => ['The requested resource does not exist'];
     }
 
     // Any other refusal of the publication is not asked again

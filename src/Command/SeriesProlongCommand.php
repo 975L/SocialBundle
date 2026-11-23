@@ -10,9 +10,9 @@
 
 namespace c975L\SocialBundle\Command;
 
-use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Repository\SocialSeriesRepository;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
+use c975L\SocialBundle\Service\SocialSeriesProlonger;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -21,19 +21,16 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-// "Prolong the series" as many times as it takes for a series to reach a date, each time as the button does (SocialSeriesGenerator::prolong()) - the running series, or the ones named. A series already reaching the date is left as it is, so the command runs again harmlessly; an imported series is never prolonged, its next posts being imported. The drafts wait on the calendar to be read and approved
+// "Prolong the series" as many times as it takes for a series to reach a date, each time as the button does (SocialSeriesProlonger, SocialSeriesGenerator::prolong()) - the running series, or the ones named. A series already reaching the date is left as it is, so the command runs again harmlessly; an imported series is never prolonged, its next posts being imported. The drafts wait on the calendar to be read and approved
 #[AsCommand(
     name: 'c975l:social:series:prolong',
     description: 'Prolongs the social series until a date, as drafts waiting for approval',
 )]
 class SeriesProlongCommand extends Command
 {
-    // A guard against a series whose prolongation would never reach the date
-    private const int MAX_ROUNDS = 100;
-
     public function __construct(
         private readonly SocialSeriesRepository $seriesRepository,
-        private readonly SocialSeriesGenerator $seriesGenerator,
+        private readonly SocialSeriesProlonger $prolonger,
     ) {
         parent::__construct();
     }
@@ -80,7 +77,7 @@ class SeriesProlongCommand extends Command
         $short = [];
         $skipped = [];
         foreach ($rows as $row) {
-            [$made, $last, $cut, $held] = $this->prolong($row['series'], $row['lastPlannedAt'], $until, (bool) $input->getOption('dry-run'));
+            [$made, $last, $cut, $held] = $this->prolonger->until($row['series'], $row['lastPlannedAt'], $until, (bool) $input->getOption('dry-run'));
             foreach ($held as $minute => $title) {
                 $skipped[] = sprintf('Series %d: %s passed over, already held by "%s".', $row['series']->getId(), $minute, $title);
             }
@@ -103,30 +100,5 @@ class SeriesProlongCommand extends Command
         }
 
         return Command::SUCCESS;
-    }
-
-    // Prolonged round after round until its last post reaches the day, none made past it - on a dry run, its moments only counted. The number of drafts, the new end, whether the rounds ran out before the day, and the minutes of its slots passed over with the post holding them returned
-    /** @return array{int, \DateTimeImmutable, bool, array<string, string>} */
-    private function prolong(SocialSeries $series, \DateTimeImmutable $last, \DateTimeImmutable $until, bool $dryRun): array
-    {
-        $made = 0;
-        $skipped = [];
-        for ($round = 0; $last < $until && $round < self::MAX_ROUNDS; ++$round) {
-            $skipped += $this->seriesGenerator->skippedMoments($series, $last, $until);
-            if ($dryRun) {
-                $new = $this->seriesGenerator->prolongMoments($series, $last, $until);
-                $next = [] === $new ? null : end($new);
-            } else {
-                $new = $this->seriesGenerator->prolong($series, $until);
-                $next = [] === $new ? null : $this->seriesRepository->findLastPlannedAt($series) ?? $until;
-            }
-            if (null === $next) {
-                break;
-            }
-            $made += \count($new);
-            $last = $next;
-        }
-
-        return [$made, $last, self::MAX_ROUNDS === $round && $last < $until, $skipped];
     }
 }
