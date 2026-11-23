@@ -13,6 +13,7 @@ namespace c975L\SocialBundle\Tests\Command;
 use c975L\SocialBundle\Command\SeriesProlongCommand;
 use c975L\SocialBundle\Entity\SocialPost;
 use c975L\SocialBundle\Entity\SocialSeries;
+use c975L\SocialBundle\Entity\SocialSlot;
 use c975L\SocialBundle\Repository\SocialPostRepository;
 use c975L\SocialBundle\Repository\SocialSeriesRepository;
 use c975L\SocialBundle\Repository\SocialSlotRepository;
@@ -25,6 +26,7 @@ use c975L\SocialBundle\Service\SocialSlotCalendar;
 use c975L\SocialBundle\Service\SocialSlotFinder;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -40,8 +42,11 @@ class SeriesProlongCommandTest extends TestCase
     private array $prolonged = [];
 
     // Each prolongation adds a week to its series' last post, as a weekly series of one post would
-    /** @param list<array{series: SocialSeries, lastPlannedAt: \DateTimeImmutable}> $rows */
-    private function tester(array $rows): CommandTester
+    /**
+     * @param list<array{series: SocialSeries, lastPlannedAt: \DateTimeImmutable}> $rows
+     * @param list<SocialSlot>                                                     $slots
+     */
+    private function tester(array $rows, array $slots = []): CommandTester
     {
         foreach ($rows as $row) {
             $this->last[(int) $row['series']->getId()] = $row['lastPlannedAt'];
@@ -68,7 +73,10 @@ class SeriesProlongCommandTest extends TestCase
 
         $generator->method('skippedMoments')->willReturn($this->skipped);
 
-        return new CommandTester(new SeriesProlongCommand($repository, new SocialSeriesProlonger($repository, $generator)));
+        $slotRepository = $this->createStub(SocialSlotRepository::class);
+        $slotRepository->method('findOrdered')->willReturn($slots);
+
+        return new CommandTester(new SeriesProlongCommand($repository, new SocialSeriesProlonger($repository, $generator), $slotRepository));
     }
 
     private function series(int $id, string $mode = SocialSeriesGenerator::MODE_TEXT): SocialSeries
@@ -96,6 +104,17 @@ class SeriesProlongCommandTest extends TestCase
         $rows[0]['lastPlannedAt'] = $this->last[1];
         $this->tester($rows)->execute(['--until' => $until]);
         $this->assertSame([], $this->prolonged);
+    }
+
+    // A series tied to a slot of the template week is prolonged even once ended, the slots taking it up again
+    public function testAnEndedSeriesOnASlotIsProlonged(): void
+    {
+        $series = $this->series(2);
+        $rows = [['series' => $series, 'lastPlannedAt' => new \DateTimeImmutable('-3 days 21:00')]];
+
+        $this->tester($rows, [new SocialSlot()->setLabel('item-1')->setWeekday(1)->setTime('18:00')->setSeries($series)])->execute(['--until' => new \DateTimeImmutable('+10 days')->format('Y-m-d')]);
+
+        $this->assertSame([2], $this->prolonged);
     }
 
     // A minute of a slot another post holds is said, the run staying a success
@@ -170,9 +189,9 @@ class SeriesProlongCommandTest extends TestCase
         $repository->method('findLastPlannedAt')->willReturnCallback(static function () use (&$last): \DateTimeImmutable {
             return $last;
         });
-        $generator = new SocialSeriesGenerator($publisher, $this->createStub(SocialPostWriter::class), new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $repository, $this->createStub(SocialSlotRepository::class), new SocialSlotFinder(new SocialSlotCalendar(), $this->createStub(SocialPostRepository::class)), sys_get_temp_dir());
+        $generator = new SocialSeriesGenerator($publisher, $this->createStub(SocialPostWriter::class), new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $repository, $this->createStub(SocialSlotRepository::class), new SocialSlotFinder(new SocialSlotCalendar(), $this->createStub(SocialPostRepository::class)), new MockClock('2026-11-01'), sys_get_temp_dir());
 
-        $tester = new CommandTester(new SeriesProlongCommand($repository, new SocialSeriesProlonger($repository, $generator)));
+        $tester = new CommandTester(new SeriesProlongCommand($repository, new SocialSeriesProlonger($repository, $generator), $this->createStub(SocialSlotRepository::class)));
 
         $this->assertSame(Command::SUCCESS, $tester->execute(['--until' => $base->modify('+30 days')->format('Y-m-d')]));
         $this->assertStringContainsString($held->format('d/m/Y H:i'), $tester->getDisplay());

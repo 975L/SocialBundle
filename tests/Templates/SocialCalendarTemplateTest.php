@@ -519,8 +519,9 @@ class SocialCalendarTemplateTest extends TestCase
     /**
      * @param list<array<string, mixed>>                                           $posts
      * @param list<array{series: SocialSeries, lastPlannedAt: \DateTimeImmutable}> $ended
+     * @param list<int>                                                            $aside
      */
-    private function series(array $posts, array $ended = []): string
+    private function series(array $posts, array $ended = [], array $aside = []): string
     {
         $series = new SocialSeries('Photo du jour', 3, 'days', 1, [], 'text', "Photo du jour\n#photo", [], ['bluesky']);
 
@@ -547,6 +548,7 @@ class SocialCalendarTemplateTest extends TestCase
             'prolong_url' => '/prolong',
             'delete_series_url' => '/series/delete',
             'ended' => $ended,
+            'aside' => $aside,
         ]);
     }
 
@@ -569,6 +571,17 @@ class SocialCalendarTemplateTest extends TestCase
         $this->assertSame(2, substr_count($html, 'class="social-series-review-card'));
         $this->assertStringContainsString("title=\"Feuilles 1\">Feuilles 1\nUn texte</a>", $html);
         $this->assertStringContainsString('data-ea-not-prose', $html);
+    }
+
+    // The drafts a review set aside come unchecked, the others checked for "Approve the selection", "Select all" then unchecked
+    public function testTheSeriesLeavesTheDraftsSetAsideUnchecked(): void
+    {
+        $html = $this->series([$this->seriesCard(1, 'draft'), $this->seriesCard(2, 'draft')], aside: [2]);
+
+        $this->assertMatchesRegularExpression('/social-series-review-pick" checked value="1"/', $html);
+        $this->assertMatchesRegularExpression('/social-series-review-pick" value="2"/', $html);
+        $this->assertDoesNotMatchRegularExpression('/id="social-series-pick-all" checked/', $html);
+        $this->assertMatchesRegularExpression('/id="social-series-pick-all" checked/', $this->series([$this->seriesCard(1, 'draft')]));
     }
 
     // Each connected network a toggle, ticked when the post goes there, saved on a change

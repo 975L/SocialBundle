@@ -16,6 +16,7 @@ use c975L\SocialBundle\Entity\SocialSeries;
 use c975L\SocialBundle\Repository\SocialSeriesRepository;
 use c975L\SocialBundle\Repository\SocialSlotRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Clock\ClockInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
 // A series of drafts, one per moment from a start at a steady pace - its texts one generic text, the site's AI writing each from one instruction, or the next contents of the sources. The series is kept with its settings (see SocialSeries): its drafts are read, corrected and approved one by one, or together from the list, and it is prolonged from its last post with the same settings
@@ -42,6 +43,9 @@ class SocialSeriesGenerator
     // How far a prolongation reading dates looks past days without content when no end is given: every date of the year has then been asked
     private const string DATED_REACH = '+1 year';
 
+    // How many rounds at its pace a series ended a while ago goes through to reach the moments still to come
+    private const int MAX_PACE_ROUNDS = 400;
+
     public function __construct(
         private readonly SocialPublisher $socialPublisher,
         private readonly SocialPostWriter $writer,
@@ -50,6 +54,7 @@ class SocialSeriesGenerator
         private readonly SocialSeriesRepository $seriesRepository,
         private readonly SocialSlotRepository $slotRepository,
         private readonly SocialSlotFinder $slotFinder,
+        private readonly ClockInterface $clock,
         private readonly string $projectDir,
     ) {
     }
@@ -128,7 +133,7 @@ class SocialSeriesGenerator
         }
 
         $readsDates = $this->readsDates($series);
-        $limit = $until ?? ($readsDates ? $last->modify(self::DATED_REACH) : null);
+        $limit = $until ?? ($readsDates ? max($last, $this->clock->now())->modify(self::DATED_REACH) : null);
         $textMissing = false;
         do {
             $moments = $this->prolongMoments($series, $last, $limit);
@@ -145,7 +150,7 @@ class SocialSeriesGenerator
         return (self::MODE_SOURCE === $series->getMode() || [] !== $series->getSources()) && $this->socialPublisher->hasDatedSource($series->getSources());
     }
 
-    // The moments a prolongation from $last takes, on the series' slots of the template week when it has some, else at its pace - a minute another post holds passed over - none past $until when given - none for an imported series, its next posts being imported. Nothing is written, so a dry run counts them
+    // The moments a prolongation from $last takes, on the series' slots of the template week when it has some, else at its pace - a minute another post holds passed over, none gone already, none past $until when given - none for an imported series, its next posts being imported. Nothing is written, so a dry run counts them
     /** @return list<\DateTimeImmutable> */
     public function prolongMoments(SocialSeries $series, \DateTimeImmutable $last, ?\DateTimeImmutable $until = null): array
     {
@@ -155,10 +160,10 @@ class SocialSeriesGenerator
 
         $slots = $this->slotRepository->findBySeries($series);
         if ([] !== $slots) {
-            return $this->slotFinder->free($slots, $last, $series->getCount(), $until)[0];
+            return $this->slotFinder->free($slots, max($last, $this->clock->now()), $series->getCount(), $until)[0];
         }
 
-        return $this->slotFinder->split($this->paceMoments($series, $last, $until))[0];
+        return $this->slotFinder->split($this->comingPaceMoments($series, $last, $until))[0];
     }
 
     // The moments at the series' pace after $last, none past $until when given, whether another post holds them or not
@@ -192,7 +197,25 @@ class SocialSeriesGenerator
 
         $slots = $this->slotRepository->findBySeries($series);
 
-        return [] !== $slots ? $this->slotFinder->free($slots, $last, $series->getCount(), $until)[1] : $this->slotFinder->split($this->paceMoments($series, $last, $until))[1];
+        return [] !== $slots ? $this->slotFinder->free($slots, max($last, $this->clock->now()), $series->getCount(), $until)[1] : $this->slotFinder->split($this->comingPaceMoments($series, $last, $until))[1];
+    }
+
+    // As many moments at the series' pace as it counts, all still to come: a series ended a while ago goes on past the ones gone already, in its own rhythm
+    /** @return list<\DateTimeImmutable> */
+    private function comingPaceMoments(SocialSeries $series, \DateTimeImmutable $last, ?\DateTimeImmutable $until): array
+    {
+        $now = $this->clock->now();
+        $coming = [];
+        for ($round = 0; \count($coming) < max(1, $series->getCount()) && $round < self::MAX_PACE_ROUNDS; ++$round) {
+            $moments = $this->paceMoments($series, $last, $until);
+            if ([] === $moments) {
+                break;
+            }
+            $coming = [...$coming, ...array_filter($moments, static fn (\DateTimeImmutable $moment): bool => $moment > $now)];
+            $last = end($moments);
+        }
+
+        return \array_slice($coming, 0, max(1, $series->getCount()));
     }
 
     // The drafts of the series at its moments, on its networks - fewer than asked when the AI answers fewer texts or the sources run out, a dated source only passing over the moments without content. With sources picked, each draft written from a text takes the picture of their next content, reserved as a draft of its own is; the series' media goes with every draft instead. $textMissing says the AI left a draft without a text

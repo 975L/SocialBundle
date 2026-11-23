@@ -133,7 +133,7 @@ class SocialPublisherTest extends TestCase
         return $source;
     }
 
-    // A gallery whose contents may be changed on a post's screen: '42' in the group '3', the next one drawn there '43'
+    // A gallery whose contents may be changed on a post's screen: '42' in the group '3', the next one drawn there '43', '44' listed free in it
     private function createBrowsableSource(): BrowsableSocialContentSourceInterface
     {
         $source = $this->createStub(BrowsableSocialContentSourceInterface::class);
@@ -144,7 +144,7 @@ class SocialPublisherTest extends TestCase
         $source->method('findContents')->willReturnCallback(function (array $excludedIds, array $scopeIds, int $limit): array {
             $this->asked['gallery_media'] = ['excluded' => $excludedIds, 'scopes' => $scopeIds];
 
-            return [new SocialContent('44', 'Photo 44', 'https://example.org/44')];
+            return [] === $scopeIds || \in_array('3', $scopeIds, true) ? [new SocialContent('44', 'Photo 44', 'https://example.org/44')] : [];
         });
 
         return $source;
@@ -1441,6 +1441,27 @@ class SocialPublisherTest extends TestCase
         $this->assertSame(['book'], array_column($publisher->freeContents(['book'], 10), 'source'));
         $this->assertSame('Fresh', $publisher->findContent('book', '12')?->title);
         $this->assertNull($publisher->findContent('page', '1'));
+    }
+
+    // The contents still free among a series' sources: a group picked asked of its source, which keeps its own contents, a whole source all of them
+    public function testTheFreeContentsOfASeriesSources(): void
+    {
+        $publisher = $this->createPublisher([$this->createBrowsableSource(), $this->createSource('book', '12')], [$this->createNetwork('bluesky')]);
+
+        $this->assertSame(['44'], array_map(static fn (array $row): string => $row['content']->sourceId, $publisher->freeContentsOf(['gallery_media:3'], 10)));
+        $this->assertSame(['3'], $this->asked['gallery_media']['scopes']);
+        $this->assertSame([], $publisher->freeContentsOf(['gallery_media:9'], 10));
+        $this->assertSame(['gallery_media', 'book'], array_column($publisher->freeContentsOf(['gallery_media', 'book'], 10), 'source'));
+    }
+
+    // The contents left are counted only where every source picked lists them: a source handing out its next one says nothing of the rest
+    public function testTheFreeContentsAreCountedOnlyWhereTheSourcesListThem(): void
+    {
+        $publisher = $this->createPublisher([$this->createBrowsableSource(), $this->createSource('book', '12')], [$this->createNetwork('bluesky')]);
+
+        $this->assertTrue($publisher->countsFreeContents(['gallery_media:3']));
+        $this->assertFalse($publisher->countsFreeContents(['book']));
+        $this->assertFalse($publisher->countsFreeContents([]));
     }
 
     // A content taken is not free, unless the post asking holds it itself; a source not installed has nothing free

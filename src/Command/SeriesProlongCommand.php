@@ -10,7 +10,10 @@
 
 namespace c975L\SocialBundle\Command;
 
+use c975L\SocialBundle\Entity\SocialSeries;
+use c975L\SocialBundle\Entity\SocialSlot;
 use c975L\SocialBundle\Repository\SocialSeriesRepository;
+use c975L\SocialBundle\Repository\SocialSlotRepository;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
 use c975L\SocialBundle\Service\SocialSeriesProlonger;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -21,7 +24,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-// "Prolong the series" as many times as it takes for a series to reach a date, each time as the button does (SocialSeriesProlonger, SocialSeriesGenerator::prolong()) - the running series, or the ones named. A series already reaching the date is left as it is, so the command runs again harmlessly; an imported series is never prolonged, its next posts being imported. The drafts wait on the calendar to be read and approved
+// "Prolong the series" as many times as it takes for a series to reach a date, each time as the button does (SocialSeriesProlonger, SocialSeriesGenerator::prolong()) - the running series and those tied to a slot, or the ones named. A series already reaching the date is left as it is, so the command runs again harmlessly; an imported series is never prolonged, its next posts being imported. The drafts wait on the calendar to be read and approved
 #[AsCommand(
     name: 'c975l:social:series:prolong',
     description: 'Prolongs the social series until a date, as drafts waiting for approval',
@@ -31,6 +34,7 @@ class SeriesProlongCommand extends Command
     public function __construct(
         private readonly SocialSeriesRepository $seriesRepository,
         private readonly SocialSeriesProlonger $prolonger,
+        private readonly SocialSlotRepository $slotRepository,
     ) {
         parent::__construct();
     }
@@ -38,7 +42,7 @@ class SeriesProlongCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('series', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'The ids of the series to prolong, the running ones (last post still to come) by default')
+            ->addArgument('series', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'The ids of the series to prolong, by default the running ones (last post still to come) and those tied to a slot of the template week')
             ->addOption('until', null, InputOption::VALUE_REQUIRED, 'The day the series are prolonged to, written YYYY-MM-DD')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'List the series, the drafts a prolongation would make and where they would end, without writing anything')
         ;
@@ -56,13 +60,8 @@ class SeriesProlongCommand extends Command
         }
         $until = $day->setTime(23, 59, 59);
 
-        // The series named, or the ones still running, imported ones left out
         $ids = array_map(intval(...), (array) $input->getArgument('series'));
-        $rows = array_filter(
-            $this->seriesRepository->findWithLastPlannedAt(),
-            static fn (array $row): bool => SocialSeriesGenerator::MODE_IMPORT !== $row['series']->getMode()
-                && ([] === $ids ? $row['lastPlannedAt'] > new \DateTimeImmutable() : \in_array($row['series']->getId(), $ids, true)),
-        );
+        $rows = $this->selected($ids);
         $left = array_diff($ids, array_map(static fn (array $row): ?int => $row['series']->getId(), $rows));
         if ([] !== $left) {
             $io->warning(sprintf('Series %s not found or imported, left out.', implode(', ', $left)));
@@ -100,5 +99,22 @@ class SeriesProlongCommand extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    // The series named, or the ones still running and those tied to a slot of the template week even once ended, imported ones left out
+    /**
+     * @param list<int> $ids
+     *
+     * @return array<int, array{series: SocialSeries, lastPlannedAt: \DateTimeImmutable}>
+     */
+    private function selected(array $ids): array
+    {
+        $onSlots = array_map(static fn (SocialSlot $slot): ?int => $slot->getSeries()?->getId(), $this->slotRepository->findOrdered());
+
+        return array_filter(
+            $this->seriesRepository->findWithLastPlannedAt(),
+            static fn (array $row): bool => SocialSeriesGenerator::MODE_IMPORT !== $row['series']->getMode()
+                && ([] === $ids ? $row['lastPlannedAt'] > new \DateTimeImmutable() || \in_array($row['series']->getId(), $onSlots, true) : \in_array($row['series']->getId(), $ids, true)),
+        );
     }
 }

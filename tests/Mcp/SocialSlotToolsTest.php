@@ -19,9 +19,11 @@ use c975L\SocialBundle\Repository\SocialSeriesRepository;
 use c975L\SocialBundle\Repository\SocialSlotRepository;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
 use c975L\SocialBundle\Service\SocialSlotCalendar;
+use c975L\SocialBundle\Service\SocialSlotPlan;
 use c975L\SocialBundle\Service\SocialSlotRelayer;
 use Doctrine\ORM\EntityManagerInterface;
 use Mcp\Server\Exception\ToolCallException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Clock\MockClock;
@@ -121,6 +123,32 @@ class SocialSlotToolsTest extends TestCase
         $this->tools(series: $series)->relay(4);
     }
 
+    // The plan of the coming days, read up to the day asked
+    public function testPlan(): void
+    {
+        $plan = $this->createStub(SocialSlotPlan::class);
+        $plan->method('read')->willReturnCallback(static fn (\DateTimeImmutable $until): array => ['until' => $until->format('Y-m-d'), 'moments' => [], 'series' => []]);
+
+        $this->assertSame(['until' => '2027-01-05', 'moments' => [], 'series' => []], $this->tools(plan: $plan)->plan('2027-01-05'));
+    }
+
+    // A day written otherwise, rolled over, missing, or past the 92 days an agent reads at most, is refused
+    #[DataProvider('badPlanDayProvider')]
+    public function testPlanRefusesABadDay(string $until): void
+    {
+        $this->expectException(ToolCallException::class);
+        $this->tools()->plan($until);
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function badPlanDayProvider(): iterable
+    {
+        yield 'written otherwise' => ['05/01/2027'];
+        yield 'rolled over' => ['2027-02-30'];
+        yield 'none' => [''];
+        yield 'too far' => ['2027-06-01'];
+    }
+
     // A slot asked by an id it does not have is refused
     public function testDeleteRefusesAnUnknownSlot(): void
     {
@@ -156,7 +184,7 @@ class SocialSlotToolsTest extends TestCase
     }
 
     // The tools on stubs, the account an editor unless said otherwise
-    private function tools(?SocialSlotRepository $slots = null, ?SocialSeriesRepository $series = null, ?EntityManagerInterface $entityManager = null, ?ValidatorInterface $validator = null, bool $granted = true, ?SocialSlotRelayer $relayer = null): SocialSlotTools
+    private function tools(?SocialSlotRepository $slots = null, ?SocialSeriesRepository $series = null, ?EntityManagerInterface $entityManager = null, ?ValidatorInterface $validator = null, bool $granted = true, ?SocialSlotRelayer $relayer = null, ?SocialSlotPlan $plan = null): SocialSlotTools
     {
         $config = $this->createStub(ConfigServiceInterface::class);
         $config->method('get')->willReturn('ROLE_EDITOR');
@@ -167,6 +195,6 @@ class SocialSlotToolsTest extends TestCase
             $validator->method('validate')->willReturn(new ConstraintViolationList());
         }
 
-        return new SocialSlotTools($slots ?? $this->createStub(SocialSlotRepository::class), $series ?? $this->createStub(SocialSeriesRepository::class), new SocialSlotCalendar(), $relayer ?? $this->createStub(SocialSlotRelayer::class), $entityManager ?? $this->createStub(EntityManagerInterface::class), $validator, new SocialMcpAccess($config, $security), new MockClock('2026-11-21 10:00'));
+        return new SocialSlotTools($slots ?? $this->createStub(SocialSlotRepository::class), $series ?? $this->createStub(SocialSeriesRepository::class), new SocialSlotCalendar(), $relayer ?? $this->createStub(SocialSlotRelayer::class), $entityManager ?? $this->createStub(EntityManagerInterface::class), $validator, new SocialMcpAccess($config, $security), new MockClock('2026-11-21 10:00'), $plan ?? $this->createStub(SocialSlotPlan::class));
     }
 }

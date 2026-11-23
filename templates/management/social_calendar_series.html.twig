@@ -66,11 +66,11 @@
                 {% endfor %}
             </div>
 
-            {# The drafts checked approved at once, each at its own moment - every one checked to begin with, a few unchecked to leave them drafts #}
+            {# The drafts checked approved at once, each at its own moment - every one checked to begin with but those a review set aside, a few unchecked to leave them drafts #}
             {% if posts|filter(card => card.state == 'draft') is not empty %}
                 <div class="social-series-review-selection mb-3">
                     <div class="form-check mb-0">
-                        <input type="checkbox" class="form-check-input" id="social-series-pick-all" checked data-social-calendar-target="pickAll" data-action="social-calendar#pickAll">
+                        <input type="checkbox" class="form-check-input" id="social-series-pick-all"{% if aside|default([]) is empty %} checked{% endif %} data-social-calendar-target="pickAll" data-action="social-calendar#pickAll">
                         <label class="form-check-label" for="social-series-pick-all">{{ 'label.social_series_review_pick_all'|trans({}, 'social') }}</label>
                     </div>
                     <twig:ea:Button type="button" color="success" size="sm" icon="fa fa-check-double" data-action="social-calendar#approvePicked">{{ 'label.social_series_review_approve_picked'|trans({}, 'social') }}</twig:ea:Button>
@@ -82,7 +82,7 @@
                     <article class="social-series-review-card is-{{ post.state }}">
                         <div class="social-series-review-media">
                             {% if post.state == 'draft' %}
-                                <input type="checkbox" class="form-check-input social-series-review-pick" checked value="{{ post.id }}" data-social-calendar-target="pick" data-action="social-calendar#syncPicks" aria-label="{{ 'label.social_series_review_pick'|trans({'%title%': post.title}, 'social') }}">
+                                <input type="checkbox" class="form-check-input social-series-review-pick"{% if post.id not in aside|default([]) %} checked{% endif %} value="{{ post.id }}" data-social-calendar-target="pick" data-action="social-calendar#syncPicks" aria-label="{{ 'label.social_series_review_pick'|trans({'%title%': post.title}, 'social') }}">
                             {% endif %}
                             {% if post.video_url %}
                                 {# A moment in rather than the first frame, often black, played at its size with its sound by a click, Enter or Space #}

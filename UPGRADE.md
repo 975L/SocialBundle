@@ -2,7 +2,9 @@
 
 ## To 2.43
 
-**Code:** `SocialMcpProvider`'s constructor takes `SocialMcpAccess`, `SocialSlotTools` and `SocialSeriesTools` in place of `ConfigServiceInterface` and `Security`, and `SeriesProlongCommand`'s takes `SocialSeriesProlonger` in place of `SocialSeriesGenerator`.
+**Code:** `SocialMcpProvider`'s constructor takes `SocialMcpAccess`, `SocialSlotTools` and `SocialSeriesTools` in place of `ConfigServiceInterface` and `Security`, and `SeriesProlongCommand`'s takes `SocialSeriesProlonger` in place of `SocialSeriesGenerator`. `SocialSeriesGenerator`'s constructor takes `ClockInterface` before the project's folder, `SocialSlotTools`'s takes `SocialSlotPlan` last, and `SeriesProlongCommand`'s takes `SocialSlotRepository` last.
+
+**Behaviour:** a prolongation never makes a draft in the past: a series ended a while ago goes on from now, on its slots or in its rhythm. `c975l:social:series:prolong` without ids also prolongs the series tied to a slot of the template week once ended.
 
 ## To 2.42
 

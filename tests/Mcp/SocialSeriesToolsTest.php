@@ -106,7 +106,7 @@ class SocialSeriesToolsTest extends TestCase
 
             return $post;
         });
-        $generator = new SocialSeriesGenerator($publisher, $this->createStub(SocialPostWriter::class), new SocialMediaFile(), $entityManager, $seriesRepository, $this->createStub(SocialSlotRepository::class), new SocialSlotFinder(new SocialSlotCalendar(), $this->createStub(SocialPostRepository::class)), sys_get_temp_dir());
+        $generator = new SocialSeriesGenerator($publisher, $this->createStub(SocialPostWriter::class), new SocialMediaFile(), $entityManager, $seriesRepository, $this->createStub(SocialSlotRepository::class), new SocialSlotFinder(new SocialSlotCalendar(), $this->createStub(SocialPostRepository::class)), new MockClock('2026-11-01'), sys_get_temp_dir());
 
         $prolonged = $this->tools($seriesRepository, prolonger: new SocialSeriesProlonger($seriesRepository, $generator))->prolong(4, '2026-12-14');
 

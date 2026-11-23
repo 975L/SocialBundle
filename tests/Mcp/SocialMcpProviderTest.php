@@ -24,6 +24,7 @@ use c975L\SocialBundle\Service\SocialPlanner;
 use c975L\SocialBundle\Service\SocialPublisher;
 use c975L\SocialBundle\Service\SocialSeriesProlonger;
 use c975L\SocialBundle\Service\SocialSlotCalendar;
+use c975L\SocialBundle\Service\SocialSlotPlan;
 use c975L\SocialBundle\Service\SocialSlotRelayer;
 use Doctrine\ORM\EntityManagerInterface;
 use Mcp\Server\Exception\ToolCallException;
@@ -40,9 +41,9 @@ class SocialMcpProviderTest extends TestCase
         $tools = iterator_to_array($this->provider()->getMcpTools(), false);
 
         $this->assertSame('social', $this->provider()->getMcpKey());
-        $this->assertSame(['social_list', 'social_get', 'social_create', 'social_edit', 'social_slots', 'social_slot_save', 'social_slot_delete', 'social_slot_relay', 'social_series', 'social_series_get', 'social_series_prolong'], array_map(static fn ($tool): string => $tool->name, $tools));
-        $this->assertSame([false, false, true, true, false, true, true, true, false, false, true], array_map(static fn ($tool): bool => $tool->writes, $tools));
-        $this->assertSame([false, false, false, false, false, false, true, false, false, false, false], array_map(static fn ($tool): bool => $tool->destroys, $tools));
+        $this->assertSame(['social_list', 'social_get', 'social_create', 'social_edit', 'social_slots', 'social_slot_save', 'social_slot_delete', 'social_plan', 'social_slot_relay', 'social_series', 'social_series_get', 'social_series_prolong'], array_map(static fn ($tool): string => $tool->name, $tools));
+        $this->assertSame([false, false, true, true, false, true, true, false, true, false, false, true], array_map(static fn ($tool): bool => $tool->writes, $tools));
+        $this->assertSame([false, false, false, false, false, false, true, false, false, false, false, false], array_map(static fn ($tool): bool => $tool->destroys, $tools));
     }
 
     // The posts planned in the days asked, in their order, each network with its status
@@ -216,7 +217,7 @@ class SocialMcpProviderTest extends TestCase
         $access = new SocialMcpAccess($config, $security);
         $clock = new MockClock('2026-11-21 10:00');
         $entityManager ??= $this->createStub(EntityManagerInterface::class);
-        $slotTools = new SocialSlotTools($this->createStub(SocialSlotRepository::class), $this->createStub(SocialSeriesRepository::class), new SocialSlotCalendar(), $this->createStub(SocialSlotRelayer::class), $entityManager, $this->createStub(ValidatorInterface::class), $access, $clock);
+        $slotTools = new SocialSlotTools($this->createStub(SocialSlotRepository::class), $this->createStub(SocialSeriesRepository::class), new SocialSlotCalendar(), $this->createStub(SocialSlotRelayer::class), $entityManager, $this->createStub(ValidatorInterface::class), $access, $clock, $this->createStub(SocialSlotPlan::class));
 
         $seriesTools = new SocialSeriesTools($this->createStub(SocialSeriesRepository::class), $this->createStub(SocialPostRepository::class), $this->createStub(SocialSlotRepository::class), $this->createStub(SocialSeriesProlonger::class), $access, $clock);
 

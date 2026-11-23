@@ -323,6 +323,18 @@ class SocialPublisher
         return array_any(iterator_to_array($this->sources, false), static fn (SocialContentSourceInterface $source): bool => $source instanceof DatedSocialContentSourceInterface && ([] === $scopes || isset($scopes[$source->getSourceType()])));
     }
 
+    // Whether the contents left among $sources can be counted: every source picked lists them, none choosing by date - a source handing out only its next content, or one per day, says nothing of how many are left
+    /** @param list<string> $sources */
+    public function countsFreeContents(array $sources): bool
+    {
+        $scopes = $this->scopesOf($sources);
+
+        return !$this->hasDatedSource($sources) && array_all(
+            array_filter(iterator_to_array($this->sources, false), static fn (SocialContentSourceInterface $source): bool => [] === $scopes || isset($scopes[$source->getSourceType()])),
+            static fn (SocialContentSourceInterface $source): bool => $source instanceof BrowsableSocialContentSourceInterface,
+        );
+    }
+
     // A post planned at $at from the next content of $sources (see prepareDrafts()), with no network yet: its text and its networks are its caller's - null when no network is connected, the sources ran out or hold nothing for $at
     /** @param list<string> $sources */
     public function createFromSources(\DateTimeImmutable $at, array $sources): ?SocialPost
@@ -376,15 +388,37 @@ class SocialPublisher
      */
     public function freeContents(array $sourceTypes, int $limit): array
     {
+        return $this->freeContentsIn(array_fill_keys($sourceTypes, []), $limit);
+    }
+
+    // The contents still free among the sources a series picked (see scopesOf()), every source for none
+    /**
+     * @param list<string> $sources
+     *
+     * @return list<array{source: string, scope: ?string, content: SocialContent}>
+     */
+    public function freeContentsOf(array $sources, int $limit): array
+    {
+        return $this->freeContentsIn($this->scopesOf($sources), $limit);
+    }
+
+    // The contents still free in the sources of $scopes (see scopesOf()), each source asked within its groups picked
+    /**
+     * @param array<string, list<string>> $scopes
+     *
+     * @return list<array{source: string, scope: ?string, content: SocialContent}>
+     */
+    private function freeContentsIn(array $scopes, int $limit): array
+    {
         $free = [];
         foreach ($this->sources as $source) {
             $type = $source->getSourceType();
-            if ([] !== $sourceTypes && !\in_array($type, $sourceTypes, true)) {
+            if ([] !== $scopes && !isset($scopes[$type])) {
                 continue;
             }
 
             $excludedIds = $this->excludedIds($source);
-            $contents = $source instanceof BrowsableSocialContentSourceInterface ? $source->findContents($excludedIds, [], $limit) : array_filter([$source->getNextContent($excludedIds)]);
+            $contents = $source instanceof BrowsableSocialContentSourceInterface ? $source->findContents($excludedIds, $scopes[$type] ?? [], $limit) : array_filter([$this->askSource($source, $excludedIds, $scopes[$type] ?? [], null)]);
             foreach ($contents as $content) {
                 $scope = $source instanceof BrowsableSocialContentSourceInterface ? $source->getContentScope($content->sourceId) : null;
                 $free[] = ['source' => $type, 'scope' => $scope, 'content' => $content];

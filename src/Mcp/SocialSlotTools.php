@@ -17,6 +17,7 @@ use c975L\SocialBundle\Repository\SocialSeriesRepository;
 use c975L\SocialBundle\Repository\SocialSlotRepository;
 use c975L\SocialBundle\Service\SocialSeriesGenerator;
 use c975L\SocialBundle\Service\SocialSlotCalendar;
+use c975L\SocialBundle\Service\SocialSlotPlan;
 use c975L\SocialBundle\Service\SocialSlotRelayer;
 use Doctrine\ORM\EntityManagerInterface;
 use Mcp\Server\Exception\ToolCallException;
@@ -38,6 +39,7 @@ class SocialSlotTools
         private readonly ValidatorInterface $validator,
         private readonly SocialMcpAccess $access,
         private readonly ClockInterface $clock,
+        private readonly SocialSlotPlan $slotPlan,
     ) {
     }
 
@@ -48,7 +50,28 @@ class SocialSlotTools
         yield new McpTool('social_slots', 'Template week', 'The slots of the template week: day, time, pace, the key an import names, the series prolonged on it, the slots it meets at the same minute and its next moments.', $this->list(...));
         yield new McpTool('social_slot_save', 'Write a slot', 'Adds a slot to the template week, or rewrites one given its id, every field as given; a series prolonged on it takes its next moments from it.', $this->save(...), true);
         yield new McpTool('social_slot_delete', 'Take a slot off', 'Takes a slot off the template week; its posts stay where they are.', $this->delete(...), true, true);
+        yield new McpTool('social_plan', 'Plan of the coming days', 'Every moment of the template week up to a day, each with its post (state, networks, what a network would refuse in its medias) or left empty, the posts off the slots, how many go out each day, and for each series drawing from the contents the slots it still has to fill against the contents left.', $this->plan(...));
         yield new McpTool('social_slot_relay', 'Lay a series again', 'Moves the drafts to come of a series onto the free moments of its slots, in their order; approved posts and those gone out stay where they are.', $this->relay(...), true);
+    }
+
+    // The plan of the coming days up to $until, read only
+    /**
+     * @param string $until last day read, YYYY-MM-DD, 92 days ahead at most
+     *
+     * @return array<string, mixed>
+     */
+    public function plan(string $until): array
+    {
+        $this->access->guard();
+        $day = $this->access->day($until);
+        if (null === $day) {
+            throw new ToolCallException('until is a day written YYYY-MM-DD.');
+        }
+        if ($day > $this->clock->now()->setTime(0, 0)->modify(sprintf('+%d days', SocialSeriesTools::MAX_DAYS))) {
+            throw new ToolCallException(sprintf('until is %d days ahead at most.', SocialSeriesTools::MAX_DAYS));
+        }
+
+        return $this->slotPlan->read($day);
     }
 
     // The template week, by day then time, each slot with those it meets and its next moments

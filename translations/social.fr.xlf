@@ -328,7 +328,7 @@
             </trans-unit>
             <trans-unit id="YQtvut9">
                 <source>description.guided_step_social_series_prolong</source>
-                <target>Un e-mail prévient quand la série approche de sa fin. « Prolonger la série », en tête de sa page (« Voir la série » dans le panneau d'un de ses posts) ou sur l'écran d'un post, en crée autant à la suite, au même rythme.</target>
+                <target>Un e-mail prévient quand la série approche de sa fin. « Prolonger la série », en tête de sa page (« Voir la série » dans le panneau d'un de ses posts) ou sur l'écran d'un post, en crée autant à la suite, au même rythme - à partir d'aujourd'hui pour une série terminée depuis un moment, jamais dans le passé.</target>
             </trans-unit>
             <trans-unit id="1LrVmDy">
                 <source>description.guided_step_social_series_review</source>

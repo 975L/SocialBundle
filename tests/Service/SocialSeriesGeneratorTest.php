@@ -25,12 +25,16 @@ use c975L\SocialBundle\Service\SocialSlotCalendar;
 use c975L\SocialBundle\Service\SocialSlotFinder;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\MockClock;
 use Symfony\Component\HttpFoundation\File\File;
 
 class SocialSeriesGeneratorTest extends TestCase
 {
     /** @var list<array{0: list<\DateTimeImmutable>, 1: list<string>}> */
     private array $drafted = [];
+
+    // The moment the generator takes as now, before every fixture's last post unless a test moves it
+    private ?MockClock $clock = null;
 
     private int $aiCalls = 0;
 
@@ -73,7 +77,7 @@ class SocialSeriesGeneratorTest extends TestCase
         $seriesRepository->method('findLastPlannedAt')->willReturn($lastPlannedAt);
         $seriesRepository->method('findFirstPlannedAt')->willReturn($firstPlannedAt);
 
-        return new SocialSeriesGenerator($publisher, $writer, new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $seriesRepository, $this->slotRepository($slots), new SocialSlotFinder(new SocialSlotCalendar(), $this->postRepository($taken)), sys_get_temp_dir());
+        return new SocialSeriesGenerator($publisher, $writer, new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $seriesRepository, $this->slotRepository($slots), new SocialSlotFinder(new SocialSlotCalendar(), $this->postRepository($taken)), $this->clock ?? new MockClock('2026-11-01'), sys_get_temp_dir());
     }
 
     // A publisher whose only source is dated, holding contents on the days given - the moments it was asked and the AI's calls being recorded
@@ -103,7 +107,7 @@ class SocialSeriesGeneratorTest extends TestCase
         $seriesRepository = $this->createStub(SocialSeriesRepository::class);
         $seriesRepository->method('findLastPlannedAt')->willReturn($lastPlannedAt);
 
-        return new SocialSeriesGenerator($publisher, $writer, new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $seriesRepository, $this->slotRepository([]), new SocialSlotFinder(new SocialSlotCalendar(), $this->postRepository([])), sys_get_temp_dir());
+        return new SocialSeriesGenerator($publisher, $writer, new SocialMediaFile(), $this->createStub(EntityManagerInterface::class), $seriesRepository, $this->slotRepository([]), new SocialSlotFinder(new SocialSlotCalendar(), $this->postRepository([])), $this->clock ?? new MockClock('2026-11-01'), sys_get_temp_dir());
     }
 
     // The slots of the template week every series is prolonged on
@@ -321,6 +325,29 @@ class SocialSeriesGeneratorTest extends TestCase
         $this->assertSame($taken, $generator->skippedMoments($series, $last));
     }
 
+    // A series on slots ended a while ago goes on from now, never in the past
+    public function testAProlongationOnSlotsEndedLongAgoGoesOnFromNow(): void
+    {
+        $this->clock = new MockClock('2026-11-23 10:00');
+        $monday = new SocialSlot()->setLabel('item-1')->setWeekday(1)->setTime('18:00');
+        $series = $this->series(2, SocialSeriesGenerator::MODE_TEXT, ['bluesky'], 'Soir');
+
+        $posts = $this->generator(lastPlannedAt: new \DateTimeImmutable('2026-11-02 18:00'), slots: [$monday])->prolong($series);
+
+        $this->assertSame(['2026-11-23 18:00', '2026-11-30 18:00'], array_map(static fn (SocialPost $post): string => $post->getPlannedAt()->format('Y-m-d H:i'), $posts));
+    }
+
+    // A series at its pace ended a while ago goes on from now in its rhythm, as many drafts as it counts, none in the past
+    public function testAProlongationAtItsPaceMakesNoDraftInThePast(): void
+    {
+        $this->clock = new MockClock('2026-11-16 10:00');
+        $series = $this->series(3, SocialSeriesGenerator::MODE_TEXT, ['bluesky'], 'Soir', interval: 7);
+
+        $posts = $this->generator(lastPlannedAt: new \DateTimeImmutable('2026-11-02 21:00'))->prolong($series);
+
+        $this->assertSame(['2026-11-16 21:00', '2026-11-23 21:00', '2026-11-30 21:00'], array_map(static fn (SocialPost $post): string => $post->getPlannedAt()->format('Y-m-d H:i'), $posts));
+    }
+
     // Imported drafts have nothing to be prolonged with, the next ones being imported in turn
     public function testAnImportedSeriesIsNotProlonged(): void
     {
@@ -371,6 +398,17 @@ class SocialSeriesGeneratorTest extends TestCase
         $this->drafted = [];
         $this->assertSame([], $this->datedGenerator([], $last)->prolong($series));
         $this->assertLessThanOrEqual($last->modify('+1 year'), end($this->drafted)[0][\count(end($this->drafted)[0]) - 1]);
+    }
+
+    // A series reading dates ended over a year ago still reaches its next content: its year without content is counted from now
+    public function testADatedProlongationEndedLongAgoReachesItsNextContent(): void
+    {
+        $this->clock = new MockClock('2026-11-16 10:00');
+        $series = $this->series(2, SocialSeriesGenerator::MODE_SOURCE, ['bluesky'], '', ['dated']);
+
+        $posts = $this->datedGenerator(['2026-11-20'], new \DateTimeImmutable('2025-06-07 09:00'))->prolong($series);
+
+        $this->assertSame(['20261120'], array_map(static fn (SocialPost $post): string => $post->getSourceId(), $posts));
     }
 
     // A stretch without content costs the AI nothing: no draft, no text to ask for

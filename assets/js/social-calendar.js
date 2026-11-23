@@ -306,6 +306,11 @@ export default class extends Controller {
         for (const pick of this.pickTargets) pick.checked = event.currentTarget.checked;
     }
 
+    // The series' page: "Select all" half-checked from the start when a review set some drafts aside
+    pickAllTargetConnected() {
+        this.syncPicks();
+    }
+
     // The series' page: "Select all" checked when every draft is, half-checked when only some are
     syncPicks() {
         if (!this.hasPickAllTarget) return;

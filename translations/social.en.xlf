@@ -328,7 +328,7 @@
             </trans-unit>
             <trans-unit id="YQtvut9">
                 <source>description.guided_step_social_series_prolong</source>
-                <target>An email warns when the series comes near its end. "Prolong the series", at the top of its page ("View the series" in the panel of one of its posts) or on the screen of a post, makes as many again after it, at the same pace.</target>
+                <target>An email warns when the series comes near its end. "Prolong the series", at the top of its page ("View the series" in the panel of one of its posts) or on the screen of a post, makes as many again after it, at the same pace - from today for a series ended a while ago, never in the past.</target>
             </trans-unit>
             <trans-unit id="1LrVmDy">
                 <source>description.guided_step_social_series_review</source>

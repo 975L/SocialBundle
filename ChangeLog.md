@@ -1,5 +1,20 @@
 # Changelog
 
+## v2.44.0
+
+Series prolonged from now, README opened on a short overview
+
+- A series ended a while ago is prolonged from now, never in the past (23/11/2026)
+- Added a `ClockInterface` argument to `SocialSeriesGenerator` [BC-Break] (23/11/2026)
+- Added `c975l:social:plan` and the `social_plan` MCP tool, the coming moments of the template week with their post or left empty (23/11/2026)
+- Added `SocialSlotPlan` and `SocialPublisher::freeContentsOf()` (23/11/2026)
+- Added a `SocialSlotPlan` argument to `SocialSlotTools` [BC-Break] (23/11/2026)
+- The series page leaves unchecked the drafts its link sets aside (`?aside=`) (23/11/2026)
+- `c975l:social:series:prolong` also prolongs the ended series tied to a slot (23/11/2026)
+- Added a `SocialSlotRepository` argument to `SeriesProlongCommand` [BC-Break] (23/11/2026)
+- Added `SocialPublisher::countsFreeContents()` (23/11/2026)
+- README opened on a short overview for humans, the reference folded below it (23/11/2026)
+
 ## v2.43.0
 
 Template week and series on the MCP endpoint

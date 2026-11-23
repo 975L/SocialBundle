@@ -277,6 +277,8 @@ class SocialCalendarController extends AbstractController
             'delete_url' => $this->generateUrl(self::DELETE_ROUTE),
             // A copy just made or the draft to approve next, its panel opening with the page
             'open_id' => $request->query->getInt('post'),
+            // The drafts a review set aside (?aside=12,15), left unchecked so that "Approve the selection" leaves them drafts
+            'aside' => array_values(array_filter(array_map(intval(...), explode(',', $request->query->getString('aside'))))),
             'token' => self::CSRF_TOKEN,
             'prolong_url' => null === $last ? null : $this->postUrl($last, 'prolongSeries', self::SERIES),
             'delete_series_url' => $this->generateUrl(self::SERIES_DELETE_ROUTE, ['id' => $series->getId()]),
