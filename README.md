@@ -5,11 +5,15 @@
 [![PHP Version](https://img.shields.io/packagist/php-v/c975l/social-bundle)](https://packagist.org/packages/c975l/social-bundle)
 [![Codacy Grade](https://app.codacy.com/project/badge/Grade/025dc54614d64d80a0ee456262e98b1c)](https://app.codacy.com/gh/975L/SocialBundle/dashboard)
 
-![SocialBundle](.github/images/SocialBundle.svg)
+<p align="center"><img src=".github/images/SocialBundle.svg" alt="SocialBundle"></p>
 
 **Your site's posts on the social networks, written, approved and scheduled from its own back-office, plus its social links, share buttons and Google reviews.**
 
 **[Bundle page](https://bundles.975l.com/en/pages/social-bundle) · [Tutorials](https://bundles.975l.com/en/tutoriels/social-bundle) · [Block kinds](https://bundles.975l.com/en/pages/blocks/Social) · [Live demo](https://bundles.975l.com/demo/) · [Demo back-office](https://bundles.975l.com/demo/login)**
+
+[![Watch the SocialBundle film](.github/images/showcase.jpg)](https://youtu.be/sBlqC9oF_sE)
+
+▶ [Watch the film](https://youtu.be/sBlqC9oF_sE) · [SocialBundle's page](https://bundles.975l.com/en/pages/social-bundle)
 
 > **TL;DR** — SocialBundle runs a site's social side from its back-office: every post to the networks is a draft someone reads and approves before it goes out at its moment on a calendar. It also keeps the site's social links in one place, adds share buttons for visitors and imports the site's Google reviews. It rests on CoreBundle and needs no third-party scheduling tool; install it with Composer, then follow the installation steps.
 
@@ -41,13 +45,10 @@ Then follow the full [installation](#installation) section below.
 
 > **For developers** — [Publishing on the networks](#publishing-on-the-networks) — Bluesky, Facebook, Instagram, LinkedIn, YouTube, Pinterest, TikTok and the Google listing, every post a draft approved before it goes out, on a calendar — plus social links, share buttons and Google reviews, for a c975L site. The links are stored as a `social_links` block reusing UiBundle's generic `Block` entity rather than a dedicated table (the "singleton CRUD" pattern), displayed anywhere through a `social_links_display` block or site-wide. Replaces the former ShareButtonsBundle.
 
-<details>
-<summary>Contents</summary>
+### Contents
 
 - **Setup** — [requirements](#requirements) · [installation](#installation) · [assets](#install-assets)
 - **Using it** — [publishing on the networks](#publishing-on-the-networks) · [social links block](#social-links-block) · [admin management](#admin-management) · [rendering](#rendering-the-block) · [styling](#styling) · [share buttons](#share-buttons) · [site-wide auto-display](#site-wide-auto-display) · [customer reviews](#customer-reviews) · [admin help procedures](#admin-help-procedures) · [guided projects](#guided-projects) · [MCP tools](#mcp-tools) · [AI agent skills](#ai-agent-skills)
-
-</details>
 
 ---
 
@@ -58,6 +59,14 @@ Add SocialBundle on top of the shared [UiBundle](https://github.com/975L/UiBundl
 | Calendar | Posts | Connections |
 |---|---|---|
 | [![The publications calendar](.github/images/social-calendar.webp)](#the-calendar) | [![The posts list](.github/images/social-posts.webp)](#how-a-post-goes-out) | [![The networks connections](.github/images/social-connections.webp)](#connecting-the-networks) |
+
+> [!TIP]
+> If this project **helps you save development time**:
+>
+> - [**star** it on GitHub](https://github.com/975L/SocialBundle) — helps others find it
+> - [**open an issue**](https://github.com/975L/SocialBundle/issues/new) to share how you use it — genuinely useful feedback
+>
+> And if you'd like to support the work directly, the **Sponsor** button at the top of the GitHub page is there for that. Thank you!
 
 ---
 
@@ -727,13 +736,3 @@ ln -s ../../vendor/c975l/social-bundle/skills/c975l-social .claude/skills/c975l-
 ```
 
 `Tests\SkillsTest` keeps the file honest: every path, route, config slug, command, class member, Twig function, block kind and component it quotes is checked against the sources, so renaming any of them fails the build rather than leaving an agent confidently wrong.
-
----
-
-> [!TIP]
-> If this project **helps you save development time**:
->
-> - [**star** it on GitHub](https://github.com/975L/SocialBundle) — helps others find it
-> - [**open an issue**](https://github.com/975L/SocialBundle/issues/new) to share how you use it — genuinely useful feedback
->
-> And if you'd like to support the work directly, the **Sponsor** button at the top of the GitHub page is there for that. Thank you!
